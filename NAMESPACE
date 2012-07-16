@@ -1,0 +1,2 @@
+useDynLib(ensemble)
+exportPattern("^[[:alpha:]]+")
