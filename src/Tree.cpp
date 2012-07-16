@@ -6,43 +6,55 @@ Tree::Tree(unsigned int* const pChildrenCountPerLevel, unsigned int const levelC
     unsigned int cumulative_element_count = 1;
     unsigned int children_per_level = 1;
 
-    for (unsigned int i = 0; i < mLevelCount; ++i)
+    mpStartingIndexPerLevel = new unsigned int[mLevelCount + 1];
+    mpStartingIndexPerLevel[0] = 0;
+
+    for (unsigned int level = 0; level < mLevelCount; ++level)
     {
-        children_per_level *= mpChildrenCountPerLevel[i];
+        mpStartingIndexPerLevel[level + 1] = cumulative_element_count;
+        children_per_level *= mpChildrenCountPerLevel[level];
         cumulative_element_count += children_per_level;
     }
 
-    mpData = new unsigned int[cumulative_element_count];
-
-    std::cout << cumulative_element_count << std::endl;
+    mpIndexTree = new unsigned int[cumulative_element_count];
+    mpInformativeContributionTree = new float[cumulative_element_count];
+    mpRedundantContributionTree = new float[cumulative_element_count];
 }
 
 Tree::~Tree()
 {
-    delete[] mpData;
+    delete[] mpStartingIndexPerLevel;
+    delete[] mpIndexTree;
+    delete[] mpInformativeContributionTree;
+    delete[] mpRedundantContributionTree;
 }
 
 void
 Tree::build()
 {
-    mpData[0] = 0;
+    mpIndexTree[0] = 0;
 
-    unsigned int last_level_element_count = 1;
-    unsigned int this_level_starting_index = 1;
-
-    for (unsigned int level = 1; level < mLevelCount; ++level)
+    for (unsigned int level = 0; level < mLevelCount; ++level)
     {
-        for (unsigned int parent = 0; parent < last_level_element_count; ++parent)
+        unsigned int const parent_count = mpStartingIndexPerLevel[level + 1]
+                - mpStartingIndexPerLevel[level];
+        for (unsigned int parent = 0; parent < parent_count; ++parent)
         {
-            for (unsigned int child = 0; child < mpChildrenCountPerLevel[level - 1]; ++child)
+            for (unsigned int child = 0; child < mpChildrenCountPerLevel[level]; ++child)
             {
+                unsigned int const child_index = mpStartingIndexPerLevel[level + 1]
+                        + (parent * mpChildrenCountPerLevel[level]) + child;
                 // create/select/validate child
-                mpData[last_level_ending_index + (parent * mpChildrenCountPerLevel[level - 1])
-                        + child] = child;
+                mpIndexTree[child_index] = child;
+                // mpInformativeContributionTree[child_index]
+                // mpRedundantContributionTree[child_index]
             }
         }
-
-        last_level_element_count *= mpChildrenCountPerLevel[level - 1];
-        this_level_starting_index += last_level_element_count;
     }
+
+    for (unsigned int i = 0; i < 33; ++i)
+    {
+        std::cout << mpIndexTree[i] << "\t";
+    }
+    std::cout << std::endl;
 }

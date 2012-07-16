@@ -1,11 +1,10 @@
-#include <iostream>
-
 #include "Tree.hpp"
 
 int
 main()
 {
-    Tree tree({2, 3, 2, 1}, 4);
-
+    unsigned int levels[] = { 2, 3, 2, 1 };
+    Tree tree(levels, 4);
+    tree.build();
     return 0;
 }
