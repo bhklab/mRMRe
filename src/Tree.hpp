@@ -21,6 +21,8 @@ public:
     void
     build();
 
+    unsigned int const
+    getParentAbsoluteIndex(unsigned int const absoluteIndex, unsigned int const level) const;
 };
 
 #endif /* ensemble_Tree_hpp */

@@ -58,3 +58,10 @@ Tree::build()
     }
     std::cout << std::endl;
 }
+
+unsigned int const
+Tree::getParentAbsoluteIndex(unsigned int const absoluteIndex, unsigned int const level) const
+{
+    return (absoluteIndex - mpStartingIndexPerLevel[level]) / mpChildrenCountPerLevel[level - 1]
+            + mpStartingIndexPerLevel[level - 1];
+}
