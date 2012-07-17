@@ -20,7 +20,8 @@ private:
 
 public:
     Tree(unsigned int* const pChildrenCountPerLevel, unsigned int const levelCount,
-            float* const pFeatureInformationMatrix, unsigned int const featureCount);
+            float* const pFeatureInformationMatrix, unsigned int const featureCount,
+            unsigned int const targetFeatureIndex);
 
     ~Tree();
 

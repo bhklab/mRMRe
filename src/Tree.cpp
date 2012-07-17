@@ -1,7 +1,8 @@
 #include "Tree.hpp"
 
 Tree::Tree(unsigned int* const pChildrenCountPerLevel, unsigned int const levelCount,
-        float* const pFeatureInformationMatrix, unsigned int const featureCount) :
+        float* const pFeatureInformationMatrix, unsigned int const featureCount,
+        unsigned int const targetFeatureIndex) :
         mpChildrenCountPerLevel(pChildrenCountPerLevel), mLevelCount(levelCount), mpFeatureInformationMatrix(
                 pFeatureInformationMatrix), mFeatureCount(featureCount)
 {
@@ -22,6 +23,10 @@ Tree::Tree(unsigned int* const pChildrenCountPerLevel, unsigned int const levelC
     mpInformativeContributionTree = new float[cumulative_element_count];
     mpRedundantContributionTree = new float[cumulative_element_count];
     mTreeElementCount = cumulative_element_count;
+
+    mpIndexTree[0] = targetFeatureIndex;
+    mpInformativeContributionTree[0] = 0.;
+    mpRedundantContributionTree[0] = 0.;
 }
 
 Tree::~Tree()
@@ -35,8 +40,6 @@ Tree::~Tree()
 void
 Tree::build()
 {
-    mpIndexTree[0] = 0; // OK
-
     for (unsigned int level = 0; level < mLevelCount; ++level)
     {
         unsigned int const parent_count = mpStartingIndexPerLevel[level + 1]
@@ -49,6 +52,8 @@ Tree::build()
             {
                 unsigned int const child_absolute_index = mpStartingIndexPerLevel[level + 1]
                         + (parent * mpChildrenCountPerLevel[level]) + child;
+
+                // Selection criterion -> no two paths contain the same index set
 
                 mpIndexTree[child_absolute_index] = child_absolute_index; // OK
                 // mpInformativeContributionTree[child_index]
