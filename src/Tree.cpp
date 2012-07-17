@@ -42,6 +42,7 @@ Tree::build()
         unsigned int const parent_count = mpStartingIndexPerLevel[level + 1]
                 - mpStartingIndexPerLevel[level];
 
+#pragma omp parallel for schedule(dynamic)
         for (unsigned int parent = 0; parent < parent_count; ++parent)
         {
             for (unsigned int child = 0; child < mpChildrenCountPerLevel[level]; ++child)
@@ -60,7 +61,7 @@ Tree::build()
 void
 Tree::getPaths(std::vector<unsigned int>* pPaths) const
 {
-    //pPaths->resize(mLevelCount * (mTreeElementCount - mpStartingIndexPerLevel[mLevelCount]));
+    pPaths->reserve(mLevelCount * (mTreeElementCount - mpStartingIndexPerLevel[mLevelCount]));
 
     for (unsigned int end_element_absolute_index = mTreeElementCount - 1;
             end_element_absolute_index >= mpStartingIndexPerLevel[mLevelCount];

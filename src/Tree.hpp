@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#include <omp.h>
+
 class Tree
 {
 private:
