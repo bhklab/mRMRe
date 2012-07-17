@@ -1,7 +1,9 @@
 #include "Tree.hpp"
 
-Tree::Tree(unsigned int* const pChildrenCountPerLevel, unsigned int const levelCount) :
-        mpChildrenCountPerLevel(pChildrenCountPerLevel), mLevelCount(levelCount)
+Tree::Tree(unsigned int* const pChildrenCountPerLevel, unsigned int const levelCount,
+        float* const pFeatureInformationMatrix, unsigned int const featureCount) :
+        mpChildrenCountPerLevel(pChildrenCountPerLevel), mLevelCount(levelCount), mpFeatureInformationMatrix(
+                pFeatureInformationMatrix), mFeatureCount(featureCount)
 {
     unsigned int cumulative_element_count = 1;
     unsigned int children_per_level = 1;
@@ -51,15 +53,9 @@ Tree::build()
             }
         }
     }
-
-    for (unsigned int i = 0; i < 33; ++i)
-    {
-        std::cout << mpIndexTree[i] << "\t";
-    }
-    std::cout << std::endl;
 }
 
-unsigned int const
+/* inline */unsigned int const
 Tree::getParentAbsoluteIndex(unsigned int const absoluteIndex, unsigned int const level) const
 {
     return (absoluteIndex - mpStartingIndexPerLevel[level]) / mpChildrenCountPerLevel[level - 1]
