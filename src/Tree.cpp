@@ -21,6 +21,7 @@ Tree::Tree(unsigned int* const pChildrenCountPerLevel, unsigned int const levelC
     mpIndexTree = new unsigned int[cumulative_element_count];
     mpInformativeContributionTree = new float[cumulative_element_count];
     mpRedundantContributionTree = new float[cumulative_element_count];
+    mTreeElementCount = cumulative_element_count;
 }
 
 Tree::~Tree()
@@ -34,23 +35,43 @@ Tree::~Tree()
 void
 Tree::build()
 {
-    mpIndexTree[0] = 0;
+    mpIndexTree[0] = 0; // OK
 
     for (unsigned int level = 0; level < mLevelCount; ++level)
     {
         unsigned int const parent_count = mpStartingIndexPerLevel[level + 1]
                 - mpStartingIndexPerLevel[level];
+
         for (unsigned int parent = 0; parent < parent_count; ++parent)
         {
             for (unsigned int child = 0; child < mpChildrenCountPerLevel[level]; ++child)
             {
-                unsigned int const child_index = mpStartingIndexPerLevel[level + 1]
+                unsigned int const child_absolute_index = mpStartingIndexPerLevel[level + 1]
                         + (parent * mpChildrenCountPerLevel[level]) + child;
-                // create/select/validate child
-                mpIndexTree[child_index] = child;
+
+                mpIndexTree[child_absolute_index] = child_absolute_index; // OK
                 // mpInformativeContributionTree[child_index]
                 // mpRedundantContributionTree[child_index]
             }
+        }
+    }
+}
+
+void
+Tree::getPaths(std::vector<unsigned int>* pPaths) const
+{
+    //pPaths->resize(mLevelCount * (mTreeElementCount - mpStartingIndexPerLevel[mLevelCount]));
+
+    for (unsigned int end_element_absolute_index = mTreeElementCount - 1;
+            end_element_absolute_index >= mpStartingIndexPerLevel[mLevelCount];
+            --end_element_absolute_index)
+    {
+        unsigned int element_absolute_index = end_element_absolute_index;
+
+        for (unsigned int level = mLevelCount; level > 0; --level)
+        {
+            pPaths->push_back(mpIndexTree[element_absolute_index]);
+            element_absolute_index = getParentAbsoluteIndex(element_absolute_index, level);
         }
     }
 }
