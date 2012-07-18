@@ -55,7 +55,8 @@ Tree::build()
 
                 // Selection criterion -> no two paths contain the same index set
 
-                mpIndexTree[child_absolute_index] = mFeatureCount;// selectBestFeature(child_absolute_index, level+1); // OK
+                mpIndexTree[child_absolute_index] = /*child_absolute_index;*/selectBestFeature(
+                        child_absolute_index, level + 1); // OK
                 // mpInformativeContributionTree[child_index]
                 // mpRedundantContributionTree[child_index]
             }
@@ -87,14 +88,13 @@ Tree::selectBestFeature(unsigned int absoluteIndex, unsigned int level)
 
         // Compute the average redundancy of i with ancestry
         unsigned int absoluteAncestorIndex = absoluteIndex;
-        if (level > 1)
-            for (unsigned int j = level; j > 0; --j)
-            {
-                absoluteAncestorIndex = getParentAbsoluteIndex(absoluteAncestorIndex, j);
-                ancestry_score_sum += mpFeatureInformationMatrix[absoluteAncestorIndex
-                        * mFeatureCount + i];
-                //ancestry_score_sum += (*mpFeatureInformationMatrix)(absoluteAncestorIndex, i);
-            }
+        for (unsigned int j = level; j > 0; --j)
+        {
+            absoluteAncestorIndex = getParentAbsoluteIndex(absoluteAncestorIndex, j);
+            ancestry_score_sum += mpFeatureInformationMatrix[absoluteAncestorIndex * mFeatureCount
+                    + i];
+            //ancestry_score_sum += (*mpFeatureInformationMatrix)(absoluteAncestorIndex, i);
+        }
 
         float ancestry_mean_score = ancestry_score_sum / level;
         float score = target_score - ancestry_mean_score;
