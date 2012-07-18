@@ -43,10 +43,10 @@ public:
     computeQualityScore(unsigned int absoluteIndex, unsigned int level);
 
     bool
-    hasAncestorByIndex(unsigned int absoluteIndex, unsigned int targetMimIndex, unsigned int level);
+    hasAncestorByIndex(unsigned int absoluteIndex, unsigned int consideredFeatureIndex, unsigned int level);
 
     bool
-    hasBrotherByIndex(unsigned int absoluteIndex, unsigned int targetMimIndex, unsigned int level);
+    hasSiblingByIndex(unsigned int absoluteIndex, unsigned int consideredFeatureIndex, unsigned int level);
 
     void
     getPaths(std::vector<unsigned int>* pPaths) const;

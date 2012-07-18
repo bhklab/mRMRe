@@ -84,7 +84,6 @@ Tree::selectBestFeature(unsigned int absoluteIndex, unsigned int level)
             continue;
 
         float target_score = mpFeatureInformationMatrix[mpIndexTree[0] * mFeatureCount + i];
-        //float target_score = (*mpFeatureInformationMatrix)(mpIndexTree[0], i);
 
         // Compute the average redundancy of i with ancestry
         unsigned int absoluteAncestorIndex = absoluteIndex;
@@ -93,7 +92,6 @@ Tree::selectBestFeature(unsigned int absoluteIndex, unsigned int level)
             absoluteAncestorIndex = getParentAbsoluteIndex(absoluteAncestorIndex, j);
             ancestry_score_sum += mpFeatureInformationMatrix[mpIndexTree[absoluteAncestorIndex]
                     * mFeatureCount + i];
-            //ancestry_score_sum += (*mpFeatureInformationMatrix)(absoluteAncestorIndex, i);
         }
 
         float ancestry_mean_score = ancestry_score_sum / level;
@@ -150,13 +148,13 @@ Tree::computeQualityScore(unsigned int absoluteIndex, unsigned int level)
 
 // TODO: Confirm that the method works
 bool
-Tree::hasAncestorByIndex(unsigned int absoluteIndex, unsigned int targetMimIndex,
+Tree::hasAncestorByIndex(unsigned int absoluteIndex, unsigned int consideredFeatureIndex,
         unsigned int level)
 {
     for (unsigned int i = level; i > 0; --i)
     {
         absoluteIndex = getParentAbsoluteIndex(absoluteIndex, i);
-        if (mpIndexTree[absoluteIndex] == targetMimIndex)
+        if (mpIndexTree[absoluteIndex] == consideredFeatureIndex)
             return true;
     }
     return false;
@@ -164,7 +162,7 @@ Tree::hasAncestorByIndex(unsigned int absoluteIndex, unsigned int targetMimIndex
 
 // TODO: Confirm that the method works
 bool
-Tree::hasBrotherByIndex(unsigned int absoluteIndex, unsigned int targetMimIndex, unsigned int level)
+Tree::hasSiblingByIndex(unsigned int absoluteIndex, unsigned int consideredFeatureIndex, unsigned int level)
 {
     //  [2][3][4][5]...[6][7][8][9]...[10]
     //  [0][1][2][3]...[0][1][2][3]...[0]
@@ -174,7 +172,7 @@ Tree::hasBrotherByIndex(unsigned int absoluteIndex, unsigned int targetMimIndex,
     unsigned int child_number = (absoluteIndex - mpStartingIndexPerLevel[level])
             % mpChildrenCountPerLevel[level];
     for (unsigned int i = absoluteIndex - child_number; i < absoluteIndex; ++i)
-        if (mpIndexTree[i] == targetMimIndex)
+        if (mpIndexTree[i] == consideredFeatureIndex)
             return true;
     return false;
 }
