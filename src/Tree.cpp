@@ -45,7 +45,7 @@ Tree::build()
         unsigned int const parent_count = mpStartingIndexPerLevel[level + 1]
                 - mpStartingIndexPerLevel[level];
 
-#pragma omp parallel for schedule(dynamic)
+//#pragma omp parallel for schedule(dynamic)
         for (unsigned int parent = 0; parent < parent_count; ++parent)
         {
             for (unsigned int child = 0; child < mpChildrenCountPerLevel[level]; ++child)
@@ -91,8 +91,8 @@ Tree::selectBestFeature(unsigned int absoluteIndex, unsigned int level)
         for (unsigned int j = level; j > 0; --j)
         {
             absoluteAncestorIndex = getParentAbsoluteIndex(absoluteAncestorIndex, j);
-            ancestry_score_sum += mpFeatureInformationMatrix[absoluteAncestorIndex * mFeatureCount
-                    + i];
+            ancestry_score_sum += mpFeatureInformationMatrix[mpIndexTree[absoluteAncestorIndex]
+                    * mFeatureCount + i];
             //ancestry_score_sum += (*mpFeatureInformationMatrix)(absoluteAncestorIndex, i);
         }
 
