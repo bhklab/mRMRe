@@ -1,6 +1,7 @@
 #ifndef ensemble_Tree_hpp
 #define ensemble_Tree_hpp
 
+#include <limits>
 #include <vector>
 
 #include <omp.h>
@@ -27,6 +28,25 @@ public:
 
     void
     build();
+
+    unsigned int const
+    selectBestFeature(unsigned int absoluteIndex, unsigned int level);
+
+    bool
+    isRedundantSolution(unsigned int absoluteIndex, unsigned int level);
+
+    bool
+    hasSameAncestry(unsigned int targetAbsoluteIndex, unsigned int consideredAbsoluteIndex,
+            unsigned int level);
+
+    float
+    computeQualityScore(unsigned int absoluteIndex, unsigned int level);
+
+    bool
+    hasAncestorByIndex(unsigned int absoluteIndex, unsigned int targetMimIndex, unsigned int level);
+
+    bool
+    hasBrotherByIndex(unsigned int absoluteIndex, unsigned int targetMimIndex, unsigned int level);
 
     void
     getPaths(std::vector<unsigned int>* pPaths) const;
