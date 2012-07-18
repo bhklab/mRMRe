@@ -22,7 +22,7 @@ private:
     unsigned int mTreeElementCount;
 
 public:
-    Tree(unsigned int* const pChildrenCountPerLevel, unsigned int const levelCount,
+    Tree(std::vector<unsigned int>* const pChildrenCountPerLevel,
             MatrixInterface* const pFeatureInformationMatrix,
             unsigned int const targetFeatureIndex);
 

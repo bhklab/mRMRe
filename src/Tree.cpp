@@ -1,8 +1,9 @@
 #include "Tree.hpp"
 
-Tree::Tree(unsigned int* const pChildrenCountPerLevel, unsigned int const levelCount,
+Tree::Tree(std::vector<unsigned int>* const pChildrenCountPerLevel,
         MatrixInterface* const pFeatureInformationMatrix, unsigned int const targetFeatureIndex) :
-        mpChildrenCountPerLevel(pChildrenCountPerLevel), mLevelCount(levelCount), mpFeatureInformationMatrix(
+        mpChildrenCountPerLevel(&((*pChildrenCountPerLevel)[0])), mLevelCount(
+                pChildrenCountPerLevel->size()), mpFeatureInformationMatrix(
                 pFeatureInformationMatrix)
 {
     unsigned int cumulative_element_count = 1;
