@@ -55,7 +55,7 @@ Tree::build()
 
                 // Selection criterion -> no two paths contain the same index set
 
-                mpIndexTree[child_absolute_index] = child_absolute_index; // OK
+                mpIndexTree[child_absolute_index] = mFeatureCount;// selectBestFeature(child_absolute_index, level+1); // OK
                 // mpInformativeContributionTree[child_index]
                 // mpRedundantContributionTree[child_index]
             }
@@ -87,12 +87,14 @@ Tree::selectBestFeature(unsigned int absoluteIndex, unsigned int level)
 
         // Compute the average redundancy of i with ancestry
         unsigned int absoluteAncestorIndex = absoluteIndex;
-        for (unsigned int j = level; j > 0; --j)
-        {
-            absoluteAncestorIndex = getParentAbsoluteIndex(absoluteAncestorIndex, j);
-            ancestry_score_sum += mpFeatureInformationMatrix[absoluteAncestorIndex * mFeatureCount + i];
-            //ancestry_score_sum += (*mpFeatureInformationMatrix)(absoluteAncestorIndex, i);
-        }
+        if (level > 1)
+            for (unsigned int j = level; j > 0; --j)
+            {
+                absoluteAncestorIndex = getParentAbsoluteIndex(absoluteAncestorIndex, j);
+                ancestry_score_sum += mpFeatureInformationMatrix[absoluteAncestorIndex
+                        * mFeatureCount + i];
+                //ancestry_score_sum += (*mpFeatureInformationMatrix)(absoluteAncestorIndex, i);
+            }
 
         float ancestry_mean_score = ancestry_score_sum / level;
         float score = target_score - ancestry_mean_score;
@@ -106,6 +108,7 @@ Tree::selectBestFeature(unsigned int absoluteIndex, unsigned int level)
             max_candidate_target_mi = target_score;
         }
     }
+    return max_candidate_index;
 }
 
 // TODO: Confirm that the method works
@@ -121,7 +124,6 @@ Tree::isRedundantSolution(unsigned int absoluteIndex, unsigned int level)
     }
     return false;
 }
-
 
 // TODO: Confirm that the method works
 bool
@@ -159,7 +161,6 @@ Tree::hasAncestorByIndex(unsigned int absoluteIndex, unsigned int targetMimIndex
     }
     return false;
 }
-
 
 // TODO: Confirm that the method works
 bool

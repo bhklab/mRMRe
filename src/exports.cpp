@@ -12,7 +12,7 @@ mRMR_filter(SEXP R_ChildrenCountPerLevel, SEXP R_FeatureInformationMatrix, SEXP 
     unsigned int target_feature_index = Rcpp::as<int> (R_TargetFeatureIndex);
 
     Tree tree(&(children_count_per_level[0]), children_count_per_level.size(),
-            &(feature_information_matrix[0]), feature_information_matrix.size(), target_feature_index);
+            &(feature_information_matrix[0]), sqrt(feature_information_matrix.size()), target_feature_index);
     tree.build();
     tree.getPaths(&paths);
 
