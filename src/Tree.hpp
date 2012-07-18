@@ -1,6 +1,7 @@
 #ifndef ensemble_Tree_hpp
 #define ensemble_Tree_hpp
 
+#include <cmath>
 #include <limits>
 #include <vector>
 
@@ -26,29 +27,32 @@ public:
 
     ~Tree();
 
-    void
+    void const
     build();
 
     unsigned int const
-    selectBestFeature(unsigned int absoluteIndex, unsigned int level);
+    selectBestFeature(unsigned int const absoluteIndex, unsigned int const level) const;
 
-    bool
-    isRedundantSolution(unsigned int absoluteIndex, unsigned int level);
+    bool const
+    isRedundantSolution(unsigned int const absoluteIndex, unsigned int const featureIndex,
+            unsigned int const level) const;
 
-    bool
-    hasSameAncestry(unsigned int targetAbsoluteIndex, unsigned int consideredAbsoluteIndex,
-            unsigned int level);
+    bool const
+    hasSameAncestry(unsigned int const absoluteIndex1, unsigned int const absoluteIndex2,
+            unsigned int const level) const;
 
-    float
-    computeQualityScore(unsigned int absoluteIndex, unsigned int level);
+    float const
+    computeQualityScore(unsigned int const absoluteIndex, unsigned int const level) const;
 
-    bool
-    hasAncestorByIndex(unsigned int absoluteIndex, unsigned int consideredFeatureIndex, unsigned int level);
+    bool const
+    hasAncestorByFeatureIndex(unsigned int const absoluteIndex, unsigned int const featureIndex,
+            unsigned int level) const;
 
-    bool
-    hasSiblingByIndex(unsigned int absoluteIndex, unsigned int consideredFeatureIndex, unsigned int level);
+    bool const
+    hasSiblingByIndex(unsigned int const absoluteIndex, unsigned int const featureIndex,
+            unsigned int const level) const;
 
-    void
+    void const
     getPaths(std::vector<unsigned int>* pPaths) const;
 
     inline unsigned int const

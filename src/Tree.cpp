@@ -37,7 +37,7 @@ Tree::~Tree()
     delete[] mpRedundantContributionTree;
 }
 
-void
+void const
 Tree::build()
 {
     for (unsigned int level = 0; level < mLevelCount; ++level)
@@ -55,8 +55,8 @@ Tree::build()
 
                 // Selection criterion -> no two paths contain the same index set
 
-                mpIndexTree[child_absolute_index] = /*child_absolute_index;*/selectBestFeature(
-                        child_absolute_index, level + 1); // OK
+                mpIndexTree[child_absolute_index] = selectBestFeature(child_absolute_index,
+                        level + 1);
                 // mpInformativeContributionTree[child_index]
                 // mpRedundantContributionTree[child_index]
             }
@@ -68,117 +68,121 @@ Tree::build()
 //       Check if ancestry_score_sum is properly computed
 //
 unsigned int const
-Tree::selectBestFeature(unsigned int absoluteIndex, unsigned int level)
+Tree::selectBestFeature(unsigned int const absoluteIndex, unsigned int const level) const
 {
-    unsigned int max_candidate_index = 0;
-    float max_candidate_value = -std::numeric_limits<double>::max();
-    float ancestry_score_sum = 0;
-    float max_candidate_ancestry_score_sum = 0;
-    float max_candidate_target_mi = 0;
+    unsigned int max_candidate_feature_index = 0;
+    float max_candidate_score = -std::numeric_limits<float>::max();
 
     for (unsigned int i = 0; i < mFeatureCount; ++i)
     {
 
-        if (hasAncestorByIndex(absoluteIndex, i, level)
-                || hasBrotherByIndex(absoluteIndex, i, level))
+        if (hasAncestorByFeatureIndex(absoluteIndex, i, level)
+                || hasSiblingByIndex(absoluteIndex, i, level))
             continue;
 
-        float target_score = mpFeatureInformationMatrix[mpIndexTree[0] * mFeatureCount + i];
+        float candidate_feature_score = mpFeatureInformationMatrix[mpIndexTree[0] * mFeatureCount
+                + i];
 
         // Compute the average redundancy of i with ancestry
         unsigned int absoluteAncestorIndex = absoluteIndex;
-        for (unsigned int j = level; j > 0; --j)
-        {
-            absoluteAncestorIndex = getParentAbsoluteIndex(absoluteAncestorIndex, j);
-            ancestry_score_sum += mpFeatureInformationMatrix[mpIndexTree[absoluteAncestorIndex]
-                    * mFeatureCount + i];
-        }
+        float ancestry_score_mean = 0;
+        if (level > 1)
+            for (unsigned int j = level; j > 0; --j)
+            {
+                absoluteAncestorIndex = getParentAbsoluteIndex(absoluteAncestorIndex, j);
+                ancestry_score_mean += mpFeatureInformationMatrix[mpIndexTree[absoluteAncestorIndex]
+                        * mFeatureCount + i];
+            }
 
-        float ancestry_mean_score = ancestry_score_sum / level;
-        float score = target_score - ancestry_mean_score;
+        ancestry_score_mean /= level;
+        float candidate_score = candidate_feature_score - ancestry_score_mean;
 
         // Pick the candidate only if it is a local maximum
-        if (score > max_candidate_value)
+        if (candidate_score > max_candidate_score
+                && !isRedundantSolution(absoluteIndex, i, level))
         {
-            max_candidate_index = i;
-            max_candidate_value = score;
-            max_candidate_ancestry_score_sum = ancestry_score_sum;
-            max_candidate_target_mi = target_score;
+            max_candidate_feature_index = i;
+            max_candidate_score = candidate_score;
         }
     }
-    return max_candidate_index;
+
+    return max_candidate_feature_index;
 }
 
 // TODO: Confirm that the method works
-bool
-Tree::isRedundantSolution(unsigned int absoluteIndex, unsigned int level)
+bool const
+Tree::isRedundantSolution(unsigned int const absoluteIndex, unsigned int const featureIndex,
+        unsigned int const level) const
 {
-    float target_score = computeQualityScore(absoluteIndex, level);
-    for (unsigned int i = mpStartingIndexPerLevel[level]; i < absoluteIndex; ++i)
-    {
-        if (computeQualityScore(i, level) == target_score)
-            if (hasSameAncestry(absoluteIndex, i, level))
-                return true;
-    }
+    unsigned int const upper_bound =
+            (level == mLevelCount) ? mTreeElementCount : mpStartingIndexPerLevel[level + 1];
+    float score = computeQualityScore(absoluteIndex, level);
+    for (unsigned int i = mpStartingIndexPerLevel[level]; i < upper_bound; ++i)
+        if (                //fabs(computeQualityScore(i, level) - score) > 0.00001
+        hasAncestorByFeatureIndex(i, featureIndex, level)
+                && hasAncestorByFeatureIndex(absoluteIndex, mpIndexTree[i], level))
+            return true;
+
     return false;
 }
 
 // TODO: Confirm that the method works
-bool
-Tree::hasSameAncestry(unsigned int targetAbsoluteIndex, unsigned int consideredAbsoluteIndex,
-        unsigned int level)
+bool const
+Tree::hasSameAncestry(unsigned int const absoluteIndex1, unsigned int const absoluteIndex2,
+        unsigned int const level) const
 {
-
-    for (unsigned int i = 0; i < level; ++i)
+    unsigned int parent_absolute_index = absoluteIndex1;
+    for (unsigned int i = level; i > 0; --i)
     {
-        targetAbsoluteIndex = getParentAbsoluteIndex(targetAbsoluteIndex, level);
-        if (!hasAncestorByIndex(consideredAbsoluteIndex, mpIndexTree[targetAbsoluteIndex], level))
+        parent_absolute_index = getParentAbsoluteIndex(parent_absolute_index, i);
+        if (!hasAncestorByFeatureIndex(parent_absolute_index, mpIndexTree[absoluteIndex2], i))
             return false;
     }
+
     return true;
 }
 
-// TODO: Confirm that the method works (divide by level -1 ?)
-float
-Tree::computeQualityScore(unsigned int absoluteIndex, unsigned int level)
+// TODO: Confirm that the method works
+float const
+Tree::computeQualityScore(unsigned int const absoluteIndex, unsigned int const level) const
 {
     return mpInformativeContributionTree[absoluteIndex]
             - 2 * mpRedundantContributionTree[absoluteIndex] / level;
 }
 
 // TODO: Confirm that the method works
-bool
-Tree::hasAncestorByIndex(unsigned int absoluteIndex, unsigned int consideredFeatureIndex,
-        unsigned int level)
+bool const
+Tree::hasAncestorByFeatureIndex(unsigned int const absoluteIndex, unsigned int const featureIndex,
+        unsigned int level) const
 {
+    unsigned int parent_absolute_index = absoluteIndex;
     for (unsigned int i = level; i > 0; --i)
     {
-        absoluteIndex = getParentAbsoluteIndex(absoluteIndex, i);
-        if (mpIndexTree[absoluteIndex] == consideredFeatureIndex)
+        parent_absolute_index = getParentAbsoluteIndex(parent_absolute_index, i);
+        if (mpIndexTree[parent_absolute_index] == featureIndex)
             return true;
     }
+
     return false;
 }
 
 // TODO: Confirm that the method works
-bool
-Tree::hasSiblingByIndex(unsigned int absoluteIndex, unsigned int consideredFeatureIndex, unsigned int level)
+bool const
+Tree::hasSiblingByIndex(unsigned int const absoluteIndex, unsigned int const featureIndex,
+        unsigned int const level) const
 {
-    //  [2][3][4][5]...[6][7][8][9]...[10]
-    //  [0][1][2][3]...[0][1][2][3]...[0]
-    //  8: (8-2)%4 = 2
-    //  9: (9-2)%4 = 3
-    // 10: (10-2)%4 = 0
-    unsigned int child_number = (absoluteIndex - mpStartingIndexPerLevel[level])
-            % mpChildrenCountPerLevel[level];
+    unsigned int const child_number = (absoluteIndex - mpStartingIndexPerLevel[level])
+            % mpChildrenCountPerLevel[level - 1];
+
     for (unsigned int i = absoluteIndex - child_number; i < absoluteIndex; ++i)
-        if (mpIndexTree[i] == consideredFeatureIndex)
+        if (mpIndexTree[i] == featureIndex)
             return true;
+
     return false;
 }
 
-void
-Tree::getPaths(std::vector<unsigned int>* pPaths) const
+void const
+Tree::getPaths(std::vector<unsigned int>* const pPaths) const
 {
     pPaths->reserve(mLevelCount * (mTreeElementCount - mpStartingIndexPerLevel[mLevelCount]));
 
