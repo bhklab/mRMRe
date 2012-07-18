@@ -1,10 +1,9 @@
 #include "Tree.hpp"
 
 Tree::Tree(unsigned int* const pChildrenCountPerLevel, unsigned int const levelCount,
-        float* const pFeatureInformationMatrix, unsigned int const featureCount,
-        unsigned int const targetFeatureIndex) :
+        MatrixInterface* const pFeatureInformationMatrix, unsigned int const targetFeatureIndex) :
         mpChildrenCountPerLevel(pChildrenCountPerLevel), mLevelCount(levelCount), mpFeatureInformationMatrix(
-                pFeatureInformationMatrix), mFeatureCount(featureCount)
+                pFeatureInformationMatrix)
 {
     unsigned int cumulative_element_count = 1;
     unsigned int children_per_level = 1;
@@ -157,14 +156,13 @@ Tree::placeElement(unsigned int const absoluteIndex, unsigned int const level)
     unsigned int max_candidate_feature_index = 0;
     float max_candidate_score = -std::numeric_limits<float>::max();
 
-    for (unsigned int i = 0; i < mFeatureCount; ++i)
+    for (unsigned int i = 0; i < mpFeatureInformationMatrix->getRowCount(); ++i)
     {
         if (hasAncestorByFeatureIndex(absoluteIndex, i, level)
                 || hasSiblingByFeatureIndex(absoluteIndex, i, level))
             continue;
 
-        float const candidate_feature_score = mpFeatureInformationMatrix[mpIndexTree[0]
-                * mFeatureCount + i];
+        float const candidate_feature_score = (*mpFeatureInformationMatrix)(i, mpIndexTree[0]);
 
         unsigned int ancestor_absolute_index = absoluteIndex;
         float ancestry_score_mean = 0.;
@@ -173,9 +171,8 @@ Tree::placeElement(unsigned int const absoluteIndex, unsigned int const level)
             for (unsigned int j = level; j > 0; --j)
             {
                 ancestor_absolute_index = getParentAbsoluteIndex(ancestor_absolute_index, j);
-                ancestry_score_mean +=
-                        mpFeatureInformationMatrix[mpIndexTree[ancestor_absolute_index]
-                                * mFeatureCount + i];
+                ancestry_score_mean += (*mpFeatureInformationMatrix)(i,
+                        mpIndexTree[ancestor_absolute_index]);
             }
 
         ancestry_score_mean /= level; // (level + 1) gives sideChannelAttack's classic mRMR

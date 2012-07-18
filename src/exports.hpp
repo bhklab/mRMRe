@@ -6,7 +6,7 @@
 
 #include <Rcpp.h>
 
-#include "MatrixInterface.hpp"
+#include "Matrix.hpp"
 #include "Tree.hpp"
 
 extern "C" SEXP
