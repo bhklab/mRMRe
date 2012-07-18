@@ -10,7 +10,7 @@ mRMR_filter(SEXP R_ChildrenCountPerLevel, SEXP R_FeatureInformationMatrix)
     std::vector<unsigned int> paths;
 
     Tree tree(&(children_count_per_level[0]), children_count_per_level.size(),
-            &(feature_information_matrix[0]), feature_information_matrix.size());
+            &(feature_information_matrix[0]), feature_information_matrix.size(), 0);
     tree.build();
     tree.getPaths(&paths);
 
