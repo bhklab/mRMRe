@@ -114,7 +114,6 @@ Tree::hasSamePath(unsigned int const absoluteIndex1, unsigned int const absolute
     for (unsigned int i = level; i > 0; --i)
     {
         parent_absolute_index = getParentAbsoluteIndex(parent_absolute_index, i);
-
         if (!hasAncestorByFeatureIndex(parent_absolute_index, mpIndexTree[absoluteIndex2], i))
             return false;
     }
@@ -179,7 +178,7 @@ Tree::placeElement(unsigned int const absoluteIndex, unsigned int const level)
                                 * mFeatureCount + i];
             }
 
-        ancestry_score_mean /= level + 1;
+        ancestry_score_mean /= level; // (level + 1) gives sideChannelAttack's classic mRMR
         float const candidate_score = candidate_feature_score - ancestry_score_mean;
 
         if (candidate_score > max_candidate_score && !isRedundantPath(absoluteIndex, i, level))
