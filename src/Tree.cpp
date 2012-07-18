@@ -45,15 +45,13 @@ Tree::build()
         unsigned int const parent_count = mpStartingIndexPerLevel[level + 1]
                 - mpStartingIndexPerLevel[level];
 
-//#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
         for (unsigned int parent = 0; parent < parent_count; ++parent)
         {
             for (unsigned int child = 0; child < mpChildrenCountPerLevel[level]; ++child)
             {
                 unsigned int const child_absolute_index = mpStartingIndexPerLevel[level + 1]
                         + (parent * mpChildrenCountPerLevel[level]) + child;
-
-                // Selection criterion -> no two paths contain the same index set
 
                 mpIndexTree[child_absolute_index] = selectBestFeature(child_absolute_index,
                         level + 1);
@@ -64,9 +62,6 @@ Tree::build()
     }
 }
 
-// TODO: Add redundancy checking
-//       Check if ancestry_score_sum is properly computed
-//
 unsigned int const
 Tree::selectBestFeature(unsigned int const absoluteIndex, unsigned int const level) const
 {
@@ -75,7 +70,6 @@ Tree::selectBestFeature(unsigned int const absoluteIndex, unsigned int const lev
 
     for (unsigned int i = 0; i < mFeatureCount; ++i)
     {
-
         if (hasAncestorByFeatureIndex(absoluteIndex, i, level)
                 || hasSiblingByIndex(absoluteIndex, i, level))
             continue;
@@ -83,23 +77,21 @@ Tree::selectBestFeature(unsigned int const absoluteIndex, unsigned int const lev
         float candidate_feature_score = mpFeatureInformationMatrix[mpIndexTree[0] * mFeatureCount
                 + i];
 
-        // Compute the average redundancy of i with ancestry
-        unsigned int absoluteAncestorIndex = absoluteIndex;
+        unsigned int ancestor_absolute_index = absoluteIndex;
         float ancestry_score_mean = 0;
         if (level > 1)
             for (unsigned int j = level; j > 0; --j)
             {
-                absoluteAncestorIndex = getParentAbsoluteIndex(absoluteAncestorIndex, j);
-                ancestry_score_mean += mpFeatureInformationMatrix[mpIndexTree[absoluteAncestorIndex]
-                        * mFeatureCount + i];
+                ancestor_absolute_index = getParentAbsoluteIndex(ancestor_absolute_index, j);
+                ancestry_score_mean +=
+                        mpFeatureInformationMatrix[mpIndexTree[ancestor_absolute_index]
+                                * mFeatureCount + i];
             }
 
-        ancestry_score_mean /= level;
+        ancestry_score_mean /= level + 1;
         float candidate_score = candidate_feature_score - ancestry_score_mean;
 
-        // Pick the candidate only if it is a local maximum
-        if (candidate_score > max_candidate_score
-                && !isRedundantSolution(absoluteIndex, i, level))
+        if (candidate_score > max_candidate_score && !isRedundantSolution(absoluteIndex, i, level))
         {
             max_candidate_feature_index = i;
             max_candidate_score = candidate_score;
@@ -109,7 +101,6 @@ Tree::selectBestFeature(unsigned int const absoluteIndex, unsigned int const lev
     return max_candidate_feature_index;
 }
 
-// TODO: Confirm that the method works
 bool const
 Tree::isRedundantSolution(unsigned int const absoluteIndex, unsigned int const featureIndex,
         unsigned int const level) const
@@ -126,7 +117,6 @@ Tree::isRedundantSolution(unsigned int const absoluteIndex, unsigned int const f
     return false;
 }
 
-// TODO: Confirm that the method works
 bool const
 Tree::hasSameAncestry(unsigned int const absoluteIndex1, unsigned int const absoluteIndex2,
         unsigned int const level) const
@@ -142,7 +132,6 @@ Tree::hasSameAncestry(unsigned int const absoluteIndex1, unsigned int const abso
     return true;
 }
 
-// TODO: Confirm that the method works
 float const
 Tree::computeQualityScore(unsigned int const absoluteIndex, unsigned int const level) const
 {
@@ -150,7 +139,6 @@ Tree::computeQualityScore(unsigned int const absoluteIndex, unsigned int const l
             - 2 * mpRedundantContributionTree[absoluteIndex] / level;
 }
 
-// TODO: Confirm that the method works
 bool const
 Tree::hasAncestorByFeatureIndex(unsigned int const absoluteIndex, unsigned int const featureIndex,
         unsigned int level) const
@@ -166,7 +154,6 @@ Tree::hasAncestorByFeatureIndex(unsigned int const absoluteIndex, unsigned int c
     return false;
 }
 
-// TODO: Confirm that the method works
 bool const
 Tree::hasSiblingByIndex(unsigned int const absoluteIndex, unsigned int const featureIndex,
         unsigned int const level) const
