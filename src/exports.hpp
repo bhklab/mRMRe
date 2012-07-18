@@ -1,6 +1,7 @@
 #ifndef ensemble_exports_hpp
 #define ensemble_exports_hpp
 
+#include <cmath>
 #include <vector>
 
 #include <Rcpp.h>

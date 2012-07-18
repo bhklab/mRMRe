@@ -30,33 +30,33 @@ public:
     void const
     build();
 
-    unsigned int const
-    selectBestFeature(unsigned int const absoluteIndex, unsigned int const level) const;
-
-    bool const
-    isRedundantSolution(unsigned int const absoluteIndex, unsigned int const featureIndex,
-            unsigned int const level) const;
-
-    bool const
-    hasSameAncestry(unsigned int const absoluteIndex1, unsigned int const absoluteIndex2,
-            unsigned int const level) const;
-
-    float const
+    inline float const
     computeQualityScore(unsigned int const absoluteIndex, unsigned int const level) const;
+
+    inline unsigned int const
+    getParentAbsoluteIndex(unsigned int const absoluteIndex, unsigned int const level) const;
+
+    void const
+    getPaths(std::vector<unsigned int>* pPaths) const;
 
     bool const
     hasAncestorByFeatureIndex(unsigned int const absoluteIndex, unsigned int const featureIndex,
             unsigned int level) const;
 
     bool const
-    hasSiblingByIndex(unsigned int const absoluteIndex, unsigned int const featureIndex,
+    hasSamePath(unsigned int const absoluteIndex1, unsigned int const absoluteIndex2,
+            unsigned int const level) const;
+
+    bool const
+    hasSiblingByFeatureIndex(unsigned int const absoluteIndex, unsigned int const featureIndex,
+            unsigned int const level) const;
+
+    bool const
+    isRedundantPath(unsigned int const absoluteIndex, unsigned int const featureIndex,
             unsigned int const level) const;
 
     void const
-    getPaths(std::vector<unsigned int>* pPaths) const;
-
-    inline unsigned int const
-    getParentAbsoluteIndex(unsigned int const absoluteIndex, unsigned int const level) const;
+    placeElement(unsigned int const absoluteIndex, unsigned int const level);
 };
 
 #endif /* ensemble_Tree_hpp */
