@@ -7,6 +7,8 @@
 
 #include <omp.h>
 
+#include "MatrixInterface.hpp"
+
 class Tree
 {
 private:
