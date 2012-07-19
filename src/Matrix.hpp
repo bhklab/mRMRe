@@ -5,12 +5,6 @@
 
 class Matrix : public MatrixInterface
 {
-private:
-    float* const mpData;
-    unsigned int const mRowCount;
-    unsigned int const mColumnCount;
-    bool const mHasAllocation;
-
 public:
     Matrix(unsigned int const rowCount, unsigned int const columnCount);
 

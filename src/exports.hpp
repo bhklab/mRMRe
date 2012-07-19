@@ -10,6 +10,7 @@
 #include "Tree.hpp"
 
 extern "C" SEXP
-mRMR_filter(SEXP R_ChildrenCountPerLevel, SEXP R_FeatureInformationMatrix, SEXP R_TargetFeatureIndex);
+mRMR_filter(SEXP R_ChildrenCountPerLevel, SEXP R_FeatureInformationMatrix,
+        SEXP R_TargetFeatureIndex);
 
 #endif /* ensemble_exports_hpp */

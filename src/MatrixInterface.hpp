@@ -3,9 +3,15 @@
 
 class MatrixInterface
 {
+private:
+    float* const mpData;
+    unsigned int const mRowCount;
+    unsigned int const mColumnCount;
+    bool const mHasAllocation;
+
 public:
     virtual
-    ~MatrixInterface() {};
+    ~MatrixInterface();
 
     virtual float&
     operator()(unsigned int const i, unsigned int const j) = 0;
