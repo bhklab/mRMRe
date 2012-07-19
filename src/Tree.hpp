@@ -7,14 +7,14 @@
 
 #include <omp.h>
 
-#include "MatrixInterface.hpp"
+#include "Matrix.hpp"
 
 class Tree
 {
 private:
     unsigned int* const mpChildrenCountPerLevel;
     unsigned int const mLevelCount;
-    MatrixInterface* const mpFeatureInformationMatrix;
+    Matrix* const mpFeatureInformationMatrix;
     unsigned int* mpStartingIndexPerLevel;
     unsigned int* mpIndexTree;
     float* mpInformativeContributionTree;
@@ -23,7 +23,7 @@ private:
 
 public:
     Tree(std::vector<unsigned int>* const pChildrenCountPerLevel,
-            MatrixInterface* const pFeatureInformationMatrix,
+            Matrix* const pFeatureInformationMatrix,
             unsigned int const targetFeatureIndex);
 
     ~Tree();

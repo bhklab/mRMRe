@@ -1,7 +1,7 @@
 #include "Tree.hpp"
 
 Tree::Tree(std::vector<unsigned int>* const pChildrenCountPerLevel,
-        MatrixInterface* const pFeatureInformationMatrix, unsigned int const targetFeatureIndex) :
+        Matrix* const pFeatureInformationMatrix, unsigned int const targetFeatureIndex) :
         mpChildrenCountPerLevel(&((*pChildrenCountPerLevel)[0])), mLevelCount(
                 pChildrenCountPerLevel->size()), mpFeatureInformationMatrix(
                 pFeatureInformationMatrix)

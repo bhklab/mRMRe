@@ -1,10 +1,15 @@
 #ifndef ensemble_SymmetricMatrix_hpp
 #define ensemble_SymmetricMatrix_hpp
 
-#include "MatrixInterface.hpp"
+#include "Matrix.hpp"
 
-class SymmetricMatrix : public MatrixInterface
+class SymmetricMatrix : public Matrix
 {
+private:
+    float* const mpData;
+    unsigned int const mRowCount;
+    bool const mHasAllocation;
+
 public:
     SymmetricMatrix(unsigned int const rowCount);
 

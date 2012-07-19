@@ -1,10 +1,17 @@
 #ifndef ensemble_Matrix_hpp
 #define ensemble_Matrix_hpp
 
-#include "MatrixInterface.hpp"
-
-class Matrix : public MatrixInterface
+class Matrix
 {
+private:
+    float* const mpData;
+    unsigned int const mRowCount;
+    unsigned int const mColumnCount;
+    bool const mHasAllocation;
+
+protected:
+    Matrix();
+
 public:
     Matrix(unsigned int const rowCount, unsigned int const columnCount);
 
@@ -12,7 +19,7 @@ public:
 
     ~Matrix();
 
-    inline float&
+    virtual inline float&
     operator()(unsigned int const i, unsigned int const j);
 
     inline unsigned int const
