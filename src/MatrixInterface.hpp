@@ -3,14 +3,18 @@
 
 class MatrixInterface
 {
-private:
+protected:
     float* const mpData;
     unsigned int const mRowCount;
     unsigned int const mColumnCount;
     bool const mHasAllocation;
 
 public:
-    virtual
+    MatrixInterface(unsigned int const size, unsigned int const rowCount,
+            unsigned const columnCount);
+
+    MatrixInterface(float* const data, unsigned int const rowCount, unsigned const columnCount);
+
     ~MatrixInterface();
 
     virtual float&

@@ -6,9 +6,9 @@
 class SymmetricMatrix : public MatrixInterface
 {
 public:
-    SymmetricMatrix(unsigned int const rowCount, unsigned int const columnCount);
+    SymmetricMatrix(unsigned int const rowCount);
 
-    SymmetricMatrix(float* const data, unsigned int const rowCount, unsigned int const columnCount);
+    SymmetricMatrix(float* const data, unsigned int const rowCount);
 
     ~SymmetricMatrix();
 
@@ -22,4 +22,4 @@ public:
     getColumnCount() const;
 };
 
-#endif /* ensemble_Matrix_hpp */
+#endif /* ensemble_SymmetricMatrix_hpp */

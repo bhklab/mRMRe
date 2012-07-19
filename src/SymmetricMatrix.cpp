@@ -1,23 +1,19 @@
 #include "SymmetricMatrix.hpp"
 
-SymmetricMatrix::SymmetricMatrix(unsigned int const rowCount, unsigned int const columnCount) :
-        mpData(new float[rowCount * columnCount]), mRowCount(rowCount), mColumnCount(columnCount), mHasAllocation(
-                true)
+SymmetricMatrix::SymmetricMatrix(unsigned int const rowCount) :
+        MatrixInterface(rowCount * (rowCount + 1) / 2, rowCount, rowCount)
 {
 
 }
 
-SymmetricMatrix::SymmetricMatrix(float* const data, unsigned int const rowCount,
-        unsigned int const columnCount) :
-        mpData(data), mRowCount(rowCount), mColumnCount(columnCount), mHasAllocation(false)
+SymmetricMatrix::SymmetricMatrix(float* const data, unsigned int const rowCount) :
+        MatrixInterface(data, rowCount, rowCount)
 {
 
 }
 
 SymmetricMatrix::~SymmetricMatrix()
 {
-    if (mHasAllocation)
-        delete[] mpData;
 }
 
 /* inline */float&

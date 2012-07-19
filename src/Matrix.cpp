@@ -1,22 +1,19 @@
 #include "Matrix.hpp"
 
 Matrix::Matrix(unsigned int const rowCount, unsigned int const columnCount) :
-        mpData(new float[rowCount * columnCount]), mRowCount(rowCount), mColumnCount(columnCount), mHasAllocation(
-                true)
+        MatrixInterface(rowCount * columnCount, rowCount, mColumnCount)
 {
 
 }
 
 Matrix::Matrix(float* const data, unsigned int const rowCount, unsigned int const columnCount) :
-        mpData(data), mRowCount(rowCount), mColumnCount(columnCount), mHasAllocation(false)
+        MatrixInterface(data, rowCount, mColumnCount)
 {
 
 }
 
 Matrix::~Matrix()
 {
-    if (mHasAllocation)
-        delete[] mpData;
 }
 
 /* inline */float&
