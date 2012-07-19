@@ -1,5 +1,11 @@
 #include "Matrix.hpp"
 
+Matrix::Matrix(unsigned int const size, unsigned int const rowCount, unsigned int const columnCount) :
+        mpData(new float[size]), mRowCount(rowCount), mColumnCount(columnCount), mHasAllocation(
+                true)
+{
+}
+
 Matrix::Matrix(unsigned int const rowCount, unsigned int const columnCount) :
         mpData(new float[rowCount * columnCount]), mRowCount(rowCount), mColumnCount(columnCount), mHasAllocation(
                 true)
@@ -23,13 +29,13 @@ Matrix::operator()(unsigned int const i, unsigned int const j)
     return mpData[(j * mRowCount) + i];
 }
 
-/* inline */unsigned int const
+unsigned int const
 Matrix::getRowCount() const
 {
     return mRowCount;
 }
 
-/* inline */unsigned int const
+unsigned int const
 Matrix::getColumnCount() const
 {
     return mColumnCount;

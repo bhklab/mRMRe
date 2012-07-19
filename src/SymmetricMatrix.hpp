@@ -5,11 +5,6 @@
 
 class SymmetricMatrix : public Matrix
 {
-private:
-    float* const mpData;
-    unsigned int const mRowCount;
-    bool const mHasAllocation;
-
 public:
     SymmetricMatrix(unsigned int const rowCount);
 
@@ -19,12 +14,6 @@ public:
 
     inline float&
     operator()(unsigned int const i, unsigned int const j);
-
-    inline unsigned int const
-    getRowCount() const;
-
-    inline unsigned int const
-    getColumnCount() const;
 };
 
 #endif /* ensemble_SymmetricMatrix_hpp */

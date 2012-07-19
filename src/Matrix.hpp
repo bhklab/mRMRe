@@ -3,16 +3,17 @@
 
 class Matrix
 {
-private:
+protected:
     float* const mpData;
     unsigned int const mRowCount;
     unsigned int const mColumnCount;
     bool const mHasAllocation;
 
-protected:
     Matrix();
 
 public:
+    Matrix(unsigned int const size, unsigned int const rowCount, unsigned int const columnCount);
+
     Matrix(unsigned int const rowCount, unsigned int const columnCount);
 
     Matrix(float* const data, unsigned int const rowCount, unsigned int const columnCount);
@@ -22,10 +23,10 @@ public:
     virtual inline float&
     operator()(unsigned int const i, unsigned int const j);
 
-    inline unsigned int const
+    unsigned int const
     getRowCount() const;
 
-    inline unsigned int const
+    unsigned int const
     getColumnCount() const;
 };
 
