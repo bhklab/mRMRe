@@ -9,12 +9,14 @@ protected:
     unsigned int const mColumnCount;
     bool const mHasAllocation;
 
-public:
     MatrixInterface(unsigned int const size, unsigned int const rowCount,
             unsigned const columnCount);
 
     MatrixInterface(float* const data, unsigned int const rowCount, unsigned const columnCount);
 
+public:
+
+    virtual
     ~MatrixInterface();
 
     virtual float&

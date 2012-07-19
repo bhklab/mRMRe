@@ -22,4 +22,5 @@ mRMR_filter(SEXP R_ChildrenCountPerLevel, SEXP R_FeatureInformationMatrix,
     tree.getPaths(&paths);
 
     return Rcpp::wrap < std::vector<unsigned int> > (paths);
+
 }
