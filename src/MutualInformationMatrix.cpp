@@ -8,6 +8,7 @@ MutualInformationMatrix::MutualInformationMatrix(Matrix* const pDataMatrix) :
     for (unsigned int i = 0; i < mpDataMatrix->getColumnCount(); ++i)
         (*mpRankedDataMatrix)(0, i) = std::numeric_limits<float>::quiet_NaN();
 
+#pragma omp parallel for schedule(dynamic)
     for (unsigned int i = 0; i < mColumnCount; ++i)
         for (unsigned int j = i; j < mColumnCount; ++j)
             SymmetricMatrix::operator()(i, j) = std::numeric_limits<float>::quiet_NaN();
@@ -18,8 +19,6 @@ MutualInformationMatrix::~MutualInformationMatrix()
 {
     delete mpRankedDataMatrix;
 }
-
-#include <Rcpp.h>
 
 /* virtual */float&
 MutualInformationMatrix::operator()(unsigned int const i, unsigned int const j)
