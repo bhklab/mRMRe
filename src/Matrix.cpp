@@ -1,12 +1,5 @@
 #include "Matrix.hpp"
 
-Matrix::Matrix(unsigned int const size, unsigned int const rowCount, unsigned int const columnCount) :
-        mpData(new float[size]), mRowCount(rowCount), mColumnCount(columnCount), mHasAllocation(
-                true)
-{
-
-}
-
 Matrix::Matrix(unsigned int const rowCount, unsigned int const columnCount) :
         mpData(new float[rowCount * columnCount]), mRowCount(rowCount), mColumnCount(columnCount), mHasAllocation(
                 true)
@@ -14,6 +7,15 @@ Matrix::Matrix(unsigned int const rowCount, unsigned int const columnCount) :
 
 }
 
+/* explicit */
+Matrix::Matrix(unsigned int const size, unsigned int const rowCount, unsigned int const columnCount) :
+        mpData(new float[size]), mRowCount(rowCount), mColumnCount(columnCount), mHasAllocation(
+                true)
+{
+
+}
+
+/* explicit */
 Matrix::Matrix(float* const pData, unsigned int const rowCount, unsigned int const columnCount) :
         mpData(pData), mRowCount(rowCount), mColumnCount(columnCount), mHasAllocation(false)
 {

@@ -3,7 +3,9 @@
 
 #include <algorithm>
 #include <cmath>
+#include <math.h>
 #include <limits>
+#include <omp.h>
 
 #include "SymmetricMatrix.hpp"
 
@@ -11,7 +13,7 @@ class MutualInformationMatrix : public SymmetricMatrix
 {
 protected:
     Matrix* const mpDataMatrix;
-    Matrix* mpRankedDataMatrix;
+    Matrix* const mpRankedDataMatrix;
 
     class DataMatrixComparator
     {
@@ -27,6 +29,7 @@ protected:
     };
 
 public:
+    explicit
     MutualInformationMatrix(Matrix* const pMatrix);
 
     virtual
@@ -34,6 +37,9 @@ public:
 
     virtual float&
     operator()(unsigned int const i, unsigned int const j);
+
+    void const
+    build();
 
     void const
     placeRanksByFeatureIndex(unsigned int const dataMatrixFeatureIndex);

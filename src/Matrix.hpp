@@ -10,10 +10,12 @@ protected:
     bool const mHasAllocation;
 
 public:
-    Matrix(unsigned int const size, unsigned int const rowCount, unsigned int const columnCount);
-
     Matrix(unsigned int const rowCount, unsigned int const columnCount);
 
+    explicit
+    Matrix(unsigned int const size, unsigned int const rowCount, unsigned int const columnCount);
+
+    explicit
     Matrix(float* const pData, unsigned int const rowCount, unsigned int const columnCount);
 
     virtual
