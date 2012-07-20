@@ -3,9 +3,8 @@
 
 #include <cmath>
 #include <limits>
-#include <vector>
-
 #include <omp.h>
+#include <vector>
 
 #include "Matrix.hpp"
 
@@ -23,8 +22,7 @@ private:
 
 public:
     Tree(std::vector<unsigned int>* const pChildrenCountPerLevel,
-            Matrix* const pFeatureInformationMatrix,
-            unsigned int const targetFeatureIndex);
+            Matrix* const pFeatureInformationMatrix, unsigned int const targetFeatureIndex);
 
     ~Tree();
 

@@ -2,9 +2,8 @@
 #define ensemble_exports_hpp
 
 #include <cmath>
-#include <vector>
-
 #include <Rcpp.h>
+#include <vector>
 
 #include "Matrix.hpp"
 #include "Tree.hpp"
