@@ -46,3 +46,17 @@ Matrix::getRowCount() const
 {
     return mRowCount;
 }
+
+std::vector<float> const
+Matrix::getVectorizedData()
+{
+    std::vector<float> vector;
+    vector.resize(mRowCount * mColumnCount);
+
+#pragma omp parallel for schedule(dynamic)
+    for (unsigned int i = 0; i < mColumnCount; ++i)
+        for (unsigned int j = 0; j < mRowCount; ++j)
+            vector[(i * mRowCount) + j] = operator()(i, j);
+
+    return vector;
+}

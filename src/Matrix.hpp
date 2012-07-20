@@ -1,6 +1,9 @@
 #ifndef ensemble_Matrix_hpp
 #define ensemble_Matrix_hpp
 
+#include <omp.h>
+#include <vector>
+
 class Matrix
 {
 protected:
@@ -29,6 +32,9 @@ public:
 
     unsigned int const
     getRowCount() const;
+
+    std::vector<float> const
+    getVectorizedData();
 };
 
 #endif /* ensemble_Matrix_hpp */

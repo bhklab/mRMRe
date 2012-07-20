@@ -70,10 +70,11 @@ Tree::getParentAbsoluteIndex(unsigned int const absoluteIndex, unsigned int cons
             + mpStartingIndexPerLevel[level - 1];
 }
 
-void const
-Tree::getPaths(std::vector<unsigned int>* const pPaths) const
+std::vector<unsigned int> const
+Tree::getPaths() const
 {
-    pPaths->reserve(mLevelCount * (mTreeElementCount - mpStartingIndexPerLevel[mLevelCount]));
+    std::vector<unsigned int> paths;
+    paths.reserve(mLevelCount * (mTreeElementCount - mpStartingIndexPerLevel[mLevelCount]));
 
     for (unsigned int end_element_absolute_index = mTreeElementCount - 1;
             end_element_absolute_index >= mpStartingIndexPerLevel[mLevelCount];
@@ -83,10 +84,12 @@ Tree::getPaths(std::vector<unsigned int>* const pPaths) const
 
         for (unsigned int level = mLevelCount; level > 0; --level)
         {
-            pPaths->push_back(mpIndexTree[element_absolute_index]);
+            paths.push_back(mpIndexTree[element_absolute_index]);
             element_absolute_index = getParentAbsoluteIndex(element_absolute_index, level);
         }
     }
+
+    return paths;
 }
 
 bool const

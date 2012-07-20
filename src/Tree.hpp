@@ -35,8 +35,8 @@ public:
     inline unsigned int const
     getParentAbsoluteIndex(unsigned int const absoluteIndex, unsigned int const level) const;
 
-    void const
-    getPaths(std::vector<unsigned int>* pPaths) const;
+    std::vector<unsigned int> const
+    getPaths() const;
 
     bool const
     hasAncestorByFeatureIndex(unsigned int const absoluteIndex, unsigned int const featureIndex,
