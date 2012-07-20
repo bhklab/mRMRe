@@ -14,7 +14,7 @@ public:
 
     Matrix(unsigned int const rowCount, unsigned int const columnCount);
 
-    Matrix(float* const data, unsigned int const rowCount, unsigned int const columnCount);
+    Matrix(float* const pData, unsigned int const rowCount, unsigned int const columnCount);
 
     virtual
     ~Matrix();

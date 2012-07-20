@@ -14,8 +14,8 @@ Matrix::Matrix(unsigned int const rowCount, unsigned int const columnCount) :
 
 }
 
-Matrix::Matrix(float* const data, unsigned int const rowCount, unsigned int const columnCount) :
-        mpData(data), mRowCount(rowCount), mColumnCount(columnCount), mHasAllocation(false)
+Matrix::Matrix(float* const pData, unsigned int const rowCount, unsigned int const columnCount) :
+        mpData(pData), mRowCount(rowCount), mColumnCount(columnCount), mHasAllocation(false)
 {
 
 }
