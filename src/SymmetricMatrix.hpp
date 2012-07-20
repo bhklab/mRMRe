@@ -10,9 +10,10 @@ public:
 
     SymmetricMatrix(float* const data, unsigned int const rowCount);
 
+    virtual
     ~SymmetricMatrix();
 
-    inline float&
+    virtual float&
     operator()(unsigned int const i, unsigned int const j);
 };
 

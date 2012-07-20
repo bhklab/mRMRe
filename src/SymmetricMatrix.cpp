@@ -3,18 +3,22 @@
 SymmetricMatrix::SymmetricMatrix(unsigned int const rowCount) :
         Matrix(rowCount * (rowCount + 1) / 2, rowCount, rowCount)
 {
+
 }
 
 SymmetricMatrix::SymmetricMatrix(float* const data, unsigned int const rowCount) :
         Matrix(data, rowCount, rowCount)
 {
+
 }
 
+/* virtual */
 SymmetricMatrix::~SymmetricMatrix()
 {
+
 }
 
-/* inline */float&
+/* virtual */float&
 SymmetricMatrix::operator()(unsigned int const i, unsigned int const j)
 {
     unsigned int const x = (i >= j) ? i : j;
