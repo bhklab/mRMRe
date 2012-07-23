@@ -12,6 +12,7 @@ class MutualInformationMatrix : public SymmetricMatrix
 protected:
     Matrix* const mpDataMatrix;
     Matrix* const mpRankedDataMatrix;
+    unsigned int* mpTestArray;
 
 public:
     explicit

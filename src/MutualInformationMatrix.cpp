@@ -5,6 +5,8 @@ MutualInformationMatrix::MutualInformationMatrix(Matrix* const pDataMatrix) :
         SymmetricMatrix(pDataMatrix->getColumnCount()), mpDataMatrix(pDataMatrix), mpRankedDataMatrix(
                 new Matrix(pDataMatrix->getRowCount(), pDataMatrix->getColumnCount()))
 {
+
+    mpTestArray = new unsigned int[pDataMatrix->getColumnCount()];
     for (unsigned int i = 0; i < mpDataMatrix->getColumnCount(); ++i)
         (*mpRankedDataMatrix)(0, i) = std::numeric_limits<float>::quiet_NaN();
 
