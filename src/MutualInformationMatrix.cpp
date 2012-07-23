@@ -25,10 +25,18 @@ MutualInformationMatrix::operator()(unsigned int const i, unsigned int const j)
 {
     if (SymmetricMatrix::operator()(i, j) != SymmetricMatrix::operator()(i, j))
     {
-        if ((*mpRankedDataMatrix)(0, i) != (*mpRankedDataMatrix)(0, i))
+        bool X;
+//#pragma omp critical
+        X = (*mpRankedDataMatrix)(0, i) != (*mpRankedDataMatrix)(0, i);
+#pragma omp critical
+        if (X)
             placeRanksByFeatureIndex(i);
 
-        if ((*mpRankedDataMatrix)(0, j) != (*mpRankedDataMatrix)(0, j))
+        bool Y;
+//#pragma omp critical
+        Y = (*mpRankedDataMatrix)(0, j) != (*mpRankedDataMatrix)(0, j);
+#pragma omp critical
+        if (Y)
             placeRanksByFeatureIndex(j);
 
         placeSpearmanCorrelation(i, j);
@@ -49,17 +57,19 @@ MutualInformationMatrix::build()
 void const
 MutualInformationMatrix::placeRanksByFeatureIndex(unsigned int const dataMatrixFeatureIndex)
 {
-    unsigned int const sample_count = mpRankedDataMatrix->getRowCount();
-    unsigned int p_order[sample_count];
+    {
+        unsigned int const sample_count = mpRankedDataMatrix->getRowCount();
+        unsigned int p_order[sample_count];
 
-    for (unsigned int i = 0; i < sample_count; ++i)
-        p_order[i] = i;
+        for (unsigned int i = 0; i < sample_count; ++i)
+            p_order[i] = i;
 
-    std::sort(p_order, p_order + sample_count,
-            DataMatrixComparator(dataMatrixFeatureIndex, mpDataMatrix));
+        std::sort(p_order, p_order + sample_count);//,
+                //DataMatrixComparator(dataMatrixFeatureIndex, mpDataMatrix));
 
-    for (unsigned int i = 0; i < sample_count; ++i)
-        (*mpRankedDataMatrix)(p_order[i], dataMatrixFeatureIndex) = i;
+        for (unsigned int i = 0; i < sample_count; ++i)
+            (*mpRankedDataMatrix)(p_order[i], dataMatrixFeatureIndex) = i;
+    }
 }
 
 void const
