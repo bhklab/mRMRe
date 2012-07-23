@@ -9,7 +9,6 @@ build_mim(SEXP R_DataMatrix, SEXP R_RowCount, SEXP R_ColumnCount)
     Matrix data_matrix(&S_DataMatrix[0], row_count, column_count);
 
     MutualInformationMatrix mi_matrix(&data_matrix);
-    mi_matrix.build();
     std::vector<float> S_MiMatrix = mi_matrix.getVectorizedData();
 
     return Rcpp::wrap < std::vector<float> > (S_MiMatrix);
