@@ -3,14 +3,14 @@
 /* explicit */
 MutualInformationMatrix::MutualInformationMatrix(Matrix* const pDataMatrix) :
         SymmetricMatrix(pDataMatrix->getColumnCount()), mpDataMatrix(pDataMatrix), mpRankedDataMatrix(
-                new Matrix(pDataMatrix->getRowCount(), pDataMatrix->getColumnCount()))
+                new Matrix(pDataMatrix->getRowCount(), pDataMatrix->getColumnCount())), mpHasFeatureRanksCached(
+                new bool[pDataMatrix->getColumnCount()])
 {
 
     mpTestArray = new unsigned int[pDataMatrix->getColumnCount()];
     for (unsigned int i = 0; i < mpDataMatrix->getColumnCount(); ++i)
-        (*mpRankedDataMatrix)(0, i) = std::numeric_limits<float>::quiet_NaN();
+        mpHasFeatureRanksCached[i] = false;
 
-#pragma omp parallel for schedule(dynamic)
     for (unsigned int i = 0; i < mColumnCount; ++i)
         for (unsigned int j = i; j < mColumnCount; ++j)
             SymmetricMatrix::operator()(i, j) = std::numeric_limits<float>::quiet_NaN();
@@ -20,6 +20,7 @@ MutualInformationMatrix::MutualInformationMatrix(Matrix* const pDataMatrix) :
 MutualInformationMatrix::~MutualInformationMatrix()
 {
     delete mpRankedDataMatrix;
+    delete[] mpHasFeatureRanksCached;
 }
 
 /* virtual */float&
@@ -27,24 +28,20 @@ MutualInformationMatrix::operator()(unsigned int const i, unsigned int const j)
 {
     if (SymmetricMatrix::operator()(i, j) != SymmetricMatrix::operator()(i, j))
     {
-
-        if ((*mpRankedDataMatrix)(0, i) != (*mpRankedDataMatrix)(0, i))
+        if (mpHasFeatureRanksCached[i])
+        {
             placeRanksByFeatureIndex(i, mpRankedDataMatrix, mpDataMatrix);
+            mpHasFeatureRanksCached[i] = true;
+        }
 
-        if ((*mpRankedDataMatrix)(0, j) != (*mpRankedDataMatrix)(0, j))
+        if (mpHasFeatureRanksCached[j])
+        {
             placeRanksByFeatureIndex(j, mpRankedDataMatrix, mpDataMatrix);
+            mpHasFeatureRanksCached[j] = true;
+        }
 
         SymmetricMatrix::operator()(i, j) = computeSpearmanCorrelation(i, j, mpRankedDataMatrix);
     }
 
     return SymmetricMatrix::operator()(i, j);
-}
-
-void const
-MutualInformationMatrix::build()
-{
-#pragma omp parallel for schedule(dynamic)
-    for (unsigned int i = 0; i < mColumnCount; ++i)
-        for (unsigned int j = i; j < mColumnCount; ++j)
-            operator()(i, j);
 }
