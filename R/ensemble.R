@@ -1,14 +1,16 @@
-`build.mim` <- function(data_matrix)
+`build.mim` <- function(data_matrix, sample_weights)
 {
     data_matrix <- as.matrix(data_matrix)
-    mi_matrix <- .Call("build_mim", as.vector(data_matrix), as.integer(nrow(data_matrix)),
-            as.integer(ncol(data_matrix)), "ensemble");
+    mi_matrix <- .Call("build_mim", as.vector(data_matrix), as.vector(sample_weights),
+            as.integer(nrow(data_matrix)), as.integer(ncol(data_matrix)), "ensemble");
     mi_matrix <- matrix(mi_matrix, nrow=ncol(data_matrix), ncol=ncol(data_matrix))
     rownames(mi_matrix) <- colnames(data_matrix)
     colnames(mi_matrix) <- colnames(data_matrix)
     return(mi_matrix)
 }
 
+if (FALSE)
+{
 `filter.mRMR` <- function(data_matrix=NULL, feature_information_matrix=NULL,
         children_count_per_level, target_feature_index)
 {
@@ -32,4 +34,5 @@
     paths <- t(matrix(paths[length(paths):1], nrow=length(children_count_per_level),
                     ncol=length(paths)/length(children_count_per_level)))
     return(paths + 1)
+}
 }

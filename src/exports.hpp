@@ -10,7 +10,7 @@
 #include "Tree.hpp"
 
 extern "C" SEXP
-build_mim(SEXP R_DataMatrix, SEXP R_RowCount, SEXP R_ColumnCount);
+build_mim(SEXP R_DataMatrix, SEXP R_SampleWeights, SEXP R_RowCount, SEXP R_ColumnCount);
 
 extern "C" SEXP
 mRMR_filter_with_mim(SEXP R_FeatureInformationMatrix, SEXP R_ChildrenCountPerLevel,

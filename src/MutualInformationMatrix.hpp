@@ -12,10 +12,11 @@ protected:
     Matrix* const mpDataMatrix;
     Matrix* const mpRankedDataMatrix;
     bool* const mpHasFeatureRanksCached;
+    float* const mpSampleWeights;
 
 public:
     explicit
-    MutualInformationMatrix(Matrix* const pMatrix);
+    MutualInformationMatrix(Matrix* const pMatrix, float* const pSampleWeights);
 
     virtual
     ~MutualInformationMatrix();

@@ -1,10 +1,11 @@
 #include "MutualInformationMatrix.hpp"
 
 /* explicit */
-MutualInformationMatrix::MutualInformationMatrix(Matrix* const pDataMatrix) :
+MutualInformationMatrix::MutualInformationMatrix(Matrix* const pDataMatrix,
+        float* const pSampleWeights) :
         SymmetricMatrix(pDataMatrix->getColumnCount()), mpDataMatrix(pDataMatrix), mpRankedDataMatrix(
                 new Matrix(pDataMatrix->getRowCount(), pDataMatrix->getColumnCount())), mpHasFeatureRanksCached(
-                new bool[pDataMatrix->getColumnCount()])
+                new bool[pDataMatrix->getColumnCount()]), mpSampleWeights(pSampleWeights)
 {
     for (unsigned int i = 0; i < mpDataMatrix->getColumnCount(); ++i)
         mpHasFeatureRanksCached[i] = false;
@@ -38,7 +39,8 @@ MutualInformationMatrix::operator()(unsigned int const i, unsigned int const j)
             mpHasFeatureRanksCached[j] = true;
         }
 
-        SymmetricMatrix::operator()(i, j) = computeSpearmanCorrelation(i, j, mpRankedDataMatrix);
+        SymmetricMatrix::operator()(i, j) = computeSpearmanCorrelation(i, j, mpRankedDataMatrix,
+                mpSampleWeights);
     }
 
     return SymmetricMatrix::operator()(i, j);

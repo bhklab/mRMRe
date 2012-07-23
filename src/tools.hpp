@@ -25,6 +25,6 @@ placeRanksByFeatureIndex(unsigned int const index, Matrix* const pRankedDataMatr
 
 float const
 computeSpearmanCorrelation(unsigned int const i, unsigned int const j,
-        Matrix* const pRankedDataMatrix);
+        Matrix* const pRankedDataMatrix, float* const pSampleWeights);
 
 #endif /* ensemble_tools_hpp */
