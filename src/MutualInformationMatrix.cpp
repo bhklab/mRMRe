@@ -26,13 +26,13 @@ MutualInformationMatrix::operator()(unsigned int const i, unsigned int const j)
 {
     if (SymmetricMatrix::operator()(i, j) != SymmetricMatrix::operator()(i, j))
     {
-        if (mpHasFeatureRanksCached[i])
+        if (!mpHasFeatureRanksCached[i])
         {
             placeRanksByFeatureIndex(i, mpRankedDataMatrix, mpDataMatrix);
             mpHasFeatureRanksCached[i] = true;
         }
 
-        if (mpHasFeatureRanksCached[j])
+        if (!mpHasFeatureRanksCached[j])
         {
             placeRanksByFeatureIndex(j, mpRankedDataMatrix, mpDataMatrix);
             mpHasFeatureRanksCached[j] = true;
