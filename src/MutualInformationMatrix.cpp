@@ -2,12 +2,12 @@
 
 /* explicit */
 MutualInformationMatrix::MutualInformationMatrix(Matrix* const pDataMatrix,
-        unsigned int const* const pStrata, float const* const pSampleWeight,
-        unsigned int const* const pFeatureType) :
+        unsigned int const* const pSampleStrata, float const* const pSampleWeights,
+        unsigned int const* const pFeatureTypes) :
         SymmetricMatrix(pDataMatrix->getColumnCount()), mpDataMatrix(pDataMatrix), mpRankedDataMatrix(
                 new Matrix(pDataMatrix->getRowCount(), pDataMatrix->getColumnCount())), mpHasFeatureRanksCached(
-                new bool[pDataMatrix->getColumnCount()]), mpStrata(pStrata), mpSampleWeight(
-                        pSampleWeight), mpFeatureType(pFeatureType)
+                new bool[pDataMatrix->getColumnCount()]), mpSampleStrata(pSampleStrata), mpSampleWeights(
+                        pSampleWeights), mpFeatureTypes(pFeatureTypes)
 {
      for (unsigned int i = 0; i < mpDataMatrix->getColumnCount(); ++i)
         mpHasFeatureRanksCached[i] = false;
@@ -31,12 +31,12 @@ MutualInformationMatrix::operator()(unsigned int const i, unsigned int const j)
     {
         float r = 0;
         // Check correlation type
-        bool const A_is_continuous = mpFeatureType[i] == FEATURE_CONTINUOUS;
-        bool const A_is_discrete = mpFeatureType[i] == FEATURE_DISCRETE;
-        bool const A_is_survival_event = mpFeatureType[i] == FEATURE_SURVIVAL_EVENT;
+        bool const A_is_continuous = mpFeatureTypes[i] == FEATURE_CONTINUOUS;
+        bool const A_is_discrete = mpFeatureTypes[i] == FEATURE_DISCRETE;
+        bool const A_is_survival_event = mpFeatureTypes[i] == FEATURE_SURVIVAL_EVENT;
 
-        bool const B_is_continuous = mpFeatureType[j] == FEATURE_CONTINUOUS;
-        bool const B_is_discrete = mpFeatureType[j] == FEATURE_DISCRETE;
+        bool const B_is_continuous = mpFeatureTypes[j] == FEATURE_CONTINUOUS;
+        bool const B_is_discrete = mpFeatureTypes[j] == FEATURE_DISCRETE;
 
         if (A_is_continuous && B_is_continuous)
         {
@@ -58,9 +58,9 @@ MutualInformationMatrix::operator()(unsigned int const i, unsigned int const j)
         /*else if (A_is_survival_event && B_is_continuous)
          r = compute_concordance_index(i, j, mpDataMatrix, mpSampleWeight, mpSampleStrata);*/
         else if (A_is_discrete && B_is_continuous)
-            r = computeConcordanceIndex(i, j, -1, mpDataMatrix, mpSampleWeight, mpStrata, true);
+            r = computeConcordanceIndex(i, j, -1, mpDataMatrix, mpSampleWeights, mpSampleStrata, true);
         else if (A_is_continuous && B_is_discrete)
-            r = computeConcordanceIndex(j, i, -1, mpDataMatrix, mpSampleWeight, mpStrata, true);
+            r = computeConcordanceIndex(j, i, -1, mpDataMatrix, mpSampleWeights, mpSampleStrata, true);
         //else if (A_is_discrete && B_is_discrete)
         //r = compute_cramers_v(i, j, mpSampleWeight, mpSampleStrata);
         else

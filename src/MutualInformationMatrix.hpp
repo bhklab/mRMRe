@@ -12,9 +12,9 @@ protected:
     Matrix* const mpDataMatrix;
     Matrix* const mpRankedDataMatrix;
     bool* const mpHasFeatureRanksCached;
-    unsigned int const* const mpStrata;
-    float const* const mpSampleWeight;
-    unsigned int const* const mpFeatureType;
+    unsigned int const* const mpSampleStrata;
+    float const* const mpSampleWeights;
+    unsigned int const* const mpFeatureTypes;
 
 public:
     static unsigned int const FEATURE_CONTINUOUS = 0;
@@ -23,8 +23,8 @@ public:
     static unsigned int const FEATURE_SURVIVAL_TIME = 3;
 
     explicit
-    MutualInformationMatrix(Matrix* const pMatrix, unsigned int const* const pStrata,
-            float const* const pSampleWeights, unsigned int const* const pFeatureType);
+    MutualInformationMatrix(Matrix* const pMatrix, unsigned int const* const pSampleStrata,
+            float const* const pSampleWeights, unsigned int const* const pFeatureTypes);
 
     virtual
     ~MutualInformationMatrix();
