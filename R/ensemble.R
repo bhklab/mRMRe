@@ -1,6 +1,6 @@
 `build.mim` <- function(data_matrix, strata=NULL, weights=NULL, feature_type=NULL)
 {
-	if(is.null(statra))
+	if(is.null(strata))
 		strata <- rep.int(0, nrow(data_matrix))
 		
 	if(is.null(weights))
