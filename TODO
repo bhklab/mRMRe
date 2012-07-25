@@ -1,0 +1,5 @@
+- Stratify Pearson/Spearman Correlation
+- Decipher and implement Fischer's Transformation
+- Decipher and stratify Cramer's V
+- Implement mRMR caching in tree
+- Adapt and separate wrappers and primitive functions in tools
