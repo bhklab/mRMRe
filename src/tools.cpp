@@ -1,7 +1,7 @@
 #include "tools.hpp"
 
 DataMatrixComparator::DataMatrixComparator(unsigned int const featureIndex,
-        Matrix* const pDataMatrix) :
+        Matrix const* const pDataMatrix) :
         mFeatureIndex(featureIndex), mpDataMatrix(pDataMatrix)
 {
 
@@ -15,7 +15,7 @@ DataMatrixComparator::operator()(unsigned int const i, unsigned int const j) con
 
 void const
 placeRanksByFeatureIndex(unsigned int const index, Matrix* const pRankedDataMatrix,
-        Matrix* const pDataMatrix)
+        Matrix const* const pDataMatrix)
 {
     unsigned int const sample_count = pRankedDataMatrix->getRowCount();
     unsigned int p_order[sample_count];
@@ -31,10 +31,10 @@ placeRanksByFeatureIndex(unsigned int const index, Matrix* const pRankedDataMatr
 
 float const
 computeSpearmanCorrelation(unsigned int const i, unsigned int const j,
-        Matrix* const pRankedDataMatrix, float* const pSampleWeights)
+        Matrix const* const pRankedDataMatrix, float const* const pSampleWeights)
 {
-    float *a = &(*pRankedDataMatrix)(0, i);
-    float *b = &(*pRankedDataMatrix)(0, j);
+    float const* const a = &(*pRankedDataMatrix)(0, i);
+    float const* const b = &(*pRankedDataMatrix)(0, j);
     unsigned int const sample_count = pRankedDataMatrix->getRowCount();
     float sum = 0.;
     float total_weight = 0.;
@@ -55,13 +55,13 @@ computeSpearmanCorrelation(unsigned int const i, unsigned int const j,
 float const
 computeConcordanceIndex(unsigned int const discreteFeatureIndex,
         unsigned int const continuousFeatureIndex, int const timeFeatureIndex,
-        Matrix* const pDataMatrix, float const* const pSampleWeights,
+        Matrix const* const pDataMatrix, float const* const pSampleWeights,
         unsigned int const* const pSampleStrata, bool const outX)
 {
-    float concordant_weight = 0;
-    float discordant_weight = 0;
-    float uninformative_weight = 0;
-    float relevant_weight = 0;
+    float concordant_weight = 0.;
+    float discordant_weight = 0.;
+    float uninformative_weight = 0.;
+    float relevant_weight = 0.;
 
     unsigned int const sample_count = pDataMatrix->getRowCount();
     for (unsigned int i = 0; i < sample_count; ++i)
@@ -129,7 +129,7 @@ computeConcordanceIndex(unsigned int const discreteFeatureIndex,
 
 float const
 computeCramersV(unsigned int const featureIndex1, unsigned int const featureIndex2,
-        Matrix* pDataMatrix, float const* const pSampleWeights)
+        Matrix const* const pDataMatrix, float const* const pSampleWeights)
 {
 
     unsigned int const sample_count = pDataMatrix->getRowCount();

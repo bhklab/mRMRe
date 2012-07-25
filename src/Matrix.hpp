@@ -27,6 +27,9 @@ public:
     virtual float&
     operator()(unsigned int const i, unsigned int const j);
 
+    float const&
+    operator()(unsigned int const i, unsigned int const j) const;
+
     unsigned int const
     getColumnCount() const;
 

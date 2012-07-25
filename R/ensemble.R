@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-`build.mim` <- function(data_matrix, sample_weights)
-=======
 `build.mim` <- function(data_matrix, strata=NULL, weights=NULL, feature_type=NULL)
 {
 	if(is.null(strata))

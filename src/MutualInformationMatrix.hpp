@@ -9,7 +9,7 @@
 class MutualInformationMatrix : public SymmetricMatrix
 {
 protected:
-    Matrix* const mpDataMatrix;
+    Matrix const* const mpDataMatrix;
     Matrix* const mpRankedDataMatrix;
     bool* const mpHasFeatureRanksCached;
     unsigned int const* const mpSampleStrata;
@@ -23,7 +23,7 @@ public:
     static unsigned int const FEATURE_SURVIVAL_TIME = 3;
 
     explicit
-    MutualInformationMatrix(Matrix* const pMatrix, unsigned int const* const pSampleStrata,
+    MutualInformationMatrix(Matrix const* const pMatrix, unsigned int const* const pSampleStrata,
             float const* const pSampleWeights, unsigned int const* const pFeatureTypes);
 
     virtual
