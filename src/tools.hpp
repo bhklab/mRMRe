@@ -33,7 +33,7 @@ computeConcordanceIndex(unsigned int const discreteFeatureIndex,
         Matrix* const pDataMatrix, float const* const pSampleWeights,
         unsigned int const* const pSampleStrata, bool const outX);
 
-double const
+float const
 computeCramersV(unsigned int const featureIndex1, unsigned int const featureIndex2,
         Matrix* pDataMatrix, float const* const pSampleWeights);
 

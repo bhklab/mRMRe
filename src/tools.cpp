@@ -56,16 +56,26 @@ computeConcordanceIndex(unsigned int const discreteFeatureIndex,
         Matrix* const pDataMatrix, float const* const pSampleWeights,
         unsigned int const* const pSampleStrata, bool const outX)
 {
-    float concordant_weight = 0.;
-    float discordant_weight = 0.;
-    float uninformative_weight = 0.;
-    float relevant_weight = 0.;
+    float concordant_weight = 0;
+    float discordant_weight = 0;
+    float uninformative_weight = 0;
+    float relevant_weight = 0;
 
     unsigned int const sample_count = pDataMatrix->getRowCount();
     for (unsigned int i = 0; i < sample_count; ++i)
     {
+        if ((*pDataMatrix)(i, discreteFeatureIndex) != (*pDataMatrix)(i, discreteFeatureIndex))
+            continue;
+        if (timeFeatureIndex >= 0
+                && (*pDataMatrix)(i, timeFeatureIndex) != (*pDataMatrix)(i, timeFeatureIndex))
+            continue;
         for (unsigned int j = 0; j < sample_count; ++j)
         {
+            if ((*pDataMatrix)(j, discreteFeatureIndex) != (*pDataMatrix)(j, discreteFeatureIndex))
+                continue;
+            if (timeFeatureIndex >= 0
+                    && (*pDataMatrix)(j, timeFeatureIndex) != (*pDataMatrix)(j, timeFeatureIndex))
+                continue;
             if (pSampleStrata[i] == pSampleStrata[j])
             {
                 float pair_weight = pSampleWeights[i] * pSampleWeights[j];
@@ -112,11 +122,10 @@ computeConcordanceIndex(unsigned int const discreteFeatureIndex,
             }
         }
     }
-
     return concordant_weight / relevant_weight;
 }
 
-double const
+float const
 computeCramersV(unsigned int const featureIndex1, unsigned int const featureIndex2,
         Matrix* pDataMatrix, float const* const pSampleWeights)
 {
@@ -140,7 +149,7 @@ computeCramersV(unsigned int const featureIndex1, unsigned int const featureInde
 
     for (unsigned int i = 0; i < sample_count; ++i)
     {
-        double const sample_weight = pSampleWeights[i];
+        float const sample_weight = pSampleWeights[i];
         contingency_table((*pDataMatrix)(i, featureIndex1), (*pDataMatrix)(i, featureIndex2)) +=
                 sample_weight;
         contingency_table(pX_class_count, (*pDataMatrix)(i, featureIndex2)) += sample_weight;
@@ -148,12 +157,12 @@ computeCramersV(unsigned int const featureIndex1, unsigned int const featureInde
         contingency_table(pX_class_count, pY_class_count) += sample_weight;
     }
 
-    double chi_square = 0.;
+    float chi_square = 0.;
 
     for (unsigned int i = 0; i < pX_class_count; ++i)
         for (unsigned int j = 0; j < pY_class_count; ++j)
         {
-            double expected_value = contingency_table(i, pY_class_count)
+            float expected_value = contingency_table(i, pY_class_count)
                     * contingency_table(pX_class_count, j)
                     / contingency_table(pX_class_count, pY_class_count);
             chi_square += std::pow((contingency_table(i, j) - expected_value), 2) / expected_value;
