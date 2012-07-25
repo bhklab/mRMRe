@@ -52,7 +52,7 @@ MutualInformationMatrix::operator()(unsigned int const i, unsigned int const j)
                 mpHasFeatureRanksCached[j] = true;
             }
 
-            r = computeSpearmanCorrelation(i, j, mpRankedDataMatrix, mpSampleWeights);
+            r = computePearsonCorrelation(i, j, mpRankedDataMatrix, mpSampleWeights);
         }
 
         else if (A_is_survival_event && B_is_continuous)
