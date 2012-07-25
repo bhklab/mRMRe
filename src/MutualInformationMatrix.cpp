@@ -7,9 +7,9 @@ MutualInformationMatrix::MutualInformationMatrix(Matrix* const pDataMatrix,
         SymmetricMatrix(pDataMatrix->getColumnCount()), mpDataMatrix(pDataMatrix), mpRankedDataMatrix(
                 new Matrix(pDataMatrix->getRowCount(), pDataMatrix->getColumnCount())), mpHasFeatureRanksCached(
                 new bool[pDataMatrix->getColumnCount()]), mpStrata(pStrata), mpSampleWeight(
-                pSampleWeight), mpFeatureType(pFeatureType)
+                        pSampleWeight), mpFeatureType(pFeatureType)
 {
-    for (unsigned int i = 0; i < mpDataMatrix->getColumnCount(); ++i)
+     for (unsigned int i = 0; i < mpDataMatrix->getColumnCount(); ++i)
         mpHasFeatureRanksCached[i] = false;
 
     for (unsigned int i = 0; i < mColumnCount; ++i)
