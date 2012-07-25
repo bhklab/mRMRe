@@ -39,53 +39,55 @@ computeConcordanceIndex(unsigned int const discreteFeatureIndex,
             if (timeFeatureIndex >= 0
                     && (*pDataMatrix)(j, timeFeatureIndex) != (*pDataMatrix)(j, timeFeatureIndex))
                 continue;
-            if (pSampleStrata[i] == pSampleStrata[j])
+            if (pSampleStrata[i] != pSampleStrata[j])
+                continue;
+
+            float pair_weight = pSampleWeights[i] * pSampleWeights[j];
+            if (isComparablePair(i, j, timeFeatureIndex, discreteFeatureIndex, pDataMatrix))
             {
-                float pair_weight = pSampleWeights[i] * pSampleWeights[j];
-                if ((timeFeatureIndex >= 0
-                        && ((*pDataMatrix)(i, timeFeatureIndex)
-                                < (*pDataMatrix)(j, timeFeatureIndex)
-                                && (*pDataMatrix)(i, discreteFeatureIndex) == 1))
-                        || (timeFeatureIndex < 0
-                                && (*pDataMatrix)(i, discreteFeatureIndex)
-                                        > (*pDataMatrix)(j, discreteFeatureIndex)))
-                {
-                    relevant_weight += pair_weight;
-                    if ((*pDataMatrix)(i, continuousFeatureIndex)
-                            > (*pDataMatrix)(j, continuousFeatureIndex))
-                        concordant_weight += pair_weight;
-                    else if ((*pDataMatrix)(i, continuousFeatureIndex)
-                            < (*pDataMatrix)(j, continuousFeatureIndex))
-                        discordant_weight += pair_weight;
-                    else if (outX)
-                        uninformative_weight += pair_weight;
-                    else
-                        discordant_weight += pair_weight;
-                }
-                else if ((timeFeatureIndex >= 0
-                        && ((*pDataMatrix)(i, timeFeatureIndex)
-                                > (*pDataMatrix)(j, timeFeatureIndex)
-                                && (*pDataMatrix)(j, discreteFeatureIndex) == 1))
-                        || (timeFeatureIndex < 0
-                                && (*pDataMatrix)(i, discreteFeatureIndex)
-                                        < (*pDataMatrix)(j, discreteFeatureIndex)))
-                {
-                    relevant_weight += pair_weight;
-                    if ((*pDataMatrix)(i, continuousFeatureIndex)
-                            < (*pDataMatrix)(j, continuousFeatureIndex))
-                        concordant_weight += pair_weight;
-                    else if ((*pDataMatrix)(i, continuousFeatureIndex)
-                            > (*pDataMatrix)(j, continuousFeatureIndex))
-                        discordant_weight += pair_weight;
-                    else if (outX)
-                        uninformative_weight += pair_weight;
-                    else
-                        discordant_weight += pair_weight;
-                }
+                relevant_weight += pair_weight;
+                if ((*pDataMatrix)(i, continuousFeatureIndex)
+                        > (*pDataMatrix)(j, continuousFeatureIndex))
+                    concordant_weight += pair_weight;
+                else if ((*pDataMatrix)(i, continuousFeatureIndex)
+                        < (*pDataMatrix)(j, continuousFeatureIndex))
+                    discordant_weight += pair_weight;
+                else if (outX)
+                    uninformative_weight += pair_weight;
+                else
+                    discordant_weight += pair_weight;
             }
+
+            else if (isComparablePair(j, i, timeFeatureIndex, discreteFeatureIndex, pDataMatrix))
+            {
+                relevant_weight += pair_weight;
+                if ((*pDataMatrix)(i, continuousFeatureIndex)
+                        < (*pDataMatrix)(j, continuousFeatureIndex))
+                    concordant_weight += pair_weight;
+                else if ((*pDataMatrix)(i, continuousFeatureIndex)
+                        > (*pDataMatrix)(j, continuousFeatureIndex))
+                    discordant_weight += pair_weight;
+                else if (outX)
+                    uninformative_weight += pair_weight;
+                else
+                    discordant_weight += pair_weight;
+            }
+
         }
     }
     return concordant_weight / relevant_weight;
+}
+
+bool const
+isComparablePair(unsigned int const i, unsigned int const j, int const timeFeatureIndex,
+        unsigned int const discreteFeatureIndex, Matrix const* const pDataMatrix)
+{
+    return (timeFeatureIndex >= 0
+            && ((*pDataMatrix)(i, timeFeatureIndex) < (*pDataMatrix)(j, timeFeatureIndex)
+                    && (*pDataMatrix)(i, discreteFeatureIndex) == 1))
+            || (timeFeatureIndex < 0
+                    && (*pDataMatrix)(i, discreteFeatureIndex)
+                            > (*pDataMatrix)(j, discreteFeatureIndex));
 }
 
 float const
@@ -120,21 +122,27 @@ computeCramersV(unsigned int const featureIndex1, unsigned int const featureInde
         contingency_table(pX_class_count, pY_class_count) += sample_weight;
     }
 
-    float chi_square = 0.;
-
-    for (unsigned int i = 0; i < pX_class_count; ++i)
-        for (unsigned int j = 0; j < pY_class_count; ++j)
-        {
-            float expected_value = contingency_table(i, pY_class_count)
-                    * contingency_table(pX_class_count, j)
-                    / contingency_table(pX_class_count, pY_class_count);
-            chi_square += std::pow((contingency_table(i, j) - expected_value), 2) / expected_value;
-        }
-
+    float chi_square = computeChiSquare(contingency_table);
     unsigned int min_classes = (pX_class_count < pY_class_count) ? pX_class_count : pY_class_count;
 
     return std::sqrt(
             chi_square / (contingency_table(pX_class_count, pY_class_count) * (min_classes - 1)));
+}
+
+float const
+computeChiSquare(Matrix pContingencyTable)
+{
+    unsigned int const row_count = pContingencyTable.getRowCount();
+    unsigned int const col_count = pContingencyTable.getColumnCount();
+    float chi_square = 0;
+    for (unsigned int i = 0; i < row_count; ++i)
+        for (unsigned int j = 0; j < col_count; ++j)
+        {
+            float expected_value = pContingencyTable(i, col_count) * pContingencyTable(row_count, j)
+                    / pContingencyTable(row_count, col_count);
+            chi_square += std::pow((pContingencyTable(i, j) - expected_value), 2) / expected_value;
+        }
+    return chi_square;
 }
 
 float const
