@@ -25,7 +25,7 @@ placeRanksByFeatureIndex(unsigned int const index, Matrix* const pRankedDataMatr
 
 float const
 computeSpearmanCorrelation(unsigned int const i, unsigned int const j,
-        Matrix* const pRankedDataMatrix);
+        Matrix* const pRankedDataMatrix, float* const pSampleWeights);
 
 float const
 computeConcordanceIndex(unsigned int const discreteFeatureIndex,

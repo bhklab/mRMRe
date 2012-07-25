@@ -31,21 +31,23 @@ placeRanksByFeatureIndex(unsigned int const index, Matrix* const pRankedDataMatr
 
 float const
 computeSpearmanCorrelation(unsigned int const i, unsigned int const j,
-        Matrix* const pRankedDataMatrix)
+        Matrix* const pRankedDataMatrix, float* const pSampleWeights)
 {
     float *a = &(*pRankedDataMatrix)(0, i);
     float *b = &(*pRankedDataMatrix)(0, j);
     unsigned int const sample_count = pRankedDataMatrix->getRowCount();
     float sum = 0.;
+    float total_weight = 0.;
 
     for (unsigned int n = 0; n < sample_count; ++n)
     {
         float const difference = a[n] - b[n];
-        sum += difference * difference;
+        sum += pSampleWeights[n] * difference * difference;
+        total_weight += pSampleWeights[n];
     }
 
     float const correlation = 1
-            - ((6 * sum) / (sample_count * ((sample_count * sample_count) - 1)));
+            - ((6 * sum) / (total_weight * ((total_weight * total_weight) - 1)));
 
     return correlation;
 }
