@@ -7,9 +7,9 @@ MutualInformationMatrix::MutualInformationMatrix(Matrix* const pDataMatrix,
         SymmetricMatrix(pDataMatrix->getColumnCount()), mpDataMatrix(pDataMatrix), mpRankedDataMatrix(
                 new Matrix(pDataMatrix->getRowCount(), pDataMatrix->getColumnCount())), mpHasFeatureRanksCached(
                 new bool[pDataMatrix->getColumnCount()]), mpSampleStrata(pSampleStrata), mpSampleWeights(
-                        pSampleWeights), mpFeatureTypes(pFeatureTypes)
+                pSampleWeights), mpFeatureTypes(pFeatureTypes)
 {
-     for (unsigned int i = 0; i < mpDataMatrix->getColumnCount(); ++i)
+    for (unsigned int i = 0; i < mpDataMatrix->getColumnCount(); ++i)
         mpHasFeatureRanksCached[i] = false;
 
     for (unsigned int i = 0; i < mColumnCount; ++i)
@@ -58,11 +58,13 @@ MutualInformationMatrix::operator()(unsigned int const i, unsigned int const j)
         /*else if (A_is_survival_event && B_is_continuous)
          r = compute_concordance_index(i, j, mpDataMatrix, mpSampleWeight, mpSampleStrata);*/
         else if (A_is_discrete && B_is_continuous)
-            r = computeConcordanceIndex(i, j, -1, mpDataMatrix, mpSampleWeights, mpSampleStrata, true);
+            r = computeConcordanceIndex(i, j, -1, mpDataMatrix, mpSampleWeights, mpSampleStrata,
+                    true);
         else if (A_is_continuous && B_is_discrete)
-            r = computeConcordanceIndex(j, i, -1, mpDataMatrix, mpSampleWeights, mpSampleStrata, true);
-        //else if (A_is_discrete && B_is_discrete)
-        //r = compute_cramers_v(i, j, mpSampleWeight, mpSampleStrata);
+            r = computeConcordanceIndex(j, i, -1, mpDataMatrix, mpSampleWeights, mpSampleStrata,
+                    true);
+        else if (A_is_discrete && B_is_discrete)
+            r = computeCramersV(i, j, mpDataMatrix, mpSampleWeights);
         else
             r = std::numeric_limits<double>::quiet_NaN();
 

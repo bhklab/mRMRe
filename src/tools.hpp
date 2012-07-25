@@ -30,7 +30,11 @@ computeSpearmanCorrelation(unsigned int const i, unsigned int const j,
 float const
 computeConcordanceIndex(unsigned int const discreteFeatureIndex,
         unsigned int const continuousFeatureIndex, int const timeFeatureIndex,
-        Matrix* const pDataMatrix, float const* const pSampleWeights, unsigned int const* const pSampleStrata,
-        bool const outX);
+        Matrix* const pDataMatrix, float const* const pSampleWeights,
+        unsigned int const* const pSampleStrata, bool const outX);
+
+double const
+computeCramersV(unsigned int const featureIndex1, unsigned int const featureIndex2,
+        Matrix* pDataMatrix, float const* const pSampleWeights);
 
 #endif /* ensemble_tools_hpp */
