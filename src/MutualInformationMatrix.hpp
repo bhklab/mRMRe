@@ -15,6 +15,9 @@ protected:
     unsigned int const* const mpSampleStrata;
     float const* const mpSampleWeights;
     unsigned int const* const mpFeatureTypes;
+    unsigned int const mSampleStratumCount;
+    unsigned int** const mpSampleIndicesPerStratum;
+    unsigned int* const mpSampleCountPerStratum;
 
 public:
     static unsigned int const FEATURE_CONTINUOUS = 0;
@@ -24,7 +27,8 @@ public:
 
     explicit
     MutualInformationMatrix(Matrix const* const pMatrix, unsigned int const* const pSampleStrata,
-            float const* const pSampleWeights, unsigned int const* const pFeatureTypes);
+            float const* const pSampleWeights, unsigned int const* const pFeatureTypes,
+            unsigned int const sampleStratumCount);
 
     virtual
     ~MutualInformationMatrix();

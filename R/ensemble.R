@@ -12,7 +12,7 @@
     data_matrix <- as.matrix(data_matrix)
     mi_matrix <- .Call("build_mim", as.vector(data_matrix), as.vector(strata),
             as.vector(weights), as.vector(feature_type), as.integer(nrow(data_matrix)),
-            as.integer(ncol(data_matrix)), "ensemble");
+            as.integer(ncol(data_matrix)), as.integer(length(unique(strata))), "ensemble");
     mi_matrix <- matrix(mi_matrix, nrow=ncol(data_matrix), ncol=ncol(data_matrix))
     rownames(mi_matrix) <- colnames(data_matrix)
     colnames(mi_matrix) <- colnames(data_matrix)

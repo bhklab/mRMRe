@@ -1,13 +1,18 @@
 #include "MutualInformationMatrix.hpp"
 
+#include <Rcpp.h>
+
 /* explicit */
 MutualInformationMatrix::MutualInformationMatrix(Matrix const* const pDataMatrix,
         unsigned int const* const pSampleStrata, float const* const pSampleWeights,
-        unsigned int const* const pFeatureTypes) :
+        unsigned int const* const pFeatureTypes, unsigned int const sampleStratumCount) :
         SymmetricMatrix(pDataMatrix->getColumnCount()), mpDataMatrix(pDataMatrix), mpRankedDataMatrix(
                 new Matrix(pDataMatrix->getRowCount(), pDataMatrix->getColumnCount())), mpHasFeatureRanksCached(
                 new bool[pDataMatrix->getColumnCount()]), mpSampleStrata(pSampleStrata), mpSampleWeights(
-                pSampleWeights), mpFeatureTypes(pFeatureTypes)
+                pSampleWeights), mpFeatureTypes(pFeatureTypes), mSampleStratumCount(
+                sampleStratumCount), mpSampleIndicesPerStratum(
+                new unsigned int*[sampleStratumCount]), mpSampleCountPerStratum(
+                new unsigned int[sampleStratumCount])
 {
     for (unsigned int i = 0; i < mpDataMatrix->getColumnCount(); ++i)
         mpHasFeatureRanksCached[i] = false;
@@ -15,6 +20,23 @@ MutualInformationMatrix::MutualInformationMatrix(Matrix const* const pDataMatrix
     for (unsigned int i = 0; i < mColumnCount; ++i)
         for (unsigned int j = i; j < mColumnCount; ++j)
             SymmetricMatrix::operator()(i, j) = std::numeric_limits<float>::quiet_NaN();
+
+    unsigned int p_iterator_per_stratum[mSampleStratumCount];
+    for (unsigned int i = 0; i < mSampleStratumCount; ++i)
+    {
+        mpSampleCountPerStratum[i] = 0;
+        p_iterator_per_stratum[i] = 0;
+    }
+
+    for (unsigned int i = 0; i < mpDataMatrix->getRowCount(); ++i)
+        ++mpSampleCountPerStratum[mpSampleStrata[i]];
+
+    for (unsigned int i = 0; i < mSampleStratumCount; ++i)
+        mpSampleIndicesPerStratum[i] = new unsigned int[mpSampleCountPerStratum[i]];
+
+    for (unsigned int i = 0; i < mpDataMatrix->getRowCount(); ++i)
+        mpSampleIndicesPerStratum[mpSampleStrata[i]][p_iterator_per_stratum[mpSampleStrata[i]]++] =
+                i;
 }
 
 /* virtual */
@@ -22,6 +44,10 @@ MutualInformationMatrix::~MutualInformationMatrix()
 {
     delete mpRankedDataMatrix;
     delete[] mpHasFeatureRanksCached;
+    for (unsigned int i = 0; i < mSampleStratumCount; ++i)
+        delete[] mpSampleIndicesPerStratum[i];
+    delete[] mpSampleIndicesPerStratum;
+    delete[] mpSampleCountPerStratum;
 }
 
 /* virtual */float&
@@ -67,8 +93,7 @@ MutualInformationMatrix::operator()(unsigned int const i, unsigned int const j)
         else if (A_is_discrete && B_is_discrete)
             r = computeCramersV(i, j, mpDataMatrix, mpSampleWeights);
 
-
-        SymmetricMatrix::operator()(i, j) = r;//-0.5 * log(1 - (r * r));
+        SymmetricMatrix::operator()(i, j) = convertCorrelationToMi(r);
     }
 
     return SymmetricMatrix::operator()(i, j);

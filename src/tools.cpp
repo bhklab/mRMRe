@@ -197,6 +197,12 @@ computeSpearmanCorrelation(unsigned int const i, unsigned int const j,
     return correlation;
 }
 
+float const
+convertCorrelationToMi(float const correlation)
+{
+    return -0.5 * log(1 - (correlation * correlation));
+}
+
 void const
 placeRanksByFeatureIndex(unsigned int const index, Matrix* const pRankedDataMatrix,
         Matrix const* const pDataMatrix)
