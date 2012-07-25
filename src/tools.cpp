@@ -96,53 +96,46 @@ computeCramersV(unsigned int const featureIndex1, unsigned int const featureInde
 {
 
     unsigned int const sample_count = pDataMatrix->getRowCount();
-    unsigned int pX_class_count = 0;
-    unsigned int pY_class_count = 0;
+    unsigned int x_class_count = 0;
+    unsigned int y_class_count = 0;
 
     for (unsigned int i = 0; i < sample_count; ++i)
     {
-        if (pX_class_count <= (*pDataMatrix)(i, featureIndex1))
-            pX_class_count = (*pDataMatrix)(i, featureIndex1) + 1;
-        if (pY_class_count <= (*pDataMatrix)(i, featureIndex2))
-            pY_class_count = (*pDataMatrix)(i, featureIndex2) + 1;
+        if (x_class_count <= (*pDataMatrix)(i, featureIndex1))
+            x_class_count = (*pDataMatrix)(i, featureIndex1) + 1;
+        if (y_class_count <= (*pDataMatrix)(i, featureIndex2))
+            y_class_count = (*pDataMatrix)(i, featureIndex2) + 1;
     }
 
-    Matrix contingency_table(pX_class_count + 1, pY_class_count + 1);
-    for (unsigned int i = 0; i < pX_class_count; ++i)
-        for (unsigned int j = 0; j < pY_class_count; ++j)
-            contingency_table(i, j) = 0;
+    Matrix* const contingency_table = new Matrix(x_class_count + 1, y_class_count + 1);
+    for (unsigned int i = 0; i < x_class_count; ++i)
+        for (unsigned int j = 0; j < y_class_count; ++j)
+            (*contingency_table)(i, j) = 0;
 
     for (unsigned int i = 0; i < sample_count; ++i)
     {
         float const sample_weight = pSampleWeights[i];
-        contingency_table((*pDataMatrix)(i, featureIndex1), (*pDataMatrix)(i, featureIndex2)) +=
+        (*contingency_table)((*pDataMatrix)(i, featureIndex1), (*pDataMatrix)(i, featureIndex2)) +=
                 sample_weight;
-        contingency_table(pX_class_count, (*pDataMatrix)(i, featureIndex2)) += sample_weight;
-        contingency_table((*pDataMatrix)(i, featureIndex1), pY_class_count) += sample_weight;
-        contingency_table(pX_class_count, pY_class_count) += sample_weight;
+        (*contingency_table)(x_class_count, (*pDataMatrix)(i, featureIndex2)) += sample_weight;
+        (*contingency_table)((*pDataMatrix)(i, featureIndex1), y_class_count) += sample_weight;
+        (*contingency_table)(x_class_count, y_class_count) += sample_weight;
     }
+    float chi_square = 0.;
 
-    float chi_square = computeChiSquare(contingency_table);
-    unsigned int min_classes = (pX_class_count < pY_class_count) ? pX_class_count : pY_class_count;
-
-    return std::sqrt(
-            chi_square / (contingency_table(pX_class_count, pY_class_count) * (min_classes - 1)));
-}
-
-float const
-computeChiSquare(Matrix pContingencyTable)
-{
-    unsigned int const row_count = pContingencyTable.getRowCount();
-    unsigned int const col_count = pContingencyTable.getColumnCount();
-    float chi_square = 0;
-    for (unsigned int i = 0; i < row_count; ++i)
-        for (unsigned int j = 0; j < col_count; ++j)
+    for (unsigned int i = 0; i < x_class_count; ++i)
+        for (unsigned int j = 0; j < y_class_count; ++j)
         {
-            float expected_value = pContingencyTable(i, col_count) * pContingencyTable(row_count, j)
-                    / pContingencyTable(row_count, col_count);
-            chi_square += std::pow((pContingencyTable(i, j) - expected_value), 2) / expected_value;
+            float expected_value = (*contingency_table)(i, y_class_count)
+                    * (*contingency_table)(x_class_count, j)
+                    / (*contingency_table)(x_class_count, y_class_count);
+
+            chi_square += std::pow(((*contingency_table)(i, j) - expected_value), 2) / expected_value;
         }
-    return chi_square;
+
+    unsigned int min_classes = (x_class_count < y_class_count) ? x_class_count : y_class_count;
+    return std::sqrt(
+            chi_square / ((*contingency_table)(x_class_count, y_class_count) * (min_classes - 1)));
 }
 
 float const

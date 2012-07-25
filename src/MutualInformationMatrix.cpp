@@ -68,7 +68,7 @@ MutualInformationMatrix::operator()(unsigned int const i, unsigned int const j)
             r = computeCramersV(i, j, mpDataMatrix, mpSampleWeights);
 
 
-        SymmetricMatrix::operator()(i, j) = -0.5 * log(1 - (r * r));
+        SymmetricMatrix::operator()(i, j) = r;//-0.5 * log(1 - (r * r));
     }
 
     return SymmetricMatrix::operator()(i, j);
