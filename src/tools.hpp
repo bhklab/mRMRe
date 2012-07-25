@@ -33,6 +33,9 @@ float const
 computeSpearmanCorrelation(unsigned int const i, unsigned int const j,
         Matrix const* const pRankedDataMatrix, float const* const pSampleWeights);
 
+float const
+computeChiSquare(Matrix const* const pContingencyTable);
+
 void const
 placeRanksByFeatureIndex(unsigned int const index, Matrix* const pRankedDataMatrix,
         Matrix const* const pDataMatrix);
