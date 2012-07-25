@@ -143,7 +143,7 @@ computePearsonCorrelation(unsigned int const i, unsigned int const j,
 {
     float const* const a = &(*pDataMatrix)(0, i);
     float const* const b = &(*pDataMatrix)(0, j);
-    unsigned int const sample_count = pRankedDataMatrix->getRowCount();
+    unsigned int const sample_count = pDataMatrix->getRowCount();
 
     float sum_of_x = 0.;
     float sum_of_x_x = 0.;
@@ -152,9 +152,9 @@ computePearsonCorrelation(unsigned int const i, unsigned int const j,
     float sum_of_x_y = 0.;
     float sum_of_weights = 0.;
 
-    for (unsigned int n = 0; n < sampleCount; ++n)
+    for (unsigned int n = 0; n < sample_count; ++n)
     {
-        float const my_weight = pSampleWeights[pSampleAdaptor[i]];
+        float const my_weight = pSampleWeights[n];
         float const my_x = a[n];
         sum_of_x += my_x * my_weight;
         sum_of_x_x += my_x * my_x * my_weight;
