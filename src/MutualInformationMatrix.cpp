@@ -30,7 +30,7 @@ MutualInformationMatrix::operator()(unsigned int const i, unsigned int const j)
     if (SymmetricMatrix::operator()(i, j) != SymmetricMatrix::operator()(i, j))
     {
         float r = 0;
-        // Check correlation type
+
         bool const A_is_continuous = mpFeatureTypes[i] == FEATURE_CONTINUOUS;
         bool const A_is_discrete = mpFeatureTypes[i] == FEATURE_DISCRETE;
         bool const A_is_survival_event = mpFeatureTypes[i] == FEATURE_SURVIVAL_EVENT;
