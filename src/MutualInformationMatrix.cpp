@@ -29,7 +29,7 @@ MutualInformationMatrix::operator()(unsigned int const i, unsigned int const j)
 {
     if (SymmetricMatrix::operator()(i, j) != SymmetricMatrix::operator()(i, j))
     {
-        float r = 0;
+        float r = std::numeric_limits<double>::quiet_NaN();
 
         bool const A_is_continuous = mpFeatureTypes[i] == FEATURE_CONTINUOUS;
         bool const A_is_discrete = mpFeatureTypes[i] == FEATURE_DISCRETE;
@@ -66,8 +66,7 @@ MutualInformationMatrix::operator()(unsigned int const i, unsigned int const j)
                     true);
         else if (A_is_discrete && B_is_discrete)
             r = computeCramersV(i, j, mpDataMatrix, mpSampleWeights);
-        else
-            r = std::numeric_limits<double>::quiet_NaN();
+
 
         SymmetricMatrix::operator()(i, j) = -0.5 * log(1 - (r * r));
     }
