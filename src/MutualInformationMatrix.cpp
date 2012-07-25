@@ -55,8 +55,9 @@ MutualInformationMatrix::operator()(unsigned int const i, unsigned int const j)
             r = computeSpearmanCorrelation(i, j, mpRankedDataMatrix);
         }
 
-        /*else if (A_is_survival_event && B_is_continuous)
-         r = compute_concordance_index(i, j, mpDataMatrix, mpSampleWeight, mpSampleStrata);*/
+        else if (A_is_survival_event && B_is_continuous)
+            r = computeConcordanceIndex(i, j, i + 1, mpDataMatrix, mpSampleWeights,
+                    mpSampleStrata, true);
         else if (A_is_discrete && B_is_continuous)
             r = computeConcordanceIndex(i, j, -1, mpDataMatrix, mpSampleWeights, mpSampleStrata,
                     true);
@@ -68,7 +69,7 @@ MutualInformationMatrix::operator()(unsigned int const i, unsigned int const j)
         else
             r = std::numeric_limits<double>::quiet_NaN();
 
-        SymmetricMatrix::operator()(i, j) = r;
+        SymmetricMatrix::operator()(i, j) = -0.5 * log(1 - (r * r));
     }
 
     return SymmetricMatrix::operator()(i, j);

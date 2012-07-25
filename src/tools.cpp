@@ -47,7 +47,7 @@ computeSpearmanCorrelation(unsigned int const i, unsigned int const j,
     float const correlation = 1
             - ((6 * sum) / (sample_count * ((sample_count * sample_count) - 1)));
 
-    return -0.5 * log(1 - (correlation * correlation));
+    return correlation;
 }
 
 float const
