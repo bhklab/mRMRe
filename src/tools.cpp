@@ -1,7 +1,7 @@
 #include "tools.hpp"
 
 DataMatrixComparator::DataMatrixComparator(unsigned int const featureIndex,
-        Matrix* const pDataMatrix) :
+        Matrix const* const pDataMatrix) :
         mFeatureIndex(featureIndex), mpDataMatrix(pDataMatrix)
 {
 
@@ -13,55 +13,16 @@ DataMatrixComparator::operator()(unsigned int const i, unsigned int const j) con
     return (*mpDataMatrix)(i, mFeatureIndex) < (*mpDataMatrix)(j, mFeatureIndex);
 }
 
-void const
-placeRanksByFeatureIndex(unsigned int const index, Matrix* const pRankedDataMatrix,
-        Matrix* const pDataMatrix)
-{
-    unsigned int const sample_count = pRankedDataMatrix->getRowCount();
-    unsigned int p_order[sample_count];
-
-    for (unsigned int i = 0; i < sample_count; ++i)
-        p_order[i] = i;
-
-    std::sort(p_order, p_order + sample_count, DataMatrixComparator(index, pDataMatrix));
-
-    for (unsigned int i = 0; i < sample_count; ++i)
-        (*pRankedDataMatrix)(p_order[i], index) = i;
-}
-
-float const
-computeSpearmanCorrelation(unsigned int const i, unsigned int const j,
-        Matrix* const pRankedDataMatrix, float* const pSampleWeights)
-{
-    float *a = &(*pRankedDataMatrix)(0, i);
-    float *b = &(*pRankedDataMatrix)(0, j);
-    unsigned int const sample_count = pRankedDataMatrix->getRowCount();
-    float sum = 0.;
-    float total_weight = 0.;
-
-    for (unsigned int n = 0; n < sample_count; ++n)
-    {
-        float const difference = a[n] - b[n];
-        sum += pSampleWeights[n] * difference * difference;
-        total_weight += pSampleWeights[n];
-    }
-
-    float const correlation = 1
-            - ((6 * sum) / (total_weight * ((total_weight * total_weight) - 1)));
-
-    return correlation;
-}
-
 float const
 computeConcordanceIndex(unsigned int const discreteFeatureIndex,
         unsigned int const continuousFeatureIndex, int const timeFeatureIndex,
-        Matrix* const pDataMatrix, float const* const pSampleWeights,
+        Matrix const* const pDataMatrix, float const* const pSampleWeights,
         unsigned int const* const pSampleStrata, bool const outX)
 {
-    float concordant_weight = 0;
-    float discordant_weight = 0;
-    float uninformative_weight = 0;
-    float relevant_weight = 0;
+    float concordant_weight = 0.;
+    float discordant_weight = 0.;
+    float uninformative_weight = 0.;
+    float relevant_weight = 0.;
 
     unsigned int const sample_count = pDataMatrix->getRowCount();
     for (unsigned int i = 0; i < sample_count; ++i)
@@ -129,7 +90,7 @@ computeConcordanceIndex(unsigned int const discreteFeatureIndex,
 
 float const
 computeCramersV(unsigned int const featureIndex1, unsigned int const featureIndex2,
-        Matrix* pDataMatrix, float const* const pSampleWeights)
+        Matrix const* const pDataMatrix, float const* const pSampleWeights)
 {
 
     unsigned int const sample_count = pDataMatrix->getRowCount();
@@ -174,4 +135,43 @@ computeCramersV(unsigned int const featureIndex1, unsigned int const featureInde
 
     return std::sqrt(
             chi_square / (contingency_table(pX_class_count, pY_class_count) * (min_classes - 1)));
+}
+
+float const
+computeSpearmanCorrelation(unsigned int const i, unsigned int const j,
+        Matrix const* const pRankedDataMatrix, float const* const pSampleWeights)
+{
+    float const* const a = &(*pRankedDataMatrix)(0, i);
+    float const* const b = &(*pRankedDataMatrix)(0, j);
+    unsigned int const sample_count = pRankedDataMatrix->getRowCount();
+    float sum = 0.;
+    float total_weight = 0.;
+
+    for (unsigned int n = 0; n < sample_count; ++n)
+    {
+        float const difference = a[n] - b[n];
+        sum += pSampleWeights[n] * difference * difference;
+        total_weight += pSampleWeights[n];
+    }
+
+    float const correlation = 1
+            - ((6 * sum) / (total_weight * ((total_weight * total_weight) - 1)));
+
+    return correlation;
+}
+
+void const
+placeRanksByFeatureIndex(unsigned int const index, Matrix* const pRankedDataMatrix,
+        Matrix const* const pDataMatrix)
+{
+    unsigned int const sample_count = pRankedDataMatrix->getRowCount();
+    unsigned int p_order[sample_count];
+
+    for (unsigned int i = 0; i < sample_count; ++i)
+        p_order[i] = i;
+
+    std::sort(p_order, p_order + sample_count, DataMatrixComparator(index, pDataMatrix));
+
+    for (unsigned int i = 0; i < sample_count; ++i)
+        (*pRankedDataMatrix)(p_order[i], index) = i;
 }

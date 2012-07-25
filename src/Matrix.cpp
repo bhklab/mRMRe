@@ -35,6 +35,12 @@ Matrix::operator()(unsigned int const i, unsigned int const j)
     return mpData[(j * mRowCount) + i];
 }
 
+float const&
+Matrix::operator()(unsigned int const i, unsigned int const j) const
+{
+    return operator()(i, j);
+}
+
 unsigned int const
 Matrix::getColumnCount() const
 {

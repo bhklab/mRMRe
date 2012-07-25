@@ -1,7 +1,7 @@
 #include "MutualInformationMatrix.hpp"
 
 /* explicit */
-MutualInformationMatrix::MutualInformationMatrix(Matrix* const pDataMatrix,
+MutualInformationMatrix::MutualInformationMatrix(Matrix const* const pDataMatrix,
         unsigned int const* const pSampleStrata, float const* const pSampleWeights,
         unsigned int const* const pFeatureTypes) :
         SymmetricMatrix(pDataMatrix->getColumnCount()), mpDataMatrix(pDataMatrix), mpRankedDataMatrix(
@@ -52,7 +52,7 @@ MutualInformationMatrix::operator()(unsigned int const i, unsigned int const j)
                 mpHasFeatureRanksCached[j] = true;
             }
 
-            r = computeSpearmanCorrelation(i, j, mpRankedDataMatrix);
+            r = computeSpearmanCorrelation(i, j, mpRankedDataMatrix, mpSampleWeights);
         }
 
         else if (A_is_survival_event && B_is_continuous)

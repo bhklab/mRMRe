@@ -11,10 +11,10 @@
 class Tree
 {
 private:
-    unsigned int* const mpChildrenCountPerLevel;
+    unsigned int const* const mpChildrenCountPerLevel;
     unsigned int const mLevelCount;
-    Matrix* const mpFeatureInformationMatrix;
-    unsigned int* mpStartingIndexPerLevel;
+    Matrix const* const mpFeatureInformationMatrix;
+    unsigned int* const mpStartingIndexPerLevel;
     unsigned int* mpIndexTree;
     float* mpInformativeContributionTree;
     float* mpRedundantContributionTree;
@@ -22,7 +22,7 @@ private:
 
 public:
     Tree(std::vector<unsigned int>* const pChildrenCountPerLevel,
-            Matrix* const pFeatureInformationMatrix, unsigned int const targetFeatureIndex);
+            Matrix const* const pFeatureInformationMatrix, unsigned int const targetFeatureIndex);
 
     ~Tree();
 

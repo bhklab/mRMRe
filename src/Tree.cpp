@@ -1,15 +1,15 @@
 #include "Tree.hpp"
 
 Tree::Tree(std::vector<unsigned int>* const pChildrenCountPerLevel,
-        Matrix* const pFeatureInformationMatrix, unsigned int const targetFeatureIndex) :
+        Matrix const* const pFeatureInformationMatrix, unsigned int const targetFeatureIndex) :
         mpChildrenCountPerLevel(&((*pChildrenCountPerLevel)[0])), mLevelCount(
                 pChildrenCountPerLevel->size()), mpFeatureInformationMatrix(
-                pFeatureInformationMatrix)
+                pFeatureInformationMatrix), mpStartingIndexPerLevel(
+                new unsigned int[mLevelCount + 1])
 {
     unsigned int cumulative_element_count = 1;
     unsigned int children_per_level = 1;
 
-    mpStartingIndexPerLevel = new unsigned int[mLevelCount + 1];
     mpStartingIndexPerLevel[0] = 0;
 
     for (unsigned int level = 0; level < mLevelCount; ++level)
