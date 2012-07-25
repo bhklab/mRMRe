@@ -19,14 +19,6 @@ public:
     operator()(unsigned int const i, unsigned int const j) const;
 };
 
-void const
-placeRanksByFeatureIndex(unsigned int const index, Matrix* const pRankedDataMatrix,
-        Matrix const* const pDataMatrix);
-
-float const
-computeSpearmanCorrelation(unsigned int const i, unsigned int const j,
-        Matrix const* const pRankedDataMatrix, float const* const pSampleWeights);
-
 float const
 computeConcordanceIndex(unsigned int const discreteFeatureIndex,
         unsigned int const continuousFeatureIndex, int const timeFeatureIndex,
@@ -36,5 +28,13 @@ computeConcordanceIndex(unsigned int const discreteFeatureIndex,
 float const
 computeCramersV(unsigned int const featureIndex1, unsigned int const featureIndex2,
         Matrix const* const pDataMatrix, float const* const pSampleWeights);
+
+float const
+computeSpearmanCorrelation(unsigned int const i, unsigned int const j,
+        Matrix const* const pRankedDataMatrix, float const* const pSampleWeights);
+
+void const
+placeRanksByFeatureIndex(unsigned int const index, Matrix* const pRankedDataMatrix,
+        Matrix const* const pDataMatrix);
 
 #endif /* ensemble_tools_hpp */
