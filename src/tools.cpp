@@ -134,7 +134,7 @@ computeChiSquare(Matrix const* const pContingencyTable)
 {
     unsigned int const row_count = pContingencyTable->getRowCount();
     unsigned int const col_count = pContingencyTable->getColumnCount();
-
+    float chi_square = 0;
     for (unsigned int i = 0; i < row_count; ++i)
         for (unsigned int j = 0; j < col_count; ++j)
         {
@@ -142,6 +142,43 @@ computeChiSquare(Matrix const* const pContingencyTable)
                     / contingency_table(row_count, col_count);
             chi_square += std::pow((contingency_table(i, j) - expected_value), 2) / expected_value;
         }
+    return chi_square;
+}
+
+float const
+computePearsonCorrelation(unsigned int const i, unsigned int const j,
+        Matrix const* const pDataMatrix, float const* const pSampleWeights)
+{
+    float const* const a = &(*pDataMatrix)(0, i);
+    float const* const b = &(*pDataMatrix)(0, j);
+    unsigned int const sample_count = pDataMatrix->getRowCount();
+
+    float sum_of_x = 0.;
+    float sum_of_x_x = 0.;
+    float sum_of_y = 0.;
+    float sum_of_y_y = 0.;
+    float sum_of_x_y = 0.;
+    float sum_of_weights = 0.;
+
+    for (unsigned int n = 0; n < sample_count; ++n)
+    {
+        float const my_weight = pSampleWeights[n];
+        float const my_x = a[n];
+        sum_of_x += my_x * my_weight;
+        sum_of_x_x += my_x * my_x * my_weight;
+        float const my_y = b[n];
+        sum_of_y += my_y * my_weight;
+        sum_of_y_y += my_y * my_y * my_weight;
+        sum_of_x_y += my_x * my_y * my_weight;
+        sum_of_weights += my_weight;
+    }
+
+    float const correlation = (sum_of_x_y - ((sum_of_x * sum_of_y) / sum_of_weights))
+            / std::sqrt(
+                    (sum_of_x_x - ((sum_of_x * sum_of_x) / sum_of_weights))
+                            * (sum_of_y_y - ((sum_of_y * sum_of_y) / sum_of_weights)));
+
+    return correlation;
 }
 
 float const
@@ -156,8 +193,8 @@ computeSpearmanCorrelation(unsigned int const i, unsigned int const j,
 
     for (unsigned int n = 0; n < sample_count; ++n)
     {
-        float const difference = a[n] - b[n];
-        sum += pSampleWeights[n] * difference * difference;
+        float const difference = a[n] - b[n]; // TODO: Implement a weighed version of this algorithm
+        sum += difference * difference;
         total_weight += pSampleWeights[n];
     }
 

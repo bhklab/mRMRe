@@ -14,10 +14,6 @@ build_mim(SEXP R_DataMatrix, SEXP R_Strata, SEXP R_Weights, SEXP R_FeatureType, 
     unsigned int const column_count = Rcpp::as<unsigned int>(R_ColumnCount);
     Matrix data_matrix(&S_DataMatrix[0], row_count, column_count);
 
-    unsigned int const* p_strata;
-    float const* p_weights;
-    unsigned int const* p_feature_type;
-
     MutualInformationMatrix mi_matrix(&data_matrix, &S_Strata[0], &S_Weights[0], &S_FeatureType[0]);
     std::vector<float> S_MiMatrix = mi_matrix.getVectorizedData();
 

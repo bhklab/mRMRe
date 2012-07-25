@@ -34,6 +34,10 @@ computeCramersV(unsigned int const featureIndex1, unsigned int const featureInde
         Matrix const* const pDataMatrix, float const* const pSampleWeights);
 
 float const
+computePearsonCorrelation(unsigned int const i, unsigned int const j,
+        Matrix const* const pDataMatrix, float const* const pSampleWeights);
+
+float const
 computeSpearmanCorrelation(unsigned int const i, unsigned int const j,
         Matrix const* const pRankedDataMatrix, float const* const pSampleWeights);
 

@@ -38,7 +38,7 @@ Matrix::operator()(unsigned int const i, unsigned int const j)
 float const&
 Matrix::operator()(unsigned int const i, unsigned int const j) const
 {
-    return operator()(i, j);
+    return const_cast<Matrix*>(this)->operator()(i, j);
 }
 
 unsigned int const
