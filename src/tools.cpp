@@ -138,6 +138,42 @@ computeCramersV(unsigned int const featureIndex1, unsigned int const featureInde
 }
 
 float const
+computePearsonCorrelation(unsigned int const i, unsigned int const j,
+        Matrix const* const pDataMatrix, float const* const pSampleWeights)
+{
+    float const* const a = &(*pDataMatrix)(0, i);
+    float const* const b = &(*pDataMatrix)(0, j);
+    unsigned int const sample_count = pRankedDataMatrix->getRowCount();
+
+    float sum_of_x = 0.;
+    float sum_of_x_x = 0.;
+    float sum_of_y = 0.;
+    float sum_of_y_y = 0.;
+    float sum_of_x_y = 0.;
+    float sum_of_weights = 0.;
+
+    for (unsigned int n = 0; n < sampleCount; ++n)
+    {
+        float const my_weight = pSampleWeights[pSampleAdaptor[i]];
+        float const my_x = a[n];
+        sum_of_x += my_x * my_weight;
+        sum_of_x_x += my_x * my_x * my_weight;
+        float const my_y = b[n];
+        sum_of_y += my_y * my_weight;
+        sum_of_y_y += my_y * my_y * my_weight;
+        sum_of_x_y += my_x * my_y * my_weight;
+        sum_of_weights += my_weight;
+    }
+
+    float const correlation = (sum_of_x_y - ((sum_of_x * sum_of_y) / sum_of_weights))
+            / std::sqrt(
+                    (sum_of_x_x - ((sum_of_x * sum_of_x) / sum_of_weights))
+                            * (sum_of_y_y - ((sum_of_y * sum_of_y) / sum_of_weights)));
+
+    return correlation;
+}
+
+float const
 computeSpearmanCorrelation(unsigned int const i, unsigned int const j,
         Matrix const* const pRankedDataMatrix, float const* const pSampleWeights)
 {
@@ -149,8 +185,8 @@ computeSpearmanCorrelation(unsigned int const i, unsigned int const j,
 
     for (unsigned int n = 0; n < sample_count; ++n)
     {
-        float const difference = a[n] - b[n];
-        sum += pSampleWeights[n] * difference * difference;
+        float const difference = a[n] - b[n]; // TODO: Implement a weighed version of this algorithm
+        sum += difference * difference;
         total_weight += pSampleWeights[n];
     }
 
