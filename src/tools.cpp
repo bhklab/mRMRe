@@ -39,53 +39,55 @@ computeConcordanceIndex(unsigned int const discreteFeatureIndex,
             if (timeFeatureIndex >= 0
                     && (*pDataMatrix)(j, timeFeatureIndex) != (*pDataMatrix)(j, timeFeatureIndex))
                 continue;
-            if (pSampleStrata[i] == pSampleStrata[j])
+            if (pSampleStrata[i] != pSampleStrata[j])
+                continue;
+
+            float pair_weight = pSampleWeights[i] * pSampleWeights[j];
+            if (isComparablePair(i, j, timeFeatureIndex, discreteFeatureIndex, pDataMatrix))
             {
-                float pair_weight = pSampleWeights[i] * pSampleWeights[j];
-                if ((timeFeatureIndex >= 0
-                        && ((*pDataMatrix)(i, timeFeatureIndex)
-                                < (*pDataMatrix)(j, timeFeatureIndex)
-                                && (*pDataMatrix)(i, discreteFeatureIndex) == 1))
-                        || (timeFeatureIndex < 0
-                                && (*pDataMatrix)(i, discreteFeatureIndex)
-                                        > (*pDataMatrix)(j, discreteFeatureIndex)))
-                {
-                    relevant_weight += pair_weight;
-                    if ((*pDataMatrix)(i, continuousFeatureIndex)
-                            > (*pDataMatrix)(j, continuousFeatureIndex))
-                        concordant_weight += pair_weight;
-                    else if ((*pDataMatrix)(i, continuousFeatureIndex)
-                            < (*pDataMatrix)(j, continuousFeatureIndex))
-                        discordant_weight += pair_weight;
-                    else if (outX)
-                        uninformative_weight += pair_weight;
-                    else
-                        discordant_weight += pair_weight;
-                }
-                else if ((timeFeatureIndex >= 0
-                        && ((*pDataMatrix)(i, timeFeatureIndex)
-                                > (*pDataMatrix)(j, timeFeatureIndex)
-                                && (*pDataMatrix)(j, discreteFeatureIndex) == 1))
-                        || (timeFeatureIndex < 0
-                                && (*pDataMatrix)(i, discreteFeatureIndex)
-                                        < (*pDataMatrix)(j, discreteFeatureIndex)))
-                {
-                    relevant_weight += pair_weight;
-                    if ((*pDataMatrix)(i, continuousFeatureIndex)
-                            < (*pDataMatrix)(j, continuousFeatureIndex))
-                        concordant_weight += pair_weight;
-                    else if ((*pDataMatrix)(i, continuousFeatureIndex)
-                            > (*pDataMatrix)(j, continuousFeatureIndex))
-                        discordant_weight += pair_weight;
-                    else if (outX)
-                        uninformative_weight += pair_weight;
-                    else
-                        discordant_weight += pair_weight;
-                }
+                relevant_weight += pair_weight;
+                if ((*pDataMatrix)(i, continuousFeatureIndex)
+                        > (*pDataMatrix)(j, continuousFeatureIndex))
+                    concordant_weight += pair_weight;
+                else if ((*pDataMatrix)(i, continuousFeatureIndex)
+                        < (*pDataMatrix)(j, continuousFeatureIndex))
+                    discordant_weight += pair_weight;
+                else if (outX)
+                    uninformative_weight += pair_weight;
+                else
+                    discordant_weight += pair_weight;
             }
+
+            else if (isComparablePair(j, i, timeFeatureIndex, discreteFeatureIndex, pDataMatrix))
+            {
+                relevant_weight += pair_weight;
+                if ((*pDataMatrix)(i, continuousFeatureIndex)
+                        < (*pDataMatrix)(j, continuousFeatureIndex))
+                    concordant_weight += pair_weight;
+                else if ((*pDataMatrix)(i, continuousFeatureIndex)
+                        > (*pDataMatrix)(j, continuousFeatureIndex))
+                    discordant_weight += pair_weight;
+                else if (outX)
+                    uninformative_weight += pair_weight;
+                else
+                    discordant_weight += pair_weight;
+            }
+
         }
     }
     return concordant_weight / relevant_weight;
+}
+
+bool const
+isComparablePair(unsigned int const i, unsigned int const j, int const timeFeatureIndex,
+        unsigned int const discreteFeatureIndex, Matrix const* const pDataMatrix)
+{
+    return (timeFeatureIndex >= 0
+            && ((*pDataMatrix)(i, timeFeatureIndex) < (*pDataMatrix)(j, timeFeatureIndex)
+                    && (*pDataMatrix)(i, discreteFeatureIndex) == 1))
+            || (timeFeatureIndex < 0
+                    && (*pDataMatrix)(i, discreteFeatureIndex)
+                            > (*pDataMatrix)(j, discreteFeatureIndex));
 }
 
 float const
