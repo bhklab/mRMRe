@@ -27,4 +27,10 @@ float const
 computeSpearmanCorrelation(unsigned int const i, unsigned int const j,
         Matrix* const pRankedDataMatrix);
 
+float const
+computeConcordanceIndex(unsigned int const discreteFeatureIndex,
+        unsigned int const continuousFeatureIndex, int const timeFeatureIndex,
+        Matrix* const pDataMatrix, float const* const pSampleWeights, unsigned int const* const pSampleStrata,
+        bool const outX);
+
 #endif /* ensemble_tools_hpp */

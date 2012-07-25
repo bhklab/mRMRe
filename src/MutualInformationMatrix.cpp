@@ -1,10 +1,13 @@
 #include "MutualInformationMatrix.hpp"
 
 /* explicit */
-MutualInformationMatrix::MutualInformationMatrix(Matrix* const pDataMatrix) :
+MutualInformationMatrix::MutualInformationMatrix(Matrix* const pDataMatrix,
+        unsigned int const* const pStrata, float const* const pSampleWeight,
+        unsigned int const* const pFeatureType) :
         SymmetricMatrix(pDataMatrix->getColumnCount()), mpDataMatrix(pDataMatrix), mpRankedDataMatrix(
                 new Matrix(pDataMatrix->getRowCount(), pDataMatrix->getColumnCount())), mpHasFeatureRanksCached(
-                new bool[pDataMatrix->getColumnCount()])
+                new bool[pDataMatrix->getColumnCount()]), mpStrata(pStrata), mpSampleWeight(
+                pSampleWeight), mpFeatureType(pFeatureType)
 {
     for (unsigned int i = 0; i < mpDataMatrix->getColumnCount(); ++i)
         mpHasFeatureRanksCached[i] = false;
@@ -26,19 +29,44 @@ MutualInformationMatrix::operator()(unsigned int const i, unsigned int const j)
 {
     if (SymmetricMatrix::operator()(i, j) != SymmetricMatrix::operator()(i, j))
     {
-        if (!mpHasFeatureRanksCached[i])
+        float r = 0;
+        // Check correlation type
+        bool const A_is_continuous = mpFeatureType[i] == FEATURE_CONTINUOUS;
+        bool const A_is_discrete = mpFeatureType[i] == FEATURE_DISCRETE;
+        bool const A_is_survival_event = mpFeatureType[i] == FEATURE_SURVIVAL_EVENT;
+
+        bool const B_is_continuous = mpFeatureType[j] == FEATURE_CONTINUOUS;
+        bool const B_is_discrete = mpFeatureType[j] == FEATURE_DISCRETE;
+
+        if (A_is_continuous && B_is_continuous)
         {
-            placeRanksByFeatureIndex(i, mpRankedDataMatrix, mpDataMatrix);
-            mpHasFeatureRanksCached[i] = true;
+            if (!mpHasFeatureRanksCached[i])
+            {
+                placeRanksByFeatureIndex(i, mpRankedDataMatrix, mpDataMatrix);
+                mpHasFeatureRanksCached[i] = true;
+            }
+
+            if (!mpHasFeatureRanksCached[j])
+            {
+                placeRanksByFeatureIndex(j, mpRankedDataMatrix, mpDataMatrix);
+                mpHasFeatureRanksCached[j] = true;
+            }
+
+            r = computeSpearmanCorrelation(i, j, mpRankedDataMatrix);
         }
 
-        if (!mpHasFeatureRanksCached[j])
-        {
-            placeRanksByFeatureIndex(j, mpRankedDataMatrix, mpDataMatrix);
-            mpHasFeatureRanksCached[j] = true;
-        }
+        /*else if (A_is_survival_event && B_is_continuous)
+         r = compute_concordance_index(i, j, mpDataMatrix, mpSampleWeight, mpSampleStrata);*/
+        else if (A_is_discrete && B_is_continuous)
+            r = computeConcordanceIndex(i, j, -1, mpDataMatrix, mpSampleWeight, mpStrata, true);
+        else if (A_is_continuous && B_is_discrete)
+            r = computeConcordanceIndex(j, i, -1, mpDataMatrix, mpSampleWeight, mpStrata, true);
+        //else if (A_is_discrete && B_is_discrete)
+        //r = compute_cramers_v(i, j, mpSampleWeight, mpSampleStrata);
+        else
+            r = std::numeric_limits<double>::quiet_NaN();
 
-        SymmetricMatrix::operator()(i, j) = computeSpearmanCorrelation(i, j, mpRankedDataMatrix);
+        SymmetricMatrix::operator()(i, j) = r;
     }
 
     return SymmetricMatrix::operator()(i, j);
