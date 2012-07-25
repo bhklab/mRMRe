@@ -13,11 +13,9 @@ build_mim(SEXP R_DataMatrix, SEXP R_SampleStrata, SEXP R_SampleWeights, SEXP R_F
     unsigned int const row_count = Rcpp::as<unsigned int>(R_RowCount);
     unsigned int const column_count = Rcpp::as<unsigned int>(R_ColumnCount);
     unsigned int const sample_stratum_count = Rcpp::as<unsigned int>(R_SampleStratumCount);
-    Matrix data_matrix(&S_DataMatrix[0], row_count, column_count);
-
-    MutualInformationMatrix mi_matrix(&data_matrix, &S_SampleStrata[0], &S_SampleWeights[0],
+    Data data(&S_DataMatrix[0], row_count, column_count, &S_SampleStrata[0], &S_SampleWeights[0],
             &S_FeatureType[0], sample_stratum_count);
+    MutualInformationMatrix mi_matrix(&data);
     std::vector<float> S_MiMatrix = mi_matrix.getVectorizedData();
-
     return Rcpp::wrap < std::vector<float> > (S_MiMatrix);
 }

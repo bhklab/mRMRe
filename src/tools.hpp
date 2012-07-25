@@ -37,9 +37,9 @@ float const
 computePearsonCorrelation(unsigned int const i, unsigned int const j,
         Matrix const* const pDataMatrix, float const* const pSampleWeights);
 
-float const
+/*float const
 computeSpearmanCorrelation(unsigned int const i, unsigned int const j,
-        Matrix const* const pRankedDataMatrix, float const* const pSampleWeights);
+        Matrix const* const pRankedDataMatrix, float const* const pSampleWeights);*/
 
 float const
 convertCorrelationToMi(float const correlation);
