@@ -56,36 +56,40 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j) const
     bool const B_is_discrete = mpFeatureTypes[j] == FEATURE_DISCRETE;
 
     if (A_is_continuous && B_is_continuous)
-        r = computeSpearmanCorrelationBetweenFeatures(i, j);
-    else if (A_is_survival_event && B_is_continuous)
-        r = computeConcordanceIndex(i, j, i + 1, mpDataMatrix, mpSampleWeights, mpSampleStrata,
-                true);
-    else if (A_is_discrete && B_is_continuous)
-        r = computeConcordanceIndex(i, j, -1, mpDataMatrix, mpSampleWeights, mpSampleStrata, true);
-    else if (A_is_continuous && B_is_discrete)
-        r = computeConcordanceIndex(j, i, -1, mpDataMatrix, mpSampleWeights, mpSampleStrata, true);
-    else if (A_is_discrete && B_is_discrete)
-        r = computeCramersV(i, j, mpDataMatrix, mpSampleWeights);
+        r = computeCorrelationBetweenContinuousFeatures(i, j);
+//    else if (A_is_survival_event && B_is_continuous)
+//        r = computeConcordanceIndex(i, j, i + 1, mpDataMatrix, mpSampleWeights, mpSampleStrata,
+//                true);
+//    else if (A_is_discrete && B_is_continuous)
+//        r = computeConcordanceIndex(i, j, -1, mpDataMatrix, mpSampleWeights, mpSampleStrata, true);
+//    else if (A_is_continuous && B_is_discrete)
+//        r = computeConcordanceIndex(j, i, -1, mpDataMatrix, mpSampleWeights, mpSampleStrata, true);
+//    else if (A_is_discrete && B_is_discrete)
+//        r = computeCramersV(i, j, mpDataMatrix, mpSampleWeights);
 
-    return -0.5 * log(1 - (r * r));
+    return Math::computeMi(r);
 }
 
 float const
-Data::computeSpearmanCorrelationBetweenFeatures(unsigned int const i, unsigned int const j) const
+Data::computeCorrelationBetweenContinuousFeatures(unsigned int const i, unsigned int const j) const
 {
     if (!mpHasFeatureRanksCached[i])
     {
-        placeRanksByFeatureIndex(i);
+        Math::placeRanksByFeatureIndex(&((*mpDataMatrix)(0, i)), &((*mpRankedDataMatrix)(0, i)),
+                mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount);
         mpHasFeatureRanksCached[i] = true;
     }
 
     if (!mpHasFeatureRanksCached[j])
     {
-        placeRanksByFeatureIndex(j);
+        Math::placeRanksByFeatureIndex(&((*mpDataMatrix)(0, j)), &((*mpRankedDataMatrix)(0, j)),
+                mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount);
         mpHasFeatureRanksCached[j] = true;
     }
 
-    return computePearsonCorrelation(i, j, mpRankedDataMatrix, mpSampleWeights);
+    return Math::computePearsonCorrelation(&((*mpRankedDataMatrix)(0, i)),
+            &((*mpRankedDataMatrix)(0, j)), mpSampleWeights, mpSampleIndicesPerStratum,
+            mpSampleCountPerStratum, mSampleStratumCount);
 }
 
 unsigned int const
@@ -98,32 +102,4 @@ unsigned int const
 Data::getFeatureCount() const
 {
     return mpDataMatrix->getColumnCount();
-}
-
-void const
-Data::placeRanksByFeatureIndex(unsigned int const index) const
-{
-    unsigned int const sample_count = getSampleCount();
-    unsigned int p_order[sample_count];
-
-    for (unsigned int i = 0; i < sample_count; ++i)
-        p_order[i] = i;
-
-    std::sort(p_order, p_order + sample_count, DataMatrixComparator(index, mpDataMatrix));
-
-    for (unsigned int i = 0; i < sample_count; ++i)
-        (*mpRankedDataMatrix)(p_order[i], index) = i;
-}
-
-Data::DataMatrixComparator::DataMatrixComparator(unsigned int const featureIndex,
-        Matrix const* const pDataMatrix) :
-        mFeatureIndex(featureIndex), mpDataMatrix(pDataMatrix)
-{
-
-}
-
-bool const
-Data::DataMatrixComparator::operator()(unsigned int const i, unsigned int const j) const
-{
-    return (*mpDataMatrix)(i, mFeatureIndex) < (*mpDataMatrix)(j, mFeatureIndex);
 }

@@ -1,4 +1,4 @@
-#include "tools.hpp"
+#include "Math.hpp"
 
 float const
 computeConcordanceIndex(unsigned int const discreteFeatureIndex,
@@ -117,7 +117,8 @@ computeCramersV(unsigned int const featureIndex1, unsigned int const featureInde
                     * (*contingency_table)(x_class_count, j)
                     / (*contingency_table)(x_class_count, y_class_count);
 
-            chi_square += std::pow(((*contingency_table)(i, j) - expected_value), 2) / expected_value;
+            chi_square += std::pow(((*contingency_table)(i, j) - expected_value), 2)
+                    / expected_value;
         }
 
     unsigned int min_classes = (x_class_count < y_class_count) ? x_class_count : y_class_count;
@@ -125,14 +126,49 @@ computeCramersV(unsigned int const featureIndex1, unsigned int const featureInde
             chi_square / ((*contingency_table)(x_class_count, y_class_count) * (min_classes - 1)));
 }
 
-float const
-computePearsonCorrelation(unsigned int const i, unsigned int const j,
-        Matrix const* const pDataMatrix, float const* const pSampleWeights)
-{
-    float const* const a = &(*pDataMatrix)(0, i);
-    float const* const b = &(*pDataMatrix)(0, j);
-    unsigned int const sample_count = pDataMatrix->getRowCount();
+// ***********
 
+Math::IndirectComparator::IndirectComparator(float const* const pSamples,
+        unsigned int const* const pSampleIndices) :
+        mpSamples(pSamples), mpSampleIndices(pSampleIndices)
+{
+
+}
+
+bool const
+Math::IndirectComparator::operator()(unsigned int const i, unsigned int const j) const
+{
+    return mpSamples[mpSampleIndices[i]] < mpSamples[mpSampleIndices[j]];
+}
+
+/* static */float const
+Math::computeMi(float const r)
+{
+    return -0.5 * std::log(1 - (r * r));
+}
+
+/* static */float const
+Math::computePearsonCorrelation(float const* const pSamplesX, float const* const pSamplesY,
+        float const* const pSampleWeights,
+        unsigned int const* const * const pSampleIndicesPerStratum,
+        unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount)
+{
+    float sum_of_r = 0.;
+
+    for (unsigned int i = 0; i < sampleStratumCount; ++i)
+        sum_of_r += computePearsonCorrelation(pSamplesX, pSamplesY, pSampleWeights,
+                pSampleIndicesPerStratum[i], pSampleCountPerStratum[i]);
+
+    sum_of_r /= sampleStratumCount;
+
+    return sum_of_r;
+}
+
+/* static */float const
+Math::computePearsonCorrelation(float const* const pSamplesX, float const* const pSamplesY,
+        float const* const pSampleWeights, unsigned int const* const pSampleIndices,
+        unsigned int const sampleCount)
+{
     float sum_of_x = 0.;
     float sum_of_x_x = 0.;
     float sum_of_y = 0.;
@@ -140,23 +176,45 @@ computePearsonCorrelation(unsigned int const i, unsigned int const j,
     float sum_of_x_y = 0.;
     float sum_of_weights = 0.;
 
-    for (unsigned int n = 0; n < sample_count; ++n)
+    for (unsigned int i = 0; i < sampleCount; ++i)
     {
-        float const my_weight = pSampleWeights[n];
-        float const my_x = a[n];
+        float const my_weight = pSampleWeights[pSampleIndices[i]];
+        float const my_x = pSamplesX[pSampleIndices[i]];
         sum_of_x += my_x * my_weight;
         sum_of_x_x += my_x * my_x * my_weight;
-        float const my_y = b[n];
+        float const my_y = pSamplesY[pSampleIndices[i]];
         sum_of_y += my_y * my_weight;
         sum_of_y_y += my_y * my_y * my_weight;
         sum_of_x_y += my_x * my_y * my_weight;
         sum_of_weights += my_weight;
     }
 
-    float const correlation = (sum_of_x_y - ((sum_of_x * sum_of_y) / sum_of_weights))
+    float const r = (sum_of_x_y - ((sum_of_x * sum_of_y) / sum_of_weights))
             / std::sqrt(
                     (sum_of_x_x - ((sum_of_x * sum_of_x) / sum_of_weights))
                             * (sum_of_y_y - ((sum_of_y * sum_of_y) / sum_of_weights)));
 
-    return correlation;
+    return r;
+}
+
+/* static */void const
+Math::placeRanksByFeatureIndex(float const* const pSamples, float* const pRanks,
+        unsigned int const* const * const pSampleIndicesPerStratum,
+        unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount)
+{
+    for (unsigned int i = 0; i < sampleStratumCount; ++i)
+    {
+        unsigned int const* const p_sample_indices = pSampleIndicesPerStratum[i];
+        unsigned int const sample_count = pSampleCountPerStratum[i];
+
+        unsigned int p_order[sample_count];
+
+        for (unsigned int j = 0; j < sample_count; ++j)
+            p_order[j] = j;
+
+        std::sort(p_order, p_order + sample_count, IndirectComparator(pSamples, p_sample_indices));
+
+        for (unsigned int j = 0; j < sample_count; ++j)
+            pRanks[p_sample_indices[p_order[j]]] = j;
+    }
 }

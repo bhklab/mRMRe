@@ -1,28 +1,14 @@
 #ifndef ensemble_Data_hpp
 #define ensemble_Data_hpp
 
-#include <algorithm>
 #include <limits>
 
 #include "Matrix.hpp"
-#include "tools.hpp"
+#include "Math.hpp"
 
 class Data
 {
 private:
-    class DataMatrixComparator
-    {
-    private:
-        unsigned int const mFeatureIndex;
-        Matrix const* const mpDataMatrix;
-
-    public:
-        DataMatrixComparator(unsigned int const featureIndex, Matrix const* const pDataMatrix);
-
-        bool const
-        operator()(unsigned int const i, unsigned int const j) const;
-    };
-
     Matrix const* const mpDataMatrix;
     Matrix* const mpRankedDataMatrix;
     bool* const mpHasFeatureRanksCached;
@@ -49,16 +35,13 @@ public:
     computeMiBetweenFeatures(unsigned int const i, unsigned int const j) const;
 
     float const
-    computeSpearmanCorrelationBetweenFeatures(unsigned int const i, unsigned int const j) const;
+    computeCorrelationBetweenContinuousFeatures(unsigned int const i, unsigned int const j) const;
 
     unsigned int const
     getSampleCount() const;
 
     unsigned int const
     getFeatureCount() const;
-
-    void const
-    placeRanksByFeatureIndex(unsigned int const i) const;
 };
 
 #endif /* ensemble_Data_hpp */
