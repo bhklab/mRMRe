@@ -6,8 +6,8 @@
 	if (is.null(weights))
 		weights <- rep.int(1, nrow(data_matrix))
 		
-	if (is.null(feature_type))
-		feature_type <- rep.int(0, ncol(data_matrix))	
+	if (is.null(feature_types))
+		feature_types <- rep.int(0, ncol(data_matrix))	
 	
     data_matrix <- as.matrix(data_matrix)
     mi_matrix <- .Call("build_mim", as.vector(data_matrix), as.vector(strata),

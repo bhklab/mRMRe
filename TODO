@@ -6,6 +6,3 @@
 
 ::Tree
     mRMR score caching in tree
-    
-BUGS
-	Why is the MiM table weird when using C-Index? It is no longer symmetric
