@@ -42,6 +42,12 @@ public:
     };
 
     static float const
+    computeFisherTransformation(float const r);
+
+    static float const
+    computeFisherTransformationReverse(float const z);
+
+    static float const
     computeMi(float const r);
 
     static float const

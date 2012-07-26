@@ -140,6 +140,19 @@ Math::IndirectComparator::operator()(unsigned int const i, unsigned int const j)
 }
 
 /* static */float const
+computeFisherTransformation(float const r)
+{
+    return 0.5 * std::log((1 + r) / (1 - r));
+}
+
+/* static */float const
+computeFisherTransformationReverse(float const z)
+{
+    float const exp = std::exp(2 * z);
+    return (exp - 1) / (exp + 1);
+}
+
+/* static */float const
 Math::computeMi(float const r)
 {
     return -0.5 * std::log(1 - (r * r));

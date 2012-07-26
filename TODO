@@ -1,4 +1,10 @@
-- Decipher and implement Fischer's Transformation
-- Decipher and stratify Cramer's V
-- Split C-Index into "survival analysis (time + event)" and "discrete vs. continuous"
-- Implement mRMR caching in tree
+::Math
+	Re-adapt Cramer's V
+	Stratify Cramer's V
+	Re-adapt Concordance Index
+	Optimize Concordance Index with outer stratification loop
+    Split Concordance Index
+    Figure out how to use Fisher's Transofmration
+
+::Tree
+    mRMR score caching in tree
