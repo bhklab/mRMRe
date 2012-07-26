@@ -67,7 +67,7 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j) const
     else if (A_is_discrete && B_is_discrete)
         r = computeCramersV(i, j, mpDataMatrix, mpSampleWeights);
 
-    return convertCorrelationToMi(r);
+    return -0.5 * log(1 - (r * r));
 }
 
 float const
@@ -75,13 +75,13 @@ Data::computeSpearmanCorrelationBetweenFeatures(unsigned int const i, unsigned i
 {
     if (!mpHasFeatureRanksCached[i])
     {
-        placeRanksByFeatureIndex(i, mpRankedDataMatrix, mpDataMatrix);
+        placeRanksByFeatureIndex(i);
         mpHasFeatureRanksCached[i] = true;
     }
 
     if (!mpHasFeatureRanksCached[j])
     {
-        placeRanksByFeatureIndex(j, mpRankedDataMatrix, mpDataMatrix);
+        placeRanksByFeatureIndex(j);
         mpHasFeatureRanksCached[j] = true;
     }
 
@@ -98,4 +98,32 @@ unsigned int const
 Data::getFeatureCount() const
 {
     return mpDataMatrix->getColumnCount();
+}
+
+void const
+Data::placeRanksByFeatureIndex(unsigned int const index) const
+{
+    unsigned int const sample_count = getSampleCount();
+    unsigned int p_order[sample_count];
+
+    for (unsigned int i = 0; i < sample_count; ++i)
+        p_order[i] = i;
+
+    std::sort(p_order, p_order + sample_count, DataMatrixComparator(index, mpDataMatrix));
+
+    for (unsigned int i = 0; i < sample_count; ++i)
+        (*mpRankedDataMatrix)(p_order[i], index) = i;
+}
+
+Data::DataMatrixComparator::DataMatrixComparator(unsigned int const featureIndex,
+        Matrix const* const pDataMatrix) :
+        mFeatureIndex(featureIndex), mpDataMatrix(pDataMatrix)
+{
+
+}
+
+bool const
+Data::DataMatrixComparator::operator()(unsigned int const i, unsigned int const j) const
+{
+    return (*mpDataMatrix)(i, mFeatureIndex) < (*mpDataMatrix)(j, mFeatureIndex);
 }

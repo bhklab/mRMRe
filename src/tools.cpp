@@ -1,18 +1,5 @@
 #include "tools.hpp"
 
-DataMatrixComparator::DataMatrixComparator(unsigned int const featureIndex,
-        Matrix const* const pDataMatrix) :
-        mFeatureIndex(featureIndex), mpDataMatrix(pDataMatrix)
-{
-
-}
-
-bool const
-DataMatrixComparator::operator()(unsigned int const i, unsigned int const j) const
-{
-    return (*mpDataMatrix)(i, mFeatureIndex) < (*mpDataMatrix)(j, mFeatureIndex);
-}
-
 float const
 computeConcordanceIndex(unsigned int const discreteFeatureIndex,
         unsigned int const continuousFeatureIndex, int const timeFeatureIndex,
@@ -172,49 +159,4 @@ computePearsonCorrelation(unsigned int const i, unsigned int const j,
                             * (sum_of_y_y - ((sum_of_y * sum_of_y) / sum_of_weights)));
 
     return correlation;
-}
-
-/*float const
-computeSpearmanCorrelation(unsigned int const i, unsigned int const j,
-        Matrix const* const pRankedDataMatrix, float const* const pSampleWeights)
-{
-    float const* const a = &(*pRankedDataMatrix)(0, i);
-    float const* const b = &(*pRankedDataMatrix)(0, j);
-    unsigned int const sample_count = pRankedDataMatrix->getRowCount();
-    float sum = 0.;
-    float total_weight = 0.;
-
-    for (unsigned int n = 0; n < sample_count; ++n)
-    {
-        float const difference = a[n] - b[n]; // TODO: Implement a weighed version of this algorithm
-        sum += difference * difference;
-        total_weight += pSampleWeights[n];
-    }
-
-    float const correlation = 1
-            - ((6 * sum) / (total_weight * ((total_weight * total_weight) - 1)));
-
-    return correlation;
-}*/
-
-float const
-convertCorrelationToMi(float const correlation)
-{
-    return -0.5 * log(1 - (correlation * correlation));
-}
-
-void const
-placeRanksByFeatureIndex(unsigned int const index, Matrix* const pRankedDataMatrix,
-        Matrix const* const pDataMatrix)
-{
-    unsigned int const sample_count = pRankedDataMatrix->getRowCount();
-    unsigned int p_order[sample_count];
-
-    for (unsigned int i = 0; i < sample_count; ++i)
-        p_order[i] = i;
-
-    std::sort(p_order, p_order + sample_count, DataMatrixComparator(index, pDataMatrix));
-
-    for (unsigned int i = 0; i < sample_count; ++i)
-        (*pRankedDataMatrix)(p_order[i], index) = i;
 }

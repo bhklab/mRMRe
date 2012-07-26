@@ -6,19 +6,6 @@
 
 #include "Matrix.hpp"
 
-class DataMatrixComparator
-{
-private:
-    unsigned int const mFeatureIndex;
-    Matrix const* const mpDataMatrix;
-
-public:
-    DataMatrixComparator(unsigned int const featureIndex, Matrix const* const pDataMatrix);
-
-    bool const
-    operator()(unsigned int const i, unsigned int const j) const;
-};
-
 float const
 computeConcordanceIndex(unsigned int const discreteFeatureIndex,
         unsigned int const continuousFeatureIndex, int const timeFeatureIndex,
@@ -36,16 +23,5 @@ computeCramersV(unsigned int const featureIndex1, unsigned int const featureInde
 float const
 computePearsonCorrelation(unsigned int const i, unsigned int const j,
         Matrix const* const pDataMatrix, float const* const pSampleWeights);
-
-/*float const
-computeSpearmanCorrelation(unsigned int const i, unsigned int const j,
-        Matrix const* const pRankedDataMatrix, float const* const pSampleWeights);*/
-
-float const
-convertCorrelationToMi(float const correlation);
-
-void const
-placeRanksByFeatureIndex(unsigned int const index, Matrix* const pRankedDataMatrix,
-        Matrix const* const pDataMatrix);
 
 #endif /* ensemble_tools_hpp */
