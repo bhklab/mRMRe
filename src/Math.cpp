@@ -2,63 +2,69 @@
 
 float const
 computeConcordanceIndex(float const* const pDiscreteSamples, float const* const pContinuousSamples,
-        float const* const pTimeSamples,
-        bool const timeSwitch, // timeSwitch = timeFeatureIndex >= 0 -- you know what to do boy!
-        unsigned int const sampleCount, float const* const pSampleWeights,
-        unsigned int const* const pSampleStrata, bool const outX)
+        float const* const pTimeSamples, bool const timeSwitch, float const* const pSampleWeights,
+        unsigned int const* const * const pSampleIndicesPerStratum,
+        unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
+        bool const outX)  // timeSwitch = timeFeatureIndex >= 0 -- you know what to do boy!
 {
     float concordant_weight = 0.;
     float discordant_weight = 0.;
     float uninformative_weight = 0.;
     float relevant_weight = 0.;
 
-    for (unsigned int i = 0; i < sampleCount; ++i)
+    for (unsigned int stratum = 0; stratum < sampleStratumCount; ++stratum)
     {
-        if (pDiscreteSamples[i] != pDiscreteSamples[i])
-            continue;
-        if (timeSwitch && pTimeSamples[i] != pTimeSamples[i])
-            continue;
-
-        for (unsigned int j = 0; j < sampleCount; ++j)
+        for (unsigned int a = 0; a < pSampleCountPerStratum[stratum]; ++a)
         {
-            if (pDiscreteSamples[j] != pDiscreteSamples[j])
+            unsigned int const i = pSampleIndicesPerStratum[stratum][a];
+
+            if (pDiscreteSamples[i] != pDiscreteSamples[i])
                 continue;
-            if (timeSwitch && pTimeSamples[j] != pTimeSamples[j])
-                continue;
-            if (pSampleStrata[i] != pSampleStrata[j])
+            if (timeSwitch && pTimeSamples[i] != pTimeSamples[i])
                 continue;
 
-            float pair_weight = pSampleWeights[i] * pSampleWeights[j];
-
-            if ((timeSwitch && (pTimeSamples[i] < pTimeSamples[j] && pDiscreteSamples[i] == 1))
-                    || (!timeSwitch && pDiscreteSamples[i] > pDiscreteSamples[j]))
+            for (unsigned int b = 0; b < pSampleCountPerStratum[stratum]; ++b)
             {
-                relevant_weight += pair_weight;
+                unsigned int const j = pSampleIndicesPerStratum[stratum][b];
 
-                if (pContinuousSamples[i] > pContinuousSamples[j])
-                    concordant_weight += pair_weight;
-                else if (pContinuousSamples[i] < pContinuousSamples[j])
-                    discordant_weight += pair_weight;
-                else if (outX)
-                    uninformative_weight += pair_weight;
-                else
-                    discordant_weight += pair_weight;
+                if (pDiscreteSamples[j] != pDiscreteSamples[j])
+                    continue;
+                if (timeSwitch && pTimeSamples[j] != pTimeSamples[j])
+                    continue;
+
+                float pair_weight = pSampleWeights[i] * pSampleWeights[j];
+
+                if ((timeSwitch && (pTimeSamples[i] < pTimeSamples[j] && pDiscreteSamples[i] == 1))
+                        || (!timeSwitch && pDiscreteSamples[i] > pDiscreteSamples[j]))
+                {
+                    relevant_weight += pair_weight;
+
+                    if (pContinuousSamples[i] > pContinuousSamples[j])
+                        concordant_weight += pair_weight;
+                    else if (pContinuousSamples[i] < pContinuousSamples[j])
+                        discordant_weight += pair_weight;
+                    else if (outX)
+                        uninformative_weight += pair_weight;
+                    else
+                        discordant_weight += pair_weight;
+                }
+                else if ((timeSwitch
+                        && (pTimeSamples[i] < pTimeSamples[j] && pDiscreteSamples[i] == 1))
+                        || (!timeSwitch && pDiscreteSamples[i] > pDiscreteSamples[j]))
+                {
+                    relevant_weight += pair_weight;
+
+                    if (pContinuousSamples[i] < pContinuousSamples[j])
+                        concordant_weight += pair_weight;
+                    else if (pContinuousSamples[i] > pContinuousSamples[j])
+                        discordant_weight += pair_weight;
+                    else if (outX)
+                        uninformative_weight += pair_weight;
+                    else
+                        discordant_weight += pair_weight;
+                }
+
             }
-            else if ((timeSwitch && (pTimeSamples[i] < pTimeSamples[j] && pDiscreteSamples[i] == 1))
-                    || (!timeSwitch && pDiscreteSamples[i] > pDiscreteSamples[j]))
-            {
-                relevant_weight += pair_weight;
-
-                if (pContinuousSamples[i] < pContinuousSamples[j])
-                    concordant_weight += pair_weight;
-                else if (pContinuousSamples[i] > pContinuousSamples[j])
-                    discordant_weight += pair_weight;
-                else if (outX)
-                    uninformative_weight += pair_weight;
-                else
-                    discordant_weight += pair_weight;
-            }
-
         }
     }
     return concordant_weight / relevant_weight;
