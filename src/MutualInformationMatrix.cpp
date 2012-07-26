@@ -22,3 +22,12 @@ MutualInformationMatrix::operator()(unsigned int const i, unsigned int const j)
 
     return SymmetricMatrix::operator()(i, j);
 }
+
+void const
+MutualInformationMatrix::build()
+{
+#pragma omp parallel for schedule(dynamic)
+    for (unsigned int i = 0; i < mColumnCount; ++i)
+        for (unsigned int j = i; j < mColumnCount; ++j)
+            operator()(i, j);
+}

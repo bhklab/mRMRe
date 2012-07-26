@@ -1,6 +1,8 @@
 #ifndef ensemble_MutualInformationMatrix_hpp
 #define ensemble_MutualInformationMatrix_hpp
 
+#include <omp.h>
+
 #include "Data.hpp"
 #include "SymmetricMatrix.hpp"
 
@@ -17,6 +19,9 @@ public:
 
     virtual float&
     operator()(unsigned int const i, unsigned int const j);
+
+    void const
+    build();
 };
 
 #endif /* ensemble_MutualInformationMatrix_hpp */
