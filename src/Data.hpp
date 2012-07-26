@@ -34,6 +34,9 @@ public:
     float const
     computeMiBetweenFeatures(unsigned int const i, unsigned int const j) const;
 
+    float const
+    computeSpearmanCorrelationBetweenFeatures(unsigned int const i, unsigned int const j) const;
+
     unsigned int const
     getSampleCount() const;
 

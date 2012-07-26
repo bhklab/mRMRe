@@ -56,22 +56,7 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j) const
     bool const B_is_discrete = mpFeatureTypes[j] == FEATURE_DISCRETE;
 
     if (A_is_continuous && B_is_continuous)
-    {
-        if (!mpHasFeatureRanksCached[i])
-        {
-            placeRanksByFeatureIndex(i, mpRankedDataMatrix, mpDataMatrix);
-            mpHasFeatureRanksCached[i] = true;
-        }
-
-        if (!mpHasFeatureRanksCached[j])
-        {
-            placeRanksByFeatureIndex(j, mpRankedDataMatrix, mpDataMatrix);
-            mpHasFeatureRanksCached[j] = true;
-        }
-
-        r = computePearsonCorrelation(i, j, mpRankedDataMatrix, mpSampleWeights);
-    }
-
+        r = computeSpearmanCorrelationBetweenFeatures(i, j);
     else if (A_is_survival_event && B_is_continuous)
         r = computeConcordanceIndex(i, j, i + 1, mpDataMatrix, mpSampleWeights, mpSampleStrata,
                 true);
@@ -83,6 +68,24 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j) const
         r = computeCramersV(i, j, mpDataMatrix, mpSampleWeights);
 
     return convertCorrelationToMi(r);
+}
+
+float const
+Data::computeSpearmanCorrelationBetweenFeatures(unsigned int const i, unsigned int const j) const
+{
+    if (!mpHasFeatureRanksCached[i])
+    {
+        placeRanksByFeatureIndex(i, mpRankedDataMatrix, mpDataMatrix);
+        mpHasFeatureRanksCached[i] = true;
+    }
+
+    if (!mpHasFeatureRanksCached[j])
+    {
+        placeRanksByFeatureIndex(j, mpRankedDataMatrix, mpDataMatrix);
+        mpHasFeatureRanksCached[j] = true;
+    }
+
+    return computePearsonCorrelation(i, j, mpRankedDataMatrix, mpSampleWeights);
 }
 
 unsigned int const
