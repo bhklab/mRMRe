@@ -1,54 +1,5 @@
 #include "Math.hpp"
 
-//float const
-//computeCramersV(unsigned int const featureIndex1, unsigned int const featureIndex2,
-//        Matrix const* const pDataMatrix, float const* const pSampleWeights)
-//{
-//
-//    unsigned int const sample_count = pDataMatrix->getRowCount();
-//    unsigned int x_class_count = 0;
-//    unsigned int y_class_count = 0;
-//
-//    for (unsigned int i = 0; i < sample_count; ++i)
-//    {
-//        if (x_class_count <= (*pDataMatrix)(i, featureIndex1))
-//            x_class_count = (*pDataMatrix)(i, featureIndex1) + 1;
-//        if (y_class_count <= (*pDataMatrix)(i, featureIndex2))
-//            y_class_count = (*pDataMatrix)(i, featureIndex2) + 1;
-//    }
-//
-//    Matrix* const contingency_table = new Matrix(x_class_count + 1, y_class_count + 1);
-//    for (unsigned int i = 0; i < x_class_count; ++i)
-//        for (unsigned int j = 0; j < y_class_count; ++j)
-//            (*contingency_table)(i, j) = 0;
-//
-//    for (unsigned int i = 0; i < sample_count; ++i)
-//    {
-//        float const sample_weight = pSampleWeights[i];
-//        (*contingency_table)((*pDataMatrix)(i, featureIndex1), (*pDataMatrix)(i, featureIndex2)) +=
-//                sample_weight;
-//        (*contingency_table)(x_class_count, (*pDataMatrix)(i, featureIndex2)) += sample_weight;
-//        (*contingency_table)((*pDataMatrix)(i, featureIndex1), y_class_count) += sample_weight;
-//        (*contingency_table)(x_class_count, y_class_count) += sample_weight;
-//    }
-//    float chi_square = 0.;
-//
-//    for (unsigned int i = 0; i < x_class_count; ++i)
-//        for (unsigned int j = 0; j < y_class_count; ++j)
-//        {
-//            float expected_value = (*contingency_table)(i, y_class_count)
-//                    * (*contingency_table)(x_class_count, j)
-//                    / (*contingency_table)(x_class_count, y_class_count);
-//
-//            chi_square += std::pow(((*contingency_table)(i, j) - expected_value), 2)
-//                    / expected_value;
-//        }
-//
-//    unsigned int min_classes = (x_class_count < y_class_count) ? x_class_count : y_class_count;
-//    return std::sqrt(
-//            chi_square / ((*contingency_table)(x_class_count, y_class_count) * (min_classes - 1)));
-//}
-
 Math::IndirectComparator::IndirectComparator(float const* const pSamples,
         unsigned int const* const pSampleIndices) :
         mpSamples(pSamples), mpSampleIndices(pSampleIndices)
@@ -135,13 +86,63 @@ Math::computeConcordanceIndex(float const* const pDiscreteSamples,
 }
 
 /* static */float const
-computeFisherTransformation(float const r)
+Math::computeCramersV(float const* const pSamplesX, float const* const pSamplesY,
+        float const* const pSampleWeights, unsigned int const sampleCount)
+{
+    unsigned int x_class_count = 0;
+    unsigned int y_class_count = 0;
+
+    for (unsigned int i = 0; i < sampleCount; ++i)
+    {
+        if (x_class_count <= pSamplesX[i])
+            x_class_count = pSamplesX[i] + 1;
+        if (y_class_count <= pSamplesY[i])
+            y_class_count = pSamplesY[i] + 1;
+    }
+
+    Matrix contingency_table(x_class_count + 1, y_class_count + 1);
+    for (unsigned int i = 0; i < x_class_count; ++i)
+        for (unsigned int j = 0; j < y_class_count; ++j)
+            contingency_table.at(i, j) = 0.;
+
+    for (unsigned int i = 0; i < sampleCount; ++i)
+    {
+        float const sample_weight = pSampleWeights[i];
+        contingency_table.at(pSamplesX[i], pSamplesY[i]) += sample_weight;
+        contingency_table.at(x_class_count, pSamplesY[i]) += sample_weight;
+        contingency_table.at(pSamplesX[i], y_class_count) += sample_weight;
+        contingency_table.at(x_class_count, y_class_count) += sample_weight;
+    }
+
+    float chi_square = 0.;
+
+    for (unsigned int i = 0; i < x_class_count; ++i)
+        for (unsigned int j = 0; j < y_class_count; ++j)
+        {
+            float expected_value = contingency_table.at(i, y_class_count)
+                    * contingency_table.at(x_class_count, j)
+                    / contingency_table.at(x_class_count, y_class_count);
+
+            chi_square += std::pow((contingency_table.at(i, j) - expected_value), 2)
+                    / expected_value;
+        }
+
+    unsigned int const min_classes =
+            (x_class_count < y_class_count) ? x_class_count : y_class_count;
+    float const v = std::sqrt(
+            chi_square / (contingency_table.at(x_class_count, y_class_count) * (min_classes - 1)));
+
+    return v;
+}
+
+/* static */float const
+Math::computeFisherTransformation(float const r)
 {
     return 0.5 * std::log((1 + r) / (1 - r));
 }
 
 /* static */float const
-computeFisherTransformationReverse(float const z)
+Math::computeFisherTransformationReverse(float const z)
 {
     float const exp = std::exp(2 * z);
     return (exp - 1) / (exp + 1);

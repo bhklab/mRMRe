@@ -4,11 +4,7 @@
 #include <algorithm>
 #include <cmath>
 
-//#include "Matrix.hpp"
-//
-//float const
-//computeCramersV(unsigned int const featureIndex1, unsigned int const featureIndex2,
-//        Matrix const* const pDataMatrix, float const* const pSampleWeights);
+#include "Matrix.hpp"
 
 class Math
 {
@@ -37,6 +33,10 @@ public:
             unsigned int const* const * const pSampleIndicesPerStratum,
             unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
             bool const outX);
+
+    static float const
+    computeCramersV(float const* const pSamplesX, float const* const pSamplesY,
+            float const* const pSampleWeights, unsigned int const sampleCount);
 
     static float const
     computeFisherTransformation(float const r);

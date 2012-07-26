@@ -1,8 +1,16 @@
 ::Math
-	Re-adapt Cramer's V (use the same order of arguments and same style... it's clean!)
 	Stratify Cramer's V
     Split Concordance Index (please get rid of timeswitch!)
-    Figure out how to use Fisher's Transofmration
+    Figure out how to use Fisher's Transformation
 
 ::Tree
     mRMR score caching in tree
+    
+ALSO
+	Please test everything. Spearman, Survival C-Index,
+	Continuous VS Discrete C-Index, Cramer's.
+
+NOTES
+	Always always look at other routines, especially in ::Math
+	to see the order and name of arguments; try to stay as close
+	as possible to what we already have
