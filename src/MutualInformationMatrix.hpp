@@ -10,7 +10,6 @@ protected:
     Data const* const mpData;
 
 public:
-    explicit
     MutualInformationMatrix(Data const* const pData);
 
     virtual
