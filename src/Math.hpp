@@ -16,16 +16,16 @@
 //isComparablePair(unsigned int const i, unsigned int const j, int const timeFeatureIndex,
 //        unsigned int const discreteFeatureIndex, Matrix const* const pDataMatrix);
 //
+//
 //float const
 //computeCramersV(unsigned int const featureIndex1, unsigned int const featureIndex2,
 //        Matrix const* const pDataMatrix, float const* const pSampleWeights);
 
-// ***********
-
 class Math
 {
 private:
-    virtual ~Math() = 0; // Prevent instantiation of ::Math
+    virtual
+    ~Math() = 0; // Prevent instantiation of ::Math
 
 public:
     class IndirectComparator
@@ -48,6 +48,7 @@ public:
     computePearsonCorrelation(float const* const pSamplesX, float const* const pSamplesY,
             float const* const pSampleWeights,
             unsigned int const* const * const pSampleIndicesPerStratum,
+            float const* const pTotalWeightPerStratum,
             unsigned int const* const pSampleCountPerStratum,
             unsigned int const sampleStratumCount);
 

@@ -95,7 +95,7 @@ Data::computeCorrelationBetweenContinuousFeatures(unsigned int const i, unsigned
 
     return Math::computePearsonCorrelation(&(mpRankedDataMatrix->at(0, i)),
             &(mpRankedDataMatrix->at(0, j)), mpSampleWeights, mpSampleIndicesPerStratum,
-            mpSampleCountPerStratum, mSampleStratumCount);
+            mpTotalWeightPerStratum, mpSampleCountPerStratum, mSampleStratumCount);
 }
 
 unsigned int const

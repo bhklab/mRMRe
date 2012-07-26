@@ -126,8 +126,6 @@
 //            chi_square / ((*contingency_table)(x_class_count, y_class_count) * (min_classes - 1)));
 //}
 
-// ***********
-
 Math::IndirectComparator::IndirectComparator(float const* const pSamples,
         unsigned int const* const pSampleIndices) :
         mpSamples(pSamples), mpSampleIndices(pSampleIndices)
@@ -151,17 +149,23 @@ Math::computeMi(float const r)
 Math::computePearsonCorrelation(float const* const pSamplesX, float const* const pSamplesY,
         float const* const pSampleWeights,
         unsigned int const* const * const pSampleIndicesPerStratum,
-        unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount)
+        float const* const pTotalWeightPerStratum, unsigned int const* const pSampleCountPerStratum,
+        unsigned int const sampleStratumCount)
 {
-    float sum_of_r = 0.;
+    float r = 0.;
+    float total_weight = 0.;
 
     for (unsigned int i = 0; i < sampleStratumCount; ++i)
-        sum_of_r += computePearsonCorrelation(pSamplesX, pSamplesY, pSampleWeights,
-                pSampleIndicesPerStratum[i], pSampleCountPerStratum[i]);
+    {
+        r += pTotalWeightPerStratum[i]
+                * computePearsonCorrelation(pSamplesX, pSamplesY, pSampleWeights,
+                        pSampleIndicesPerStratum[i], pSampleCountPerStratum[i]);
+        total_weight += pTotalWeightPerStratum[i];
+    }
 
-    sum_of_r /= sampleStratumCount;
+    r /= total_weight;
 
-    return sum_of_r;
+    return r;
 }
 
 /* static */float const
@@ -212,7 +216,8 @@ Math::placeRanksByFeatureIndex(float const* const pSamples, float* const pRanks,
         for (unsigned int j = 0; j < sample_count; ++j)
             p_order[j] = j;
 
-        std::sort(p_order, p_order + sample_count, IndirectComparator(pSamples, p_sample_indices));
+        std::sort(p_order, p_order + sample_count,
+                Math::IndirectComparator(pSamples, p_sample_indices));
 
         for (unsigned int j = 0; j < sample_count; ++j)
             pRanks[p_sample_indices[p_order[j]]] = j;
