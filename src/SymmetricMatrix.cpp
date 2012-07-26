@@ -13,7 +13,7 @@ SymmetricMatrix::~SymmetricMatrix()
 }
 
 /* virtual */float&
-SymmetricMatrix::operator()(unsigned int const i, unsigned int const j)
+SymmetricMatrix::at(unsigned int const i, unsigned int const j)
 {
     unsigned int const x = (i >= j) ? i : j;
     unsigned int const y = (i >= j) ? j : i;

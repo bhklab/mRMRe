@@ -25,10 +25,10 @@ public:
     ~Matrix();
 
     virtual float&
-    operator()(unsigned int const i, unsigned int const j);
+    at(unsigned int const i, unsigned int const j);
 
     float const&
-    operator()(unsigned int const i, unsigned int const j) const;
+    at(unsigned int const i, unsigned int const j) const;
 
     unsigned int const
     getColumnCount() const;
@@ -37,7 +37,7 @@ public:
     getRowCount() const;
 
     std::vector<float> const
-    getVectorizedData();
+    getVectorizedData() const;
 };
 
 #endif /* ensemble_Matrix_hpp */

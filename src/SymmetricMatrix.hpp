@@ -12,7 +12,7 @@ public:
     ~SymmetricMatrix();
 
     virtual float&
-    operator()(unsigned int const i, unsigned int const j);
+    at(unsigned int const i, unsigned int const j);
 };
 
 #endif /* ensemble_SymmetricMatrix_hpp */

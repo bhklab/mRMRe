@@ -166,7 +166,7 @@ Tree::placeElement(unsigned int const absoluteIndex, unsigned int const level)
                 || hasSiblingByFeatureIndex(absoluteIndex, i, level))
             continue;
 
-        float const candidate_feature_score = (*mpFeatureInformationMatrix)(i, mpIndexTree[0]);
+        float const candidate_feature_score = mpFeatureInformationMatrix->at(i, mpIndexTree[0]);
 
         unsigned int ancestor_absolute_index = absoluteIndex;
         float ancestry_score_mean = 0.;
@@ -175,7 +175,7 @@ Tree::placeElement(unsigned int const absoluteIndex, unsigned int const level)
             for (unsigned int j = level; j > 0; --j)
             {
                 ancestor_absolute_index = getParentAbsoluteIndex(ancestor_absolute_index, j);
-                ancestry_score_mean += (*mpFeatureInformationMatrix)(i,
+                ancestry_score_mean += mpFeatureInformationMatrix->at(i,
                         mpIndexTree[ancestor_absolute_index]);
             }
 

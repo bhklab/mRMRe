@@ -5,7 +5,7 @@ MutualInformationMatrix::MutualInformationMatrix(Data const* const pData) :
 {
     for (unsigned int i = 0; i < mColumnCount; ++i)
         for (unsigned int j = i; j < mColumnCount; ++j)
-            SymmetricMatrix::operator()(i, j) = std::numeric_limits<float>::quiet_NaN();
+            SymmetricMatrix::at(i, j) = std::numeric_limits<float>::quiet_NaN();
 }
 
 /* virtual */
@@ -15,12 +15,12 @@ MutualInformationMatrix::~MutualInformationMatrix()
 }
 
 /* virtual */float&
-MutualInformationMatrix::operator()(unsigned int const i, unsigned int const j)
+MutualInformationMatrix::at(unsigned int const i, unsigned int const j)
 {
-    if (SymmetricMatrix::operator()(i, j) != SymmetricMatrix::operator()(i, j))
-        SymmetricMatrix::operator()(i, j) = mpData->computeMiBetweenFeatures(i, j);
+    if (SymmetricMatrix::at(i, j) != SymmetricMatrix::at(i, j))
+        SymmetricMatrix::at(i, j) = mpData->computeMiBetweenFeatures(i, j);
 
-    return SymmetricMatrix::operator()(i, j);
+    return SymmetricMatrix::at(i, j);
 }
 
 void const
@@ -29,5 +29,5 @@ MutualInformationMatrix::build()
 #pragma omp parallel for schedule(dynamic)
     for (unsigned int i = 0; i < mColumnCount; ++i)
         for (unsigned int j = i; j < mColumnCount; ++j)
-            operator()(i, j);
+            at(i, j);
 }

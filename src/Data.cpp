@@ -81,20 +81,20 @@ Data::computeCorrelationBetweenContinuousFeatures(unsigned int const i, unsigned
 {
     if (!mpHasFeatureRanksCached[i])
     {
-        Math::placeRanksByFeatureIndex(&((*mpDataMatrix)(0, i)), &((*mpRankedDataMatrix)(0, i)),
+        Math::placeRanksByFeatureIndex(&(mpDataMatrix->at(0, i)), &(mpRankedDataMatrix->at(0, i)),
                 mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount);
         mpHasFeatureRanksCached[i] = true;
     }
 
     if (!mpHasFeatureRanksCached[j])
     {
-        Math::placeRanksByFeatureIndex(&((*mpDataMatrix)(0, j)), &((*mpRankedDataMatrix)(0, j)),
+        Math::placeRanksByFeatureIndex(&(mpDataMatrix->at(0, j)), &(mpRankedDataMatrix->at(0, j)),
                 mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount);
         mpHasFeatureRanksCached[j] = true;
     }
 
-    return Math::computePearsonCorrelation(&((*mpRankedDataMatrix)(0, i)),
-            &((*mpRankedDataMatrix)(0, j)), mpSampleWeights, mpSampleIndicesPerStratum,
+    return Math::computePearsonCorrelation(&(mpRankedDataMatrix->at(0, i)),
+            &(mpRankedDataMatrix->at(0, j)), mpSampleWeights, mpSampleIndicesPerStratum,
             mpSampleCountPerStratum, mSampleStratumCount);
 }
 

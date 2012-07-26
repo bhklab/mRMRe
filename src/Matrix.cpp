@@ -30,15 +30,15 @@ Matrix::~Matrix()
 }
 
 /* virtual */float&
-Matrix::operator()(unsigned int const i, unsigned int const j)
+Matrix::at(unsigned int const i, unsigned int const j)
 {
     return mpData[(j * mRowCount) + i];
 }
 
 float const&
-Matrix::operator()(unsigned int const i, unsigned int const j) const
+Matrix::at(unsigned int const i, unsigned int const j) const
 {
-    return const_cast<Matrix*>(this)->operator()(i, j);
+    return const_cast<Matrix*>(this)->at(i, j);
 }
 
 unsigned int const
@@ -54,7 +54,7 @@ Matrix::getRowCount() const
 }
 
 std::vector<float> const
-Matrix::getVectorizedData()
+Matrix::getVectorizedData() const
 {
     std::vector<float> vector;
     vector.resize(mRowCount * mColumnCount);
@@ -62,7 +62,7 @@ Matrix::getVectorizedData()
 #pragma omp parallel for schedule(dynamic)
     for (unsigned int i = 0; i < mColumnCount; ++i)
         for (unsigned int j = 0; j < mRowCount; ++j)
-            vector[(i * mRowCount) + j] = operator()(i, j);
+            vector[(i * mRowCount) + j] = at(i, j);
 
     return vector;
 }

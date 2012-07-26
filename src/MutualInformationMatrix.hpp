@@ -18,7 +18,7 @@ public:
     ~MutualInformationMatrix();
 
     virtual float&
-    operator()(unsigned int const i, unsigned int const j);
+    at(unsigned int const i, unsigned int const j);
 
     void const
     build();
