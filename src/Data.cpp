@@ -8,7 +8,8 @@ Data::Data(float* const pData, unsigned int const sampleCount, unsigned int cons
                 new bool[mpDataMatrix->getColumnCount()]), mpSampleStrata(pSampleStrata), mpSampleWeights(
                 pSampleWeights), mpFeatureTypes(pFeatureTypes), mSampleStratumCount(
                 sampleStratumCount), mpSampleIndicesPerStratum(
-                new unsigned int*[sampleStratumCount]), mpSampleCountPerStratum(
+                new unsigned int*[sampleStratumCount]), mpTotalWeightPerStratum(
+                new float[sampleStratumCount]), mpSampleCountPerStratum(
                 new unsigned int[sampleStratumCount])
 {
     for (unsigned int i = 0; i < mpDataMatrix->getColumnCount(); ++i)
@@ -17,8 +18,9 @@ Data::Data(float* const pData, unsigned int const sampleCount, unsigned int cons
     unsigned int p_iterator_per_stratum[mSampleStratumCount];
     for (unsigned int i = 0; i < mSampleStratumCount; ++i)
     {
-        mpSampleCountPerStratum[i] = 0;
+        mpTotalWeightPerStratum[i] = 0.;
         p_iterator_per_stratum[i] = 0;
+        mpSampleCountPerStratum[i] = 0;
     }
 
     for (unsigned int i = 0; i < mpDataMatrix->getRowCount(); ++i)
@@ -28,8 +30,11 @@ Data::Data(float* const pData, unsigned int const sampleCount, unsigned int cons
         mpSampleIndicesPerStratum[i] = new unsigned int[mpSampleCountPerStratum[i]];
 
     for (unsigned int i = 0; i < mpDataMatrix->getRowCount(); ++i)
-        mpSampleIndicesPerStratum[mpSampleStrata[i]][p_iterator_per_stratum[mpSampleStrata[i]]++] =
-                i;
+    {
+        unsigned int const p_sample_stratum = mpSampleStrata[i];
+        mpSampleIndicesPerStratum[p_sample_stratum][p_iterator_per_stratum[p_sample_stratum]++] = i;
+        mpTotalWeightPerStratum[p_sample_stratum] += pSampleWeights[i];
+    }
 }
 
 Data::~Data()
@@ -40,6 +45,7 @@ Data::~Data()
     for (unsigned int i = 0; i < mSampleStratumCount; ++i)
         delete[] mpSampleIndicesPerStratum[i];
     delete[] mpSampleIndicesPerStratum;
+    delete[] mpTotalWeightPerStratum;
     delete[] mpSampleCountPerStratum;
 }
 

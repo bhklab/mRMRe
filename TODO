@@ -1,7 +1,4 @@
-- Plan task delegation
-- Stratify Pearson/Spearman Correlation
 - Decipher and implement Fischer's Transformation
 - Decipher and stratify Cramer's V
 - Split C-Index into "survival analysis (time + event)" and "discrete vs. continuous"
 - Implement mRMR caching in tree
-- Adapt and separate wrappers and primitive functions in tools

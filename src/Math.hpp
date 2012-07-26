@@ -25,7 +25,7 @@ computeCramersV(unsigned int const featureIndex1, unsigned int const featureInde
 class Math
 {
 private:
-    virtual ~Math() = 0;
+    virtual ~Math() = 0; // Prevent instantiation of ::Math
 
 public:
     class IndirectComparator
