@@ -7,17 +7,6 @@
 //#include "Matrix.hpp"
 //
 //float const
-//computeConcordanceIndex(unsigned int const discreteFeatureIndex,
-//        unsigned int const continuousFeatureIndex, int const timeFeatureIndex,
-//        Matrix const* const pDataMatrix, float const* const pSampleWeights,
-//        unsigned int const* const pSampleStrata, bool const outX);
-//
-//bool const
-//isComparablePair(unsigned int const i, unsigned int const j, int const timeFeatureIndex,
-//        unsigned int const discreteFeatureIndex, Matrix const* const pDataMatrix);
-//
-//
-//float const
 //computeCramersV(unsigned int const featureIndex1, unsigned int const featureIndex2,
 //        Matrix const* const pDataMatrix, float const* const pSampleWeights);
 
@@ -40,6 +29,14 @@ public:
         bool const
         operator()(unsigned int const i, unsigned int const j) const;
     };
+
+    static float const
+    computeConcordanceIndex(float const* const pDiscreteSamples,
+            float const* const pContinuousSamples, float const* const pTimeSamples,
+            bool const timeSwitch, float const* const pSampleWeights,
+            unsigned int const* const * const pSampleIndicesPerStratum,
+            unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
+            bool const outX);
 
     static float const
     computeFisherTransformation(float const r);

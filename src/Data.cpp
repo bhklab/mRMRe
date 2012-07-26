@@ -63,6 +63,15 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j) const
 
     if (A_is_continuous && B_is_continuous)
         r = computeCorrelationBetweenContinuousFeatures(i, j);
+    else if (A_is_discrete && B_is_continuous)
+        r = Math::computeConcordanceIndex(&(mpDataMatrix->at(0, i)), &(mpRankedDataMatrix->at(0, j)), 0,
+                false, mpSampleWeights, mpSampleIndicesPerStratum, mpSampleCountPerStratum,
+                mSampleStratumCount, true);
+    else if (A_is_continuous && B_is_discrete)
+        r = Math::computeConcordanceIndex(&(mpDataMatrix->at(0, j)), &(mpRankedDataMatrix->at(0, i)), 0,
+                false, mpSampleWeights, mpSampleIndicesPerStratum, mpSampleCountPerStratum,
+                mSampleStratumCount, true);
+
 //    else if (A_is_survival_event && B_is_continuous)
 //        r = computeConcordanceIndex(i, j, i + 1, mpDataMatrix, mpSampleWeights, mpSampleStrata,
 //                true);

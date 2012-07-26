@@ -1,10 +1,11 @@
 ::Math
-	Re-adapt Cramer's V
+	Re-adapt Cramer's V (use the same order of arguments and same style... it's clean!)
 	Stratify Cramer's V
-	Re-adapt Concordance Index
-	Optimize Concordance Index with outer stratification loop
-    Split Concordance Index
+    Split Concordance Index (please get rid of timeswitch!)
     Figure out how to use Fisher's Transofmration
 
 ::Tree
     mRMR score caching in tree
+    
+BUGS
+	Why is the MiM table weird when using C-Index? It is no longer symmetric
