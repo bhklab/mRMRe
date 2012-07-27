@@ -28,8 +28,15 @@ public:
 
     static float const
     computeConcordanceIndex(float const* const pDiscreteSamples,
+            float const* const pContinuousSamples, float const* const pSampleWeights,
+            unsigned int const* const * const pSampleIndicesPerStratum,
+            unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
+            bool const outX);
+
+    static float const
+    computeConcordanceIndexWithTime(float const* const pDiscreteSamples,
             float const* const pContinuousSamples, float const* const pTimeSamples,
-            bool const timeSwitch, float const* const pSampleWeights,
+            float const* const pSampleWeights,
             unsigned int const* const * const pSampleIndicesPerStratum,
             unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
             bool const outX);

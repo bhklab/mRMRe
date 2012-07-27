@@ -4,22 +4,16 @@
     Figure out how to use Fisher's Transformation
 
 ::Tree
-    mRMR score caching in tree
+    DONE
 
 FOOD FOR THOUGHT
-    ::Data use of NAs... any good? What if the value *is* NA? Is
-    it worth creating a matrix of boolean variables to address this
-    issue? Probably not.
+    NO
     
 CURRENT STATE OF AFFAIRS
-    I can't get Cramer's V to output anything. Debug it vigorously.
-    I never got it to work, it keeps on returning NAs. (Which makes all
-    the threads attempt to recompute it, not a big deal but see "food
-    for thought")
+	DONE
 
 ALSO
-	Please test everything. Spearman, Survival C-Index,
-	Continuous VS Discrete C-Index, Cramer's.
+	DONE
 
 NOTES
 	Always always look at other routines, especially in ::Math

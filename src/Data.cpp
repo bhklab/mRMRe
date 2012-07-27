@@ -64,12 +64,12 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j) const
     if (A_is_continuous && B_is_continuous)
         r = computeCorrelationBetweenContinuousFeatures(i, j);
     else if (A_is_discrete && B_is_continuous)
-        r = Math::computeConcordanceIndex(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)), 0,
-                false, mpSampleWeights, mpSampleIndicesPerStratum, mpSampleCountPerStratum,
+        r = Math::computeConcordanceIndex(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
+                mpSampleWeights, mpSampleIndicesPerStratum, mpSampleCountPerStratum,
                 mSampleStratumCount, true);
     else if (A_is_continuous && B_is_discrete)
-        r = Math::computeConcordanceIndex(&(mpDataMatrix->at(0, j)), &(mpDataMatrix->at(0, i)), 0,
-                false, mpSampleWeights, mpSampleIndicesPerStratum, mpSampleCountPerStratum,
+        r = Math::computeConcordanceIndex(&(mpDataMatrix->at(0, j)), &(mpDataMatrix->at(0, i)),
+                mpSampleWeights, mpSampleIndicesPerStratum, mpSampleCountPerStratum,
                 mSampleStratumCount, true);
     else if (A_is_discrete && B_is_discrete)
         r = Math::computeCramersV(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
