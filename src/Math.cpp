@@ -56,7 +56,7 @@ Math::computeConcordanceIndex(float const* const pDiscreteSamples,
                     else
                         discordant_weight += pair_weight;
                 }
-                else if (pDiscreteSamples[i] > pDiscreteSamples[j])
+                else if (pDiscreteSamples[i] < pDiscreteSamples[j])
                 {
                     relevant_weight += pair_weight;
 
@@ -112,8 +112,7 @@ Math::computeConcordanceIndexWithTime(float const* const pDiscreteSamples,
 
                 float pair_weight = pSampleWeights[i] * pSampleWeights[j];
 
-                if ((pTimeSamples[i] < pTimeSamples[j] && pDiscreteSamples[i] == 1)
-                        || (pDiscreteSamples[i] > pDiscreteSamples[j]))
+                if (pTimeSamples[i] < pTimeSamples[j] && pDiscreteSamples[i] == 1)
                 {
                     relevant_weight += pair_weight;
 
@@ -126,8 +125,7 @@ Math::computeConcordanceIndexWithTime(float const* const pDiscreteSamples,
                     else
                         discordant_weight += pair_weight;
                 }
-                else if ((pTimeSamples[i] < pTimeSamples[j] && pDiscreteSamples[i] == 1)
-                        || (pDiscreteSamples[i] > pDiscreteSamples[j]))
+                else if (pTimeSamples[i] > pTimeSamples[j] && pDiscreteSamples[j] == 1)
                 {
                     relevant_weight += pair_weight;
 
@@ -140,7 +138,6 @@ Math::computeConcordanceIndexWithTime(float const* const pDiscreteSamples,
                     else
                         discordant_weight += pair_weight;
                 }
-
             }
         }
     }

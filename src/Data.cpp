@@ -60,6 +60,7 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j) const
 
     bool const B_is_continuous = mpFeatureTypes[j] == FEATURE_CONTINUOUS;
     bool const B_is_discrete = mpFeatureTypes[j] == FEATURE_DISCRETE;
+    bool const B_is_survival_event = mpFeatureTypes[j] == FEATURE_SURVIVAL_EVENT;
 
     if (A_is_continuous && B_is_continuous)
         r = computeCorrelationBetweenContinuousFeatures(i, j);
@@ -74,16 +75,14 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j) const
     else if (A_is_discrete && B_is_discrete)
         r = Math::computeCramersV(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
                 mpSampleWeights, getSampleCount());
-
-//    else if (A_is_survival_event && B_is_continuous)
-//        r = computeConcordanceIndex(i, j, i + 1, mpDataMatrix, mpSampleWeights, mpSampleStrata,
-//                true);
-//    else if (A_is_discrete && B_is_continuous)
-//        r = computeConcordanceIndex(i, j, -1, mpDataMatrix, mpSampleWeights, mpSampleStrata, true);
-//    else if (A_is_continuous && B_is_discrete)
-//        r = computeConcordanceIndex(j, i, -1, mpDataMatrix, mpSampleWeights, mpSampleStrata, true);
-//    else if (A_is_discrete && B_is_discrete)
-//        r = computeCramersV(i, j, mpDataMatrix, mpSampleWeights);
+    else if (A_is_survival_event && B_is_continuous)
+        r = Math::computeConcordanceIndexWithTime(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
+                &(mpDataMatrix->at(0, i + 1)), mpSampleWeights, mpSampleIndicesPerStratum,
+                mpSampleCountPerStratum, mSampleStratumCount, true);
+    else if (A_is_continuous && B_is_survival_event)
+        r = Math::computeConcordanceIndexWithTime(&(mpDataMatrix->at(0, j)), &(mpDataMatrix->at(0, i)),
+                &(mpDataMatrix->at(0, j + 1)), mpSampleWeights, mpSampleIndicesPerStratum,
+                mpSampleCountPerStratum, mSampleStratumCount, true);
 
     return Math::computeMi(r);
 }
