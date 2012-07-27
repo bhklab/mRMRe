@@ -159,6 +159,8 @@ Tree::placeElement(unsigned int const absoluteIndex, unsigned int const level)
 {
     unsigned int max_candidate_feature_index = 0;
     float max_candidate_score = -std::numeric_limits<float>::max();
+    float max_candidate_feature_score = 0;
+    float max_candidate_ancestry_score = 0;
 
     for (unsigned int i = 0; i < mpFeatureInformationMatrix->getRowCount(); ++i)
     {
@@ -175,21 +177,26 @@ Tree::placeElement(unsigned int const absoluteIndex, unsigned int const level)
             for (unsigned int j = level; j > 0; --j)
             {
                 ancestor_absolute_index = getParentAbsoluteIndex(ancestor_absolute_index, j);
-                ancestry_score_mean += mpFeatureInformationMatrix->at(i,
+                ancestry_score += mpFeatureInformationMatrix->at(i,
                         mpIndexTree[ancestor_absolute_index]);
             }
 
-        ancestry_score_mean /= level; // (level + 1) gives sideChannelAttack's classic mRMR
+        ancestry_score_mean = ancestry_score / level; // (level + 1) gives sideChannelAttack's classic mRMR
         float const candidate_score = candidate_feature_score - ancestry_score_mean;
 
         if (candidate_score > max_candidate_score && !isRedundantPath(absoluteIndex, i, level))
         {
             max_candidate_feature_index = i;
             max_candidate_score = candidate_score;
+            max_candidate_feature_score = candidate_feature_score;
+            max_candidate_ancestry_score = ancestry_score;
         }
     }
 
     mpIndexTree[absoluteIndex] = max_candidate_feature_index;
-    // mpInformativeContributionTree[absoluteIndex]
-    // mpRedundantContributionTree[absoluteIndex]
+    unsigned int const parent_index = getParentIndex(absoluteIndex, level);
+    mpInformativeContributionTree[absoluteIndex] = mpInformativeContributionTree[parent_index]
+            + max_candidata_feature_score;
+    mpRedundantContributionTree[absoluteIndex] = mpRedundantContributionTree[parent_index]
+            + max_candidate_ancestry_score;
 }
