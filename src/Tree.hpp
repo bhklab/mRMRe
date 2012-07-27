@@ -38,6 +38,9 @@ public:
     std::vector<unsigned int> const
     getPaths() const;
 
+    std::vector<float> const
+    getScores() const;
+
     bool const
     hasAncestorByFeatureIndex(unsigned int const absoluteIndex, unsigned int const featureIndex,
             unsigned int level) const;

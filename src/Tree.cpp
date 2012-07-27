@@ -92,6 +92,28 @@ Tree::getPaths() const
     return paths;
 }
 
+std::vector<float> const
+Tree::getScores() const
+{
+    std::vector<float> scores;
+    scores.reserve(mLevelCount * (mTreeElementCount - mpStartingIndexPerLevel[mLevelCount]));
+
+    for (unsigned int end_element_absolute_index = mTreeElementCount - 1;
+            end_element_absolute_index >= mpStartingIndexPerLevel[mLevelCount];
+            --end_element_absolute_index)
+    {
+        unsigned int element_absolute_index = end_element_absolute_index;
+
+        for (unsigned int level = mLevelCount; level > 0; --level)
+        {
+            scores.push_back(computeQualityScore(element_absolute_index, level));
+            element_absolute_index = getParentAbsoluteIndex(element_absolute_index, level);
+        }
+    }
+
+    return scores;
+}
+
 bool const
 Tree::hasAncestorByFeatureIndex(unsigned int const absoluteIndex, unsigned int const featureIndex,
         unsigned int level) const
@@ -171,7 +193,7 @@ Tree::placeElement(unsigned int const absoluteIndex, unsigned int const level)
         float const candidate_feature_score = mpFeatureInformationMatrix->at(i, mpIndexTree[0]);
 
         unsigned int ancestor_absolute_index = absoluteIndex;
-        float ancestry_score_mean = 0.;
+        float ancestry_score = 0.;
 
         if (level > 1)
             for (unsigned int j = level; j > 0; --j)
@@ -181,7 +203,7 @@ Tree::placeElement(unsigned int const absoluteIndex, unsigned int const level)
                         mpIndexTree[ancestor_absolute_index]);
             }
 
-        ancestry_score_mean = ancestry_score / level; // (level + 1) gives sideChannelAttack's classic mRMR
+        float ancestry_score_mean = ancestry_score / level; // (level + 1) gives sideChannelAttack's classic mRMR
         float const candidate_score = candidate_feature_score - ancestry_score_mean;
 
         if (candidate_score > max_candidate_score && !isRedundantPath(absoluteIndex, i, level))
@@ -194,9 +216,9 @@ Tree::placeElement(unsigned int const absoluteIndex, unsigned int const level)
     }
 
     mpIndexTree[absoluteIndex] = max_candidate_feature_index;
-    unsigned int const parent_index = getParentIndex(absoluteIndex, level);
+    unsigned int const parent_index = getParentAbsoluteIndex(absoluteIndex, level);
     mpInformativeContributionTree[absoluteIndex] = mpInformativeContributionTree[parent_index]
-            + max_candidata_feature_score;
+            + max_candidate_feature_score;
     mpRedundantContributionTree[absoluteIndex] = mpRedundantContributionTree[parent_index]
             + max_candidate_ancestry_score;
 }
