@@ -72,8 +72,8 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j) const
                 false, mpSampleWeights, mpSampleIndicesPerStratum, mpSampleCountPerStratum,
                 mSampleStratumCount, true);
     else if (A_is_discrete && B_is_discrete)
-        r = Math::computeCramersV(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)), mpSampleWeights,
-                getSampleCount());
+        r = Math::computeCramersV(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
+                mpSampleWeights, getSampleCount());
 
 //    else if (A_is_survival_event && B_is_continuous)
 //        r = computeConcordanceIndex(i, j, i + 1, mpDataMatrix, mpSampleWeights, mpSampleStrata,

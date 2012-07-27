@@ -101,9 +101,9 @@ Math::computeCramersV(float const* const pSamplesX, float const* const pSamplesY
     }
 
     Matrix contingency_table(x_class_count + 1, y_class_count + 1);
-    for (unsigned int i = 0; i < x_class_count; ++i)
-        for (unsigned int j = 0; j < y_class_count; ++j)
-            contingency_table.at(i, j) = 0.;
+    for (unsigned int i = 0; i <= x_class_count; ++i)
+        for (unsigned int j = 0; j <= y_class_count; ++j)
+            contingency_table.at(i, j) = 0;
 
     for (unsigned int i = 0; i < sampleCount; ++i)
     {
