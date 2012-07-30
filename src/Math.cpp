@@ -147,17 +147,42 @@ Math::computeConcordanceIndexWithTime(float const* const pDiscreteSamples,
 
 /* static */float const
 Math::computeCramersV(float const* const pSamplesX, float const* const pSamplesY,
-        float const* const pSampleWeights, unsigned int const sampleCount)
+        float const* const pSampleWeights,
+        unsigned int const* const * const pSampleIndicesPerStratum,
+        float const* const pTotalWeightPerStratum, unsigned int const* const pSampleCountPerStratum,
+        unsigned int const sampleStratumCount)
+{
+    float r = 0.;
+    float total_weight = 0.;
+
+    for (unsigned int i = 0; i < sampleStratumCount; ++i)
+    {
+        r += pTotalWeightPerStratum[i]
+                * computeCramersV(pSamplesX, pSamplesY, pSampleWeights, pSampleIndicesPerStratum[i],
+                        pSampleCountPerStratum[i]);
+        total_weight += pTotalWeightPerStratum[i];
+    }
+
+    r /= total_weight;
+
+    return r;
+}
+
+/* static */float const
+Math::computeCramersV(float const* const pSamplesX, float const* const pSamplesY,
+        float const* const pSampleWeights, unsigned int const* const pSampleIndices,
+        unsigned int const sampleCount)
 {
     unsigned int x_class_count = 0;
     unsigned int y_class_count = 0;
 
     for (unsigned int i = 0; i < sampleCount; ++i)
     {
-        if (x_class_count <= pSamplesX[i])
-            x_class_count = pSamplesX[i] + 1;
-        if (y_class_count <= pSamplesY[i])
-            y_class_count = pSamplesY[i] + 1;
+        unsigned int const index = pSampleIndices[i];
+        if (x_class_count <= pSamplesX[index])
+            x_class_count = pSamplesX[index] + 1;
+        if (y_class_count <= pSamplesY[index])
+            y_class_count = pSamplesY[index] + 1;
     }
 
     Matrix contingency_table(x_class_count + 1, y_class_count + 1);
@@ -167,10 +192,11 @@ Math::computeCramersV(float const* const pSamplesX, float const* const pSamplesY
 
     for (unsigned int i = 0; i < sampleCount; ++i)
     {
-        float const sample_weight = pSampleWeights[i];
-        contingency_table.at(pSamplesX[i], pSamplesY[i]) += sample_weight;
-        contingency_table.at(x_class_count, pSamplesY[i]) += sample_weight;
-        contingency_table.at(pSamplesX[i], y_class_count) += sample_weight;
+        unsigned int const index = pSampleIndices[i];
+        float const sample_weight = pSampleWeights[index];
+        contingency_table.at(pSamplesX[index], pSamplesY[index]) += sample_weight;
+        contingency_table.at(x_class_count, pSamplesY[index]) += sample_weight;
+        contingency_table.at(pSamplesX[index], y_class_count) += sample_weight;
         contingency_table.at(x_class_count, y_class_count) += sample_weight;
     }
 
