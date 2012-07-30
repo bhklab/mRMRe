@@ -40,16 +40,20 @@
         mRMR_tree <- .Call("filter_mRMR_with_data", as.vector(levels), data, as.vector(strata),
                 as.vector(weights), as.vector(feature_types), nrow(data), ncol(data),
                 as.integer(length(unique(strata))), as.integer(target_feature_index) - 1)
-        
-        return(mRMR_tree)
+		mRMR_tree <- t(matrix(mRMR_tree[length(mRMR_tree):1], nrow=length(levels),
+						ncol=length(mRMR_tree)/length(levels)))
+		
+		return(mRMR_tree + 1)
     }
     else if (is.null(data)) # filter_mRMR_with_mim
     {
         mim <- as.matrix(mim)
         
         mRMR_tree <- .Call("filter_mRMR_with_mim", as.vector(levels), mim, ncol(mim),
-                as.integer(target_feature_index) - 1)
-        
-        return(mRMR_tree)
+                as.integer(target_feature_index) - 1)   	
+		mRMR_tree <- t(matrix(mRMR_tree[length(mRMR_tree):1], nrow=length(levels),
+						ncol=length(mRMR_tree)/length(levels)))
+		
+		return(mRMR_tree + 1)
     }
 }
