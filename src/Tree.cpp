@@ -78,8 +78,13 @@ Tree::build()
 /* inline */float const
 Tree::computeQualityScore(unsigned int const absoluteIndex, unsigned int const level) const
 {
+    if (level == 0)
+        return 0;
+    if (level == 1)
+        return mpInformativeContributionTree[absoluteIndex]
+                - mpRedundantContributionTree[absoluteIndex];
     return mpInformativeContributionTree[absoluteIndex]
-            - 2 * mpRedundantContributionTree[absoluteIndex] / level;
+            - 2 * mpRedundantContributionTree[absoluteIndex] / (level - 1);
 }
 
 /* inline */unsigned int const
