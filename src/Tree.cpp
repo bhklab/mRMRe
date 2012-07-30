@@ -54,6 +54,25 @@ Tree::build()
                 placeElement(child_absolute_index, level + 1);
             }
     }
+
+    // Prepare output
+    unsigned int const size = mLevelCount * (mTreeElementCount - mpStartingIndexPerLevel[mLevelCount]);
+    mPaths.reserve(size);
+    mScores.reserve(size);
+
+    for (unsigned int end_element_absolute_index = mTreeElementCount - 1;
+            end_element_absolute_index >= mpStartingIndexPerLevel[mLevelCount];
+            --end_element_absolute_index)
+    {
+        unsigned int element_absolute_index = end_element_absolute_index;
+
+        for (unsigned int level = mLevelCount; level > 0; --level)
+        {
+            mPaths.push_back(mpIndexTree[element_absolute_index]);
+            mScores.push_back(computeQualityScore(element_absolute_index, level));
+            element_absolute_index = getParentAbsoluteIndex(element_absolute_index, level);
+        }
+    }
 }
 
 /* inline */float const
@@ -73,45 +92,13 @@ Tree::getParentAbsoluteIndex(unsigned int const absoluteIndex, unsigned int cons
 std::vector<unsigned int> const
 Tree::getPaths() const
 {
-    std::vector<unsigned int> paths;
-    paths.reserve(mLevelCount * (mTreeElementCount - mpStartingIndexPerLevel[mLevelCount]));
-
-    for (unsigned int end_element_absolute_index = mTreeElementCount - 1;
-            end_element_absolute_index >= mpStartingIndexPerLevel[mLevelCount];
-            --end_element_absolute_index)
-    {
-        unsigned int element_absolute_index = end_element_absolute_index;
-
-        for (unsigned int level = mLevelCount; level > 0; --level)
-        {
-            paths.push_back(mpIndexTree[element_absolute_index]);
-            element_absolute_index = getParentAbsoluteIndex(element_absolute_index, level);
-        }
-    }
-
-    return paths;
+    return mPaths;
 }
 
 std::vector<float> const
 Tree::getScores() const
 {
-    std::vector<float> scores;
-    scores.reserve(mLevelCount * (mTreeElementCount - mpStartingIndexPerLevel[mLevelCount]));
-
-    for (unsigned int end_element_absolute_index = mTreeElementCount - 1;
-            end_element_absolute_index >= mpStartingIndexPerLevel[mLevelCount];
-            --end_element_absolute_index)
-    {
-        unsigned int element_absolute_index = end_element_absolute_index;
-
-        for (unsigned int level = mLevelCount; level > 0; --level)
-        {
-            scores.push_back(computeQualityScore(element_absolute_index, level));
-            element_absolute_index = getParentAbsoluteIndex(element_absolute_index, level);
-        }
-    }
-
-    return scores;
+    return mScores;
 }
 
 bool const

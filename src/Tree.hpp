@@ -19,6 +19,8 @@ private:
     float* mpInformativeContributionTree;
     float* mpRedundantContributionTree;
     unsigned int mTreeElementCount;
+    std::vector<unsigned int> mPaths;
+    std::vector<float> mScores;
 
 public:
     Tree(std::vector<unsigned int>* const pChildrenCountPerLevel,
