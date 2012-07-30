@@ -46,7 +46,9 @@ filter_mRMR_with_data(SEXP R_ChildrenCountPerLevel, SEXP R_DataMatrix, SEXP R_Sa
     mRMR_tree.build();
     std::vector<unsigned int> S_Paths = mRMR_tree.getPaths();
     std::vector<float> S_Scores = mRMR_tree.getScores();
-    return Rcpp::wrap < std::vector<unsigned int> > (S_Paths); // TODO: Add Scores to return
+    return Rcpp::List::create(
+            Rcpp::Named("paths") = Rcpp::wrap < std::vector<unsigned int> > (S_Paths),
+            Rcpp::Named("scores") = Rcpp::wrap < std::vector<float> > (S_Scores));
 }
 
 extern "C" SEXP
@@ -64,5 +66,7 @@ filter_mRMR_with_mim(SEXP R_ChildrenCountPerLevel, SEXP R_MiMatrix, SEXP R_Featu
     mRMR_tree.build();
     std::vector<unsigned int> S_Paths = mRMR_tree.getPaths();
     std::vector<float> S_Scores = mRMR_tree.getScores();
-    return Rcpp::wrap < std::vector<unsigned int> > (S_Paths); // TODO: Add Scores to return
+    return Rcpp::List::create(
+            Rcpp::Named("paths") = Rcpp::wrap < std::vector<unsigned int> > (S_Paths),
+            Rcpp::Named("scores") = Rcpp::wrap < std::vector<float> > (S_Scores));
 }

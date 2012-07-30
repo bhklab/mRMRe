@@ -156,8 +156,9 @@ Tree::isRedundantPath(unsigned int const absoluteIndex, unsigned int const featu
     float score = computeQualityScore(absoluteIndex, level);
 
     for (unsigned int i = mpStartingIndexPerLevel[level]; i < upper_bound; ++i)
-        if (hasAncestorByFeatureIndex(i, featureIndex, level)
-                && hasAncestorByFeatureIndex(absoluteIndex, mpIndexTree[i], level)) // TODO: fabs(computeQualityScore(i, level) - score) > 0.00001
+        if (fabs(computeQualityScore(i, level) - score) > 0.00001
+                && hasAncestorByFeatureIndex(i, featureIndex, level)
+                && hasAncestorByFeatureIndex(absoluteIndex, mpIndexTree[i], level))
             return true;
 
     return false;
