@@ -3,8 +3,8 @@
 
 #include <limits>
 
-#include "Matrix.hpp"
 #include "Math.hpp"
+#include "Matrix.hpp"
 
 class Data
 {

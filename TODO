@@ -1,10 +1,10 @@
 ::Math
-	Stratify Cramer's V
+    Stratify Cramer's V
     Figure out how to use Fisher's Transformation
 
 ::Tree
-	Make sure that getPaths and getScores are working properly
-	Interface tree with R
+    Make sure that getPaths and getScores are working properly
+    Interface tree with R
 	
 R
-	Causality inference
+    Causality inference

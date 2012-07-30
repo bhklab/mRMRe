@@ -76,13 +76,13 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j) const
         r = Math::computeCramersV(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
                 mpSampleWeights, getSampleCount());
     else if (A_is_survival_event && B_is_continuous)
-        r = Math::computeConcordanceIndexWithTime(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
-                &(mpDataMatrix->at(0, i + 1)), mpSampleWeights, mpSampleIndicesPerStratum,
-                mpSampleCountPerStratum, mSampleStratumCount, true);
+        r = Math::computeConcordanceIndexWithTime(&(mpDataMatrix->at(0, i)),
+                &(mpDataMatrix->at(0, j)), &(mpDataMatrix->at(0, i + 1)), mpSampleWeights,
+                mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount, true);
     else if (A_is_continuous && B_is_survival_event)
-        r = Math::computeConcordanceIndexWithTime(&(mpDataMatrix->at(0, j)), &(mpDataMatrix->at(0, i)),
-                &(mpDataMatrix->at(0, j + 1)), mpSampleWeights, mpSampleIndicesPerStratum,
-                mpSampleCountPerStratum, mSampleStratumCount, true);
+        r = Math::computeConcordanceIndexWithTime(&(mpDataMatrix->at(0, j)),
+                &(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j + 1)), mpSampleWeights,
+                mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount, true);
 
     return Math::computeMi(r);
 }
