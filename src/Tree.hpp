@@ -23,7 +23,7 @@ private:
     std::vector<float> mScores;
 
 public:
-    Tree(std::vector<unsigned int>* const pChildrenCountPerLevel,
+    Tree(unsigned int const* const pChildrenCountPerLevel, unsigned int const levelCount,
             Matrix const* const pFeatureInformationMatrix, unsigned int const targetFeatureIndex);
 
     ~Tree();

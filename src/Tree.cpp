@@ -1,9 +1,8 @@
 #include "Tree.hpp"
 
-Tree::Tree(std::vector<unsigned int>* const pChildrenCountPerLevel,
+Tree::Tree(unsigned int const* const pChildrenCountPerLevel, unsigned int const levelCount,
         Matrix const* const pFeatureInformationMatrix, unsigned int const targetFeatureIndex) :
-        mpChildrenCountPerLevel(&((*pChildrenCountPerLevel)[0])), mLevelCount(
-                pChildrenCountPerLevel->size()), mpFeatureInformationMatrix(
+        mpChildrenCountPerLevel(pChildrenCountPerLevel), mLevelCount(levelCount), mpFeatureInformationMatrix(
                 pFeatureInformationMatrix), mpStartingIndexPerLevel(
                 new unsigned int[mLevelCount + 1])
 {
@@ -56,7 +55,8 @@ Tree::build()
     }
 
     // Prepare output
-    unsigned int const size = mLevelCount * (mTreeElementCount - mpStartingIndexPerLevel[mLevelCount]);
+    unsigned int const size = mLevelCount
+            * (mTreeElementCount - mpStartingIndexPerLevel[mLevelCount]);
     mPaths.reserve(size);
     mScores.reserve(size);
 
