@@ -35,5 +35,5 @@
                 as.integer(target_feature_index) - 1)
     }
     
-    return(mRMR_tree(paths=wrap(mRMR_tree$paths) + 1, scores=wrap(mRMR_tree$scores)))
+    return(mRMR_tree(paths=wrap(tree$paths) + 1, scores=wrap(tree$scores)))
 }
