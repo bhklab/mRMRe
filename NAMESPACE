@@ -1,3 +1,2 @@
-useDynLib(ensemble, build_mim, filter_mRMR_with_data, filter_mRMR_with_mim)
+useDynLib(ensemble, build_mim, filter_mRMR_with_data, filter_mRMR_with_mim, .fixes="C_")
 export(build.mim, filter.mRMR)
-# exportPattern("^[[:alpha:]]+")
