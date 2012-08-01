@@ -22,7 +22,7 @@ build_mim(SEXP R_DataMatrix, SEXP R_SampleStrata, SEXP R_SampleWeights, SEXP R_F
 }
 
 extern "C" SEXP
-filter_mRMR_with_data(SEXP R_ChildrenCountPerLevel, SEXP R_DataMatrix, SEXP R_SampleStrata,
+build_mRMR_tree_from_data(SEXP R_ChildrenCountPerLevel, SEXP R_DataMatrix, SEXP R_SampleStrata,
         SEXP R_SampleWeights, SEXP R_FeatureTypes, SEXP R_SampleCount, SEXP R_FeatureCount,
         SEXP R_SampleStratumCount, SEXP R_TargetFeatureIndex)
 {
@@ -52,7 +52,7 @@ filter_mRMR_with_data(SEXP R_ChildrenCountPerLevel, SEXP R_DataMatrix, SEXP R_Sa
 }
 
 extern "C" SEXP
-filter_mRMR_with_mim(SEXP R_ChildrenCountPerLevel, SEXP R_MiMatrix, SEXP R_FeatureCount,
+build_mRMR_tree_from_mim(SEXP R_ChildrenCountPerLevel, SEXP R_MiMatrix, SEXP R_FeatureCount,
         SEXP R_TargetFeatureIndex)
 {
     std::vector<unsigned int> S_ChildrenCountPerLevel = Rcpp::as < std::vector<unsigned int>
