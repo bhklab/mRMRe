@@ -1,2 +1,4 @@
-useDynLib(ensemble, build_mim, build_mRMR_tree_from_data, build_mRMR_tree_from_mim, .fixes="C_")
-export(build.mim, filter.mRMR)
+useDynLib(ensemble, .fixes="C_",
+    build_mim, build_mRMR_tree_from_data, build_mRMR_tree_from_mim)
+export(build.mim,
+    mRMR_tree, filter.mRMR_tree)
