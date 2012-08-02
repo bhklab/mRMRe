@@ -69,7 +69,6 @@ Math::computeConcordanceIndex(float const* const pDiscreteSamples,
                     else
                         discordant_weight += pair_weight;
                 }
-
             }
         }
     }
@@ -157,9 +156,9 @@ Math::computeCramersV(float const* const pSamplesX, float const* const pSamplesY
 
     for (unsigned int i = 0; i < sampleStratumCount; ++i)
     {
-        r += pTotalWeightPerStratum[i]
-                * computeCramersV(pSamplesX, pSamplesY, pSampleWeights, pSampleIndicesPerStratum[i],
-                        pSampleCountPerStratum[i]);
+        float const correlation = computeCramersV(pSamplesX, pSamplesY, pSampleWeights,
+                pSampleIndicesPerStratum[i], pSampleCountPerStratum[i]);
+        r += pTotalWeightPerStratum[i] * correlation;
         total_weight += pTotalWeightPerStratum[i];
     }
 
@@ -252,9 +251,9 @@ Math::computePearsonCorrelation(float const* const pSamplesX, float const* const
 
     for (unsigned int i = 0; i < sampleStratumCount; ++i)
     {
-        r += pTotalWeightPerStratum[i]
-                * computePearsonCorrelation(pSamplesX, pSamplesY, pSampleWeights,
-                        pSampleIndicesPerStratum[i], pSampleCountPerStratum[i]);
+        float const correlation = computePearsonCorrelation(pSamplesX, pSamplesY, pSampleWeights,
+                pSampleIndicesPerStratum[i], pSampleCountPerStratum[i]);
+        r += pTotalWeightPerStratum[i] * correlation;
         total_weight += pTotalWeightPerStratum[i];
     }
 

@@ -1,5 +1,6 @@
 useDynLib(ensemble, .fixes="C_",
     build_mim, build_mRMR_tree_from_data, build_mRMR_tree_from_mim,
+    compute_concordance_index, compute_concordance_index_with_time,
     compute_cramers_v, compute_pearson_correlation, compute_spearman_correlation)
 export(build.mim, correlate,
     mRMR_tree, filter.mRMR_tree)

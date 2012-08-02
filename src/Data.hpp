@@ -19,6 +19,8 @@ private:
     unsigned int** const mpSampleIndicesPerStratum;
     float* const mpTotalWeightPerStratum;
     unsigned int* const mpSampleCountPerStratum;
+    bool const mUsesRanks;
+    bool const mOutX;
 
 public:
     static unsigned int const FEATURE_CONTINUOUS = 0;
@@ -28,7 +30,8 @@ public:
 
     Data(float* const pData, unsigned int const sampleCount, unsigned int const featureCount,
             unsigned int const* const pSampleStrata, float const* const pSampleWeights,
-            unsigned int const* const pFeatureTypes, unsigned int const sampleStratumCount);
+            unsigned int const* const pFeatureTypes, unsigned int const sampleStratumCount,
+            bool const usesRanks, bool const outX);
 
     ~Data();
 
