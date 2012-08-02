@@ -70,3 +70,84 @@ build_mRMR_tree_from_mim(SEXP R_ChildrenCountPerLevel, SEXP R_MiMatrix, SEXP R_F
             Rcpp::Named("paths") = Rcpp::wrap < std::vector<unsigned int> > (S_Paths),
             Rcpp::Named("scores") = Rcpp::wrap < std::vector<float> > (S_Scores));
 }
+
+extern "C" SEXP
+compute_cramers_v(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_SampleWeights, SEXP R_SampleStrata,
+        SEXP R_SampleStratumCount)
+{
+    std::vector<float> S_SamplesX = Rcpp::as < std::vector<float> > (R_SamplesX);
+    std::vector<float> S_SamplesY = Rcpp::as < std::vector<float> > (R_SamplesY);
+    std::vector<float> S_SampleWeights = Rcpp::as < std::vector<float> > (R_SampleWeights);
+    std::vector<unsigned int> S_SampleStrata = Rcpp::as < std::vector<unsigned int>
+            > (R_SampleStrata);
+    unsigned int const sample_stratum_count = Rcpp::as<unsigned int>(R_SampleStratumCount);
+    unsigned int const sample_count = S_SamplesX.size();
+    unsigned int* p_sample_indices_per_stratum[sample_stratum_count];
+    float p_total_weight_per_stratum[sample_stratum_count];
+    unsigned int p_sample_count_per_stratum[sample_stratum_count];
+    Math::placeStratificationData(&S_SampleStrata[0], &S_SampleWeights[0],
+            p_sample_indices_per_stratum, p_total_weight_per_stratum, p_sample_count_per_stratum,
+            sample_stratum_count, sample_count);
+    float const r = Math::computeCramersV(&S_SamplesX[0], &S_SamplesY[0], &S_SampleWeights[0],
+            p_sample_indices_per_stratum, p_total_weight_per_stratum, p_sample_count_per_stratum,
+            sample_stratum_count);
+    for (unsigned int i = 0; i < sample_stratum_count; ++i)
+        delete[] p_sample_indices_per_stratum[i];
+    return Rcpp::wrap<float>(r);
+}
+
+extern "C" SEXP
+compute_pearson_correlation(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_SampleWeights,
+        SEXP R_SampleStrata, SEXP R_SampleStratumCount)
+{
+    std::vector<float> S_SamplesX = Rcpp::as < std::vector<float> > (R_SamplesX);
+    std::vector<float> S_SamplesY = Rcpp::as < std::vector<float> > (R_SamplesY);
+    std::vector<float> S_SampleWeights = Rcpp::as < std::vector<float> > (R_SampleWeights);
+    std::vector<unsigned int> S_SampleStrata = Rcpp::as < std::vector<unsigned int>
+            > (R_SampleStrata);
+    unsigned int const sample_stratum_count = Rcpp::as<unsigned int>(R_SampleStratumCount);
+    unsigned int const sample_count = S_SamplesX.size();
+    unsigned int* p_sample_indices_per_stratum[sample_stratum_count];
+    float p_total_weight_per_stratum[sample_stratum_count];
+    unsigned int p_sample_count_per_stratum[sample_stratum_count];
+    Math::placeStratificationData(&S_SampleStrata[0], &S_SampleWeights[0],
+            p_sample_indices_per_stratum, p_total_weight_per_stratum, p_sample_count_per_stratum,
+            sample_stratum_count, sample_count);
+    float const r = Math::computePearsonCorrelation(&S_SamplesX[0], &S_SamplesY[0],
+            &S_SampleWeights[0], p_sample_indices_per_stratum, p_total_weight_per_stratum,
+            p_sample_count_per_stratum, sample_stratum_count);
+    for (unsigned int i = 0; i < sample_stratum_count; ++i)
+        delete[] p_sample_indices_per_stratum[i];
+    return Rcpp::wrap<float>(r);
+}
+
+extern "C" SEXP
+compute_spearman_correlation(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_SampleWeights,
+        SEXP R_SampleStrata, SEXP R_SampleStratumCount)
+{
+    std::vector<float> S_SamplesX = Rcpp::as < std::vector<float> > (R_SamplesX);
+    std::vector<float> S_SamplesY = Rcpp::as < std::vector<float> > (R_SamplesY);
+    std::vector<float> S_SampleWeights = Rcpp::as < std::vector<float> > (R_SampleWeights);
+    std::vector<unsigned int> S_SampleStrata = Rcpp::as < std::vector<unsigned int>
+            > (R_SampleStrata);
+    unsigned int const sample_stratum_count = Rcpp::as<unsigned int>(R_SampleStratumCount);
+    unsigned int const sample_count = S_SamplesX.size();
+    unsigned int* p_sample_indices_per_stratum[sample_stratum_count];
+    float p_total_weight_per_stratum[sample_stratum_count];
+    unsigned int p_sample_count_per_stratum[sample_stratum_count];
+    Math::placeStratificationData(&S_SampleStrata[0], &S_SampleWeights[0],
+            p_sample_indices_per_stratum, p_total_weight_per_stratum, p_sample_count_per_stratum,
+            sample_stratum_count, sample_count);
+    float p_ranked_samples_x[sample_count];
+    float p_ranked_samples_y[sample_count];
+    Math::placeRanksByFeatureIndex(&S_SamplesX[0], p_ranked_samples_x, p_sample_indices_per_stratum,
+            p_sample_count_per_stratum, sample_stratum_count);
+    Math::placeRanksByFeatureIndex(&S_SamplesY[0], p_ranked_samples_y, p_sample_indices_per_stratum,
+            p_sample_count_per_stratum, sample_stratum_count);
+    float const r = Math::computePearsonCorrelation(p_ranked_samples_x, p_ranked_samples_y,
+            &S_SampleWeights[0], p_sample_indices_per_stratum, p_total_weight_per_stratum,
+            p_sample_count_per_stratum, sample_stratum_count);
+    for (unsigned int i = 0; i < sample_stratum_count; ++i)
+        delete[] p_sample_indices_per_stratum[i];
+    return Rcpp::wrap<float>(r);
+}

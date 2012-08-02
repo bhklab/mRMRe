@@ -4,6 +4,7 @@
 #include <Rcpp.h>
 #include <vector>
 
+#include "Math.hpp"
 #include "MutualInformationMatrix.hpp"
 #include "Tree.hpp"
 
@@ -19,5 +20,17 @@ build_mRMR_tree_from_data(SEXP R_ChildrenCountPerLevel, SEXP R_DataMatrix, SEXP 
 extern "C" SEXP
 build_mRMR_tree_from_mim(SEXP R_ChildrenCountPerLevel, SEXP R_MiMatrix, SEXP R_FeatureCount,
         SEXP R_TargetFeatureIndex);
+
+extern "C" SEXP
+compute_cramers_v(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_SampleWeights, SEXP R_SampleStrata,
+        SEXP R_SampleStratumCount);
+
+extern "C" SEXP
+compute_pearson_correlation(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_SampleWeights,
+        SEXP R_SampleStrata, SEXP R_SampleStratumCount);
+
+extern "C" SEXP
+compute_spearman_correlation(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_SampleWeights,
+        SEXP R_SampleStrata, SEXP R_SampleStratumCount);
 
 #endif /* ensemble_exports_hpp */
