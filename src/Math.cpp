@@ -318,3 +318,31 @@ Math::placeRanksByFeatureIndex(float const* const pSamples, float* const pRanks,
             pRanks[p_sample_indices[p_order[j]]] = j;
     }
 }
+
+/* static */void const
+Math::placeStratificationData(unsigned int const* const pSampleStrata,
+        float const* const pSampleWeights, unsigned int** const pSampleIndicesPerStratum,
+        float* const pTotalWeightPerStratum, unsigned int* const pSampleCountPerStratum,
+        unsigned int const sampleStratumCount, unsigned int const sampleCount)
+{
+    unsigned int p_iterator_per_stratum[sampleStratumCount];
+    for (unsigned int i = 0; i < sampleStratumCount; ++i)
+    {
+        pTotalWeightPerStratum[i] = 0.;
+        p_iterator_per_stratum[i] = 0;
+        pSampleCountPerStratum[i] = 0;
+    }
+
+    for (unsigned int i = 0; i < sampleCount; ++i)
+        ++pSampleCountPerStratum[pSampleStrata[i]];
+
+    for (unsigned int i = 0; i < sampleStratumCount; ++i)
+        pSampleIndicesPerStratum[i] = new unsigned int[pSampleCountPerStratum[i]];
+
+    for (unsigned int i = 0; i < sampleCount; ++i)
+    {
+        unsigned int const p_sample_stratum = pSampleStrata[i];
+        pSampleIndicesPerStratum[p_sample_stratum][p_iterator_per_stratum[p_sample_stratum]++] = i;
+        pTotalWeightPerStratum[p_sample_stratum] += pSampleWeights[i];
+    }
+}

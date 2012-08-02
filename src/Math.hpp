@@ -81,6 +81,12 @@ public:
             unsigned int const* const * const pSampleIndicesPerStratum,
             unsigned int const* const pSampleCountPerStratum,
             unsigned int const sampleStratumCount);
+
+    static void const
+    placeStratificationData(unsigned int const* const pSampleStrata,
+            float const* const pSampleWeights, unsigned int** const pSampleIndicesPerStratum,
+            float* const pTotalWeightPerStratum, unsigned int* const pSampleCountPerStratum,
+            unsigned int const sampleStratumCount, unsigned int const sampleCount);
 };
 
 #endif /* ensemble_Math_hpp */

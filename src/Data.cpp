@@ -15,26 +15,8 @@ Data::Data(float* const pData, unsigned int const sampleCount, unsigned int cons
     for (unsigned int i = 0; i < mpDataMatrix->getColumnCount(); ++i)
         mpHasFeatureRanksCached[i] = false;
 
-    unsigned int p_iterator_per_stratum[mSampleStratumCount];
-    for (unsigned int i = 0; i < mSampleStratumCount; ++i)
-    {
-        mpTotalWeightPerStratum[i] = 0.;
-        p_iterator_per_stratum[i] = 0;
-        mpSampleCountPerStratum[i] = 0;
-    }
-
-    for (unsigned int i = 0; i < mpDataMatrix->getRowCount(); ++i)
-        ++mpSampleCountPerStratum[mpSampleStrata[i]];
-
-    for (unsigned int i = 0; i < mSampleStratumCount; ++i)
-        mpSampleIndicesPerStratum[i] = new unsigned int[mpSampleCountPerStratum[i]];
-
-    for (unsigned int i = 0; i < mpDataMatrix->getRowCount(); ++i)
-    {
-        unsigned int const p_sample_stratum = mpSampleStrata[i];
-        mpSampleIndicesPerStratum[p_sample_stratum][p_iterator_per_stratum[p_sample_stratum]++] = i;
-        mpTotalWeightPerStratum[p_sample_stratum] += pSampleWeights[i];
-    }
+    Math::placeStratificationData(mpSampleStrata, mpSampleWeights, mpSampleIndicesPerStratum,
+            mpTotalWeightPerStratum, mpSampleCountPerStratum, mSampleStratumCount, sampleCount);
 }
 
 Data::~Data()
