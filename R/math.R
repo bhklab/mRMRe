@@ -20,7 +20,7 @@
     return(mi_matrix)
 }
 
-`correlate` <- function(x, y, strata=NULL, weights=NULL, method=c("cramer", "pearson", "spearman"))
+`correlate` <- function(x, y, strata=NULL, weights=NULL, method=c("c-index" ,"cramer", "pearson", "spearman"))
 {
     x <- as.vector(x)
     y <- as.vector(y)
@@ -44,6 +44,10 @@
         value <- .Call(C_compute_pearson_correlation, x, y, weights, strata, stratum_count)
     else if (method == "spearman")
         value <- .Call(C_compute_spearman_correlation, x, y, weights, strata, stratum_count)
+	else if (method == "c-index")
+		value <- .Call(C_compute_concordance_index, x, y, weights, strata, stratum_count)
+	else
+		message("Invalid method specified")
     
     return(value)
 }
