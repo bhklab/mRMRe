@@ -72,22 +72,24 @@ build_mRMR_tree_from_mim(SEXP R_ChildrenCountPerLevel, SEXP R_MiMatrix, SEXP R_F
 }
 
 extern "C" SEXP
-compute_concordance_index(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_SampleStrata,
-        SEXP R_SampleWeights, SEXP R_SampleIndicesPerStratum, SEXP R_outX)
+compute_concordance_index(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_SampleWeights,
+        SEXP R_SampleIndicesPerStratum, SEXP R_SampleCountPerStratum, SEXP R_outX)
 {
-    std::vector<float> S_SamplesX = Rcpp::as < std::vector<float> > (R_SamplesX);
-    std::vector<float> S_SamplesY = Rcpp::as < std::vector<float> > (R_SamplesY);
-    std::vector<float> S_SampleWeights = Rcpp::as < std::vector<float> > (R_SampleWeights);
+    const std::vector<float> S_SamplesX = Rcpp::as < std::vector<float> > (R_SamplesX);
+    const std::vector<float> S_SamplesY = Rcpp::as < std::vector<float> > (R_SamplesY);
+    const std::vector<float> S_SampleWeights = Rcpp::as < std::vector<float> > (R_SampleWeights);
 
-    std::vector<unsigned int> S_SampleStrata = Rcpp::as < std::vector<unsigned int>
-            > (R_SampleStrata);
-    std::vector<std::vector<unsigned int>> S_SampleIndicesPerStratum = Rcpp::as < std::vector
-            < std::vector<unsigned int> >> (R_SampleIndicesPerStratum);
+    const std::vector<unsigned int> S_SampleCountPerStratum = Rcpp::as < std::vector<unsigned int>
+            > (R_SampleCountPerStratum);
+    const std::vector<unsigned int> S_SampleIndicesPerStratum = Rcpp::as < std::vector<unsigned int>
+            > (R_SampleIndicesPerStratum);
+    unsigned int S_SampleStrataCount = S_SampleIndicesPerStratum.size();
 
     bool S_outX = Rcpp::as<bool>(R_outX);
 
     return Rcpp::wrap<float>(
-            computeConcordanceIndex(&S_SamplesX[0], &S_SamplesY[0], &S_SampleWeights[0],
-                    &S_SampleStratum[0], &S_SampleIndicesPerStratum, S_outX));
+            Math::computeConcordanceIndex(&S_SamplesX[0], &S_SamplesY[0], &S_SampleWeights[0],
+                    &S_SampleIndicesPerStratum[0], &S_SampleCountPerStratum[0], S_SampleStrataCount,
+                    S_outX));
 }
 
