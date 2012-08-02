@@ -20,4 +20,8 @@ extern "C" SEXP
 build_mRMR_tree_from_mim(SEXP R_ChildrenCountPerLevel, SEXP R_MiMatrix, SEXP R_FeatureCount,
         SEXP R_TargetFeatureIndex);
 
+extern "C" SEXP
+compute_concordance_index(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_SampleStrata,
+        SEXP R_SampleWeights, SEXP R_SampleIndicesPerStratum, SEXP R_outX);
+
 #endif /* ensemble_exports_hpp */

@@ -70,3 +70,24 @@ build_mRMR_tree_from_mim(SEXP R_ChildrenCountPerLevel, SEXP R_MiMatrix, SEXP R_F
             Rcpp::Named("paths") = Rcpp::wrap < std::vector<unsigned int> > (S_Paths),
             Rcpp::Named("scores") = Rcpp::wrap < std::vector<float> > (S_Scores));
 }
+
+extern "C" SEXP
+compute_concordance_index(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_SampleStrata,
+        SEXP R_SampleWeights, SEXP R_SampleIndicesPerStratum, SEXP R_outX)
+{
+    std::vector<float> S_SamplesX = Rcpp::as < std::vector<float> > (R_SamplesX);
+    std::vector<float> S_SamplesY = Rcpp::as < std::vector<float> > (R_SamplesY);
+    std::vector<float> S_SampleWeights = Rcpp::as < std::vector<float> > (R_SampleWeights);
+
+    std::vector<unsigned int> S_SampleStrata = Rcpp::as < std::vector<unsigned int>
+            > (R_SampleStrata);
+    std::vector<std::vector<unsigned int>> S_SampleIndicesPerStratum = Rcpp::as < std::vector
+            < std::vector<unsigned int> >> (R_SampleIndicesPerStratum);
+
+    bool S_outX = Rcpp::as<bool>(R_outX);
+
+    return Rcpp::wrap<float>(
+            computeConcordanceIndex(&S_SamplesX[0], &S_SamplesY[0], &S_SampleWeights[0],
+                    &S_SampleStratum[0], &S_SampleIndicesPerStratum, S_outX));
+}
+
