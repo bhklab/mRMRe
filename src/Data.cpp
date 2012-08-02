@@ -2,15 +2,16 @@
 
 Data::Data(float* const pData, unsigned int const sampleCount, unsigned int const featureCount,
         unsigned int const* const pSampleStrata, float const* const pSampleWeights,
-        unsigned int const* const pFeatureTypes, unsigned int const sampleStratumCount) :
+        unsigned int const* const pFeatureTypes, unsigned int const sampleStratumCount,
+        bool const usesRanks, bool const outX) :
         mpDataMatrix(new Matrix(pData, sampleCount, featureCount)), mpRankedDataMatrix(
-                new Matrix(sampleCount, featureCount)), mpHasFeatureRanksCached(
+                usesRanks ? new Matrix(sampleCount, featureCount) : 0), mpHasFeatureRanksCached(
                 new bool[mpDataMatrix->getColumnCount()]), mpSampleStrata(pSampleStrata), mpSampleWeights(
                 pSampleWeights), mpFeatureTypes(pFeatureTypes), mSampleStratumCount(
                 sampleStratumCount), mpSampleIndicesPerStratum(
                 new unsigned int*[sampleStratumCount]), mpTotalWeightPerStratum(
                 new float[sampleStratumCount]), mpSampleCountPerStratum(
-                new unsigned int[sampleStratumCount])
+                new unsigned int[sampleStratumCount]), mUsesRanks(usesRanks), mOutX(outX)
 {
     for (unsigned int i = 0; i < mpDataMatrix->getColumnCount(); ++i)
         mpHasFeatureRanksCached[i] = false;
@@ -22,7 +23,8 @@ Data::Data(float* const pData, unsigned int const sampleCount, unsigned int cons
 Data::~Data()
 {
     delete mpDataMatrix;
-    delete mpRankedDataMatrix;
+    if (mpRankedDataMatrix)
+        delete mpRankedDataMatrix;
     delete[] mpHasFeatureRanksCached;
     for (unsigned int i = 0; i < mSampleStratumCount; ++i)
         delete[] mpSampleIndicesPerStratum[i];
@@ -61,11 +63,11 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j) const
     else if (A_is_survival_event && B_is_continuous)
         r = Math::computeConcordanceIndexWithTime(&(mpDataMatrix->at(0, i)),
                 &(mpDataMatrix->at(0, j)), &(mpDataMatrix->at(0, i + 1)), mpSampleWeights,
-                mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount, true);
+                mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount, mOutX);
     else if (A_is_continuous && B_is_survival_event)
         r = Math::computeConcordanceIndexWithTime(&(mpDataMatrix->at(0, j)),
                 &(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j + 1)), mpSampleWeights,
-                mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount, true);
+                mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount, mOutX);
 
     return Math::computeMi(r);
 }
@@ -73,23 +75,32 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j) const
 float const
 Data::computeCorrelationBetweenContinuousFeatures(unsigned int const i, unsigned int const j) const
 {
-    if (!mpHasFeatureRanksCached[i])
+    if (mUsesRanks)
     {
-        Math::placeRanksByFeatureIndex(&(mpDataMatrix->at(0, i)), &(mpRankedDataMatrix->at(0, i)),
-                mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount);
-        mpHasFeatureRanksCached[i] = true;
-    }
+        if (!mpHasFeatureRanksCached[i])
+        {
+            Math::placeRanksByFeatureIndex(&(mpDataMatrix->at(0, i)),
+                    &(mpRankedDataMatrix->at(0, i)), mpSampleIndicesPerStratum,
+                    mpSampleCountPerStratum, mSampleStratumCount);
+            mpHasFeatureRanksCached[i] = true;
+        }
 
-    if (!mpHasFeatureRanksCached[j])
-    {
-        Math::placeRanksByFeatureIndex(&(mpDataMatrix->at(0, j)), &(mpRankedDataMatrix->at(0, j)),
-                mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount);
-        mpHasFeatureRanksCached[j] = true;
-    }
+        if (!mpHasFeatureRanksCached[j])
+        {
+            Math::placeRanksByFeatureIndex(&(mpDataMatrix->at(0, j)),
+                    &(mpRankedDataMatrix->at(0, j)), mpSampleIndicesPerStratum,
+                    mpSampleCountPerStratum, mSampleStratumCount);
+            mpHasFeatureRanksCached[j] = true;
+        }
 
-    return Math::computePearsonCorrelation(&(mpRankedDataMatrix->at(0, i)),
-            &(mpRankedDataMatrix->at(0, j)), mpSampleWeights, mpSampleIndicesPerStratum,
-            mpTotalWeightPerStratum, mpSampleCountPerStratum, mSampleStratumCount);
+        return Math::computePearsonCorrelation(&(mpRankedDataMatrix->at(0, i)),
+                &(mpRankedDataMatrix->at(0, j)), mpSampleWeights, mpSampleIndicesPerStratum,
+                mpTotalWeightPerStratum, mpSampleCountPerStratum, mSampleStratumCount);
+    }
+    else
+        return Math::computePearsonCorrelation(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
+                mpSampleWeights, mpSampleIndicesPerStratum, mpTotalWeightPerStratum,
+                mpSampleCountPerStratum, mSampleStratumCount);
 }
 
 unsigned int const

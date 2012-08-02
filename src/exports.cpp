@@ -2,7 +2,8 @@
 
 extern "C" SEXP
 build_mim(SEXP R_DataMatrix, SEXP R_SampleStrata, SEXP R_SampleWeights, SEXP R_FeatureTypes,
-        SEXP R_SampleCount, SEXP R_FeatureCount, SEXP R_SampleStratumCount)
+        SEXP R_SampleCount, SEXP R_FeatureCount, SEXP R_SampleStratumCount, SEXP R_UsesRanks,
+        SEXP R_OutX)
 {
     std::vector<float> S_DataMatrix = Rcpp::as < std::vector<float> > (R_DataMatrix);
     std::vector<unsigned int> S_SampleStrata = Rcpp::as < std::vector<unsigned int>
@@ -13,8 +14,10 @@ build_mim(SEXP R_DataMatrix, SEXP R_SampleStrata, SEXP R_SampleWeights, SEXP R_F
     unsigned int const sample_count = Rcpp::as<unsigned int>(R_SampleCount);
     unsigned int const feature_count = Rcpp::as<unsigned int>(R_FeatureCount);
     unsigned int const sample_stratum_count = Rcpp::as<unsigned int>(R_SampleStratumCount);
+    bool const uses_ranks = Rcpp::as<bool>(R_UsesRanks);
+    bool const outX = Rcpp::as<bool>(R_OutX);
     Data data(&S_DataMatrix[0], sample_count, feature_count, &S_SampleStrata[0],
-            &S_SampleWeights[0], &S_FeatureTypes[0], sample_stratum_count);
+            &S_SampleWeights[0], &S_FeatureTypes[0], sample_stratum_count, uses_ranks, outX);
     MutualInformationMatrix mi_matrix(&data);
     mi_matrix.build();
     std::vector<float> S_MiMatrix = mi_matrix.getVectorizedData();
@@ -24,7 +27,7 @@ build_mim(SEXP R_DataMatrix, SEXP R_SampleStrata, SEXP R_SampleWeights, SEXP R_F
 extern "C" SEXP
 build_mRMR_tree_from_data(SEXP R_ChildrenCountPerLevel, SEXP R_DataMatrix, SEXP R_SampleStrata,
         SEXP R_SampleWeights, SEXP R_FeatureTypes, SEXP R_SampleCount, SEXP R_FeatureCount,
-        SEXP R_SampleStratumCount, SEXP R_TargetFeatureIndex)
+        SEXP R_SampleStratumCount, SEXP R_TargetFeatureIndex, SEXP R_UsesRanks, SEXP R_OutX)
 {
     std::vector<unsigned int> S_ChildrenCountPerLevel = Rcpp::as < std::vector<unsigned int>
             > (R_ChildrenCountPerLevel);
@@ -37,8 +40,10 @@ build_mRMR_tree_from_data(SEXP R_ChildrenCountPerLevel, SEXP R_DataMatrix, SEXP 
     unsigned int const sample_count = Rcpp::as<unsigned int>(R_SampleCount);
     unsigned int const feature_count = Rcpp::as<unsigned int>(R_FeatureCount);
     unsigned int const sample_stratum_count = Rcpp::as<unsigned int>(R_SampleStratumCount);
+    bool const uses_ranks = Rcpp::as<bool>(R_UsesRanks);
+    bool const outX = Rcpp::as<bool>(R_OutX);
     Data data(&S_DataMatrix[0], sample_count, feature_count, &S_SampleStrata[0],
-            &S_SampleWeights[0], &S_FeatureTypes[0], sample_stratum_count);
+            &S_SampleWeights[0], &S_FeatureTypes[0], sample_stratum_count, uses_ranks, outX);
     MutualInformationMatrix mi_matrix(&data);
     unsigned int const target_feature_index = Rcpp::as<unsigned int>(R_TargetFeatureIndex);
     Tree mRMR_tree(&S_ChildrenCountPerLevel[0], S_ChildrenCountPerLevel.size(), &mi_matrix,
@@ -73,7 +78,7 @@ build_mRMR_tree_from_mim(SEXP R_ChildrenCountPerLevel, SEXP R_MiMatrix, SEXP R_F
 
 extern "C" SEXP
 compute_concordance_index(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_SampleWeights,
-        SEXP R_SampleStrata, SEXP R_SampleStratumCount, SEXP R_outX)
+        SEXP R_SampleStrata, SEXP R_SampleStratumCount, SEXP R_OutX)
 {
     std::vector<float> S_SamplesX = Rcpp::as < std::vector<float> > (R_SamplesX);
     std::vector<float> S_SamplesY = Rcpp::as < std::vector<float> > (R_SamplesY);
@@ -81,7 +86,7 @@ compute_concordance_index(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_SampleWeights
     std::vector<unsigned int> S_SampleStrata = Rcpp::as < std::vector<unsigned int>
             > (R_SampleStrata);
     unsigned int const sample_stratum_count = Rcpp::as<unsigned int>(R_SampleStratumCount);
-    bool const outX = Rcpp::as<bool>(R_outX);
+    bool const outX = Rcpp::as<bool>(R_OutX);
     unsigned int const sample_count = S_SamplesX.size();
     unsigned int* p_sample_indices_per_stratum[sample_stratum_count];
     float p_total_weight_per_stratum[sample_stratum_count];
@@ -99,7 +104,7 @@ compute_concordance_index(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_SampleWeights
 
 extern "C" SEXP
 compute_concordance_index_with_time(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_Time,
-        SEXP R_SampleWeights, SEXP R_SampleStrata, SEXP R_SampleStratumCount, SEXP R_outX)
+        SEXP R_SampleWeights, SEXP R_SampleStrata, SEXP R_SampleStratumCount, SEXP R_OutX)
 {
     std::vector<float> S_SamplesX = Rcpp::as < std::vector<float> > (R_SamplesX);
     std::vector<float> S_SamplesY = Rcpp::as < std::vector<float> > (R_SamplesY);
@@ -108,7 +113,7 @@ compute_concordance_index_with_time(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_Tim
     std::vector<unsigned int> S_SampleStrata = Rcpp::as < std::vector<unsigned int>
             > (R_SampleStrata);
     unsigned int const sample_stratum_count = Rcpp::as<unsigned int>(R_SampleStratumCount);
-    bool const outX = Rcpp::as<bool>(R_outX);
+    bool const outX = Rcpp::as<bool>(R_OutX);
     unsigned int const sample_count = S_SamplesX.size();
     unsigned int* p_sample_indices_per_stratum[sample_stratum_count];
     float p_total_weight_per_stratum[sample_stratum_count];

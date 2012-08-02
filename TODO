@@ -1,5 +1,2 @@
-1* Control thread #
-2* C-index with continuous variables
-3* Correlation estimator combination (bootstrap)
-4* Export math routines
-5* Grant user capacity to select method to use in correlation
+- Control thread #
+- Correlation estimator combination (bootstrap)

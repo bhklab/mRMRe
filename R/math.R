@@ -1,4 +1,4 @@
-`build.mim` <- function(data, strata=NULL, weights=NULL, feature_types=NULL)
+`build.mim` <- function(data, strata=NULL, weights=NULL, feature_types=NULL, use_ranks=NULL, outX=NULL)
 {
     data <- as.matrix(data)
     
@@ -9,10 +9,17 @@
 		weights <- rep.int(1, nrow(data))
 		
 	if (is.null(feature_types))
-		feature_types <- rep.int(0, ncol(data))	
+		feature_types <- rep.int(0, ncol(data))
+    
+    if (is.null(use_ranks))
+        use_ranks <- TRUE
+    
+    if (is.null(outX))
+        outX <- TRUE
 	
     mi_matrix <- .Call(C_build_mim, as.vector(data), as.vector(strata), as.vector(weights), as.vector(feature_types),
-            as.integer(nrow(data)), as.integer(ncol(data)), as.integer(length(unique(strata))))
+            as.integer(nrow(data)), as.integer(ncol(data)), as.integer(length(unique(strata))), as.integer(use_ranks),
+            as.integer(outX))
     mi_matrix <- matrix(mi_matrix, nrow=ncol(data), ncol=ncol(data))
     rownames(mi_matrix) <- colnames(data)
     colnames(mi_matrix) <- colnames(data)
