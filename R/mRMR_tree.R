@@ -1,11 +1,19 @@
-`mRMR_tree` <- function(paths, scores)
+`mRMR_tree` <- function(
+        paths,
+        scores)
 {
     object <- list(paths=paths, scores=scores)
     class(object) <- "mRMR_tree"
     return(object)
 }
 
-`filter.mRMR_tree` <- function(levels, data=NULL, strata=NULL, weights=NULL, feature_types=NULL, mim=NULL,
+`filter.mRMR_tree` <- function(
+        levels,
+        data=NULL,
+        strata=NULL,
+        weights=NULL,
+        feature_types=NULL,
+        mim=NULL,
         target_feature_index=NULL)
 {
     wrap <- function(i) t(matrix(i[length(i):1], nrow=length(levels), ncol=length(i)/length(levels)))
