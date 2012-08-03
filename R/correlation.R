@@ -3,13 +3,13 @@
         strata=rep.int(0, nrow(data)),
         weights=rep.int(1, nrow(data)),
         feature_types=rep.int(0, ncol(data)),
-        use_ranks=TRUE,
+        uses_ranks=TRUE,
         outX=TRUE)
 {
     data <- as.matrix(data)
     
     mi_matrix <- .Call(C_build_mim, as.vector(data), as.vector(strata), as.vector(weights), as.vector(feature_types),
-            as.integer(nrow(data)), as.integer(ncol(data)), as.integer(length(unique(strata))), as.integer(use_ranks),
+            as.integer(nrow(data)), as.integer(ncol(data)), as.integer(length(unique(strata))), as.integer(uses_ranks),
             as.integer(outX))
     mi_matrix <- matrix(mi_matrix, nrow=ncol(data), ncol=ncol(data))
     rownames(mi_matrix) <- colnames(data)
