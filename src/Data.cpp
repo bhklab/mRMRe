@@ -3,7 +3,7 @@
 Data::Data(float* const pData, unsigned int const sampleCount, unsigned int const featureCount,
         unsigned int const* const pSampleStrata, float const* const pSampleWeights,
         unsigned int const* const pFeatureTypes, unsigned int const sampleStratumCount,
-        bool const usesRanks, bool const outX) :
+        bool const usesRanks, bool const outX, unsigned int const bootstrapCount) :
         mpDataMatrix(new Matrix(pData, sampleCount, featureCount)), mpRankedDataMatrix(
                 usesRanks ? new Matrix(sampleCount, featureCount) : 0), mpHasFeatureRanksCached(
                 new bool[mpDataMatrix->getColumnCount()]), mpSampleStrata(pSampleStrata), mpSampleWeights(
@@ -11,7 +11,8 @@ Data::Data(float* const pData, unsigned int const sampleCount, unsigned int cons
                 sampleStratumCount), mpSampleIndicesPerStratum(
                 new unsigned int*[sampleStratumCount]), mpTotalWeightPerStratum(
                 new float[sampleStratumCount]), mpSampleCountPerStratum(
-                new unsigned int[sampleStratumCount]), mUsesRanks(usesRanks), mOutX(outX)
+                new unsigned int[sampleStratumCount]), mUsesRanks(usesRanks), mOutX(outX), mBootstrapCount(
+                bootstrapCount)
 {
     for (unsigned int i = 0; i < mpDataMatrix->getColumnCount(); ++i)
         mpHasFeatureRanksCached[i] = false;
@@ -49,25 +50,31 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j) const
     if (A_is_continuous && B_is_continuous)
         r = computeCorrelationBetweenContinuousFeatures(i, j);
     else if (A_is_discrete && B_is_continuous)
-        r = Math::computeConcordanceIndex(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
-                mpSampleWeights, mpSampleIndicesPerStratum, mpSampleCountPerStratum,
-                mSampleStratumCount, true);
+        r = Math::computeSomersD(
+                Math::computeConcordanceIndex(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
+                        mpSampleWeights, mpSampleIndicesPerStratum, mpSampleCountPerStratum,
+                        mSampleStratumCount, true));
     else if (A_is_continuous && B_is_discrete)
-        r = Math::computeConcordanceIndex(&(mpDataMatrix->at(0, j)), &(mpDataMatrix->at(0, i)),
-                mpSampleWeights, mpSampleIndicesPerStratum, mpSampleCountPerStratum,
-                mSampleStratumCount, true);
+        r = Math::computeSomersD(
+                Math::computeConcordanceIndex(&(mpDataMatrix->at(0, j)), &(mpDataMatrix->at(0, i)),
+                        mpSampleWeights, mpSampleIndicesPerStratum, mpSampleCountPerStratum,
+                        mSampleStratumCount, true));
     else if (A_is_discrete && B_is_discrete)
         r = Math::computeCramersV(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
                 mpSampleWeights, mpSampleIndicesPerStratum, mpTotalWeightPerStratum,
-                mpSampleCountPerStratum, mSampleStratumCount);
+                mpSampleCountPerStratum, mSampleStratumCount, mBootstrapCount);
     else if (A_is_survival_event && B_is_continuous)
-        r = Math::computeConcordanceIndexWithTime(&(mpDataMatrix->at(0, i)),
-                &(mpDataMatrix->at(0, j)), &(mpDataMatrix->at(0, i + 1)), mpSampleWeights,
-                mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount, mOutX);
+        r = Math::computeSomersD(
+                Math::computeConcordanceIndexWithTime(&(mpDataMatrix->at(0, i)),
+                        &(mpDataMatrix->at(0, j)), &(mpDataMatrix->at(0, i + 1)), mpSampleWeights,
+                        mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount,
+                        mOutX));
     else if (A_is_continuous && B_is_survival_event)
-        r = Math::computeConcordanceIndexWithTime(&(mpDataMatrix->at(0, j)),
-                &(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j + 1)), mpSampleWeights,
-                mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount, mOutX);
+        r = Math::computeSomersD(
+                Math::computeConcordanceIndexWithTime(&(mpDataMatrix->at(0, j)),
+                        &(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j + 1)), mpSampleWeights,
+                        mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount,
+                        mOutX));
 
     return Math::computeMi(r);
 }
@@ -95,12 +102,13 @@ Data::computeCorrelationBetweenContinuousFeatures(unsigned int const i, unsigned
 
         return Math::computePearsonCorrelation(&(mpRankedDataMatrix->at(0, i)),
                 &(mpRankedDataMatrix->at(0, j)), mpSampleWeights, mpSampleIndicesPerStratum,
-                mpTotalWeightPerStratum, mpSampleCountPerStratum, mSampleStratumCount);
+                mpTotalWeightPerStratum, mpSampleCountPerStratum, mSampleStratumCount,
+                mBootstrapCount);
     }
     else
         return Math::computePearsonCorrelation(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
                 mpSampleWeights, mpSampleIndicesPerStratum, mpTotalWeightPerStratum,
-                mpSampleCountPerStratum, mSampleStratumCount);
+                mpSampleCountPerStratum, mSampleStratumCount, mBootstrapCount);
 }
 
 unsigned int const

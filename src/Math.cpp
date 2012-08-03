@@ -149,8 +149,40 @@ Math::computeCramersV(float const* const pSamplesX, float const* const pSamplesY
         float const* const pSampleWeights,
         unsigned int const* const * const pSampleIndicesPerStratum,
         float const* const pTotalWeightPerStratum, unsigned int const* const pSampleCountPerStratum,
-        unsigned int const sampleStratumCount)
+        unsigned int const sampleStratumCount, unsigned int const bootstrapCount)
 {
+    float p_error_per_stratum[sampleStratumCount];
+    float const* p_weight_per_stratum = pTotalWeightPerStratum;
+
+    if (bootstrapCount > 0)
+    {
+        unsigned int seed = 0;
+        Matrix bootstraps(bootstrapCount, sampleStratumCount);
+
+#pragma omp parallel for schedule(dynamic) firstprivate(seed)
+        for (unsigned int i = 0; i < bootstrapCount; ++i)
+        {
+            for (unsigned int j = 0; j < sampleStratumCount; ++j)
+            {
+                unsigned int const sample_count = pSampleCountPerStratum[j];
+                unsigned int p_samples[sample_count];
+
+                for (unsigned int k = 0; k < sample_count; ++k)
+                    p_samples[k] = pSampleIndicesPerStratum[j][rand_r(&seed) % sample_count];
+
+                float const correlation = computeCramersV(pSamplesX, pSamplesY, pSampleWeights,
+                        p_samples, sample_count);
+                bootstraps.at(i, j) = correlation;
+            }
+        }
+
+        for (unsigned int i = 0; i < sampleStratumCount; ++i)
+            p_error_per_stratum[i] = 1.
+                    / Math::computeVariance(&(bootstraps.at(0, i)), bootstrapCount);
+
+        p_weight_per_stratum = p_error_per_stratum;
+    }
+
     float r = 0.;
     float total_weight = 0.;
 
@@ -158,8 +190,8 @@ Math::computeCramersV(float const* const pSamplesX, float const* const pSamplesY
     {
         float const correlation = computeCramersV(pSamplesX, pSamplesY, pSampleWeights,
                 pSampleIndicesPerStratum[i], pSampleCountPerStratum[i]);
-        r += pTotalWeightPerStratum[i] * correlation;
-        total_weight += pTotalWeightPerStratum[i];
+        r += p_weight_per_stratum[i] * correlation;
+        total_weight += p_weight_per_stratum[i];
     }
 
     r /= total_weight;
@@ -185,6 +217,7 @@ Math::computeCramersV(float const* const pSamplesX, float const* const pSamplesY
     }
 
     Matrix contingency_table(x_class_count + 1, y_class_count + 1);
+
     for (unsigned int i = 0; i <= x_class_count; ++i)
         for (unsigned int j = 0; j <= y_class_count; ++j)
             contingency_table.at(i, j) = 0;
@@ -244,8 +277,40 @@ Math::computePearsonCorrelation(float const* const pSamplesX, float const* const
         float const* const pSampleWeights,
         unsigned int const* const * const pSampleIndicesPerStratum,
         float const* const pTotalWeightPerStratum, unsigned int const* const pSampleCountPerStratum,
-        unsigned int const sampleStratumCount)
+        unsigned int const sampleStratumCount, unsigned int const bootstrapCount)
 {
+    float p_error_per_stratum[sampleStratumCount];
+    float const* p_weight_per_stratum = pTotalWeightPerStratum;
+
+    if (bootstrapCount > 0)
+    {
+        unsigned int seed = 0;
+        Matrix bootstraps(bootstrapCount, sampleStratumCount);
+
+#pragma omp parallel for schedule(dynamic) firstprivate(seed)
+        for (unsigned int i = 0; i < bootstrapCount; ++i)
+        {
+            for (unsigned int j = 0; j < sampleStratumCount; ++j)
+            {
+                unsigned int const sample_count = pSampleCountPerStratum[j];
+                unsigned int p_samples[sample_count];
+
+                for (unsigned int k = 0; k < sample_count; ++k)
+                    p_samples[k] = pSampleIndicesPerStratum[j][rand_r(&seed) % sample_count];
+
+                float const correlation = computePearsonCorrelation(pSamplesX, pSamplesY,
+                        pSampleWeights, p_samples, sample_count);
+                bootstraps.at(i, j) = correlation;
+            }
+        }
+
+        for (unsigned int i = 0; i < sampleStratumCount; ++i)
+            p_error_per_stratum[i] = 1.
+                    / Math::computeVariance(&(bootstraps.at(0, i)), bootstrapCount);
+
+        p_weight_per_stratum = p_error_per_stratum;
+    }
+
     float r = 0.;
     float total_weight = 0.;
 
@@ -253,8 +318,8 @@ Math::computePearsonCorrelation(float const* const pSamplesX, float const* const
     {
         float const correlation = computePearsonCorrelation(pSamplesX, pSamplesY, pSampleWeights,
                 pSampleIndicesPerStratum[i], pSampleCountPerStratum[i]);
-        r += pTotalWeightPerStratum[i] * correlation;
-        total_weight += pTotalWeightPerStratum[i];
+        r += p_weight_per_stratum[i] * correlation;
+        total_weight += p_weight_per_stratum[i];
     }
 
     r /= total_weight;
@@ -295,6 +360,32 @@ Math::computePearsonCorrelation(float const* const pSamplesX, float const* const
     return r;
 }
 
+/* static */float const
+Math::computeSomersD(float const c)
+{
+    return (c - 0.5) * 2;
+}
+
+/* static */float const
+Math::computeVariance(float const* const pSamples, unsigned int const sampleCount)
+{
+    if (sampleCount == 0)
+        return 0.;
+
+    float sum_for_mean = pSamples[0];
+    float sum_for_error = 0.;
+
+    for (unsigned int i = 1; i < sampleCount; ++i)
+    {
+        float my_sum = pSamples[i] - sum_for_mean;
+        float my_mean = ((i - 1) * my_sum) / i;
+        sum_for_mean += my_mean;
+        sum_for_error += my_mean * my_sum;
+    }
+
+    return sum_for_error / (sampleCount - 1);
+}
+
 /* static */void const
 Math::placeRanksByFeatureIndex(float const* const pSamples, float* const pRanks,
         unsigned int const* const * const pSampleIndicesPerStratum,
@@ -304,7 +395,6 @@ Math::placeRanksByFeatureIndex(float const* const pSamples, float* const pRanks,
     {
         unsigned int const* const p_sample_indices = pSampleIndicesPerStratum[i];
         unsigned int const sample_count = pSampleCountPerStratum[i];
-
         unsigned int p_order[sample_count];
 
         for (unsigned int j = 0; j < sample_count; ++j)
@@ -325,6 +415,7 @@ Math::placeStratificationData(unsigned int const* const pSampleStrata,
         unsigned int const sampleStratumCount, unsigned int const sampleCount)
 {
     unsigned int p_iterator_per_stratum[sampleStratumCount];
+
     for (unsigned int i = 0; i < sampleStratumCount; ++i)
     {
         pTotalWeightPerStratum[i] = 0.;

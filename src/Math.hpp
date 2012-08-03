@@ -46,8 +46,8 @@ public:
             float const* const pSampleWeights,
             unsigned int const* const * const pSampleIndicesPerStratum,
             float const* const pTotalWeightPerStratum,
-            unsigned int const* const pSampleCountPerStratum,
-            unsigned int const sampleStratumCount);
+            unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
+            unsigned int const bootstrapCount);
 
     static float const
     computeCramersV(float const* const pSamplesX, float const* const pSamplesY,
@@ -68,13 +68,19 @@ public:
             float const* const pSampleWeights,
             unsigned int const* const * const pSampleIndicesPerStratum,
             float const* const pTotalWeightPerStratum,
-            unsigned int const* const pSampleCountPerStratum,
-            unsigned int const sampleStratumCount);
+            unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
+            unsigned int const bootstrapCount);
 
     static float const
     computePearsonCorrelation(float const* const pSamplesX, float const* const pSamplesY,
             float const* const pSampleWeights, unsigned int const* const pSampleIndices,
             unsigned int const sampleCount);
+
+    static float const
+    computeSomersD(float const c);
+
+    static float const
+    computeVariance(float const* const pSamples, unsigned int const sampleCount);
 
     static void const
     placeRanksByFeatureIndex(float const* const pSamples, float* const pRanks,

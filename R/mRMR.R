@@ -16,7 +16,8 @@
         mim=NULL,
         target_feature_index=NULL,
         uses_ranks=TRUE,
-        outX=TRUE)
+        outX=TRUE,
+        bootstrap_count=0)
 {
     levels <- as.vector(levels)
     target_feature_index <- as.integer(target_feature_index) - 1
@@ -25,7 +26,7 @@
     {
         tree <- .Call(C_build_mRMR_tree_from_data, levels, as.vector(data), as.vector(strata), as.vector(weights),
                 as.vector(feature_types), nrow(data), ncol(data), as.integer(length(unique(strata))),
-                target_feature_index, as.integer(uses_ranks), as.integer(outX))
+                target_feature_index, as.integer(uses_ranks), as.integer(outX), as.integer(bootstrap_count))
     }
     else if (is.null(data))
     {
