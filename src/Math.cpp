@@ -154,7 +154,7 @@ Math::computeCramersV(float const* const pSamplesX, float const* const pSamplesY
     float p_error_per_stratum[sampleStratumCount];
     float const* p_weight_per_stratum = pTotalWeightPerStratum;
 
-    if (bootstrapCount > 3)
+    if (bootstrapCount > 3 && sampleStratumCount > 0)
     {
         unsigned int seed = 0;
         Matrix bootstraps(bootstrapCount, sampleStratumCount);
@@ -282,7 +282,7 @@ Math::computePearsonCorrelation(float const* const pSamplesX, float const* const
     float p_error_per_stratum[sampleStratumCount];
     float const* p_weight_per_stratum = pTotalWeightPerStratum;
 
-    if (bootstrapCount > 3)
+    if (bootstrapCount > 3 && sampleStratumCount > 0)
     {
         unsigned int seed = 0;
         Matrix bootstraps(bootstrapCount, sampleStratumCount);
