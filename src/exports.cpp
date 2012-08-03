@@ -209,3 +209,11 @@ compute_spearman_correlation(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_SampleWeig
         delete[] p_sample_indices_per_stratum[i];
     return Rcpp::wrap<float>(r);
 }
+
+extern "C" SEXP
+set_thread_count(SEXP R_ThreadCount)
+{
+    unsigned int const thread_count = Rcpp::as<unsigned int>(R_ThreadCount);
+    omp_set_num_threads(thread_count);
+    return R_NilValue;
+}

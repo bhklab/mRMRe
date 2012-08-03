@@ -7,7 +7,6 @@
         outX=TRUE)
 {
     data <- as.matrix(data)
-    
     mi_matrix <- .Call(C_build_mim, as.vector(data), as.vector(strata), as.vector(weights), as.vector(feature_types),
             as.integer(nrow(data)), as.integer(ncol(data)), as.integer(length(unique(strata))), as.integer(uses_ranks),
             as.integer(outX))
