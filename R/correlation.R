@@ -56,13 +56,17 @@
 		estimator=c("pearson", "spearman", "kendall"))
 {
 	apply(solutions, 1, function(row) {
-				triplets <- combn(row,2)
+				triplets <- rbind(combn(row, 2), target_index)
 				apply(triplets, 2, function(triplet){
-							ij_cor <- cor(data[,triplet[1]], data[,target_index], method=estimator)
-							ik_cor <- cor(data[,triplet[1]], data[,triplet[2]], method=estimator)
-							jk_cor <- cor(data[,triplet[2]], data[,target_index], method=estimator)
-							causality_coefficient <- -1/2 * log(((1 - ij_cor^2) * (1 - ik_cor^2) * (1 - jk_cor^2))
-											/ (1 + 2 * ij_cor * ik_cor * jk_cor - ij_cor^2 - ik_cor^2 - jk_cor^2))
+                            correlation <- cor(data[, triplet], method=estimator)
+							ij_cor <- correlation[1, 2]
+                            ik_cor <- correlation[1, 3]
+							jk_cor <- correlation[2, 3]
+                            ij_cor_sq <- ij_cor ^ 2
+                            ik_cor_sq <- ik_cor ^ 2
+                            jk_cor_sq <- jk_cor ^ 2
+							causality_coefficient <- -1/2 * log(((1 - ij_cor_sq) * (1 - ik_cor_sq) * (1 - jk_cor_sq))
+											/ (1 + 2 * ij_cor * ik_cor * jk_cor - ij_cor_sq - ik_cor_sq - jk_cor_sq))
 			})
 	})
 
