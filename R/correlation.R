@@ -67,6 +67,7 @@
                             jk_cor_sq <- jk_cor^2
 							causality_coefficient <- -1/2 * log(((1 - ij_cor_sq) * (1 - ik_cor_sq) * (1 - jk_cor_sq))
 											/ (1 + 2 * ij_cor * ik_cor * jk_cor - ij_cor_sq - ik_cor_sq - jk_cor_sq))
+
 							print(causality_coefficient)
 						})
 			})
