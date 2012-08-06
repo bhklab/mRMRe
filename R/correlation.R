@@ -48,3 +48,25 @@
     
     return(value)
 }
+
+`compute_causality` <- function(
+		data,
+		target_index,
+		solutions,
+		estimator=c("pearson", "spearman", "kendall"))
+{
+	allcor <- cor(data,method=estimator)
+	apply(solutions, 1, function(row) {
+				triplets <- t(combn(row,2))
+				apply(triplets, 1, function(triplet){
+							temp <- sort(c(triplet, target_index))
+							i <- temp[1]
+							j <- temp[2]
+							k <- temp[3]
+							causality_coefficient <- -1/2 * log(((1 - allcor[i,j]^2) * (1 - allcor[i,k]^2) * (1 - allcor[j,k]^2))
+											/ (1 + 2 * allcor[i,j] * allcor[i,k] * allcor[j,k] - allcor[i,j]^2
+												- allcor[i,k]^2 - allcor[j,k]^2))
+						})
+			})
+
+}
