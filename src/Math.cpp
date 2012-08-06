@@ -156,7 +156,7 @@ Math::computeCramersV(float const* const pSamplesX, float const* const pSamplesY
 
     if (bootstrapCount > 3 && sampleStratumCount > 0)
     {
-        unsigned int seed = 0;
+        unsigned int seed = std::time(NULL);
         Matrix bootstraps(bootstrapCount, sampleStratumCount);
 
 #pragma omp parallel for schedule(dynamic) firstprivate(seed)
@@ -180,7 +180,8 @@ Math::computeCramersV(float const* const pSamplesX, float const* const pSamplesY
             p_error_per_stratum[i] = 1.
                     / Math::computeVariance(&(bootstraps.at(0, i)), bootstrapCount);
 
-        p_weight_per_stratum = p_error_per_stratum;
+        if (p_error_per_stratum[0] != 0.)
+            p_weight_per_stratum = p_error_per_stratum;
     }
 
     float r = 0.;
@@ -284,7 +285,7 @@ Math::computePearsonCorrelation(float const* const pSamplesX, float const* const
 
     if (bootstrapCount > 3 && sampleStratumCount > 0)
     {
-        unsigned int seed = 0;
+        unsigned int seed = std::time(NULL);
         Matrix bootstraps(bootstrapCount, sampleStratumCount);
 
 #pragma omp parallel for schedule(dynamic) firstprivate(seed)
@@ -308,7 +309,8 @@ Math::computePearsonCorrelation(float const* const pSamplesX, float const* const
             p_error_per_stratum[i] = 1.
                     / Math::computeVariance(&(bootstraps.at(0, i)), bootstrapCount);
 
-        p_weight_per_stratum = p_error_per_stratum;
+        if (p_error_per_stratum[0] != 0.)
+            p_weight_per_stratum = p_error_per_stratum;
     }
 
     float r = 0.;
@@ -377,8 +379,8 @@ Math::computeVariance(float const* const pSamples, unsigned int const sampleCoun
 
     for (unsigned int i = 1; i < sampleCount; ++i)
     {
-        float my_sum = pSamples[i] - sum_for_mean;
-        float my_mean = ((i - 1) * my_sum) / i;
+        float const my_sum = pSamples[i] - sum_for_mean;
+        float const my_mean = ((i - 1) * my_sum) / i;
         sum_for_mean += my_mean;
         sum_for_error += my_mean * my_sum;
     }

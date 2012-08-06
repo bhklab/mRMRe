@@ -37,7 +37,10 @@ Data::~Data()
 float const
 Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j) const
 {
-    float r = std::numeric_limits<double>::quiet_NaN();
+    if (i == j)
+        return std::numeric_limits<float>::infinity();
+
+    float r = std::numeric_limits<float>::quiet_NaN();
 
     bool const A_is_continuous = mpFeatureTypes[i] == FEATURE_CONTINUOUS;
     bool const A_is_discrete = mpFeatureTypes[i] == FEATURE_DISCRETE;
