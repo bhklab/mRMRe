@@ -60,12 +60,12 @@
 				triplets <- t(combn(row,2))
 				apply(triplets, 1, function(triplet){
 							temp <- sort(c(triplet, target_index))
-							i <- temp[1]
-							j <- temp[2]
-							k <- temp[3]
-							causality_coefficient <- -1/2 * log(((1 - allcor[i,j]^2) * (1 - allcor[i,k]^2) * (1 - allcor[j,k]^2))
-											/ (1 + 2 * allcor[i,j] * allcor[i,k] * allcor[j,k] - allcor[i,j]^2
-												- allcor[i,k]^2 - allcor[j,k]^2))
+							ij_cor <- allcor[temp[1],temp[2]]
+							ik_cor <- allcor[temp[1],temp[3]]
+							jk_cor <- allcor[temp[2],temp[3]]
+							causality_coefficient <- -1/2 * log(((1 - ij_cor^2) * (1 - ik_cor^2) * (1 - jk_cor^2))
+											/ (1 + 2 * ij_cor * ik_cor * jk_cor - ij_cor^2 - ik_cor^2 - jk_cor^2))
+							print(causality_coefficient)
 						})
 			})
 
