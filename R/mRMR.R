@@ -1,8 +1,9 @@
 `mRMR_tree` <- function(
         paths,
-        scores)
+        scores,
+        target_feature_index)
 {
-    object <- list(paths=paths, scores=scores)
+    object <- list(paths=paths, scores=scores, target_feature_index=target_feature_index)
     class(object) <- "mRMR_tree"
     return(object)
 }
@@ -36,5 +37,5 @@
 
     wrap <- function(i) t(matrix(i[length(i):1], nrow=length(levels), ncol=length(i)/length(levels)))
     
-    return(mRMR_tree(paths=wrap(tree$paths) + 1, scores=wrap(tree$scores)))
+    return(mRMR_tree(paths=wrap(tree$paths) + 1, scores=wrap(tree$scores)), target_feature_index + 1)
 }
