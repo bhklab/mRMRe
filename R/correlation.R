@@ -63,7 +63,7 @@
 							jk_cor <- cor(data[,triplet[2]], data[,target_index], method=estimator)
 							causality_coefficient <- -1/2 * log(((1 - ij_cor^2) * (1 - ik_cor^2) * (1 - jk_cor^2))
 											/ (1 + 2 * ij_cor * ik_cor * jk_cor - ij_cor^2 - ik_cor^2 - jk_cor^2))
-						})
 			})
+	})
 
 }
