@@ -56,6 +56,7 @@
 		estimator=c("pearson", "spearman", "kendall"))
 {
 	allcor <- mat.or.vec(ncol(data), ncol(data))
+	causality_coefficients <- list()
 	apply(solutions, 1, function(row) {
 				triplets <- combn(row,2)
 				apply(triplets, 2, function(triplet){
@@ -79,10 +80,14 @@
 								allcor[target_index, j] <<- r
 								allcor[j, target_index] <<- r
 							}
-							causality_coefficient <- -1/2 * log(((1 - allcor[i, j]^2) * (1 - allcor[i, target_index]^2)
+							causality <- -1/2 * log(((1 - allcor[i, j]^2) * (1 - allcor[i, target_index]^2)
 												* (1 - allcor[j, target_index]^2)) / (1 + 2 * allcor[i, j] * allcor[i, target_index] 
 												* allcor[j, target_index] - allcor[i, j]^2 - allcor[i, target_index]^2 - 
 												allcor[j, target_index]^2))
+							causality_coefficients[i] <<- append(causality_coefficients[i], causality)
+							causality_coefficients[j] <<- append(causality_coefficients[j], causality)
+							print (paste(i, causality_coefficients[i]))
 			})
 	})
+	#return(causality_coefficients)
 }
