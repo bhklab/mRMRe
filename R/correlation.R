@@ -58,7 +58,7 @@
 	allcor <- mat.or.vec(ncol(data), ncol(data))
 	causality_coefficients <- list()
 	apply(solutions, 1, function(row) {
-				triplets <- combn(row,2)
+				triplets <- rbind(combn(row, 2), target_index)
 				apply(triplets, 2, function(triplet){
 							i <- triplet[1]
 							j <- triplet[2]
