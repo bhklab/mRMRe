@@ -57,8 +57,8 @@
 {
 	allcor <- cor(data,method=estimator)
 	apply(solutions, 1, function(row) {
-				triplets <- t(combn(row,2))
-				apply(triplets, 1, function(triplet){
+				triplets <- combn(row,2)
+				apply(triplets, 2, function(triplet){
 							temp <- sort(c(triplet, target_index))
 							ij_cor <- allcor[temp[1],temp[2]]
 							ik_cor <- allcor[temp[1],temp[3]]
