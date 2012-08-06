@@ -57,14 +57,16 @@
 {
 	allcor <- cor(data,method=estimator)
 	apply(solutions, 1, function(row) {
-				triplets <- t(combn(row,2))
-				apply(triplets, 1, function(triplet){
-							temp <- sort(c(triplet, target_index))
+				triplets <- rbind(combn(row, 2), target_index)
+				apply(triplets, 2, function(triplet){
 							ij_cor <- allcor[temp[1],temp[2]]
 							ik_cor <- allcor[temp[1],temp[3]]
 							jk_cor <- allcor[temp[2],temp[3]]
-							causality_coefficient <- -1/2 * log(((1 - ij_cor^2) * (1 - ik_cor^2) * (1 - jk_cor^2))
-											/ (1 + 2 * ij_cor * ik_cor * jk_cor - ij_cor^2 - ik_cor^2 - jk_cor^2))
+                            ij_cor_sq <- ij_cor^2
+                            ik_cor_sq <- ik_cor^2
+                            jk_cor_sq <- jk_cor^2
+							causality_coefficient <- -1/2 * log(((1 - ij_cor_sq) * (1 - ik_cor_sq) * (1 - jk_cor_sq))
+											/ (1 + 2 * ij_cor * ik_cor * jk_cor - ij_cor_sq - ik_cor_sq - jk_cor_sq))
 							print(causality_coefficient)
 						})
 			})
