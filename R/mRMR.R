@@ -29,6 +29,7 @@
         tree <- .Call(C_build_mRMR_tree_from_data, levels, as.vector(data), as.vector(strata), as.vector(weights),
                 as.vector(feature_types), nrow(data), ncol(data), as.integer(length(unique(strata))),
                 target_feature_index, as.integer(uses_ranks), as.integer(outX), as.integer(bootstrap_count))
+		tree$mim <- matrix(tree$mim, ncol=sqrt(length(tree$mim)), nrow=sqrt(length(tree$mim)))
     }
     else if (is.null(data))
     {
@@ -38,6 +39,5 @@
     }
 
     wrap <- function(i) t(matrix(i[length(i):1], nrow=length(levels), ncol=length(i)/length(levels)))
-    tree$mim <- matrix(tree$mim, ncol=sqrt(length(tree$mim)), nrow=sqrt(length(tree$mim)))
     return(mRMR_tree(paths=wrap(tree$paths) + 1, scores=wrap(tree$scores), target_feature_index + 1, tree$mim))
 }
