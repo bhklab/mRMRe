@@ -50,13 +50,12 @@
 }
 	
 `compute_causality` <- function(
-		data,
-		mim,
+		data=NULL,
+		mim=NULL,
 		target_index,
 		solutions,
 		estimator=c("pearson", "spearman", "kendall"))
 {
-browser()
 	if(!is.null(mim))
 		allcor <- as.matrix(mim)
 	else
@@ -98,3 +97,5 @@ browser()
 		})
 	return(causality_coefficients)
 }
+
+
