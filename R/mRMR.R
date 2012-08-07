@@ -38,6 +38,6 @@
     }
 
     wrap <- function(i) t(matrix(i[length(i):1], nrow=length(levels), ncol=length(i)/length(levels)))
-    
+    tree$mim <- matrix(tree$mim, ncol=sqrt(length(tree$mim)), nrow=sqrt(length(tree$mim)))
     return(mRMR_tree(paths=wrap(tree$paths) + 1, scores=wrap(tree$scores), target_feature_index + 1, tree$mim))
 }

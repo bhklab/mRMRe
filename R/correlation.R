@@ -51,12 +51,17 @@
 	
 `compute_causality` <- function(
 		data,
+		mim,
 		target_index,
 		solutions,
 		estimator=c("pearson", "spearman", "kendall"))
 {
-	allcor <- matrix(ncol=ncol(data), nrow=ncol(data))
-	causality_coefficients <- matrix(ncol=ncol(data), nrow=ncol(data))
+browser()
+	if(!is.null(mim))
+		allcor <- as.matrix(mim)
+	else
+		allcor <- matrix(ncol=ncol(data), nrow=ncol(data))
+	causality_coefficients <- matrix(ncol=ncol(allcor), nrow=ncol(allcor))
 	apply(solutions, 1, function(row) {
 				pairs <- combn(row, 2)
 				apply(pairs, 2, function(pair){
