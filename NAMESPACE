@@ -5,4 +5,5 @@ useDynLib(ensemble, .fixes="C_",
     set_thread_count)
 export(build.mim, correlate,
     mRMR_tree, filter.mRMR_tree,
-    set_thread_count)
+    set_thread_count,
+    compute_causality)
