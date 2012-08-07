@@ -30,6 +30,8 @@
                 as.vector(feature_types), nrow(data), ncol(data), as.integer(length(unique(strata))),
                 target_feature_index, as.integer(uses_ranks), as.integer(outX), as.integer(bootstrap_count))
 		tree$mim <- matrix(tree$mim, ncol=sqrt(length(tree$mim)), nrow=sqrt(length(tree$mim)))
+        rownames(tree$mim) <- colnames(data)
+        colnames(tree$mim) <- colnames(data)
     }
     else if (is.null(data))
     {
