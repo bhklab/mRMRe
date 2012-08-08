@@ -81,7 +81,7 @@ metric <- apply(drug_map, 1, function(drug)
             model <- glmnet::glmnet(x=training_set[,-1], y=training_set[,1], alpha=best_params[1], lambda=best_params[2])
             p <- predict(object=model, newx=test_data, type="response")[, 1]
          }
-         r <- cor(test_labels, p[common_indices]) #, method="spearman")
+         r <- cor(test_labels, p[common_indices], use="complete.obs") #, method="spearman")
          message(paste(drug[[1]], method, r, sep="\t"))
          return(p)
      })
@@ -112,3 +112,8 @@ interpret <- function(cmethod, prefix)
     dev.off()
     return(graph)
 }
+
+lapply(c("pearson", "spearman", "kendall", "cindex"), function(cmethod)
+{
+    interpret(cmethod, "IV")
+})
