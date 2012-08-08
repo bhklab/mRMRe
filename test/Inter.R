@@ -20,13 +20,12 @@ metric <- apply(drug_map, 1, function(drug)
     training_set <- cbind(training_labels, training_data)[indices, , drop=FALSE]
     colnames(training_set)[1] <- drug[[2]]
     tree <- ensemble::filter.mRMR_tree(levels=c(2,2,2,2,2), data=training_set, uses_ranks=TRUE, target_feature_index=1)
-    predictions <- mclapply(methods, mc.preschedule=TRUE, mc.cores=5, mc.cleanup=TRUE, function(method)
+    predictions <- mclapply(methods, mc.preschedule=TRUE, mc.cores=length(methods), mc.cleanup=TRUE, function(method)
     {
-        message(paste(drug[[1]], method, sep="\t"))
         p <- NULL
         if (method == "SINGLEGENE")
         {
-            formula <- as.formula(paste(colnames(training_labels)[[1]], "~", colnames(training_data)[tree$paths[1, 1] - 1], collapse= " + "))
+            formula <- as.formula(paste(colnames(training_labels)[[1]], "~", colnames(training_data)[tree$paths[1, 1] - 1], collapse=" + "))
             model <- lm(data=as.data.frame(training_set), formula=formula)
             p <- as.vector(predict(object=model, newdata=as.data.frame(test_data), type="response"))
         }
@@ -83,6 +82,7 @@ metric <- apply(drug_map, 1, function(drug)
             p <- as.vector(predict(object=model, newx=test_data, type="response")[, 1])
          }
          r <- cor(test_labels, p[common_indices], use="complete.obs")#, method="spearman")
+         message(paste(drug[[1]], method, r, sep="\t"))
          return(r)
      })
      names(predictions) <- methods
