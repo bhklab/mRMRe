@@ -2,18 +2,18 @@ library(ensemble)
 library(multicore)
 library(doParallel)
 library(foreach)
+library(glmnet)
 registerDoParallel(4)
-load("x03.RData")
+load("~/Testbed/x03.RData")
 
 drugs <- c("Lapatinib", "PD-0325901", "Irinotecan")
-methods <- c("SINGLEGENE", "RANKMULTIV", "mRMR", "ENSEMBLEmRMR", "ELASTICNET")
+methods <- c("SINGLEGENE", "RANKMULTIV", "RANKENSEMBLE", "mRMR", "ENSEMBLEmRMR", "ELASTICNET")
 drug_map <- drug_map[drugs, , drop=FALSE]
 common_indices <- intersect(rownames(data_cgp), rownames(data_ccle))
 training_data <- data_cgp
 test_data <- data_ccle
 metric <- apply(drug_map, 1, function(drug)
 {
-    message(drug)
     training_labels <- ic50_cgp[, drug[[2]], drop=FALSE]
     indices <- complete.cases(training_labels)
     test_labels <- ic50_ccle[common_indices, drug[[1]], drop=FALSE]
@@ -23,6 +23,7 @@ metric <- apply(drug_map, 1, function(drug)
     
     predictions <- mclapply(methods, mc.preschedule=TRUE, mc.cores=5, mc.cleanup=TRUE, function(method)
     {
+        message(paste(drug[[1]], method, sep="\t"))
         formula <- NULL
         model <- NULL
         p <- NULL
@@ -31,6 +32,23 @@ metric <- apply(drug_map, 1, function(drug)
             formula <- as.formula(paste(colnames(training_labels)[[1]], "~", colnames(training_data)[tree$paths[1, 1] - 1], collapse= " + "))
             model <- lm(data=as.data.frame(training_set), formula=formula)
             p <- predict(object=model, newdata=as.data.frame(test_data), type="response")
+        }
+        else if (method == "RANKMULTIV")
+        {
+            unique_indices <- unique(tree$paths[ , 1])
+            formula <- as.formula(paste(colnames(training_labels)[[1]], "~", paste(sapply(unique_indices, function(element) colnames(training_data)[element - 1]), collapse=" + ")))
+            model <- lm(data=as.data.frame(training_set), formula=formula)
+            p <- predict(object=model, newdata=as.data.frame(test_data), type="response")
+        }
+        else if (method == "RANKENSEMBLE")
+        {
+            unique_indices <- unique(tree$paths[ , 1])
+            p <- apply(sapply(unique_indices, function(element)
+            {
+                formula <- as.formula(paste(colnames(training_labels)[[1]], "~", colnames(training_data)[element - 1], collapse= " + "))
+                model <- lm(data=as.data.frame(training_set), formula=formula)
+                prediction <- predict(object=model, newdata=as.data.frame(test_data), type="response")
+            }), 1, mean)
         }
         else if (method == "mRMR")
         {
@@ -47,20 +65,6 @@ metric <- apply(drug_map, 1, function(drug)
                     model <- lm(data=as.data.frame(training_set), formula=formula)
                     prediction <- predict(object=model, newdata=as.data.frame(test_data), type="response")
             }), 1, mean)
-        }
-        else if (method == "RANKMULTIV")
-        {
-            unique_indices <- unique(tree$paths[ , 1])
-            formula <- as.formula(paste(colnames(training_labels)[[1]], "~", paste(sapply(unique_indices, function(element) colnames(training_data)[element - 1]), collapse=" + ")))
-            model <- lm(data=as.data.frame(training_set), formula=formula)
-            p <- predict(object=model, newdata=as.data.frame(test_data), type="response")
-        }
-        else if (method == "RANKENSEMBLE")
-        {
-            #unique_indices <- unique(tree$paths[ , 1])
-            #p <- apply(, function()
-            #{
-            #}), 1, mean)
         }
         else if (method == "ELASTICNET")
         {
