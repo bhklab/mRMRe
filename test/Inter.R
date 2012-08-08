@@ -89,4 +89,7 @@ metric <- apply(drug_map, 1, function(drug)
      return(predictions)
 })
 names(metric) <- drugs
-summary <- sapply(rownames(drug_map), function(i) sapply(methods, function(j) metric[[i]][[j]]))
+graph <- sapply(rownames(drug_map), function(i) sapply(methods, function(j) metric[[i]][[j]]))
+col <- rainbow(length(methods), s=0.5, v=0.9)
+barplot(graph, beside=T, col=col, space=c(0.25, 5), las=1, horiz=F, ylab="Pearson's Rho", names.arg=rep(NA, length(drugs)))
+legend("topright", legend=rownames(graph), col=col, bty="n", pch=15)
