@@ -27,14 +27,14 @@ metric <- apply(drug_map, 1, function(drug)
         {
             formula <- as.formula(paste(colnames(training_labels)[[1]], "~", colnames(training_data)[tree$paths[1, 1] - 1], collapse=" + "))
             model <- lm(data=as.data.frame(training_set), formula=formula)
-            p <- as.vector(predict(object=model, newdata=as.data.frame(test_data), type="response"))
+            p <- predict(object=model, newdata=as.data.frame(test_data), type="response")
         }
         else if (method == "RANKMULTIV")
         {
             unique_indices <- unique(tree$paths[ , 1])
             formula <- as.formula(paste(colnames(training_labels)[[1]], "~", paste(sapply(unique_indices, function(element) colnames(training_data)[element - 1]), collapse=" + ")))
             model <- lm(data=as.data.frame(training_set), formula=formula)
-            p <- as.vector(predict(object=model, newdata=as.data.frame(test_data), type="response"))
+            p <- predict(object=model, newdata=as.data.frame(test_data), type="response")
         }
         else if (method == "RANKENSEMBLE")
         {
@@ -43,14 +43,14 @@ metric <- apply(drug_map, 1, function(drug)
             {
                 formula <- as.formula(paste(colnames(training_labels)[[1]], "~", colnames(training_data)[element - 1], collapse= " + "))
                 model <- lm(data=as.data.frame(training_set), formula=formula)
-                prediction <- as.vector(predict(object=model, newdata=as.data.frame(test_data), type="response"))
+                prediction <- predict(object=model, newdata=as.data.frame(test_data), type="response")
             }), 1, mean)
         }
         else if (method == "mRMR")
         {
             formula <- as.formula(paste(colnames(training_labels)[[1]], "~", paste(sapply(tree$paths[1, ], function(element) colnames(training_data)[element - 1]), collapse=" + ")))
             model <- lm(data=as.data.frame(training_set), formula=formula)
-            p <- as.vector(predict(object=model, newdata=as.data.frame(test_data), type="response"))
+            p <- predict(object=model, newdata=as.data.frame(test_data), type="response")
         }
         else if (method == "ENSEMBLEmRMR")
         {
@@ -59,7 +59,7 @@ metric <- apply(drug_map, 1, function(drug)
                 formula <- as.formula(paste(colnames(training_labels)[[1]], "~",
                     paste(sapply(path, function(element) colnames(training_data)[element - 1]), collapse=" + ")))
                     model <- lm(data=as.data.frame(training_set), formula=formula)
-                    prediction <- as.vector(predict(object=model, newdata=as.data.frame(test_data), type="response"))
+                    prediction <- predict(object=model, newdata=as.data.frame(test_data), type="response")
             }), 1, mean)
         }
         else if (method == "ELASTICNET")
@@ -79,7 +79,7 @@ metric <- apply(drug_map, 1, function(drug)
             }
             best_params <- c(alpha_to_test[ceiling(minix/length(lambda_to_test))], lambda_to_test[idx])
             model <- glmnet::glmnet(x=training_set[,-1], y=training_set[,1], alpha=best_params[1], lambda=best_params[2])
-            p <- as.vector(predict(object=model, newx=test_data, type="response")[, 1])
+            p <- predict(object=model, newx=test_data, type="response")[, 1]
          }
          r <- cor(test_labels, p[common_indices], use="complete.obs")#, method="spearman")
          message(paste(drug[[1]], method, r, sep="\t"))
