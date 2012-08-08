@@ -20,7 +20,7 @@ metric <- apply(drug_map, 1, function(drug)
     training_set <- cbind(training_labels, training_data)[indices, , drop=FALSE]
     colnames(training_set)[1] <- drug[[2]]
     tree <- ensemble::filter.mRMR_tree(levels=c(2,2,2,2,2), data=training_set, uses_ranks=TRUE, target_feature_index=1)
-    predictions <- mclapply(methods, mc.preschedule=TRUE, mc.cores=length(methods), mc.cleanup=TRUE, function(method)
+    predictions <- lapply(methods, function(method) #mclapply(methods, mc.preschedule=TRUE, mc.cores=2, mc.cleanup=TRUE, function(method)
     {
         p <- NULL
         if (method == "SINGLEGENE")
@@ -81,17 +81,34 @@ metric <- apply(drug_map, 1, function(drug)
             model <- glmnet::glmnet(x=training_set[,-1], y=training_set[,1], alpha=best_params[1], lambda=best_params[2])
             p <- predict(object=model, newx=test_data, type="response")[, 1]
          }
-         r <- ensemble::correlate(test_labels, p[common_indices], method="cindex")#, method="spearman")
+         r <- cor(test_labels, p[common_indices]) #, method="spearman")
          message(paste(drug[[1]], method, r, sep="\t"))
-         return(r)
+         return(p)
      })
      names(predictions) <- methods
      return(predictions)
 })
 names(metric) <- drugs
-pdf("~/Testbed/INTER_GRAPH.pdf")
-graph <- sapply(rownames(drug_map), function(i) sapply(methods, function(j) metric[[i]][[j]]))
-col <- rainbow(length(methods), s=0.5, v=0.9)
-barplot(graph, beside=T, col=col, space=c(0.25, 5), las=1, horiz=F, ylab="Pearson's Rho", names.arg=rownames(drug_map))
-legend("topright", legend=rownames(graph), col=col, bty="n", pch=15)
-dev.off()
+
+interpret <- function(cmethod, prefix)
+{
+    graph <- sapply(rownames(drug_map), function(drug_name)
+    {
+        test_labels <- ic50_ccle[common_indices, drug_map[drug_name, "CCLE"]]
+        sapply(methods, function(method)
+        {
+            r <- NA
+            if (cmethod == "cindex")
+                r <- 2 * (ensemble::correlate(test_labels, metric[[drug_name]][[method]][common_indices], method=cmethod) - 0.5)
+            else
+                r <- cor(test_labels, metric[[drug_name]][[method]][common_indices], method=cmethod, use="complete.obs")
+            return(r)
+        })
+    })
+    pdf(paste("~/Testbed/", prefix, "_", cmethod, ".pdf", sep=""))
+    col <- rainbow(length(methods), s=0.5, v=0.9)
+    barplot(graph, beside=T, col=col, space=c(0.25, 5), las=1, horiz=F, ylab=cmethod, names.arg=rownames(drug_map))
+    legend("topright", legend=rownames(graph), col=col, bty="n", pch=15)
+    dev.off()
+    return(graph)
+}
