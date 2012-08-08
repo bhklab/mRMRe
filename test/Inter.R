@@ -11,7 +11,54 @@ drug <- drug_map["Irinotecan", ]
 modes <- c("COMMON", "NEW")
 levels <- c(2,2,2,2,2)
 
-get_predictions <- function()
+get_predictions_per_method <- function(training_set, test_set, tree)
+{
+    df_training_set <- as.data.frame(training_set)
+    df_test_set <- as.data.frame(test_set)
+    
+    predictions_per_method <- lapply(methods, function(method)
+    {
+        if (method == "SINGLEGENE")
+        {
+            formula <- as.formula(paste(colnames(training_set)[[1]], "~", colnames(training_set)[tree$paths[1, 1]], collapse=" + "))
+            model <- lm(data=df_training_set, formula=formula)
+            predictions <- predict(object=model, newdata=df_test_set, type="response")
+        }
+        else if (method == "RANKMULTIV")
+        {
+            unique_indices <- unique(tree$paths[ , 1])
+            formula <- as.formula(paste(colnames(training_set)[[1]], "~", paste(sapply(unique_indices, function(element) colnames(training_set)[element]), collapse=" + ")))
+            model <- lm(data=df_training_set, formula=formula)
+            predictions <- predict(object=model, newdata=df_test_set, type="response")
+        }
+        else if (method == "mRMR")
+        {
+            formula <- as.formula(paste(colnames(training_set)[[1]], "~", paste(sapply(tree$paths[1, ], function(element) colnames(training_set)[element]), collapse=" + ")))
+            model <- lm(data=df_training_set, formula=formula)
+            predictions <- predict(object=model, newdata=df_test_set, type="response")
+        }
+        else if (method == "ENSEMBLEmRMR")
+        {
+            predictions <- apply(apply(tree$paths, 1, function(path)
+            {
+                formula <- as.formula(paste(colnames(training_set)[[1]], "~", paste(sapply(path, function(element) colnames(training_set)[element]), collapse=" + ")))
+                model <- lm(data=df_training_set, formula=formula)
+                prediction <- predict(object=model, newdata=df_test_set, type="response")
+            }), 1, mean)
+        }
+        
+        message(method)
+        return(predictions)
+    })
+    names(predictions_per_method) <- methods
+    return(predictions_per_method)
+}
+
+##
+## Mode-specific routines (NEW, COMMON)
+##
+
+get_predictions_per_mode <- function()
 {
     predictions_per_mode <- lapply(modes, function(mode)
     {
@@ -32,52 +79,17 @@ get_predictions <- function()
         colnames(training_set)[1] <- drug["CGP"]
         test_labels <- ic50_ccle[indices_ccle, drug["CCLE"], drop=FALSE]
         test_set <- data_ccle[indices_ccle, , drop=FALSE]
-        df_training_set <- as.data.frame(training_set)
-        df_test_set <- as.data.frame(test_set)
         
         tree <- ensemble::filter.mRMR_tree(levels=levels, data=training_set, uses_ranks=TRUE, target_feature_index=1)
 
-        predictions_per_method <- lapply(methods, function(method)
-        {
-            if (method == "SINGLEGENE")
-            {
-                formula <- as.formula(paste(colnames(training_labels)[[1]], "~", colnames(training_set)[tree$paths[1, 1]], collapse=" + "))
-                model <- lm(data=df_training_set, formula=formula)
-                predictions <- predict(object=model, newdata=df_test_set, type="response")
-            }
-            else if (method == "RANKMULTIV")
-            {
-                unique_indices <- unique(tree$paths[ , 1])
-                formula <- as.formula(paste(colnames(training_labels)[[1]], "~", paste(sapply(unique_indices, function(element) colnames(training_set)[element]), collapse=" + ")))
-                model <- lm(data=df_training_set, formula=formula)
-                predictions <- predict(object=model, newdata=df_test_set, type="response")
-            }
-            else if (method == "mRMR")
-            {
-                formula <- as.formula(paste(colnames(training_labels)[[1]], "~", paste(sapply(tree$paths[1, ], function(element) colnames(training_set)[element]), collapse=" + ")))
-                model <- lm(data=df_training_set, formula=formula)
-                predictions <- predict(object=model, newdata=df_test_set, type="response")
-            }
-            else if (method == "ENSEMBLEmRMR")
-            {
-                predictions <- apply(apply(tree$paths, 1, function(path)
-                {
-                    formula <- as.formula(paste(colnames(training_labels)[[1]], "~", paste(sapply(path, function(element) colnames(training_set)[element]), collapse=" + ")))
-                    model <- lm(data=df_training_set, formula=formula)
-                    prediction <- predict(object=model, newdata=df_test_set, type="response")
-                }), 1, mean)
-            }
-            message(paste(drug[["CCLE"]], mode, method, sep="\t"))
-            return(predictions)
-        })
-        names(predictions_per_method) <- methods
-        return(predictions_per_method)
+        message(mode)
+        return(get_predictions_per_method(training_set=training_set, test_set=test_set, tree=tree))
     })
     names(predictions_per_mode) <- modes
     return(predictions_per_mode)
 }
 
-generate_graph <- function(get_predictions_return)
+get_graph_per_mode <- function(return_obj)
 {
     scores_per_mode <- lapply(modes, function(mode)
     {
@@ -107,3 +119,45 @@ generate_graph <- function(get_predictions_return)
     names(scores_per_mode) <- modes
     return(scores_per_mode)
 }
+
+##
+## CV-specific routines
+##
+
+get_predictions_per_method_cv <- function(folds=10)
+{
+    data <- cbind(ic50_cgp[, drug["CGP"], drop=FALSE], data_cgp)
+    colnames(data)[1] <- drug["CGP"]
+    complete_cases <- complete.cases(data[, 1])
+    partitions <- mapply(function(i, j) c(i, j), split(which(complete_cases), seq(folds)), split(which(!complete_cases), seq(folds)), SIMPLIFY=FALSE)
+    
+    predictions_per_fold <- lapply(seq(partitions), function(partition)
+            {
+                training_indices <- Reduce(x=partitions[-partition], f=c)
+                training_set <- data[training_indices, , drop=FALSE]
+                test_indices <- Reduce(x=partitions[partition], f=c)
+                test_set <- data[test_indices, , drop=FALSE]
+                
+                tree <- ensemble::filter.mRMR_tree(levels=levels, data=training_set, uses_ranks=TRUE, target_feature_index=1)
+                
+                message(partition)
+                return(get_predictions_per_method(training_set=training_set, test_set=test_set, tree=tree))
+            })
+    names(predictions_per_fold) <- seq(partitions)
+    
+    #predictions_per_method <- lapply(methods, function(method)
+    #{
+        
+    #    predictions_per_fold)
+    #})    
+
+    return(predictions_per_fold)
+}
+
+##
+## Heatmap-specific routines
+##
+
+##
+## C-INDEX vs Depth
+##
