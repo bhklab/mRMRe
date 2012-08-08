@@ -68,7 +68,7 @@ metric <- apply(drug_map, 1, function(drug)
             lambda_to_test <- exp(rev(seq(from=-6, to=5, length.out=250)))
             cvmses <- foreach(i=1:length(alpha_to_test), .combine="cbind", .packages="glmnet") %dopar%
             {
-                rr <- glmnet::cv.glmnet(x=training_set[,-1], y=training_set[,1], alpha=alpha_to_test[i],lambda=lambda_to_test)$cvm
+                rr <- glmnet::cv.glmnet(x=training_set[,-1], y=training_set[,1], alpha=alpha_to_test[i], lambda=lambda_to_test)$cvm
             }
             dimnames(cvmses) <- list(paste("lambda", 1:length(lambda_to_test), sep="_"), paste("alpha", 1:length(alpha_to_test), sep="_"))
             minix <- order(cvmses, decreasing=FALSE)[1]
@@ -89,3 +89,4 @@ metric <- apply(drug_map, 1, function(drug)
      return(predictions)
 })
 names(metric) <- drugs
+summary <- sapply(rownames(drug_map), function(i) sapply(methods, function(j) metric[[i]][[j]]))
