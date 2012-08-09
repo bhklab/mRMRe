@@ -1,9 +1,5 @@
 library(ensemble)
-library(multicore)
-library(doParallel)
-library(foreach)
-library(glmnet)
-registerDoParallel(4)
+
 load("~/Testbed/x03.RData")
 
 methods <- c("SINGLEGENE", "RANKMULTIV",  "mRMR", "ENSEMBLEmRMR")
@@ -11,7 +7,7 @@ drug <- drug_map["Irinotecan", ]
 modes <- c("COMMON", "NEW")
 levels <- c(2,2,2,2,2)
 
-get_predictions_per_method <- function(training_set, test_set, tree)
+get_predictions_per_method <- function(training_set, test_set, tree) # Returns a list with format: obj[[method]] is a vector of predictions
 {
     df_training_set <- as.data.frame(training_set)
     df_test_set <- as.data.frame(test_set)
@@ -58,7 +54,7 @@ get_predictions_per_method <- function(training_set, test_set, tree)
 ## Mode-specific routines (NEW, COMMON)
 ##
 
-get_predictions_per_mode <- function()
+get_predictions_per_mode <- function() # Returns a list with format: obj[[mode]][[method]] is a vector of predictions
 {
     predictions_per_mode <- lapply(modes, function(mode)
     {
@@ -89,7 +85,7 @@ get_predictions_per_mode <- function()
     return(predictions_per_mode)
 }
 
-get_graph_per_mode <- function(return_obj)
+get_graph_per_mode <- function(return_obj) # Returns a list with format: obj[[mode]][[method]] is a correlation
 {
     scores_per_mode <- lapply(modes, function(mode)
     {
@@ -124,35 +120,33 @@ get_graph_per_mode <- function(return_obj)
 ## CV-specific routines
 ##
 
-get_predictions_per_method_cv <- function(folds=10)
+get_predictions_per_method_cv <- function(folds=10) # Returns a list with format: obj[[method]] is a vector of predictions
 {
     data <- cbind(ic50_cgp[, drug["CGP"], drop=FALSE], data_cgp)
     colnames(data)[1] <- drug["CGP"]
     complete_cases <- complete.cases(data[, 1])
     partitions <- mapply(function(i, j) c(i, j), split(which(complete_cases), seq(folds)), split(which(!complete_cases), seq(folds)), SIMPLIFY=FALSE)
     
-    predictions_per_fold <- lapply(seq(partitions), function(partition)
-            {
-                training_indices <- Reduce(x=partitions[-partition], f=c)
-                training_set <- data[training_indices, , drop=FALSE]
-                test_indices <- Reduce(x=partitions[partition], f=c)
-                test_set <- data[test_indices, , drop=FALSE]
-                
-                tree <- ensemble::filter.mRMR_tree(levels=levels, data=training_set, uses_ranks=TRUE, target_feature_index=1)
-                
-                message(partition)
-                return(get_predictions_per_method(training_set=training_set, test_set=test_set, tree=tree))
-            })
-    names(predictions_per_fold) <- seq(partitions)
-    
-    #predictions_per_method <- lapply(methods, function(method)
-    #{
+    predictions <- Reduce(f=rbind, x=lapply(seq(partitions), function(partition)
+    {
+        training_indices <- Reduce(x=partitions[-partition], f=c)
+        training_set <- data[training_indices, , drop=FALSE]
+        test_indices <- Reduce(x=partitions[partition], f=c)
+        test_set <- data[test_indices, , drop=FALSE]
         
-    #    predictions_per_fold)
-    #})    
-
-    return(predictions_per_fold)
+        tree <- ensemble::filter.mRMR_tree(levels=levels, data=training_set, uses_ranks=TRUE, target_feature_index=1)
+        
+        message(partition)
+        return(as.data.frame(get_predictions_per_method(training_set=training_set, test_set=test_set, tree=tree)))
+    }))
+    predictions <- predictions[rownames(data_cgp), , drop=FALSE]
+    return(as.list(predictions))
 }
+
+# TODO:
+# - Perhaps repeat these CVs 10 times ? A routine should be in place for that
+# - A method for gathering correlations & graphs from this... however way we want it
+# - The below routines
 
 ##
 ## Heatmap-specific routines
