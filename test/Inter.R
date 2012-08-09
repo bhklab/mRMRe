@@ -92,6 +92,8 @@ names(metric) <- drugs
 
 interpret <- function(cmethod, prefix)
 {
+	common_indices <- intersect(rownames(data_cgp), rownames(data_ccle))
+	common_indices <- which(!(rownames(data_ccle) %in% common_indices))
     graph <- sapply(rownames(drug_map), function(drug_name)
     {
         test_labels <- ic50_ccle[common_indices, drug_map[drug_name, "CCLE"]]
@@ -105,7 +107,7 @@ interpret <- function(cmethod, prefix)
             return(r)
         })
     })
-    pdf(paste("~/Testbed/", prefix, "_", cmethod, ".pdf", sep=""))
+    pdf(paste("~/Testbest/", prefix, "_", cmethod, ".pdf", sep=""))
     col <- rainbow(length(methods), s=0.5, v=0.9)
     barplot(graph, beside=T, col=col, space=c(0.25, 5), las=1, horiz=F, ylab=cmethod, names.arg=rownames(drug_map))
     legend("topright", legend=rownames(graph), col=col, bty="n", pch=15)
