@@ -46,7 +46,9 @@ get_predictions_per_method <- function(training_set, test_set, tree) # Returns a
         
         message(method)
         return(predictions)
+
     })
+
     names(predictions_per_method) <- methods
     return(predictions_per_method)
 }
