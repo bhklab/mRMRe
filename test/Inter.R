@@ -5,6 +5,7 @@ load("~/Testbed/x03.RData")
 methods <- c("SINGLEGENE", "RANKMULTIV",  "mRMR", "ENSEMBLEmRMR")
 drug <- drug_map["Irinotecan", ]
 modes <- c("COMMON", "NEW")
+folds <- 10
 levels <- c(2,2,2,2,2)
 
 get_predictions_per_method <- function(training_set, test_set, tree) # Returns a list with format: obj[[method]] is a vector of predictions
@@ -120,14 +121,14 @@ graph_mephisto <- function(obj_mephisto) # Returns a list with format: obj[[mode
 ## CV-specific routines
 ##
 
-run_baal <- function(folds=10) # Returns a list with format: obj[[method]] is a vector of predictions
+run_baal <- function() # Returns a list with format: obj[[partition]][[method]] is a vector of predictions
 {
     data <- cbind(ic50_cgp[, drug["CGP"], drop=FALSE], data_cgp)
     colnames(data)[1] <- drug["CGP"]
     complete_cases <- complete.cases(data[, 1])
     partitions <- mapply(function(i, j) c(i, j), split(which(complete_cases), seq(folds)), split(which(!complete_cases), seq(folds)), SIMPLIFY=FALSE)
     
-    predictions <- Reduce(f=rbind, x=lapply(seq(partitions), function(partition)
+    predictions_per_partition <- lapply(seq(partitions), function(partition)
     {
         training_indices <- Reduce(x=partitions[-partition], f=c)
         training_set <- data[training_indices, , drop=FALSE]
@@ -137,28 +138,60 @@ run_baal <- function(folds=10) # Returns a list with format: obj[[method]] is a 
         tree <- ensemble::filter.mRMR_tree(levels=levels, data=training_set, uses_ranks=TRUE, target_feature_index=1)
         
         message(partition)
-        return(as.data.frame(get_predictions_per_method(training_set=training_set, test_set=test_set, tree=tree)))
-    }))
-    predictions <- predictions[rownames(data_cgp), , drop=FALSE]
-    return(as.list(predictions))
+        return(get_predictions_per_method(training_set=training_set, test_set=test_set, tree=tree))
+    })
+    names(predictions_per_partition) <- seq(partitions)
+    return(predictions_per_partition)
 }
 
-graph_baal <- function(obj_baal) # Returns a list with format: obj[[method]] is a correlation
+graph_baal <- function(obj_baal) # Returns a list with format: obj[["scores"]][[method]] is a correlation
+                                 #           				   obj[["p_values"]] is a matrix of pairwise per-fold wilcox tests
 {
-    scores_per_method <- lapply(methods, function(method)
+    # Flat scores
+    predictions_per_method <- Reduce(f=rbind, x=lapply(obj_baal, as.data.frame))
+    predictions_per_method <- as.list(predictions_per_method[rownames(data_cgp), , drop=FALSE])
+
+    scores_per_method_flat <- lapply(methods, function(method)
     {
         labels <- ic50_cgp[, drug["CGP"], drop=TRUE]
-        ensemble::correlate(labels, obj_baal[[method]], method="cindex")
+        r <- ensemble::correlate(labels, predictions_per_method[[method]], method="cindex")
+        return(r)
     })
-    names(scores_per_method) <- methods
-    return(scores_per_method)
-}
+    names(scores_per_method_flat) <- methods
+    
+    # Inter scores
+    partitions <- seq(obj_baal)
+    scores_per_partition <- lapply(partitions, function(partition)
+    {
+        labels <- ic50_cgp[names(obj_baal[[partition]]), drug["CGP"], drop=TRUE]
+        scores_per_method <- lapply(methods, function(method) ensemble::correlate(labels, partition[[partition]][[method]]))
+        names(scores_per_method) <- methods
+        return(scores_per_method)
+    })
+    names(scores_per_partition) <- partitions
+    
+    scores_per_method_inter <- lapply(methods, function(method)
+    {
+        scores_per_partition_inter <- lapply(partitions, function(partition) obj_baal[[partition]][[method]])
+        names(scores_per_partition_inter) <- partitions
+        return(scores_per_partition_inter)
+    })
+    names(scores_per_method_inter) <- methods
+    
+    p_values <- as.data.frame(lapply(methods, function(m1)
+    {
+        c2 <- lapply(methods, function(m2)
+        {
+            v1 <- as.vector(scores_per_method_inter[[m1]])
+            v2 <- as.vector(scores_per_method_inter[[m2]])
+            return(wilcox.test(v1, v2)[["p.value"]])
+        })
+    }))
+    rownames(p_values) <- methods
+    colnames(p_values) <- methods
 
-# TODO:
-# - Perhaps repeat these CVs 10 times ? A routine should be in place for that
-# - graph_demonname takes run_demonname's return value as argument (graph_baal(run_baal(...)) -- provides some sort of caching so that we do not regenerate data if we change graphical schemes
-# - A method for gathering correlations & graphs from this... however way we want it
-# - The below routines
+    return(list(scores=scores_per_method_flat, p_values=p_values))
+}
 
 ##
 ## Heatmap-specific routines
