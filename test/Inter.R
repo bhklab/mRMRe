@@ -54,7 +54,7 @@ get_predictions_per_method <- function(training_set, test_set, tree) # Returns a
 ## Mode-specific routines (NEW, COMMON)
 ##
 
-get_predictions_per_mode <- function() # Returns a list with format: obj[[mode]][[method]] is a vector of predictions
+run_mephisto <- function() # Returns a list with format: obj[[mode]][[method]] is a vector of predictions
 {
     predictions_per_mode <- lapply(modes, function(mode)
     {
@@ -85,7 +85,7 @@ get_predictions_per_mode <- function() # Returns a list with format: obj[[mode]]
     return(predictions_per_mode)
 }
 
-get_graph_per_mode <- function(return_obj) # Returns a list with format: obj[[mode]][[method]] is a correlation
+graph_mephisto <- function(obj_mephisto) # Returns a list with format: obj[[mode]][[method]] is a correlation
 {
     scores_per_mode <- lapply(modes, function(mode)
     {
@@ -100,8 +100,8 @@ get_graph_per_mode <- function(return_obj) # Returns a list with format: obj[[mo
             indices_ccle <- which(!(rownames(data_ccle) %in% common_indices))
         }
         
-        test_labels <- ic50_ccle[indices_ccle, drug["CCLE"], drop=FALSE]
-        score_per_method <- sapply(methods, function(method) ensemble::correlate(test_labels, get_predictions_return[[mode]][[method]], method="cindex"))
+        test_labels <- ic50_ccle[indices_ccle, drug["CCLE"], drop=TRUE]
+        score_per_method <- sapply(methods, function(method) ensemble::correlate(test_labels, obj_mephisto[[mode]][[method]], method="cindex"))
         names(score_per_method) <- methods
 
         pdf(paste("~/Testbed/Inter_", mode, ".pdf", sep=""))
@@ -120,7 +120,7 @@ get_graph_per_mode <- function(return_obj) # Returns a list with format: obj[[mo
 ## CV-specific routines
 ##
 
-get_predictions_per_method_cv <- function(folds=10) # Returns a list with format: obj[[method]] is a vector of predictions
+run_baal <- function(folds=10) # Returns a list with format: obj[[method]] is a vector of predictions
 {
     data <- cbind(ic50_cgp[, drug["CGP"], drop=FALSE], data_cgp)
     colnames(data)[1] <- drug["CGP"]
@@ -143,8 +143,20 @@ get_predictions_per_method_cv <- function(folds=10) # Returns a list with format
     return(as.list(predictions))
 }
 
+graph_baal <- function(obj_baal) # Returns a list with format: obj[[method]] is a correlation
+{
+    scores_per_method <- lapply(methods, function(method)
+    {
+        labels <- ic50_cgp[, drug["CGP"], drop=TRUE]
+        ensemble::correlate(labels, obj_baal[[method]], method="cindex")
+    })
+    names(scores_per_method) <- methods
+    return(scores_per_method)
+}
+
 # TODO:
 # - Perhaps repeat these CVs 10 times ? A routine should be in place for that
+# - graph_demonname takes run_demonname's return value as argument (graph_baal(run_baal(...)) -- provides some sort of caching so that we do not regenerate data if we change graphical schemes
 # - A method for gathering correlations & graphs from this... however way we want it
 # - The below routines
 
