@@ -8,6 +8,8 @@ class SymmetricMatrix : public Matrix
 public:
     SymmetricMatrix(unsigned int const rowCount);
 
+    SymmetricMatrix(float* const pData, unsigned int const rowCount);
+
     virtual
     ~SymmetricMatrix();
 

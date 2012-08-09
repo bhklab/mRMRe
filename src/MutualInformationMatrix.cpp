@@ -8,6 +8,12 @@ MutualInformationMatrix::MutualInformationMatrix(Data const* const pData) :
             SymmetricMatrix::at(i, j) = std::numeric_limits<float>::quiet_NaN();
 }
 
+MutualInformationMatrix::MutualInformationMatrix(Data const* const pData, float* const pInternalData) :
+        SymmetricMatrix(pInternalData, pData->getFeatureCount()), mpData(pData)
+{
+
+}
+
 /* virtual */
 MutualInformationMatrix::~MutualInformationMatrix()
 {

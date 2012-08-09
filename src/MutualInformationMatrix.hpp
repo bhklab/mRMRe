@@ -14,6 +14,8 @@ protected:
 public:
     MutualInformationMatrix(Data const* const pData);
 
+    MutualInformationMatrix(Data const* const pData, float* const pInternalData);
+
     virtual
     ~MutualInformationMatrix();
 
