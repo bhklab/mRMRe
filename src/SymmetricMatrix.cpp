@@ -6,6 +6,12 @@ SymmetricMatrix::SymmetricMatrix(unsigned int const rowCount) :
 
 }
 
+SymmetricMatrix::SymmetricMatrix(float* const pData, unsigned int const rowCount) :
+        Matrix(pData, rowCount, rowCount)
+{
+
+}
+
 /* virtual */
 SymmetricMatrix::~SymmetricMatrix()
 {

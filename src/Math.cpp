@@ -343,15 +343,19 @@ Math::computePearsonCorrelation(float const* const pSamplesX, float const* const
 
     for (unsigned int i = 0; i < sampleCount; ++i)
     {
-        float const my_weight = pSampleWeights[pSampleIndices[i]];
         float const my_x = pSamplesX[pSampleIndices[i]];
-        sum_of_x += my_x * my_weight;
-        sum_of_x_x += my_x * my_x * my_weight;
         float const my_y = pSamplesY[pSampleIndices[i]];
-        sum_of_y += my_y * my_weight;
-        sum_of_y_y += my_y * my_y * my_weight;
-        sum_of_x_y += my_x * my_y * my_weight;
-        sum_of_weights += my_weight;
+
+        if (my_x == my_x && my_y == my_y)
+        {
+            float const my_weight = pSampleWeights[pSampleIndices[i]];
+            sum_of_x += my_x * my_weight;
+            sum_of_x_x += my_x * my_x * my_weight;
+            sum_of_y += my_y * my_weight;
+            sum_of_y_y += my_y * my_y * my_weight;
+            sum_of_x_y += my_x * my_y * my_weight;
+            sum_of_weights += my_weight;
+        }
     }
 
     float const r = (sum_of_x_y - ((sum_of_x * sum_of_y) / sum_of_weights))
@@ -388,6 +392,8 @@ Math::computeVariance(float const* const pSamples, unsigned int const sampleCoun
     return sum_for_error / (sampleCount - 1);
 }
 
+#include <Rcpp.h>
+
 /* static */void const
 Math::placeRanksByFeatureIndex(float const* const pSamples, float* const pRanks,
         unsigned int const* const * const pSampleIndicesPerStratum,
@@ -399,13 +405,24 @@ Math::placeRanksByFeatureIndex(float const* const pSamples, float* const pRanks,
         unsigned int const sample_count = pSampleCountPerStratum[i];
         unsigned int p_order[sample_count];
 
+        unsigned int offset = 0;
         for (unsigned int j = 0; j < sample_count; ++j)
-            p_order[j] = j;
+        {
+            unsigned int const my_index = p_sample_indices[j];
 
-        std::sort(p_order, p_order + sample_count,
+            if (pSamples[my_index] == pSamples[my_index])
+                p_order[j - offset] = j;
+            else
+                ++offset;
+        }
+
+        std::sort(p_order, p_order + sample_count - offset,
                 Math::IndirectComparator(pSamples, p_sample_indices));
 
         for (unsigned int j = 0; j < sample_count; ++j)
+            pRanks[j] = std::numeric_limits<float>::quiet_NaN();
+
+        for (unsigned int j = 0; j < sample_count - offset; ++j)
             pRanks[p_sample_indices[p_order[j]]] = j;
     }
 }
