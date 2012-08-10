@@ -11,19 +11,23 @@ get_predictions_per_method <- function(training_set, test_set, tree) # Returns a
 {
     df_training_set <- as.data.frame(training_set)
     df_test_set <- as.data.frame(test_set)
-    
+    ranking <- apply(training_set[,-1], 2, cor, training_set[,1], method="pearson", use="complete.obs")
+	
+	
     predictions_per_method <- lapply(methods, function(method)
     {
         if (method == "SINGLEGENE")
-        {
+        {	
+			gene <- names(ranking)[order(abs(ranking), decreasing=TRUE)[1]]
             formula <- as.formula(paste(colnames(training_set)[[1]], "~", colnames(training_set)[tree$paths[1, 1]], collapse=" + "))
             model <- lm(data=df_training_set, formula=formula)
             predictions <- predict(object=model, newdata=df_test_set, type="response")
         }
         else if (method == "RANKMULTIV")
         {
+			genes <- names(ranking)[order(abs(ranking_scc), decreasing=TRUE)[1:length(levels)]]
             unique_indices <- unique(tree$paths[ , 1])
-            formula <- as.formula(paste(colnames(training_set)[[1]], "~", paste(sapply(unique_indices, function(element) colnames(training_set)[element]), collapse=" + ")))
+            formula <- as.formula(paste(colnames(training_set)[[1]], "~", paste(sapply(genes, function(element) colnames(training_set)[element]), collapse=" + ")))
             model <- lm(data=df_training_set, formula=formula)
             predictions <- predict(object=model, newdata=df_test_set, type="response")
         }
@@ -137,6 +141,7 @@ run_baal <- function(folds=10) # Returns a list with format: obj[[method]] is a 
         test_set <- data[test_indices, , drop=FALSE]
         
         tree <- ensemble::filter.mRMR_tree(levels=levels, data=training_set, uses_ranks=TRUE, target_feature_index=1)
+		browser()
         
         message(partition)
         return(as.data.frame(get_predictions_per_method(training_set=training_set, test_set=test_set, tree=tree)))
