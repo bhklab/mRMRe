@@ -2,11 +2,12 @@ library(ensemble)
 
 load("~/Testbed/x03.RData")
 
-methods <- c("SINGLEGENE", "RANKMULTIV",  "mRMR", "ENSEMBLEmRMR")
+methods <- c("SINGLEGENE", "RANKMULTIV", "mRMR", "ENSEMBLEmRMR")
 drug <- drug_map["Irinotecan", ]
 modes <- c("COMMON", "NEW")
 folds <- 10
-levels <- c(2,2,2,2,2)
+repetitions <- 100
+levels <- c(200, rep(1, 29))
 prefix <- "~/Testbed/Inter_"
 
 get_predictions_per_method <- function(training_set, test_set)
@@ -18,10 +19,8 @@ get_predictions_per_method <- function(training_set, test_set)
     df_training_set <- as.data.frame(training_set)
     df_test_set <- as.data.frame(test_set)
 
-
     ranking <- apply(training_set[, -1, drop=FALSE], 2, cor, training_set[, 1, drop=TRUE], method="pearson", use="complete.obs")
     ranking_order <- order(abs(ranking), decreasing=TRUE)
-    
 
     predictions_per_method <- lapply(methods, function(method)
     {
@@ -138,11 +137,33 @@ graph_mephisto <- function(obj_mephisto)
 ## CV-specific routines
 ##
 
-run_baal <- function()
-    # Returns a list with format: obj[[partition]][[method]] is a vector of predictions
+run_andariel <- function()
 {
     data <- cbind(ic50_cgp[, drug["CGP"], drop=FALSE], data_cgp)
     colnames(data)[1] <- drug["CGP"]
+    
+    predictions_per_repetition <- lapply(seq(repetitions), function(repetition) 
+    {
+        set.seed(repetition)
+        order <- sample(nrow(data))
+        message(paste("repetition ", repetition, sep=""))
+        data <- data[order, , drop=FALSE]
+        run_baal(data)
+    })
+    names(predictions_per_repetition) <- seq(repetitions)
+    return(predictions_per_repetition)
+}
+
+graph_andariel <- function(obj_andariel)
+{
+    scores_per_repetition <- lapply(seq(repetitions), function(repetition) graph_baal(obj_andariel[[repetition]]))
+    names(scores_per_repetition) <- seq(repetitions)
+    return(scores_per_repetition)
+}
+
+run_baal <- function(data)
+    # Returns a list with format: obj[[partition]][[method]] is a vector of predictions
+{
     complete_cases <- complete.cases(data[, 1])
     partitions <- mapply(function(i, j) c(i, j), split(which(complete_cases), seq(folds)),
             split(which(!complete_cases), seq(folds)), SIMPLIFY=FALSE)
@@ -154,7 +175,7 @@ run_baal <- function()
         test_indices <- Reduce(x=partitions[partition], f=c)
         test_set <- data[test_indices, , drop=FALSE]
 
-        message(partition)
+        message(paste("partition ", partition, sep=""))
         return(get_predictions_per_method(training_set=training_set, test_set=test_set))
     })
     names(predictions_per_partition) <- seq(partitions)
@@ -178,33 +199,33 @@ graph_baal <- function(obj_baal)
     names(scores_per_method_flat) <- methods
     
     # Inter scores
-    partitions <- seq(obj_baal)
-    scores_per_partition <- lapply(partitions, function(partition)
-    {
-        labels <- ic50_cgp[names(obj_baal[[partition]][[methods[[1]]]]), drug["CGP"], drop=TRUE]
-        scores_per_method <- lapply(methods, function(method)
-                    ensemble::correlate(labels, obj_baal[[partition]][[method]], method="cindex"))
-        names(scores_per_method) <- methods
-        return(scores_per_method)
-    })
-    names(scores_per_partition) <- partitions
+    #partitions <- seq(obj_baal)
+    #scores_per_partition <- lapply(partitions, function(partition)
+    #{
+    #    labels <- ic50_cgp[names(obj_baal[[partition]][[methods[[1]]]]), drug["CGP"], drop=TRUE]
+    #    scores_per_method <- lapply(methods, function(method)
+    #                ensemble::correlate(labels, obj_baal[[partition]][[method]], method="cindex"))
+    #    names(scores_per_method) <- methods
+    #    return(scores_per_method)
+    #})
+    #names(scores_per_partition) <- partitions
     
-    scores_per_method_inter <- lapply(methods, function(method)
-    {
-        scores_per_partition_inter <- lapply(partitions, function(partition)
-                    scores_per_partition[[partition]][[method]])
-        names(scores_per_partition_inter) <- partitions
-        return(scores_per_partition_inter)
-    })
-    names(scores_per_method_inter) <- methods
+    #scores_per_method_inter <- lapply(methods, function(method)
+    #{
+    #    scores_per_partition_inter <- lapply(partitions, function(partition)
+    #                scores_per_partition[[partition]][[method]])
+    #    names(scores_per_partition_inter) <- partitions
+    #    return(scores_per_partition_inter)
+    #})
+    #names(scores_per_method_inter) <- methods
 
-    p_values <- as.data.frame(sapply(methods, function(m1) sapply(methods, function(m2)
-                                    wilcox.test(as.numeric(scores_per_method_inter[[m1]]),
-                                            as.numeric(scores_per_method_inter[[m2]]))[["p.value"]])))
-    rownames(p_values) <- methods
-    colnames(p_values) <- methods
+    #p_values <- as.data.frame(sapply(methods, function(m1) sapply(methods, function(m2)
+    #                                wilcox.test(as.numeric(scores_per_method_inter[[m1]]),
+    #                                        as.numeric(scores_per_method_inter[[m2]]))[["p.value"]])))
+    #rownames(p_values) <- methods
+    #colnames(p_values) <- methods
 
-    return(list(scores=scores_per_method_flat, fold_score_per_method=scores_per_method_inter, p_values=p_values))
+    return(scores_per_method_flat)#list(scores=scores_per_method_flat, fold_score_per_method=scores_per_method_inter, p_values=p_values))
 }
 
 ##
