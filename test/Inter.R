@@ -11,6 +11,8 @@ levels <- c(2,2,2,2,2)
 get_predictions_per_method <- function(training_set, test_set, tree)
     # Returns a list with format: obj[[method]] is a vector of predictions
 {
+    tree <- ensemble::filter.mRMR_tree(levels=levels, data=training_set, uses_ranks=TRUE, target_feature_index=1)
+    
     df_training_set <- as.data.frame(training_set)
     df_test_set <- as.data.frame(test_set)
     
@@ -78,18 +80,15 @@ run_mephisto <- function()
             indices_ccle <- which(!(rownames(data_ccle) %in% common_indices))
         }
         
-        training_labels <- ic50_cgp[indices_cgp, drug["CGP"], drop=FALSE]
-        training_labels_complete_cases <- complete.cases(training_labels)
-        training_set <- cbind(training_labels,
-                data_cgp[indices_cgp, , drop=FALSE])[training_labels_complete_cases, , drop=FALSE]
+        training_set <- cbind(ic50_cgp[indices_cgp, drug["CGP"], drop=FALSE],
+                data_cgp[indices_cgp, , drop=FALSE])
+        training_set <- training_set[complete.cases(training_set), , drop=FALSE]
         colnames(training_set)[1] <- drug["CGP"]
         test_labels <- ic50_ccle[indices_ccle, drug["CCLE"], drop=FALSE]
         test_set <- data_ccle[indices_ccle, , drop=FALSE]
-        
-        tree <- ensemble::filter.mRMR_tree(levels=levels, data=training_set, uses_ranks=TRUE, target_feature_index=1)
 
         message(mode)
-        return(get_predictions_per_method(training_set=training_set, test_set=test_set, tree=tree))
+        return(get_predictions_per_method(training_set=training_set, test_set=test_set))
     })
     names(predictions_per_mode) <- modes
     return(predictions_per_mode)
@@ -149,10 +148,8 @@ run_baal <- function()
         test_indices <- Reduce(x=partitions[partition], f=c)
         test_set <- data[test_indices, , drop=FALSE]
         
-        tree <- ensemble::filter.mRMR_tree(levels=levels, data=training_set, uses_ranks=TRUE, target_feature_index=1)
-        
         message(partition)
-        return(get_predictions_per_method(training_set=training_set, test_set=test_set, tree=tree))
+        return(get_predictions_per_method(training_set=training_set, test_set=test_set))
     })
     names(predictions_per_partition) <- seq(partitions)
     return(predictions_per_partition)

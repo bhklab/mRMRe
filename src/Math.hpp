@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cmath>
 #include <ctime>
+#include <limits>
 
 #include "Matrix.hpp"
 
