@@ -7,42 +7,46 @@ drug <- drug_map["Irinotecan", ]
 modes <- c("COMMON", "NEW")
 folds <- 10
 levels <- c(2,2,2,2,2)
+prefix <- "~/Testbed/Inter_"
 
-get_predictions_per_method <- function(training_set, test_set, tree)
+get_predictions_per_method <- function(training_set, test_set)
     # Returns a list with format: obj[[method]] is a vector of predictions
 {
-    tree <- ensemble::filter.mRMR_tree(levels=levels, data=training_set, uses_ranks=TRUE, target_feature_index=1)
+    classic_tree <- ensemble::filter.mRMR_tree(levels=rep(1, length(levels)), data=training_set, uses_ranks=FALSE, target_feature_index=1)
+    ensemble_tree <- ensemble::filter.mRMR_tree(levels=levels, data=training_set, uses_ranks=FALSE, target_feature_index=1)
     
     df_training_set <- as.data.frame(training_set)
     df_test_set <- as.data.frame(test_set)
+
+    ranking <- apply(training_set[, -1, drop=FALSE], 2, cor, training_set[, 1, drop=TRUE], method="pearson", use="complete.obs")
+    ranking_order <- order(abs(ranking), decreasing=TRUE)
     
     predictions_per_method <- lapply(methods, function(method)
     {
         if (method == "SINGLEGENE")
-        {
-            formula <- as.formula(paste(colnames(training_set)[[1]], "~",
-                            colnames(training_set)[tree$paths[1, 1]], collapse=" + "))
+        { 
+            gene <- names(ranking)[ranking_order[1]]
+            formula <- as.formula(paste(colnames(training_set)[[1]], "~", gene, collapse=" + "))
             model <- lm(data=df_training_set, formula=formula)
             predictions <- predict(object=model, newdata=df_test_set, type="response")
         }
         else if (method == "RANKMULTIV")
         {
-            unique_indices <- unique(tree$paths[ , 1])
-            formula <- as.formula(paste(colnames(training_set)[[1]], "~",
-                            paste(sapply(unique_indices, function(element) colnames(training_set)[element]), collapse=" + ")))
+            genes <- names(ranking)[ranking_order[1:length(levels)]]
+            formula <- as.formula(paste(colnames(training_set)[[1]], "~", paste(genes, collapse=" + ")))
             model <- lm(data=df_training_set, formula=formula)
             predictions <- predict(object=model, newdata=df_test_set, type="response")
         }
         else if (method == "mRMR")
         {
             formula <- as.formula(paste(colnames(training_set)[[1]], "~",
-                            paste(sapply(tree$paths[1, ], function(element) colnames(training_set)[element]), collapse=" + ")))
+                            paste(sapply(classic_tree$paths[1, ], function(element) colnames(training_set)[element]), collapse=" + ")))
             model <- lm(data=df_training_set, formula=formula)
             predictions <- predict(object=model, newdata=df_test_set, type="response")
         }
         else if (method == "ENSEMBLEmRMR")
         {
-            predictions <- apply(apply(tree$paths, 1, function(path)
+            predictions <- apply(apply(ensemble_tree$paths, 1, function(path)
             {
                 formula <- as.formula(paste(colnames(training_set)[[1]], "~",
                                 paste(sapply(path, function(element) colnames(training_set)[element]), collapse=" + ")))
@@ -115,7 +119,7 @@ graph_mephisto <- function(obj_mephisto)
                     ensemble::correlate(test_labels, obj_mephisto[[mode]][[method]], method="cindex"))
         names(score_per_method) <- methods
 
-        pdf(paste("~/Testbed/Inter_", mode, ".pdf", sep=""))
+        pdf(paste(prefix, mode, ".pdf", sep=""))
         col <- rainbow(length(score_per_method), s=0.5, v=0.9)
         barplot(score_per_method, col=col, space=c(0.25, 5), las=1, horiz=F,
                 ylab="concordance index", names.arg=drug["CCLE"])
@@ -198,7 +202,7 @@ graph_baal <- function(obj_baal)
     rownames(p_values) <- methods
     colnames(p_values) <- methods
 
-    return(list(scores=scores_per_method_flat, p_values=p_values))
+    return(list(scores=scores_per_method_flat, fold_score_per_method=scores_per_method_inter, p_values=p_values))
 }
 
 ##
