@@ -1,0 +1,23 @@
+We have decided on the figure that will be included in the application note (AN). The figure shall contain (a) Cross-Validation: Barplot of C-Index of the cross-validation for the 4 methods. (b) Distribution of the genes in comparison to classic mRMR [I did that already]. (c) GO Term analysis [I'll handle that]. (d-e) Barplots of method validation (NEW & COMMON).
+
+So basically you need to do (a) and (d-e). (d-e) is fairly easy, I think the method run_mephisto does exaclty that (double check please). (a) will be a bit trickier.  This graph will present 4 bars with their respective error bars.  I already have precomputed some data for you (see /Users/dejayn/git/ensemble/test/100REP_10CV_CGP.RData).  The data you need is in andariel_all_folds_average.  The high of a bar is determined by the average of the column and the error bar by the 95% confidence interval (I do not know exactly how to do this)
+
+Also, BHK has sent us an AN he has written for survcomp so we can get a feel on the content of such a publication.  Read it and start writing our AN.  We will write this one and BHK will correct afterwards.  "It's your baby guys", he said. 
+
+PS: The other objects in 100REP_10CV_CGP.RData are intermediate holders that I used in transforming andariel (the ouput of 100x run_baal()) into a 100x4 matrix.I kept it in just in case. There is also wilcox, a 4x4 matrix containing the wilcoxon paired single-sided rank test.  Notice the matrix is not symmetric because we are doing a single-side test.
+
+In bullet point form:
+- Create a graph for the 100 repetitions 10 folds cross-validation with error bars (a)
+- Create a graph for NEW
+- Create a graph for COMMON
+- Write the AN (focus mostly on the technicals)
+
+My tasks:
+- Graph the genes in ensemblemRMR and classicmRMR
+- Assess pathways and GO enrichment in the genes found by our method
+- Graph the pathways and enrichement analysis
+- Write the AN (focus mostly on the case study + biopoetry)
+
+I think this splitting is good given our individual strength and appreciation ofthe different parts of the project.  We are very close to finishing it so your good work will be very useful.
+
+By Monday we NEED to have a first draft of the completed AN (full text and figures). Correct it on Tuesday, finish it by Wednesday.

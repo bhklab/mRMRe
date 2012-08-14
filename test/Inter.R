@@ -120,11 +120,11 @@ graph_mephisto <- function(obj_mephisto)
                     ensemble::correlate(test_labels, obj_mephisto[[mode]][[method]], method="cindex"))
         names(score_per_method) <- methods
 
-        pdf(paste(prefix, mode, ".pdf", sep=""))
+        pdf(paste("-0.5-0.7-", mode, "_BARPLOT.pdf", sep=""))
         col <- rainbow(length(score_per_method), s=0.5, v=0.9)
         barplot(score_per_method, col=col, space=c(0.25, 5), las=1, horiz=F,
-                ylab="concordance index", names.arg=drug["CCLE"])
-        legend("topright", legend=names(score_per_method), col=col, bty="n", pch=15)
+                ylab="Concordance index", names.arg=names(score_per_method), ylim=c(0.5, 0.7), xpd=FALSE)
+        #legend("topright", legend=names(score_per_method), col=col, bty="n", pch=15)
         dev.off()
         
         return(score_per_method)
@@ -148,7 +148,7 @@ run_andariel <- function()
         order <- sample(nrow(data))
         message(paste("repetition ", repetition, sep=""))
         data <- data[order, , drop=FALSE]
-        run_baal(data)
+        run_baal(data) # graph_baal(run_baal(data))
     })
     names(predictions_per_repetition) <- seq(repetitions)
     return(predictions_per_repetition)
@@ -159,6 +159,16 @@ graph_andariel <- function(obj_andariel)
     scores_per_repetition <- lapply(seq(repetitions), function(repetition) graph_baal(obj_andariel[[repetition]]))
     names(scores_per_repetition) <- seq(repetitions)
     return(scores_per_repetition)
+}
+
+work_andariel <- function(all_folds_avg)
+{
+    pdf("-0.5-0.7-CV_BOXPLOT.pdf")
+    col <- rainbow(ncol(all_folds_avg), s=0.5, v=0.9)
+    boxplot(all_folds_avg, col=col, space=c(0.25, 5), las=1, horiz=F,
+            ylab="Concordance index", names.arg=colnames(all_folds_avg), ylim=c(0.5, 0.7), xpd=FALSE)
+    #legend("topright", legend=names(score_per_method), col=col, bty="n", pch=15)
+    dev.off()
 }
 
 run_baal <- function(data)
