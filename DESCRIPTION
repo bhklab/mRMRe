@@ -1,5 +1,5 @@
-Package: ensemble
-Type: ensemble
+Package: mRMRe
+Type: mRMRe
 Title: R package implementing ensemble methods, such as mRMR
 Version: 1.0
 Date: 2012-07-16

@@ -1,4 +1,4 @@
-library(ensemble)
+library(mRMRe)
 
 load("~/Testbed/x03.RData")
 
@@ -8,13 +8,14 @@ modes <- c("COMMON", "NEW")
 folds <- 10
 repetitions <- 100
 levels <- c(200, rep(1, 29))
-prefix <- "~/Testbed/Inter_"
+prefix <- "~/Testbed/"
+limits <- c(0.5, 0.7)
 
 get_predictions_per_method <- function(training_set, test_set)
     # Returns a list with format: obj[[method]] is a vector of predictions
 {
-    classic_tree <- ensemble::filter.mRMR_tree(levels=rep(1, length(levels)), data=training_set, uses_ranks=FALSE, target_feature_index=1)
-    ensemble_tree <- ensemble::filter.mRMR_tree(levels=levels, data=training_set, uses_ranks=FALSE, target_feature_index=1)
+    classic_tree <- mRMRe::filter.mRMR_tree(levels=rep(1, length(levels)), data=training_set, uses_ranks=FALSE, target_feature_index=1)
+    ensemble_tree <- mRMRe::filter.mRMR_tree(levels=levels, data=training_set, uses_ranks=FALSE, target_feature_index=1)
     
     df_training_set <- as.data.frame(training_set)
     df_test_set <- as.data.frame(test_set)
@@ -105,25 +106,26 @@ graph_mephisto <- function(obj_mephisto)
     scores_per_mode <- lapply(modes, function(mode)
     {
         common_indices <- intersect(rownames(data_cgp), rownames(data_ccle))
+        indices_cgp <- rownames(rownames(data_cgp))
         if (mode == "COMMON")
         {
-            indices_cgp <- indices_ccle <- common_indices
+            indices_ccle <- common_indices
         }
         else if (mode == "NEW")
         {
-            indices_cgp <- which(!(rownames(data_cgp) %in% common_indices))
+            #indices_cgp <- which(!(rownames(data_cgp) %in% common_indices))
             indices_ccle <- which(!(rownames(data_ccle) %in% common_indices))
         }
         
         test_labels <- ic50_ccle[indices_ccle, drug["CCLE"], drop=TRUE]
         score_per_method <- sapply(methods, function(method)
-                    ensemble::correlate(test_labels, obj_mephisto[[mode]][[method]], method="cindex"))
+                    mRMRe::correlate(test_labels, obj_mephisto[[mode]][[method]], method="cindex"))
         names(score_per_method) <- methods
 
-        pdf(paste("-0.5-0.7-", mode, "_BARPLOT.pdf", sep=""))
+        pdf(paste(prefix, paste(limits, collapse="-"), "_", mode, "_BARPLOT.pdf", sep=""))
         col <- rainbow(length(score_per_method), s=0.5, v=0.9)
         barplot(score_per_method, col=col, space=c(0.25, 5), las=1, horiz=F,
-                ylab="Concordance index", names.arg=names(score_per_method), ylim=c(0.5, 0.7), xpd=FALSE)
+                ylab="Concordance index", names.arg=names(score_per_method), ylim=limits, xpd=FALSE)
         #legend("topright", legend=names(score_per_method), col=col, bty="n", pch=15)
         dev.off()
         
@@ -163,12 +165,13 @@ graph_andariel <- function(obj_andariel)
 
 work_andariel <- function(all_folds_avg)
 {
-    pdf("-0.5-0.7-CV_BOXPLOT.pdf")
+    pdf(paste(prefix, paste(limits, collapse="-"), "_CV_BOXPLOT.pdf", sep=""))
     col <- rainbow(ncol(all_folds_avg), s=0.5, v=0.9)
     boxplot(all_folds_avg, col=col, space=c(0.25, 5), las=1, horiz=F,
-            ylab="Concordance index", names.arg=colnames(all_folds_avg), ylim=c(0.5, 0.7), xpd=FALSE)
+            ylab="Concordance index", names.arg=colnames(all_folds_avg), ylim=limits, xpd=FALSE)
     #legend("topright", legend=names(score_per_method), col=col, bty="n", pch=15)
     dev.off()
+    return(NULL)
 }
 
 run_baal <- function(data)
@@ -203,7 +206,7 @@ graph_baal <- function(obj_baal)
     scores_per_method_flat <- lapply(methods, function(method)
     {
         labels <- ic50_cgp[, drug["CGP"], drop=TRUE]
-        r <- ensemble::correlate(labels, predictions_per_method[[method]], method="cindex")
+        r <- mRMRe::correlate(labels, predictions_per_method[[method]], method="cindex")
         return(r)
     })
     names(scores_per_method_flat) <- methods
@@ -214,7 +217,7 @@ graph_baal <- function(obj_baal)
     #{
     #    labels <- ic50_cgp[names(obj_baal[[partition]][[methods[[1]]]]), drug["CGP"], drop=TRUE]
     #    scores_per_method <- lapply(methods, function(method)
-    #                ensemble::correlate(labels, obj_baal[[partition]][[method]], method="cindex"))
+    #                mRMRe::correlate(labels, obj_baal[[partition]][[method]], method="cindex"))
     #    names(scores_per_method) <- methods
     #    return(scores_per_method)
     #})
