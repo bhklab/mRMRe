@@ -1,29 +1,27 @@
-`mRMRclassic` <- function(
+`mRMR.classic` <- function(
         data,
         target,
         feature_count,
         strata=rep.int(0, nrow(data)),
         weights=rep.int(1, nrow(data)),
         feature_types=rep.int(0, ncol(data)),
-        mim=NULL,
         uses_ranks=TRUE,
         outX=TRUE,
         bootstrap_count=0
         )
 {
     return(mRMRe::mRMRensemble(levels=rep.int(1, feature_count), data=data, target=target, strata=strata,
-                    weights=weights, feature_types=feature_types, mim=mim, uses_ranks=uses_ranks, outX=outX,
+                    weights=weights, feature_types=feature_types, uses_ranks=uses_ranks, outX=outX,
                     bootstrap_count=bootstrap_count))
 }
 
-`mRMRensemble` <- function(
-        data=NULL,
-        target=NULL,
+`mRMR.ensemble` <- function(
+        data,
+        target,
         levels,
         strata=rep.int(0, nrow(data)),
         weights=rep.int(1, nrow(data)),
         feature_types=rep.int(0, ncol(data)),
-        mim=NULL,
         uses_ranks=TRUE,
         outX=TRUE,
         bootstrap_count=0)
@@ -40,12 +38,6 @@
         rownames(tree$mim) <- colnames(data)
         colnames(tree$mim) <- colnames(data)
     }
-    else if (is.null(data))
-    {
-        tree <- .Call(C_build_mRMR_tree_from_mim, levels, as.vector(mim), ncol(mim),
-                target_feature_index)
-        tree$mim <- mim
-    }
 
     wrap <- function(i) t(matrix(i[length(i):1], nrow=length(levels), ncol=length(i)/length(levels)))
     
@@ -53,9 +45,3 @@
     class(object) <- "mRMRensemble"
     return(object)
 }
-
-`set_thread_count` <- function(thread_count)
-{
-    .Call(C_set_thread_count, as.integer(thread_count))
-}
-
