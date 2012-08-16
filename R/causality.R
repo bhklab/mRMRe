@@ -1,9 +1,9 @@
 `compute.causality` <- function(data, ...)
 {
     if (class(data) == "mRMReObject")
-        return(compute.causality.mRMReObject(data=data))
+        return(mRMRe::compute.causality.mRMReObject(data=data))
     else
-        return(compute.causality.default(data=data, ...))
+        return(mRMRe::compute.causality.default(data=data, ...))
 }
 
 `compute.causality.default` <- function(
