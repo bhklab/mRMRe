@@ -1,4 +1,12 @@
-`compute.causality` <- function(
+`compute.causality` <- function(data, ...)
+{
+    if (class(data) == "mRMReObject")
+        return(compute.causality.mRMReObject(data=data))
+    else
+        return(compute.causality.default(data=data, ...))
+}
+
+`compute.causality.default` <- function(
         data=NULL,
         mim=NULL,
         target_index,
@@ -55,9 +63,9 @@
     return(causality_coefficients)
 }
 
-`compute.causality` <- function(
-        tree)
+`compute.causality.mRMReObject` <- function(data)
 {
+    tree <- data
     causality_coefficients <- matrix(ncol=ncol(tree$mim), nrow=ncol(tree$mim))
     apply(tree$paths, 1, function(row)
     {
