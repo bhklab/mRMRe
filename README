@@ -1,4 +1,4 @@
 mRMRe
 =====
 
-R package implementing ensemble methods, such as mRMR
+an R package for parallelized mRMR ensemble feature selection

@@ -2,7 +2,7 @@
 \alias{mRMR.ensemble}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-%%  ~~function to do ... ~~
+Performs an ensemble mRMR feature selection.
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~

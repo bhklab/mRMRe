@@ -1,6 +1,6 @@
 Package: mRMRe
 Type: mRMRe
-Title: R package implementing ensemble methods, such as mRMR
+Title: R package for parallelized mRMR ensemble feature selection
 Version: 1.0
 Date: 2012-07-16
 Author: Who wrote it

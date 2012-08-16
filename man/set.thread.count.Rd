@@ -2,7 +2,7 @@
 \alias{set.thread.count}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-%%  ~~function to do ... ~~
+Sets the maximum number of threads that can be launched.
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~

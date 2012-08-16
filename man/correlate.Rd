@@ -2,7 +2,7 @@
 \alias{correlate}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-%%  ~~function to do ... ~~
+Computes the degree of association between two variables.
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~

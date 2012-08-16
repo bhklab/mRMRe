@@ -30,7 +30,7 @@
         stop("data must be of type data frame")
     
     levels <- as.vector(levels)
-    data <- cbind(target, data)
+    data <- cbind(target=target, data)
 
     tree <- .Call(C_build_mRMR_tree_from_data, levels, as.vector(data), as.vector(strata), as.vector(weights),
             as.vector(feature_types), nrow(data), ncol(data), as.integer(length(unique(strata))),

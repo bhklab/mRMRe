@@ -1,0 +1,61 @@
+%\VignetteIndexEntry{mRMRe: an R package for parallelized mRMR ensemble feature selection}
+%\VignetteDepends{Rcpp}
+%\VignetteSuggests{}
+%\VignetteKeywords{}
+%\VignettePackage{mRMRe}
+
+\documentclass[12pt]{article}
+
+\newcommand{\scscst}{\scriptscriptstyle}
+\newcommand{\scst}{\scriptstyle}
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Rclass}[1]{\textit{#1}}
+\newcommand{\Rpackage}[1]{\textit{#1}}
+\newcommand{\Rexpression}[1]{\texttt{#1}}
+\newcommand{\Rmethod}[1]{{\texttt{#1}}}
+\newcommand{\Rfunarg}[1]{{\texttt{#1}}}
+
+\begin{document}
+
+\title{\Rpackage{mRMRe}: an R package for parallelized mRMR ensemble feature selection}
+\author[1]{Nicolas De Jay}
+\author[2]{Simon Papillon-Cavanagh}
+\author[3]{Benjamin Haibe-Kains}
+
+%\affil%
+
+\SweaveOpts{highlight=TRUE, tidy=TRUE, keep.space=TRUE, keep.blank.space=FALSE, keep.comment=TRUE}
+
+\maketitle
+\tableofcontents
+
+%------------------------------------------------------------
+\clearpage
+\section{Introduction}
+%------------------------------------------------------------
+
+The \Rpackage{mRMRe} package is for this and that
+
+%------------------------------------------------------------
+\subsection{Installation}
+%------------------------------------------------------------
+
+\Rpackage{mRMRe} requires that \RPackage{Rcpp} is installed. These should be installed automatically when you install \Rpackage{mRMRe}. To install \Rpackage{mRMRe}, source biocLite from Bioconductor:
+
+<<install-pkg, eval=false>>=
+source("http://bioconductor.org/biocLite.R")
+biocLite("mRMRe")
+@
+
+Load \Rpackage{mRMRe} into your current workspace:
+<<loadlib,results=hide>>==
+library(mRMRe)
+@ 
+
+%------------------------------------------------------------
+\subsection{Further help}
+%------------------------------------------------------------ 
+
+
+\end{document}

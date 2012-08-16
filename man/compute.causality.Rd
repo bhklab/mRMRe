@@ -2,7 +2,7 @@
 \alias{compute.causality}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-%%  ~~function to do ... ~~
+Computes the causality.
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~

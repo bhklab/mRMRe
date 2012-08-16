@@ -2,7 +2,7 @@
 \alias{build.mim}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-%%  ~~function to do ... ~~
+Constructs a mutual information matrix.
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
