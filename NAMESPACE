@@ -4,6 +4,6 @@ useDynLib(mRMRe, .fixes="C_",
     compute_cramers_v, compute_pearson_correlation, compute_spearman_correlation,
     set_thread_count)
 export(build.mim, correlate,
-    mRMR_tree, filter.mRMR_tree,
+    mRMRclassic, mRMRensemble,
     set_thread_count,
     compute_causality)
