@@ -10,7 +10,7 @@
         bootstrap_count=0
         )
 {
-    return(mRMRe::mRMRensemble(levels=rep.int(1, feature_count), data=data, target=target, strata=strata,
+    return(mRMRe::mRMR.ensemble(levels=rep.int(1, feature_count), data=data, target=target, strata=strata,
                     weights=weights, feature_types=feature_types, uses_ranks=uses_ranks, outX=outX,
                     bootstrap_count=bootstrap_count))
 }

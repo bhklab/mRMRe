@@ -6,56 +6,67 @@
 
 \documentclass[12pt]{article}
 
-\newcommand{\scscst}{\scriptscriptstyle}
-\newcommand{\scst}{\scriptstyle}
-\newcommand{\Robject}[1]{{\texttt{#1}}}
-\newcommand{\Rfunction}[1]{{\texttt{#1}}}
-\newcommand{\Rclass}[1]{\textit{#1}}
-\newcommand{\Rpackage}[1]{\textit{#1}}
-\newcommand{\Rexpression}[1]{\texttt{#1}}
-\newcommand{\Rmethod}[1]{{\texttt{#1}}}
-\newcommand{\Rfunarg}[1]{{\texttt{#1}}}
+\usepackage[utf8]{inputenc}
+\usepackage{authblk}
+
+
+
+
+\title{mRMRe: an R package for parallelized mRMR ensemble feature selection}
+\author[1]{Nicolas De Jay}
+\author[1]{Simon Papillon-Cavanagh}
+\author[2]{Catharina Olsen}
+\author[2]{Gianluca Bontempi}
+\author[1]{Benjamin Haibe-Kains}
+\affil[1]{Bioinformatics and Computational Biology Laboratory, Institut de recherches cliniques de Montr\'{e}al, Montreal, Quebec, Canada}
+\affil[2]{Machine Learning Group, Universit\'{e} Libre de Bruxelles, Brussels, Belgium}
+
+\SweaveOpts{highlight=TRUE, tidy=TRUE, keep.space=TRUE, keep.blank.space=FALSE, keep.comment=TRUE}
+
+<<setup,echo=FALSE,results=hide>>=
+options(keep.source=TRUE)
+@
 
 \begin{document}
 
-\title{\Rpackage{mRMRe}: an R package for parallelized mRMR ensemble feature selection}
-\author[1]{Nicolas De Jay}
-\author[2]{Simon Papillon-Cavanagh}
-\author[3]{Benjamin Haibe-Kains}
-
-%\affil%
-
-\SweaveOpts{highlight=TRUE, tidy=TRUE, keep.space=TRUE, keep.blank.space=FALSE, keep.comment=TRUE}
 
 \maketitle
 \tableofcontents
 
 %------------------------------------------------------------
-\clearpage
 \section{Introduction}
 %------------------------------------------------------------
 
-The \Rpackage{mRMRe} package is for this and that
+The \textit{mRMRe} package is for this and that
 
 %------------------------------------------------------------
 \subsection{Installation}
 %------------------------------------------------------------
 
-\Rpackage{mRMRe} requires that \RPackage{Rcpp} is installed. These should be installed automatically when you install \Rpackage{mRMRe}. To install \Rpackage{mRMRe}, source biocLite from Bioconductor:
+\textit{mRMRe} requires that \textit{Rcpp} is installed. These should be installed automatically when you install \textit{mRMRe}. To install \textit{mRMRe}, source biocLite from Bioconductor:
 
 <<install-pkg, eval=false>>=
 source("http://bioconductor.org/biocLite.R")
 biocLite("mRMRe")
 @
 
-Load \Rpackage{mRMRe} into your current workspace:
+Load \textit{mRMRe} into your current workspace:
 <<loadlib,results=hide>>==
 library(mRMRe)
 @ 
 
 %------------------------------------------------------------
-\subsection{Further help}
-%------------------------------------------------------------ 
+\section{Mutual Information Matrix}
+%------------------------------------------------------------
 
+<<eval=FALSE>>=
+merged_data <- data.frame(ic50=cgps_ic50, cgps_ge)
+
+# Pearson correlation for continuous variables
+mim.pearson <- build.mim(data=merged_data, uses_ranks=FALSE)
+
+# Spearman correlation for continuous variables
+mim.spearman <- build.mim(data=merged_data) 
+@
 
 \end{document}
