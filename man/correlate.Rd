@@ -1,68 +1,51 @@
 \name{correlate}
 \alias{correlate}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Computes the degree of association between two variables.
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-correlate(x, y, strata = rep.int(0, length(x)), weights = rep.int(1, length(x)), method = c("cramer", "pearson", "spearman", "cindex"), outX = TRUE, bootstrap_count = 0)
+correlate(x, y, strata, weights, method, outX, bootstrap_count)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{x}{
-%%     ~~Describe \code{x} here~~
-}
-  \item{y}{
-%%     ~~Describe \code{y} here~~
+  \item{x, y}{
+Two vector containing sample data.
 }
   \item{strata}{
-%%     ~~Describe \code{strata} here~~
+A vector containing the stratum associated with each sample. Defaults to all samples being in the same stratum.
 }
   \item{weights}{
-%%     ~~Describe \code{weights} here~~
+A vector containing the weight associated with each sample. Defaults to all samples having the same weight.
 }
   \item{method}{
-%%     ~~Describe \code{method} here~~
+A string containing the estimator to be used for computing the correlation between x and y.
+Must be one of the following methods: "cramer", "pearson", "spearman", "cindex".
 }
   \item{outX}{
-%%     ~~Describe \code{outX} here~~
+Boolean value on whether ties should be counted. Defaults to TRUE.
 }
   \item{bootstrap_count}{
-%%     ~~Describe \code{bootstrap_count} here~~
-}
+If a positive non-zero integer is given,
+  samples of each stratum will be recombined by the generic inverse-variance
+  weighted average based on sample bootstrapping. Defaults to 0.
+  }
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+The result of the estimator. "cramer" returns Cramer's V, "pearson" returns Pearson's r, "spearman" returns Spearman's r, "cindex" returns the concordance index.
 }
 \references{
-%% ~put references to the literature/web site here ~
 }
 \author{
-%%  ~~who you are~~
+Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
 \note{
-%%  ~~further notes~~
 }
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
 \keyword{ ~kwd1 }
 \keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
