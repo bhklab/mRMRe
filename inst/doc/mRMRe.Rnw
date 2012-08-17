@@ -1,5 +1,5 @@
 %\VignetteIndexEntry{mRMRe: an R package for parallelized mRMR ensemble feature selection}
-%\VignetteDepends{Rcpp}
+%\VignetteDepends{Rcpp,xtable}
 %\VignetteSuggests{}
 %\VignetteKeywords{}
 %\VignettePackage{mRMRe}
@@ -8,8 +8,6 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage{authblk}
-
-
 
 
 \title{mRMRe: an R package for parallelized mRMR ensemble feature selection}
@@ -43,17 +41,22 @@ The \textit{mRMRe} package is for this and that
 \subsection{Installation}
 %------------------------------------------------------------
 
-\textit{mRMRe} requires that \textit{Rcpp} is installed. These should be installed automatically when you install \textit{mRMRe}. To install \textit{mRMRe}, source biocLite from Bioconductor:
+\textit{mRMRe} requires that \textit{Rcpp} is installed. 
+These should be installed automatically when you install \textit{mRMRe}. To install \textit{mRMRe}, source biocLite from CRAN.
 
 <<install-pkg, eval=false>>=
-source("http://bioconductor.org/biocLite.R")
-biocLite("mRMRe")
+install.packages("mRMRe")
 @
 
 Load \textit{mRMRe} into your current workspace:
 <<loadlib,results=hide>>==
 library(mRMRe)
 @ 
+
+Load the example dataset \textit{cgps} into your current workspace:
+<<loadlib,results=hide>>==
+data(cgps)
+@
 
 %------------------------------------------------------------
 \section{Mutual Information Matrix}

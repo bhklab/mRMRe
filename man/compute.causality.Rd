@@ -45,17 +45,7 @@ compute.causality(data, ...)
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
 
-## The function is currently defined as
-function (data, ...) 
-{
-    if (class(data) == "mRMReObject") 
-        return(compute.causality.mRMReObject(data = data))
-    else return(compute.causality.default(data = data, ...))
-  }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

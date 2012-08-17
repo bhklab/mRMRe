@@ -66,20 +66,7 @@ mRMR.classic(data, target, feature_count, strata = rep.int(0, nrow(data)), weigh
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
 
-## The function is currently defined as
-function (data, target, feature_count, strata = rep.int(0, nrow(data)), 
-    weights = rep.int(1, nrow(data)), feature_types = rep.int(0, 
-        ncol(data)), uses_ranks = TRUE, outX = TRUE, bootstrap_count = 0) 
-{
-    return(mRMRe::mRMRensemble(levels = rep.int(1, feature_count), 
-        data = data, target = target, strata = strata, weights = weights, 
-        feature_types = feature_types, uses_ranks = uses_ranks, 
-        outX = outX, bootstrap_count = bootstrap_count))
-  }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

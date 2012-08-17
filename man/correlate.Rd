@@ -60,37 +60,7 @@ correlate(x, y, strata = rep.int(0, length(x)), weights = rep.int(1, length(x)),
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
 
-## The function is currently defined as
-function (x, y, strata = rep.int(0, length(x)), weights = rep.int(1, 
-    length(x)), method = c("cramer", "pearson", "spearman", "cindex"), 
-    outX = TRUE, bootstrap_count = 0) 
-{
-    x <- as.vector(x)
-    y <- as.vector(y)
-    strata <- as.vector(strata)
-    weights <- as.vector(weights)
-    method <- match.arg(method)
-    stratum_count <- as.integer(length(unique(strata)))
-    bootstrap_count <- as.integer(bootstrap_count)
-    value <- NA
-    if (method == "cramer") 
-        value <- .Call(C_compute_cramers_v, x, y, weights, strata, 
-            stratum_count, bootstrap_count)
-    else if (method == "pearson") 
-        value <- .Call(C_compute_pearson_correlation, x, y, weights, 
-            strata, stratum_count, bootstrap_count)
-    else if (method == "spearman") 
-        value <- .Call(C_compute_spearman_correlation, x, y, 
-            weights, strata, stratum_count, bootstrap_count)
-    else if (method == "cindex") 
-        value <- .Call(C_compute_concordance_index, x, y, weights, 
-            strata, stratum_count, outX)
-    return(value)
-  }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
