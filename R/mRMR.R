@@ -47,8 +47,17 @@
     colnames(tree$mim) <- colnames(data)
 
     wrap <- function(i) t(matrix(i[length(i):1], nrow=length(levels), ncol=length(i)/length(levels)))
+    paths <- wrap(tree$paths)
     
-    object <- list(paths=wrap(tree$paths) + 1, scores=wrap(tree$scores), tree$mim)
+    offsets <- rep(0, length(paths))
+    lapply(which(feature_types == 3), function(index)
+    {
+        subset <- which(paths > index)
+        offsets[subset] <<- offsets[subset] + 1
+    })
+    paths <- paths - offsets
+    
+    object <- list(paths=paths, scores=wrap(tree$scores), tree$mim)
     class(object) <- "mRMReObject"
     return(object)
 }
