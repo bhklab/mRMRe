@@ -57,7 +57,7 @@
     })
     paths <- paths - offsets
     
-    object <- list(paths=paths, scores=wrap(tree$scores), tree$mim)
+    object <- list(paths=paths, scores=wrap(tree$scores), mim=tree$mim)
     class(object) <- "mRMReObject"
     return(object)
 }

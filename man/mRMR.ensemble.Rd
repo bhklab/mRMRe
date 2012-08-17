@@ -1,74 +1,66 @@
 \name{mRMR.ensemble}
 \alias{mRMR.ensemble}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Performs an ensemble mRMR feature selection.
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-mRMR.ensemble(data, target, levels, strata = rep.int(0, nrow(data)), weights = rep.int(1, nrow(data)), feature_types = rep.int(0, ncol(data)), uses_ranks = TRUE, outX = TRUE, bootstrap_count = 0)
+mRMR.ensemble(data, target, levels, strata, weights, feature_types, uses_ranks, outX, bootstrap_count)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{data}{
-%%     ~~Describe \code{data} here~~
+  A data frame with rows and columns respectively corresponding to samples and features.
 }
   \item{target}{
-%%     ~~Describe \code{target} here~~
+  A vector corresponding to the targeted phenotype for which ensemble mRMR feature selection is desired.
 }
   \item{levels}{
-%%     ~~Describe \code{levels} here~~
+  A vector containing the number of features to be selected at each turn of ensemble mRMR feature selection.
 }
   \item{strata}{
-%%     ~~Describe \code{strata} here~~
+  A vector containing the stratum associated with each sample. Defaults to all samples being in the same stratum.
 }
   \item{weights}{
-%%     ~~Describe \code{weights} here~~
+  A vector containing the weight associated with each sample. Defaults to all samples having the same weight.
 }
   \item{feature_types}{
-%%     ~~Describe \code{feature_types} here~~
+  A vector specifying the type of each feature, the first feature being the target. A value of 0 is for a continuous feature;
+  1, for a discrete feature; and 2, for survival data. Defaults to all samples being continuous.
 }
   \item{uses_ranks}{
-%%     ~~Describe \code{uses_ranks} here~~
+  If set to TRUE, the Spearman correlation is used between continuous features. If set to FALSE, the Pearson correlation is used. Defaults to TRUE.
 }
   \item{outX}{
-%%     ~~Describe \code{outX} here~~
+  Boolean value on whether ties should be counted. Defaults to TRUE.
 }
   \item{bootstrap_count}{
-%%     ~~Describe \code{bootstrap_count} here~~
+  If a positive non-zero integer is given,
+  samples of each stratum will be recombined by the generic inverse-variance
+  weighted average based on sample bootstrapping. Defaults to 0.
 }
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+Returns a mRMReObject object with the following attributes:
+  \item{paths}{Index matrix in which rows correspond to solutions and columns to the features selected for each solution.}
+  \item{scores}{Score matrix associated with ensemble mRMR feature selection.}
+  \item{mim}{Mutual information matrix used for ensemble mRMR feature selection.}
 }
 \references{
-%% ~put references to the literature/web site here ~
 }
 \author{
-%%  ~~who you are~~
+Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
 \note{
-%%  ~~further notes~~
 }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
 
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
 \keyword{ ~kwd1 }
 \keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

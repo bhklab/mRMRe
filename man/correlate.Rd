@@ -34,7 +34,8 @@ If a positive non-zero integer is given,
 \details{
 }
 \value{
-The result of the estimator. "cramer" returns Cramer's V, "pearson" returns Pearson's r, "spearman" returns Spearman's r, "cindex" returns the concordance index.
+A value depending on the estimator. "cramer" returns Cramer's V,
+"pearson" returns Pearson's r, "spearman" returns Spearman's r, "cindex" returns the concordance index.
 }
 \references{
 }
