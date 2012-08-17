@@ -1,3 +1,6 @@
+# feature_type = 0 for continous
+# feature_type = 1 for discrete
+# feature_type = 2 for survival
 `build.mim` <- function(
         data,
         strata=rep.int(0, nrow(data)),
@@ -7,6 +10,13 @@
         outX=TRUE,
         bootstrap_count=0)
 {
+    if (is.data.frame(data))
+        stop("data must be of type data frame")
+    
+    expansion <- expand.data(data, feature_types)
+    data <- expansion$data
+    feature_types <- expansion$feature_types
+    
     data <- as.matrix(data)
     mi_matrix <- .Call(C_build_mim, as.vector(data), as.vector(strata), as.vector(weights), as.vector(feature_types),
             as.integer(nrow(data)), as.integer(ncol(data)), as.integer(length(unique(strata))), as.integer(uses_ranks),
