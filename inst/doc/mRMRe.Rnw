@@ -35,7 +35,7 @@ options(keep.source=TRUE)
 \section{Introduction}
 %------------------------------------------------------------
 
-The \textit{mRMRe} package is for this and that
+\textit{mRMRe} is an R package for parallelized mRMR ensemble feature selection.
 
 %------------------------------------------------------------
 \subsection{Installation}
@@ -59,7 +59,11 @@ data(cgps)
 @
 
 %------------------------------------------------------------
-\section{Mutual Information Matrix}
+\section{Measures of Associtation}
+%------------------------------------------------------------
+
+%------------------------------------------------------------
+\subsection{Mutual Information Matrix}
 %------------------------------------------------------------
 
 <<eval=FALSE>>=
@@ -71,5 +75,27 @@ mim.pearson <- build.mim(data=merged_data, uses_ranks=FALSE)
 # Spearman correlation for continuous variables
 mim.spearman <- build.mim(data=merged_data) 
 @
+
+%------------------------------------------------------------
+\subsection{Correlations}
+%------------------------------------------------------------
+
+Correlations
+
+%------------------------------------------------------------
+\section{mRMR Feature Selection}
+%------------------------------------------------------------
+
+%------------------------------------------------------------
+\subsection{Classic mRMR}
+%------------------------------------------------------------
+
+Classic
+
+%------------------------------------------------------------
+\subsection{Ensemble mRMR}
+%------------------------------------------------------------
+
+Ensemble
 
 \end{document}
