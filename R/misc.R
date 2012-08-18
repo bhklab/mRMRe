@@ -1,7 +1,30 @@
-# feature_type = 0 for continous
-# feature_type = 1 for discrete
-# feature_type = 2 for survival
-`expand.data` <- function(data, feature_types)
+## example of data
+#library(survival)
+#dd <- data.frame("surv1"=Surv(runif(100), sample(0:1, 100, replace=T)), "cont1"=runif(100), "cat1"=factor(sample(1:5, 100, replace=T), ordered=T), "surv2"=Surv(runif(100), sample(0:1, 100, replace=T)), "cont2"=runif(100), "cont3"=runif(100), "surv3"=Surv(runif(100), sample(0:1, 100, replace=T)), "cat2"=factor(sample(1:5, 100, replace=T), ordered=T))
+#head(dd)
+`.expand.data` <- function(data)
+{
+    ## expand features
+    feature_types <- sapply(data, class)
+    if(is.list(feature_types)) { feature_types <- unlist(lapply(feature_types, function(x) { paste(x, collapse="_") })) }
+    ff <- unlist(sapply(feature_types, function(x) { if(x == "Surv") { return(c("Surv_time", "Surv_event")) } else { return(x) } }))
+    ## expand data
+    dd <- sapply(data, function(x) {
+        if(class(x)[1] != "Surv") { return(as.numeric(x)) } else {
+            ## split survival data
+            x <- cbind("time"=x[ ,"time"], "event"=x[ ,"status"])
+            return(x)
+        }
+    })
+    dd <- do.call(cbind, dd)
+    rownames(dd) <- rownames(data)
+    ## update colnames
+    colnames(dd)[!is.element(ff, c("Surv_time", "Surv_event"))] <- colnames(data)[feature_types != "Surv"]
+    colnames(dd)[is.element(ff, c("Surv_time", "Surv_event"))] <- paste(rep(colnames(data)[feature_types == "Surv"], each=2), rep(c("time", "event"), sum(feature_types == "Surv")), sep="_")
+    return(list("data"=dd, "feature_types"=ff))
+}
+
+`.expand.data.old` <- function(data, feature_types)
 {
     offset <- 0
     survival_feature_indices <- which(feature_types == 2)
