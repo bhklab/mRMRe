@@ -5,7 +5,6 @@
         data,
         strata=rep.int(0, nrow(data)),
         weights=rep.int(1, nrow(data)),
-        feature_types=rep.int(0, ncol(data)),
         uses_ranks=TRUE,
         outX=TRUE,
         bootstrap_count=0)
@@ -13,7 +12,7 @@
     if (is.data.frame(data))
         stop("data must be of type data frame")
     
-    expansion <- expand.data(data, feature_types)
+    expansion <- mRMRe::.expand.data(data)
     data <- expansion$data
     feature_types <- expansion$feature_types
     
