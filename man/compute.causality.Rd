@@ -1,6 +1,5 @@
 \name{compute.causality}
 \alias{compute.causality}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Computes the causality
 }
@@ -10,7 +9,6 @@ This function computes causality scores based on mutual infomration theory.
 \usage{
 compute.causality(data, target_index, mim, solutions, estimator = c("pearson", "spearman", "kendall"))
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{data}{
   	An mRMReObject
@@ -18,7 +16,7 @@ compute.causality(data, target_index, mim, solutions, estimator = c("pearson", "
 	A data frame with rows and columns respectively corresponding to samples and features.
     Only columns of the following types are supported: "numeric", "ordered_factor" and "Surv".
     
-    If mRMReObject is used, the other arguments need not to be used.
+    If mRMReObject is used, the other arguments need not be used.
 }
   \item{target_index}{
 	Index of the target feature (column) from the data matrix.
