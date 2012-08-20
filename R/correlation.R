@@ -9,10 +9,7 @@
     if (!is.data.frame(data))
         stop("data must be of type data frame")
     
-    feature_types <- unlist(sapply(data, class))
-    if (is.list(feature_types))
-        feature_types <- unlist(lapply(feature_types, paste, collapse="_"))
-    
+    feature_types <- sapply(data, function(x) paste(class(x), collapse="_"))
     if (any(!is.element(feature_types, c("numeric", "ordered_factor", "Surv"))))
         stop("feature types must be either numeric, ordered factor or Surv")
     

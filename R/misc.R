@@ -1,6 +1,6 @@
 `.expand.data` <- function(data) # mim
 {
-    feature_types <- sapply(data, function(x) { return(paste(class(x), collapse="_")) })
+    feature_types <- sapply(data, function(x) paste(class(x), collapse="_"))
     
     new_feature_types <- unlist(lapply(feature_types, function(type)
     {
