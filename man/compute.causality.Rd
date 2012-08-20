@@ -40,7 +40,8 @@ compute.causality(data, target_index, mim, solutions, estimator = c("pearson", "
 Returns a matrix of causality coefficients for every pair of features considered in solutions.
 }
 \references{
-%% ~put references to the literature/web site here ~
+Bell AJ: The co-information lattice. In Proceedings of the Fifth International Workshop on Independent Component Analysis and Blind Signal Separation: ICA 2003. edited by Amari S et al.2003.
+
 }
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
