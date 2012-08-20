@@ -51,18 +51,19 @@
         outX=TRUE,
         bootstrap_count=0)
 {
+    if (length(x) != length(y))
+        stop("both sample sets must have the same length")
+    
     if (missing(weights)) 
-        weights <- rep.int(1, nrow(data))
+        weights <- rep.int(1, length(x))
     
     if (missing(strata)) 
-        strata <- rep.int(0, nrow(data))
+        strata <- rep.int(0, length(x))
     else if (is.factor(strata))
         strata <- as.integer(strata) - 1
     else
         stop("strata must be provided as factors")
     
-    x <- as.vector(x)
-    y <- as.vector(y)
     weights <- as.vector(weights)
     method <- match.arg(method)
     stratum_count <- as.integer(length(unique(strata)))
