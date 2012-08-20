@@ -6,14 +6,14 @@ Performs an mRMR feature selection.
 \description{
 }
 \usage{
-mRMR.classic(data, target, feature_count, strata, weights, feature_types, uses_ranks, outX, bootstrap_count)
+mRMR.classic(data, target_index, feature_count, strata, weights, uses_ranks, outX, bootstrap_count)
 }
 \arguments{
   \item{data}{
   A data frame with rows and columns respectively corresponding to samples and features.
 }
-  \item{target}{
-  A vector corresponding to the targeted phenotype for which mRMR feature selection is desired.
+  \item{target_index}{
+  Index of the target feature (column) from the data matrix.
 }
   \item{feature_count}{
   The number of features to be selected by mRMR feature selection.
@@ -23,10 +23,6 @@ mRMR.classic(data, target, feature_count, strata, weights, feature_types, uses_r
 }
   \item{weights}{
   A vector containing the weight associated with each sample. Defaults to all samples having the same weight.
-}
-  \item{feature_types}{
-  A vector specifying the type of each feature, the first feature being the target. A value of 0 is for a continuous feature;
-  1, for a discrete feature; and 2, for survival data. Defaults to all samples being continuous.
 }
   \item{uses_ranks}{
   If set to TRUE, the Spearman correlation is used between continuous features. If set to FALSE, the Pearson correlation is used. Defaults to TRUE.
@@ -56,12 +52,13 @@ Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
 \note{
 }
-
-
 \seealso{
 }
 \examples{
+data(cgps)
 
+data <- data.frame(target=as.numeric(cgps_ic50), as.numeric(cgps_ge))
+mRMR.classic(data, 1, 30)
 }
 \keyword{ ~kwd1 }
 \keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

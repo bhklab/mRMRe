@@ -12,7 +12,7 @@
     if (is.data.frame(data))
         stop("data must be of type data frame")
     
-    expansion <- mRMRe::.expand.data(data)
+    expansion <- mRMRe:::.expand.data(data)
     data <- expansion$data
     feature_types <- expansion$feature_types
     

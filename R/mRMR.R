@@ -1,6 +1,6 @@
 `mRMR.classic` <- function(
         data,
-        target,
+        target_index,
         feature_count,
         strata=rep.int(0, nrow(data)),
         weights=rep.int(1, nrow(data)),
@@ -9,7 +9,7 @@
         bootstrap_count=0
         )
 {
-    return(mRMRe::mRMR.ensemble(levels=rep.int(1, feature_count), data=data, target=target, strata=strata,
+    return(mRMRe::mRMR.ensemble(levels=rep.int(1, feature_count), data=data, target=target_index, strata=strata,
                     weights=weights, uses_ranks=uses_ranks, outX=outX, bootstrap_count=bootstrap_count))
 }
 
@@ -36,7 +36,7 @@
     # if (any(!sapply(data[ ,feature_types == "factor", drop=FALSE], is.ordered)))
     #     stop("categorical features must be ordered factors")
 
-    expansion <- .expand.data(data=data)
+    expansion <- mRMRe:::.expand.data(data=data)
     data <- expansion$data
     feature_types <- expansion$feature_types
     levels <- as.vector(levels)
