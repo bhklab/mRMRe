@@ -10,8 +10,9 @@
         stop("data must be of type data frame")
     
     feature_types <- sapply(data, function(x) paste(class(x), collapse="_"))
+    
     if (any(!is.element(feature_types, c("numeric", "ordered_factor", "Surv"))))
-        stop("feature types must be either numeric, ordered factor or Surv")
+        stop("data columns must be either of numeric, ordered factor or Surv type")
     
     if (missing(strata)) 
         weights <- rep.int(1, nrow(data))
@@ -19,17 +20,19 @@
     if (missing(strata)) 
         strata <- rep.int(0, nrow(data))
                
-    expansion <- mRMRe:::.expand.data(data)
+    expansion <- mRMRe:::.expand.input(feature_types=feature_types, data=data)
     data <- expansion$data
     feature_types <- expansion$feature_types
+    feature_names <- expansion$feature_names
     
     data <- as.matrix(data)
     mi_matrix <- .Call(mRMRe:::.C_build_mim, as.vector(data), as.vector(strata), as.vector(weights), as.vector(feature_types),
             as.integer(nrow(data)), as.integer(ncol(data)), as.integer(length(unique(strata))), as.integer(uses_ranks),
             as.integer(outX), as.integer(bootstrap_count))
     mi_matrix <- matrix(mi_matrix, nrow=ncol(data), ncol=ncol(data))
-    rownames(mi_matrix) <- colnames(data)
-    colnames(mi_matrix) <- colnames(data)
+    
+    compression <- mRMRe:::.compress.output(feature_types=feature_types, feature_names=feature_names, mi_matrix=mi_matrix)
+    mi_matrix <- compression$mi_matrix
     
     return(mi_matrix)
 }

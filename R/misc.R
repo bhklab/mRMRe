@@ -1,6 +1,31 @@
-`.expand.data` <- function(data) # mim
+`.compress.output` <- function(feature_types, feature_names=NULL, mi_matrix=NULL, paths=NULL)
 {
-    feature_types <- sapply(data, function(x) paste(class(x), collapse="_"))
+    if (!is.null(mi_matrix))
+    {
+        sub <- feature_types == 3
+        mi_matrix <- mi_matrix[!sub, !sub]
+        rownames(mi_matrix) <- feature_names
+        colnames(mi_matrix) <- feature_names
+    }
+    
+    if (!is.null(paths))
+    {
+        offsets <- rep(0, length(paths))
+        lapply(which(feature_types == 3), function(index)
+        {
+            subset <- which(paths > index)
+            offsets[subset] <<- offsets[subset] + 1
+        })
+        paths <- paths - offsets
+    }
+    
+    return(list("mi_matrix"=mi_matrix, "paths"=paths))
+}
+
+`.expand.input` <- function(feature_types=NULL, data) # mim
+{
+    if (is.null(feature_types))
+        feature_types <- sapply(data, function(x) paste(class(x), collapse="_"))
     
     new_feature_types <- unlist(lapply(feature_types, function(type)
     {
@@ -21,7 +46,7 @@
     rownames(new_data) <- rownames(data)
     colnames(new_data)[!new_feature_types %in% c(2, 3)] <- colnames(data)[feature_types != "Surv"]
     colnames(new_data)[new_feature_types %in% c(2, 3)] <- paste(rep(colnames(data)[feature_types == "Surv"], each=2),
-        rep(c("time", "event"), sum(feature_types == "Surv")), sep="_")
+        rep(c("time", "event"), sum(feature_types == "Surv")), sep="@@@")
 
     # new_mim <- sapply(seq(feature_types), function(i)
     # {
@@ -37,7 +62,7 @@
     #     return(a)
     # })
 
-    return(list(data=new_data, feature_types=new_feature_types)) # new_mim=new_mim
+    return(list("data"=new_data, "feature_types"=new_feature_types, "feature_names"=colnames(data))) # new_mim=new_mim
 }
 
 `set.thread.count` <- function(thread_count)
