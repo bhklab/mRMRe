@@ -4,7 +4,7 @@
 \description{
 This function constructs a mutual information matrix (MIM).
 }
-\usage{build.mim(data, strata, weights, uses_ranks, outX, bootstrap_count = 0)}
+\usage{build.mim(data, strata, weights, uses_ranks, outX, bootstrap_count)}
 \arguments{
   \item{data}{A data frame with rows and columns respectively corresponding to samples and features.}
   \item{strata}{A vector containing the stratum associated with each sample. Defaults to all samples being in the same stratum.}
@@ -15,12 +15,12 @@ This function constructs a mutual information matrix (MIM).
   samples of each stratum will be recombined by the generic inverse-variance
   weighted average based on sample bootstrapping. Defaults to 0.}
 }
-\details{}
+%\details{}
 \value{A symmetric matrix whose rows and columns correspond to features. Each (i, j) in the matrix is the mutual information between the features i and j.}
-\references{}
+%\references{}
 \author{Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains}
-\note{}
-\seealso{}
+%\note{}
+\seealso{mRMR.classic, mRMR.ensemble}
 \examples{
 ## Test on a dummy dataset
 library(survival)

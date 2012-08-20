@@ -40,9 +40,7 @@
     return(list(data=new_data, feature_types=new_feature_types)) # new_mim=new_mim
 }
 
-
-
 `set.thread.count` <- function(thread_count)
 {
-    .Call(C_set_thread_count, as.integer(thread_count))
+    .Call(mRMRe:::.C_set_thread_count, as.integer(thread_count))
 }

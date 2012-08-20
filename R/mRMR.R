@@ -33,10 +33,10 @@
     if (any(!is.element(feature_types, c("numeric", "ordered_factor", "Surv"))))
         stop("feature types must be either numeric, ordered factor or Surv")
 
-    if(missing(strata)) 
+    if (missing(strata)) 
         weights <- rep.int(1, nrow(data))
         
-    if(missing(strata)) 
+    if (missing(strata)) 
         strata <- rep.int(0, nrow(data))
 
     expansion <- mRMRe:::.expand.data(data=data)
