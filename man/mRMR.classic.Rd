@@ -57,7 +57,7 @@ Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 \examples{
 data(cgps)
 
-data <- data.frame(target=as.numeric(cgps_ic50), as.numeric(cgps_ge))
+data <- data.frame(target=cgps_ic50, cgps_ge)
 mRMR.classic(data, 1, 30)
 }
 %\keyword{ ~kwd1 }

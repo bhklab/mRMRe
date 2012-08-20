@@ -58,9 +58,9 @@ Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 
 data(cgps)
 
-data <- data.frame(target=as.numeric(cgps_ic50), as.numeric(cgps_ge))
-mRMR.ensemble(data, 1, rep.int(1, 30)) # For mRMR.classic-like results
-mRMR.ensemble(data, 1, 10:1)
+data <- data.frame(target=cgps_ic50, cgps_ge)
+classic <- mRMR.ensemble(data, 1, rep.int(1, 30)) # For mRMR.classic-like results
+ensemble <- mRMR.ensemble(data, 1, 10:1)
 }
 %\keyword{ ~kwd1 }
 %\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

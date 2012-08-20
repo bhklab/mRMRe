@@ -4,7 +4,7 @@
 Computes the causality
 }
 \description{
-This function computes causality scores based on mutual infomration theory.
+This function computes causality scores based on mutual information theory.
 }
 \usage{
 compute.causality(data, target_index, mim, solutions, estimator = c("pearson", "spearman", "kendall"))
@@ -54,7 +54,7 @@ Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 \examples{
 data(cgps)
 
-data <- data.frame(target=as.numeric(cgps_ic50), as.numeric(cgps_ge))
+data <- data.frame(target=cgps_ic50, cgps_ge)
 ensemble <- mRMR.ensemble(data, 1, 10:1)
 compute.causality(ensemble)
 compute.causality(data=data, target_index=1, mim=NULL, solutions=ensemble$paths, estimator="spearman")
