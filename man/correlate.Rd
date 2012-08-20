@@ -21,7 +21,7 @@ correlate(x, y, strata, weights, method, outX, bootstrap_count)
   }
   \item{method}{
   A string containing the estimator to be used for computing the correlation between x and y.
-  Must be one of the following methods: "cramer", "pearson", "spearman", "cindex".
+  Must be one of the following methods: "cramer", "pearson", "spearman", "cindex", "kendall".
   }
   \item{outX}{
   Boolean value on whether ties should be counted. Defaults to TRUE.
@@ -33,8 +33,12 @@ correlate(x, y, strata, weights, method, outX, bootstrap_count)
 }
 %\details{}
 \value{
-A value depending on the estimator. "cramer" returns Cramer's V,
-"pearson" returns Pearson's r, "spearman" returns Spearman's r, "cindex" returns the concordance index.
+A value depending on the estimator.
+"cramer" returns Cramer's V,
+"pearson" returns Pearson's rho,
+"spearman" returns Spearman's rho,
+"cindex" returns the concordance index,
+"kendall" returns Kendall's tau.
 }
 %\references{}
 \author{

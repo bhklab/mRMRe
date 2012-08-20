@@ -47,7 +47,7 @@
         y,
         strata,
         weights,
-        method=c("cramer", "pearson", "spearman", "cindex"),
+        method=c("cramer", "pearson", "spearman", "cindex", "kendall"),
         outX=TRUE,
         bootstrap_count=0)
 {
@@ -88,6 +88,8 @@
         value <- .Call(mRMRe:::.C_compute_spearman_correlation, x, y, weights, strata, stratum_count, bootstrap_count)
     else if (method == "cindex")
         value <- .Call(mRMRe:::.C_compute_concordance_index, x, y, weights, strata, stratum_count, outX)
+    else if (method == "kendall")
+        value <- (.Call(mRMRe:::.C_compute_concordance_index, x, y, weights, strata, stratum_count, outX) - 0.5) * 2
     
     return(value)
 }

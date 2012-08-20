@@ -38,8 +38,10 @@ mRMR.ensemble(data, target_index, levels, strata, weights, uses_ranks, outX, boo
   weighted average based on sample bootstrapping. Defaults to 0.
 }
 }
-%\details{
-%}
+\details{
+The resulting mutual information matrix is computed using Pearson or Spearman's rho between numeric features (depending on the uses_ranks argument);
+using Cramer's V between ordered factors; and Concordance index for any other combination.
+}
 \value{
 Returns a mRMReObject object with the following attributes:
   \item{paths}{Index matrix in which rows correspond to solutions and columns to the features selected for each solution.}
