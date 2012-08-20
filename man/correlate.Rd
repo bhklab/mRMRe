@@ -43,7 +43,21 @@ Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
 %\note{}
 \seealso{build.mim}
-%\examples{
-%}
+\examples{
+data(cgps)
+# Compute c-index between feature 1 and 2
+correlate(cgps_ge[,1],cgps_ge[,2], method="cindex")
+
+# Compute Cramer's V
+x <- sample(c(0,1), 100, replace=TRUE)
+y <- sample(c(0,1), 100, replace=TRUE)
+correlate(x,y, method="cramer")
+
+# Compute pearson coefficient with random strata and sample weights
+# between feature 1 and 2
+strata <- sample(c(0,1,2), nrow(cgps_ge), replace=TRUE)
+weights <- runif(nrow(cgps_ge))
+correlate(cgps_ge[,1],cgps_ge[,2], strata=strata, weights=weights, method="pearson", bootstrap_count=1000)
+}
 %\keyword{ ~kwd1 }
 %\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
