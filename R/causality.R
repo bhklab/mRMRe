@@ -1,17 +1,19 @@
 `compute.causality` <- function(
-        data=NULL,
+        data,
         target_index,
-        mim=NULL,
+        mim,
         solutions,
         estimator=c("pearson", "spearman", "kendall"))
 {
     if (class(data) == "mRMReObject")
         return(mRMRe::compute.causality.mRMReObject(data=data))
 
-    if(!is.null(mim))
+    if(missing(mim))
         allcor <- as.matrix(mim)
     else
         allcor <- matrix(ncol=ncol(data), nrow=ncol(data))
+        
+    estimator <- match.arg(estimator)
     
     causality_coefficients <- matrix(ncol=ncol(allcor), nrow=ncol(allcor))
     apply(solutions, 1, function(row)

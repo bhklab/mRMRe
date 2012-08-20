@@ -1,9 +1,10 @@
 \name{correlate}
 \alias{correlate}
 \title{
-Computes the degree of association between two variables.
+Computes the degree of association between two variables
 }
 \description{
+This function computes the degree of association between two variables (correlation)
 }
 \usage{
 correlate(x, y, strata, weights, method, outX, bootstrap_count)

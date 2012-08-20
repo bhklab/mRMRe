@@ -2,13 +2,13 @@
 \alias{compute.causality}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Computes the causality.
+Computes the causality
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+This function computes causality scores based on mutual infomration theory.
 }
 \usage{
-compute.causality(data, ...)
+compute.causality(	data, target_index, mim, solutions, estimator = c("pearson", "spearman", "kendall"))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

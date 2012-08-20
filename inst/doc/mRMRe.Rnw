@@ -1,5 +1,5 @@
 %\VignetteIndexEntry{mRMRe: an R package for parallelized mRMR ensemble feature selection}
-%\VignetteDepends{Rcpp,xtable}
+%\VignetteDepends{Rcpp}
 %\VignetteSuggests{}
 %\VignetteKeywords{}
 %\VignettePackage{mRMRe}

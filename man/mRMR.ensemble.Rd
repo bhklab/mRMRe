@@ -1,9 +1,10 @@
 \name{mRMR.ensemble}
 \alias{mRMR.ensemble}
 \title{
-Performs an ensemble mRMR feature selection.
+Performs an ensemble mRMR feature selection
 }
 \description{
+This function performs an ensemble mRMR feature selection, that is multiple mRMR selections in parallel.
 }
 \usage{
 mRMR.ensemble(data, target_index, levels, strata, weights, uses_ranks, outX, bootstrap_count)

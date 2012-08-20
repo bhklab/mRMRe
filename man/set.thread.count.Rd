@@ -1,9 +1,10 @@
 \name{set.thread.count}
 \alias{set.thread.count}
 \title{
-Sets the maximum number of threads that can be launched.
+Sets the maximum number of threads that can be launched
 }
 \description{
+This function sets the maximum number of threads that can be launched.
 }
 \usage{
 set.thread.count(thread_count)

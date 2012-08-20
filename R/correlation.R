@@ -1,17 +1,23 @@
 # feature_type = 0 for continous
-# feature_type = 1 for discrete
+# feature_type = 1 for factor
 # feature_type = 2 for survival
 `build.mim` <- function(
         data,
-        strata=rep.int(0, nrow(data)),
-        weights=rep.int(1, nrow(data)),
+        strata,
+        weights,
         uses_ranks=TRUE,
         outX=TRUE,
         bootstrap_count=0)
 {
-    if (is.data.frame(data))
+    if (!is.data.frame(data))
         stop("data must be of type data frame")
     
+    if(missing(strata)) 
+        weights <- rep.int(1, nrow(data))
+
+    if(missing(strata)) 
+        strata <- rep.int(0, nrow(data))
+               
     expansion <- mRMRe:::.expand.data(data)
     data <- expansion$data
     feature_types <- expansion$feature_types

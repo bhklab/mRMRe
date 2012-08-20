@@ -1,24 +1,23 @@
 `.expand.data` <- function(data) # mim
 {
-    feature_types <- unlist(lapply(data, function(column) class(column)[[1]]))
-
+    feature_types <- sapply(data, function(x) { return(paste(class(x), collapse="_")) })
+    
     new_feature_types <- unlist(lapply(feature_types, function(type)
     {
         if (type == "Surv")
             return(c(2, 3))
-        else if (type == "factor")
+        else if (type == "ordered_factor")
             return(1)
-        else # type == "numeric" or type == "integer"
-            return(0)
+        else # type == "numeric", type == "integer" or type == "double"
+            return(0)  
     }))
 
-    new_data <- do.call(cbind, lapply(data, function(type)
+    new_data <- do.call(cbind, lapply(data, function(column)
     {
         if (class(column)[[1]] == "Surv")
             return(cbind(event=column[, "status"], time=column[, "time"]))
         return(as.numeric(column))
     }))
-
     rownames(new_data) <- rownames(data)
     colnames(new_data)[!new_feature_types %in% c(2, 3)] <- colnames(data)[feature_types != "Surv"]
     colnames(new_data)[new_feature_types %in% c(2, 3)] <- paste(rep(colnames(data)[feature_types == "Surv"], each=2),

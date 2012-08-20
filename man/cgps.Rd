@@ -11,7 +11,7 @@ This dataset contains gene expression of 200 cancer cell lines for which sensiti
 }
 \usage{data(cgps)}
 \format{
-The \code{\link[mRMRe]{cgp}} dataset is composed of three objects
+The \code{\link[mRMRe]{cgps}} dataset is composed of three objects
  \describe{
     \item{cgps_annot}{Dataframe containing gene annotations}
     \item{cgps_ge}{Matrix containing expressions of 1000 genes; cell lines in rows, genes in columns}
@@ -27,7 +27,7 @@ http://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-783
 http://www.nature.com/nature/journal/v483/n7391/extref/nature11005-s2.zip
 }
 \references{
-Garnett MJ et al. (2012) "Systematic identification of genomic markers of drug sensitivity in cancer cells", \emph{Nature}, \bold{483}:570–575.
+Garnett MJ et al. "Systematic identification of genomic markers of drug sensitivity in cancer cells", \emph{Nature}, \bold{483}:570–575, 2012.
 }
 \examples{
 data(cgps.rda)

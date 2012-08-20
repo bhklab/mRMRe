@@ -2,8 +2,8 @@
         data,
         target_index,
         feature_count,
-        strata=rep.int(0, nrow(data)),
-        weights=rep.int(1, nrow(data)),
+        strata,
+        weights,
         uses_ranks=TRUE,
         outX=TRUE,
         bootstrap_count=0
@@ -17,24 +17,27 @@
         data,
         target_index,
         levels,
-        strata=rep.int(0, nrow(data)),
-        weights=rep.int(1, nrow(data)),
+        strata,
+        weights,
         uses_ranks=TRUE,
         outX=TRUE,
         bootstrap_count=0)
 {
-    if (is.data.frame(data))
-        stop("data must be of type data frame") }
+    if (!is.data.frame(data))
+        stop("data must be of type data frame")
     
-    feature_types <- unlist(sapply(data, class)
+    feature_types <- unlist(sapply(data, class))
     if (is.list(feature_types))
         feature_types <- unlist(lapply(feature_types, paste, collapse="_"))
 
     if (any(!is.element(feature_types, c("numeric", "ordered_factor", "Surv"))))
         stop("feature types must be either numeric, ordered factor or Surv")
 
-    # if (any(!sapply(data[ ,feature_types == "factor", drop=FALSE], is.ordered)))
-    #     stop("categorical features must be ordered factors")
+    if(missing(strata)) 
+        weights <- rep.int(1, nrow(data))
+        
+    if(missing(strata)) 
+        strata <- rep.int(0, nrow(data))
 
     expansion <- mRMRe:::.expand.data(data=data)
     data <- expansion$data

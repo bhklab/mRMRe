@@ -1,8 +1,10 @@
 \name{build.mim}
 \alias{build.mim}
-\title{Constructs a mutual information matrix.}
-\description{}
-\usage{build.mim(data, strata, weights, feature_types, uses_ranks, outX, bootstrap_count = 0)}
+\title{Constructs a mutual information matrix (MIM)}
+\description{
+This function constructs a mutual information matrix (MIM).
+}
+\usage{build.mim(data, strata, weights, uses_ranks, outX, bootstrap_count = 0)}
 \arguments{
   \item{data}{A data frame with rows and columns respectively corresponding to samples and features.}
   \item{strata}{A vector containing the stratum associated with each sample. Defaults to all samples being in the same stratum.}
@@ -20,11 +22,18 @@
 \note{}
 \seealso{}
 \examples{
-data(cgps)
+## Test on a dummy dataset
+library(survival)
+dd <- data.frame("surv1"=Surv(runif(100), sample(0:1, 100, replace=TRUE)), "cont1"=runif(100), "cat1"=factor(sample(1:5, 100, replace=TRUE), ordered=TRUE), "surv2"=Surv(runif(100), sample(0:1, 100, replace=TRUE)), "cont2"=runif(100), "cont3"=runif(100), "surv3"=Surv(runif(100), sample(0:1, 100, replace=TRUE)), "cat2"=factor(sample(1:5, 100, replace=TRUE), ordered=TRUE))
+print(head(dd))
+build.mim(data=dd)
 
-# The variables are all of continuous type
-build.mim(data.frame(cgps_ic50, cgps_ge)) # Uses Spearman as correlation estimator
-build.mim(data.frame(cgps_ic50, cgps_ge), uses_ranks=FALSE) # Uses Pearson as correlation estimator
+## Test on the 'cgps' dataset
+data(cgps)
+## The variables are all of continuous type
+mim <- build.mim(data.frame(cgps_ic50, cgps_ge)) # Uses Spearman as correlation estimator
+print(head(mim))
+mim <- build.mim(data.frame(cgps_ic50, cgps_ge), uses_ranks=FALSE) # Uses Pearson as correlation estimator
+print(head(mim))
 }
 \keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
