@@ -56,6 +56,16 @@
     bootstrap_count <- as.integer(bootstrap_count)
     value <- NA
     
+    type_x <- paste(class(x), collapse="_")
+    type_y <- paste(class(y), collapse="_")
+    if (type_x == "ordered_factor")
+        x <- as.integer(x) - 1
+    if (type_y == "ordered_factor")
+        y <- as.integer(y) - 1
+    
+    x <- as.numeric(x)
+    y <- as.numeric(y)
+    
     if (method == "cramer")
         value <- .Call(mRMRe:::.C_compute_cramers_v, x, y, weights, strata, stratum_count, bootstrap_count)
     else if (method == "pearson")

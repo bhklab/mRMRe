@@ -39,8 +39,13 @@
 
     new_data <- do.call(cbind, lapply(data, function(column)
     {
-        if (class(column)[[1]] == "Surv")
+        type <- paste(class(column), collapse="_")
+        
+        if (type == "Surv")
             return(cbind(event=column[, "status"], time=column[, "time"]))
+        else if (type == "ordered_factor")
+            column <- as.integer(column) - 1
+        
         return(as.numeric(column))
     }))
     rownames(new_data) <- rownames(data)
