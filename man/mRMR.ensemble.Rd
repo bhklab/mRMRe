@@ -21,7 +21,7 @@ mRMR.ensemble(data, target_index, levels, strata, weights, uses_ranks, outX, boo
   A vector containing the number of features to be selected at each turn of ensemble mRMR feature selection.
 }
   \item{strata}{
-  A vector containing the stratum associated with each sample. Defaults to all samples being in the same stratum.
+  A vector of factors specifying the stratum associated with each sample. Defaults to all samples being in the same stratum.
 }
   \item{weights}{
   A vector containing the weight associated with each sample. Defaults to all samples having the same weight.

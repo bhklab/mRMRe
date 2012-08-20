@@ -8,7 +8,7 @@ This function constructs a mutual information matrix (MIM).
 \arguments{
   \item{data}{A data frame with rows and columns respectively corresponding to samples and features.
   Only columns of the following types are supported: "numeric", "ordered_factor" and "Surv".}
-  \item{strata}{A vector containing the stratum associated with each sample. Defaults to all samples being in the same stratum.}
+  \item{strata}{A vector of factors specifying the stratum associated with each sample. Defaults to all samples being in the same stratum.}
   \item{weights}{A vector containing the weight associated with each sample. Defaults to all samples having the same weight.}
   \item{uses_ranks}{If set to TRUE, the Spearman correlation is used between continuous features. If set to FALSE, the Pearson correlation is used. Defaults to TRUE.}
   \item{outX}{Boolean value on whether ties should be counted. Defaults to TRUE.}

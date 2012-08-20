@@ -14,11 +14,15 @@
     if (any(!is.element(feature_types, c("numeric", "ordered_factor", "Surv"))))
         stop("data columns must be either of numeric, ordered factor or Surv type")
     
-    if (missing(strata)) 
+    if (missing(weights)) 
         weights <- rep.int(1, nrow(data))
     
     if (missing(strata)) 
         strata <- rep.int(0, nrow(data))
+    else if (is.factor(strata))
+        strata <- as.integer(strata) - 1
+    else
+        stop("strata must be provided as factors")
                
     expansion <- mRMRe:::.expand.input(feature_types=feature_types, data=data)
     data <- expansion$data
@@ -41,15 +45,24 @@
 `correlate` <- function(
         x,
         y,
-        strata=rep.int(0, length(x)),
-        weights=rep.int(1, length(x)),
+        strata,
+        weights,
         method=c("cramer", "pearson", "spearman", "cindex"),
         outX=TRUE,
         bootstrap_count=0)
 {
+    if (missing(weights)) 
+        weights <- rep.int(1, nrow(data))
+    
+    if (missing(strata)) 
+        strata <- rep.int(0, nrow(data))
+    else if (is.factor(strata))
+        strata <- as.integer(strata) - 1
+    else
+        stop("strata must be provided as factors")
+    
     x <- as.vector(x)
     y <- as.vector(y)
-    strata <- as.vector(strata)
     weights <- as.vector(weights)
     method <- match.arg(method)
     stratum_count <- as.integer(length(unique(strata)))
