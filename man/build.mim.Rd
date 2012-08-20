@@ -6,7 +6,8 @@ This function constructs a mutual information matrix (MIM).
 }
 \usage{build.mim(data, strata, weights, uses_ranks, outX, bootstrap_count)}
 \arguments{
-  \item{data}{A data frame with rows and columns respectively corresponding to samples and features.}
+  \item{data}{A data frame with rows and columns respectively corresponding to samples and features.
+  Only columns of the following types are supported: "numeric", "ordered_factor" and "Surv".}
   \item{strata}{A vector containing the stratum associated with each sample. Defaults to all samples being in the same stratum.}
   \item{weights}{A vector containing the weight associated with each sample. Defaults to all samples having the same weight.}
   \item{uses_ranks}{If set to TRUE, the Spearman correlation is used between continuous features. If set to FALSE, the Pearson correlation is used. Defaults to TRUE.}
@@ -36,4 +37,4 @@ print(head(mim))
 mim <- build.mim(data.frame(cgps_ic50, cgps_ge), uses_ranks=FALSE) # Uses Pearson as correlation estimator
 print(head(mim))
 }
-\keyword{ ~kwd1 }
+%\keyword{mim}

@@ -12,6 +12,7 @@ mRMR.classic(data, target_index, feature_count, strata, weights, uses_ranks, out
 \arguments{
   \item{data}{
   A data frame with rows and columns respectively corresponding to samples and features.
+    Only columns of the following types are supported: "numeric", "ordered_factor" and "Surv".
 }
   \item{target_index}{
   Index of the target feature (column) from the data matrix.
@@ -37,29 +38,27 @@ mRMR.classic(data, target_index, feature_count, strata, weights, uses_ranks, out
   weighted average based on sample bootstrapping. Defaults to 0.
 }
 }
-\details{
-}
+%\details{
+%}
 \value{
 Returns a mRMReObject object with the following attributes:
   \item{paths}{Index vector in which elements correspond to the features selected.}
   \item{scores}{Score vector associated with mRMR feature selection.}
   \item{mim}{Mutual information matrix used for mRMR feature selection.}
 }
-\references{
-}
+%\references{
+%}
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
-
 }
-\note{
-}
-\seealso{
-}
+%\note{
+%}
+\seealso{mRMR.classic, mRMR.ensemble}
 \examples{
 data(cgps)
 
 data <- data.frame(target=as.numeric(cgps_ic50), as.numeric(cgps_ge))
 mRMR.classic(data, 1, 30)
 }
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+%\keyword{ ~kwd1 }
+%\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

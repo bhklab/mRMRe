@@ -32,22 +32,18 @@ If a positive non-zero integer is given,
   weighted average based on sample bootstrapping. Defaults to 0.
   }
 }
-\details{
-}
+%\details{}
 \value{
 A value depending on the estimator. "cramer" returns Cramer's V,
 "pearson" returns Pearson's r, "spearman" returns Spearman's r, "cindex" returns the concordance index.
 }
-\references{
-}
+%\references{}
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
-\note{
-}
-\seealso{
-}
-\examples{
-}
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+%\note{}
+\seealso{build.mim}
+%\examples{
+%}
+%\keyword{ ~kwd1 }
+%\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

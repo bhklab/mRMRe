@@ -14,23 +14,21 @@ set.thread.count(thread_count)
 Maximum number of threads.
 }
 }
-\details{
-}
+%\details{
+%}
 \value{
 None
 }
-\references{
-}
+%\references{
+%}
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
-\note{
-}
-
-\seealso{
-}
-\examples{
-
-}
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+%\note{
+%}
+%\seealso{
+%}
+%\examples{
+%}
+%\keyword{ ~kwd1 }
+%\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

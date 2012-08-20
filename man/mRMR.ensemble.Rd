@@ -12,6 +12,7 @@ mRMR.ensemble(data, target_index, levels, strata, weights, uses_ranks, outX, boo
 \arguments{
   \item{data}{
   A data frame with rows and columns respectively corresponding to samples and features.
+   Only columns of the following types are supported: "numeric", "ordered_factor" and "Surv".
 }
   \item{target_index}{
   Index of the target feature (column) from the data matrix.
@@ -37,25 +38,22 @@ mRMR.ensemble(data, target_index, levels, strata, weights, uses_ranks, outX, boo
   weighted average based on sample bootstrapping. Defaults to 0.
 }
 }
-\details{
-}
+%\details{
+%}
 \value{
 Returns a mRMReObject object with the following attributes:
   \item{paths}{Index matrix in which rows correspond to solutions and columns to the features selected for each solution.}
   \item{scores}{Score matrix associated with ensemble mRMR feature selection.}
   \item{mim}{Mutual information matrix used for ensemble mRMR feature selection.}
 }
-\references{
-}
+%\references{
+%}
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
-\note{
-}
-
-
-\seealso{
-}
+%\note{
+%}
+\seealso{build.mim, mRMR.classic}
 \examples{
 
 data(cgps)
