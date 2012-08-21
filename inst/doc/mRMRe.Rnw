@@ -67,20 +67,49 @@ data(cgps)
 %------------------------------------------------------------
 
 <<eval=FALSE>>=
-merged_data <- data.frame(ic50=cgps_ic50, cgps_ge)
+## Test on a dummy dataset
+library(survival)
+dd <- data.frame("surv1"=Surv(runif(100), sample(0:1, 100, replace=TRUE)),
+        "cont1"=runif(100),
+        "cat1"=factor(sample(1:5, 100, replace=TRUE), ordered=TRUE),
+        "surv2"=Surv(runif(100), sample(0:1, 100, replace=TRUE)),
+        "cont2"=runif(100),
+        "cont3"=runif(100),
+        "surv3"=Surv(runif(100),
+                sample(0:1, 100, replace=TRUE)),
+        "cat2"=factor(sample(1:5, 100, replace=TRUE), ordered=TRUE))
+print(head(dd))
+build.mim(data=dd)
 
-# Pearson correlation for continuous variables
-mim.pearson <- build.mim(data=merged_data, uses_ranks=FALSE)
-
-# Spearman correlation for continuous variables
-mim.spearman <- build.mim(data=merged_data) 
+## Test on the 'cgps' dataset
+data(cgps)
+## The variables are all of continuous type
+mim <- build.mim(data.frame(cgps_ic50, cgps_ge)) # Uses Spearman as correlation estimator
+print(head(mim))
+mim <- build.mim(data.frame(cgps_ic50, cgps_ge), uses_ranks=FALSE) # Uses Pearson as correlation estimator
+print(head(mim))
 @
 
 %------------------------------------------------------------
 \subsection{Correlations}
 %------------------------------------------------------------
 
-Correlations
+<<eval=FALSE>>=
+data(cgps)
+# Compute c-index between feature 1 and 2
+correlate(cgps_ge[,1],cgps_ge[,2], method="cindex")
+
+# Compute Cramer's V
+x <- sample(c(0, 1, 2), 100, replace=TRUE)
+y <- sample(c(0, 1), 100, replace=TRUE)
+correlate(x, y, method="cramer")
+
+# Compute Pearson coefficient with random strata and sample weights
+# between feature 1 and 2
+strata <- sample(as.factor(c("STRATUM_1","STRATUM_2","STRATUM_3")), nrow(cgps_ge), replace=TRUE)
+weights <- runif(nrow(cgps_ge))
+correlate(cgps_ge[, 1], cgps_ge[, 2], strata=strata, weights=weights, method="pearson", bootstrap_count=1000)
+@
 
 %------------------------------------------------------------
 \section{mRMR Feature Selection}
@@ -90,12 +119,48 @@ Correlations
 \subsection{Classic mRMR}
 %------------------------------------------------------------
 
-Classic
+<<eval=FALSE>>=
+data(cgps)
+
+data <- data.frame(target=cgps_ic50, cgps_ge)
+mRMR.classic(data, 1, 30)
+@
 
 %------------------------------------------------------------
 \subsection{Ensemble mRMR}
 %------------------------------------------------------------
 
-Ensemble
+<<eval=FALSE>>=
+data(cgps)
+
+data <- data.frame(target=cgps_ic50, cgps_ge)
+mRMR.ensemble(data, 1, rep.int(1, 30)) # For mRMR.classic-like results
+mRMR.ensemble(data, 1, c(5:1, 4))
+@
+
+%------------------------------------------------------------
+\section{Causality Inference}
+%------------------------------------------------------------
+
+<<eval=FALSE>>=
+data(cgps)
+
+data <- data.frame(target=cgps_ic50, cgps_ge)
+ensemble <- mRMR.ensemble(data, 1, c(10, 5, rep(1, 5)))
+compute.causality(ensemble)
+compute.causality(data=data, target_index=1, mim=NULL, solutions=ensemble$paths, estimator="spearman")
+@
+
+%------------------------------------------------------------
+\section{Utilities}
+%------------------------------------------------------------
+
+<<eval=FALSE>>=
+data(cgps)
+
+set.thread.count(4)
+mim <- build.mim(data.frame(target=cgps_ic50, cgps_ge))
+head(mim)
+@
 
 \end{document}

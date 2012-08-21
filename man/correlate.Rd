@@ -35,6 +35,6 @@ correlate(x, y, method="cramer")
 # between feature 1 and 2
 strata <- sample(as.factor(c("STRATUM_1","STRATUM_2","STRATUM_3")), nrow(cgps_ge), replace=TRUE)
 weights <- runif(nrow(cgps_ge))
-correlate(cgps_ge[,1],cgps_ge[,2], strata=strata, weights=weights, method="pearson", bootstrap_count=1000)
+correlate(cgps_ge[, 1],cgps_ge[, 2], strata=strata, weights=weights, method="pearson", bootstrap_count=1000)
 }
 %\keyword{ ~kwd1 }
