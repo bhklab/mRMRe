@@ -2,7 +2,7 @@
 \alias{compute.causality}
 \title{Computes the causality}
 \description{This function computes causality scores based on mutual information theory.}
-\usage{compute.causality(data, target_index, mim, solutions, estimator = c("pearson", "spearman", "kendall"))}
+\usage{compute.causality(data, target_index, mim, solutions, estimator)}
 \arguments{
   \item{data}{
   	An mRMReObject
@@ -15,7 +15,7 @@
   \item{target_index}{Index of the target feature (column) from the data matrix.}
   \item{mim}{A mutual information matrix that will be used in computing causality.}
   \item{solutions}{A matrix where each row represents an mRMR solution.}
-  \item{estimator=c("pearson", "spearman", "kendall")}{string containing the estimator to be used for computing the correlation between elements.}
+  \item{estimator}{String containing the estimator to be used for computing the correlation between elements. Must be one of the following: "pearson", "spearman" or "kendall".}
 }
 %\details{}
 \value{Returns a matrix of causality coefficients for every pair of features considered in solutions.}
