@@ -30,6 +30,7 @@ data(cgps)
 
 data <- data.frame(target=cgps_ic50, cgps_ge)
 ensemble <- mRMR.ensemble(data, 1, c(10, 5, rep(1, 5)))
+
 compute.causality(ensemble)
 compute.causality(data=data, target_index=1, mim=NULL, solutions=ensemble$paths, estimator="spearman")
 }

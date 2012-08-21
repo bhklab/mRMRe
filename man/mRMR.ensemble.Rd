@@ -31,7 +31,9 @@ Returns a mRMReObject object with the following attributes:
 data(cgps)
 
 data <- data.frame(target=cgps_ic50, cgps_ge)
+
 mRMR.ensemble(data, 1, rep.int(1, 30)) # For mRMR.classic-like results
 mRMR.ensemble(data, 1, c(5:1, 4))
+
 }
 %\keyword{ ~kwd1 }
