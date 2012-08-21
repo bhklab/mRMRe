@@ -60,6 +60,14 @@ data_cgps <- data.frame(cgps_ic50, cgps_ge)
 @
 
 %------------------------------------------------------------
+\subsection{Known Issues}
+%------------------------------------------------------------
+
+\textit{mRMRe} has only been tested on Mac OS X 10.6.8 and on Linux platforms. Due to the use of the \textit{openMP} library, users may encounter problems
+when trying to install this package on Mac OS X 10.6.8. To fix this issue, it is recommended to add the \textit{-fopenmp} to the CC, CXX and LDFLAGS flags in the
+\textit{~/.R/Makevars} configuration file.
+
+%------------------------------------------------------------
 \section{Measures of Associtation}
 %------------------------------------------------------------
 
