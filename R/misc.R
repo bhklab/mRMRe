@@ -44,9 +44,9 @@
         if (type == "Surv")
             return(cbind(event=column[, "status"], time=column[, "time"]))
         else if (type == "ordered_factor")
-            column <- as.integer(column) - 1
-        
-        return(as.numeric(column))
+            return(as.numeric(as.integer(column) - 1))
+        else
+            return(as.numeric(column))
     }))
     rownames(new_data) <- rownames(data)
     colnames(new_data)[!new_feature_types %in% c(2, 3)] <- colnames(data)[feature_types != "Surv"]

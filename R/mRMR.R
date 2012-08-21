@@ -31,11 +31,15 @@
     if (any(!is.element(feature_types, c("numeric", "ordered_factor", "Surv"))))
         stop("data columns must be either of numeric, ordered factor or Surv type")
 
-    if (missing(strata)) 
+    if (missing(weights)) 
         weights <- rep.int(1, nrow(data))
-        
+    
     if (missing(strata)) 
         strata <- rep.int(0, nrow(data))
+    else if (is.factor(strata))
+        strata <- as.integer(strata) - 1
+    else
+        stop("strata must be provided as factors")
     
     levels <- as.vector(levels)
     

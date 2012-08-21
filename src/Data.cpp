@@ -78,6 +78,18 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j) const
                         &(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j + 1)), mpSampleWeights,
                         mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount,
                         mOutX));
+    else if (A_is_survival_event && B_is_discrete)
+        r = Math::computeSomersD(
+                Math::computeConcordanceIndexWithTime(&(mpDataMatrix->at(0, i)),
+                        &(mpDataMatrix->at(0, j)), &(mpDataMatrix->at(0, i + 1)), mpSampleWeights,
+                        mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount,
+                        mOutX));
+    else if (A_is_discrete && B_is_survival_event)
+        r = Math::computeSomersD(
+                Math::computeConcordanceIndexWithTime(&(mpDataMatrix->at(0, j)),
+                        &(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j + 1)), mpSampleWeights,
+                        mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount,
+                        mOutX));
 
     return Math::computeMi(r);
 }
