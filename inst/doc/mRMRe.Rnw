@@ -65,6 +65,8 @@ data(cgps)
 %------------------------------------------------------------
 \subsection{Mutual Information Matrix}
 %------------------------------------------------------------
+mRMRe offers a fully parallelized implementation of the Mutual Information Matrix.
+The method supports the following column types: "numeric", "ordered_factor" and "Surv".
 
 <<eval=FALSE>>=
 ## Test on a dummy dataset
@@ -93,7 +95,8 @@ print(head(mim))
 %------------------------------------------------------------
 \subsection{Correlations}
 %------------------------------------------------------------
-
+The mRMRe package offers an efficient, stratified and weighted implementation of the major correlation estimators
+(Cramer's V, C-Index, Pearson, Spearman).
 <<eval=FALSE>>=
 data(cgps)
 # Compute c-index between feature 1 and 2
@@ -114,11 +117,14 @@ correlate(cgps_ge[, 1], cgps_ge[, 2], strata=strata, weights=weights, method="pe
 %------------------------------------------------------------
 \section{mRMR Feature Selection}
 %------------------------------------------------------------
+mRMRe offers a highly efficient feature selection mRMR implementation.  First, we parallelized crucial steps of the algorithm.
+Second, we used a lazy implementation of the Mutual Information Matrix.
+
 
 %------------------------------------------------------------
 \subsection{Classic mRMR}
 %------------------------------------------------------------
-
+Here is an example of the classic mRMR feature selection.
 <<eval=FALSE>>=
 data(cgps)
 
@@ -129,7 +135,9 @@ mRMR.classic(data, 1, 30)
 %------------------------------------------------------------
 \subsection{Ensemble mRMR}
 %------------------------------------------------------------
-
+Our ensemble approach allows to create a tree-like set of solutions of non redundant mRMR solutions.  
+The topology of the ensemble tree is user defined throught the \textit{levels} parameter.
+A binary tree of depth 10 can be generated with \textit{levels=rep(2,10)}, therefore creating 2^10 mRMR solutions.
 <<eval=FALSE>>=
 data(cgps)
 
@@ -141,7 +149,7 @@ mRMR.ensemble(data, 1, c(5:1, 4))
 %------------------------------------------------------------
 \section{Causality Inference}
 %------------------------------------------------------------
-
+The mRMRe package allows one to infer causality through the use of the Co-information lattice method.
 <<eval=FALSE>>=
 data(cgps)
 
@@ -154,7 +162,8 @@ compute.causality(data=data, target_index=1, mim=NULL, solutions=ensemble$paths,
 %------------------------------------------------------------
 \section{Utilities}
 %------------------------------------------------------------
-
+In order to allow for full user control, mRMRe allows its users to set the number of threads it will
+use for computations.  One should consider using the following method to avoid crowding computing clusters.
 <<eval=FALSE>>=
 data(cgps)
 
