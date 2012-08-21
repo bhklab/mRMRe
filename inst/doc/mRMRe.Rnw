@@ -119,12 +119,14 @@ correlate(cgps_ge[, 1], cgps_ge[, 2], strata=strata, weights=weights, method="pe
 %------------------------------------------------------------
 
 mRMRe offers a highly efficient feature selection mRMR implementation.  First, we parallelized crucial steps of the algorithm.
-Second, we used a lazy implementation of the Mutual Information Matrix.
+Second, we used a lazy implementation of the mutual information matrix.
 
 %------------------------------------------------------------
 \subsection{Classic mRMR}
 %------------------------------------------------------------
+
 Here is an example of the classic mRMR feature selection.
+
 <<classic.mRMR,eval=FALSE>>=
 data(cgps)
 
