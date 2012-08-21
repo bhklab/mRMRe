@@ -6,9 +6,9 @@
         estimator=c("pearson", "spearman", "kendall"))
 {
     if (class(data) == "mRMReObject")
-        return(mRMRe::compute.causality.mRMReObject(data=data))
+        return(mRMRe:::.compute.causality.mRMReObject(data=data))
 
-    if(missing(mim))
+    if (missing(mim))
         allcor <- as.matrix(mim)
     else
         allcor <- matrix(ncol=ncol(data), nrow=ncol(data))
@@ -60,8 +60,7 @@
     return(causality_coefficients)
 }
 
-# Dude you didn't finish writing this function lol
-`compute.causality.mRMReObject` <- function(data)
+`.compute.causality.mRMReObject` <- function(data)
 {
     tree <- data
     target_index <- 1
