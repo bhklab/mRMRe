@@ -203,20 +203,24 @@ compute_spearman_correlation(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_SampleWeig
     Math::placeStratificationData(&S_SampleStrata[0], &S_SampleWeights[0],
             p_sample_indices_per_stratum, p_total_weight_per_stratum, p_sample_count_per_stratum,
             sample_stratum_count, sample_count);
-    float p_ordered_samples_x[sample_count];
-    float p_ordered_samples_y[sample_count];
+    float* const p_ordered_samples_x = new float[sample_count];
+    float* const p_ordered_samples_y = new float[sample_count];
     Math::placeOrders(&S_SamplesX[0], p_ordered_samples_x, p_sample_indices_per_stratum,
             p_sample_count_per_stratum, sample_stratum_count);
     Math::placeOrders(&S_SamplesY[0], p_ordered_samples_y, p_sample_indices_per_stratum,
             p_sample_count_per_stratum, sample_stratum_count);
-    float p_ranked_samples_x[sample_count];
-    float p_ranked_samples_y[sample_count];
+    float* const p_ranked_samples_x = new float[sample_count];
+    float* const p_ranked_samples_y = new float[sample_count];
     Math::placeRanksFromOrders(&S_SamplesX[0], &S_SamplesY[0], p_ordered_samples_x,
             p_ordered_samples_y, p_ranked_samples_x, p_ranked_samples_y,
             p_sample_indices_per_stratum, p_sample_count_per_stratum, sample_stratum_count);
     float const r = Math::computePearsonCorrelation(p_ranked_samples_x, p_ranked_samples_y,
             &S_SampleWeights[0], p_sample_indices_per_stratum, p_total_weight_per_stratum,
             p_sample_count_per_stratum, sample_stratum_count, bootstrap_count);
+    delete[] p_ordered_samples_x;
+    delete[] p_ordered_samples_y;
+    delete[] p_ranked_samples_x;
+    delete[] p_ranked_samples_y;
     delete[] p_sample_count_per_stratum;
     delete[] p_total_weight_per_stratum;
     for (unsigned int i = 0; i < sample_stratum_count; ++i)
