@@ -401,7 +401,7 @@ Math::computeVariance(float const* const pSamples, unsigned int const sampleCoun
 }
 
 /* static */void const
-Math::placeOrdersByFeatureIndex(float const* const pSamples, float* const pOrders,
+Math::placeOrders(float const* const pSamples, float* const pOrders,
         unsigned int const* const * const pSampleIndicesPerStratum,
         unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount)
 {
@@ -431,42 +431,7 @@ Math::placeOrdersByFeatureIndex(float const* const pSamples, float* const pOrder
 }
 
 /* static */void const
-Math::placeRanksByFeatureIndex(float const* const pSamples, float* const pRanks,
-        unsigned int const* const * const pSampleIndicesPerStratum,
-        unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount)
-{
-    for (unsigned int i = 0; i < sampleStratumCount; ++i)
-    {
-        unsigned int const* const p_sample_indices = pSampleIndicesPerStratum[i];
-        unsigned int const sample_count = pSampleCountPerStratum[i];
-        unsigned int* const p_order = new unsigned int[sample_count];
-
-        unsigned int offset = 0;
-        for (unsigned int j = 0; j < sample_count; ++j)
-        {
-            unsigned int const my_index = p_sample_indices[j];
-
-            if (pSamples[my_index] == pSamples[my_index])
-                p_order[j - offset] = j;
-            else
-                ++offset;
-        }
-
-        std::sort(p_order, p_order + sample_count - offset,
-                Math::IndirectComparator(pSamples, p_sample_indices));
-
-        for (unsigned int j = 0; j < sample_count; ++j)
-            pRanks[j] = std::numeric_limits<float>::quiet_NaN();
-
-        for (unsigned int j = 0; j < sample_count - offset; ++j)
-            pRanks[p_sample_indices[p_order[j]]] = j;
-
-        delete[] p_order;
-    }
-}
-
-/* static */void const
-Math::placeRanksByFeatureIndex(float const* const pSamplesX, float const* const pSamplesY,
+Math::placeRanksFromOrders(float const* const pSamplesX, float const* const pSamplesY,
         float const* const pOrdersX, float const* const pOrdersY, float* const pRanksX,
         float* const pRanksY, unsigned int const* const * const pSampleIndicesPerStratum,
         unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount)
@@ -497,6 +462,41 @@ Math::placeRanksByFeatureIndex(float const* const pSamplesX, float const* const 
             else
                 pRanksY[order_y] = offset_y++;
         }
+    }
+}
+
+/* static */void const
+Math::placeRanksFromSamples(float const* const pSamples, float* const pRanks,
+        unsigned int const* const * const pSampleIndicesPerStratum,
+        unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount)
+{
+    for (unsigned int i = 0; i < sampleStratumCount; ++i)
+    {
+        unsigned int const* const p_sample_indices = pSampleIndicesPerStratum[i];
+        unsigned int const sample_count = pSampleCountPerStratum[i];
+        unsigned int* const p_order = new unsigned int[sample_count];
+
+        unsigned int offset = 0;
+        for (unsigned int j = 0; j < sample_count; ++j)
+        {
+            unsigned int const my_index = p_sample_indices[j];
+
+            if (pSamples[my_index] == pSamples[my_index])
+                p_order[j - offset] = j;
+            else
+                ++offset;
+        }
+
+        std::sort(p_order, p_order + sample_count - offset,
+                Math::IndirectComparator(pSamples, p_sample_indices));
+
+        for (unsigned int j = 0; j < sample_count; ++j)
+            pRanks[j] = std::numeric_limits<float>::quiet_NaN();
+
+        for (unsigned int j = 0; j < sample_count - offset; ++j)
+            pRanks[p_sample_indices[p_order[j]]] = j;
+
+        delete[] p_order;
     }
 }
 

@@ -101,21 +101,21 @@ Data::computeCorrelationBetweenContinuousFeatures(unsigned int const i, unsigned
     {
         if (!mpHasOrderCached[i])
         {
-            Math::placeOrdersByFeatureIndex(&(mpDataMatrix->at(0, i)), &(mpOrderMatrix->at(0, i)),
+            Math::placeOrders(&(mpDataMatrix->at(0, i)), &(mpOrderMatrix->at(0, i)),
                     mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount);
             mpHasOrderCached[i] = true;
         }
 
         if (!mpHasOrderCached[j])
         {
-            Math::placeOrdersByFeatureIndex(&(mpDataMatrix->at(0, j)), &(mpOrderMatrix->at(0, j)),
+            Math::placeOrders(&(mpDataMatrix->at(0, j)), &(mpOrderMatrix->at(0, j)),
                     mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount);
             mpHasOrderCached[j] = true;
         }
 
         float* const p_ranked_samples_x = new float[mpDataMatrix->getRowCount()];
         float* const p_ranked_samples_y = new float[mpDataMatrix->getRowCount()];
-        Math::placeRanksByFeatureIndex(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
+        Math::placeRanksFromOrders(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
                 &(mpOrderMatrix->at(0, i)), &(mpOrderMatrix->at(0, j)), p_ranked_samples_x,
                 p_ranked_samples_y, mpSampleIndicesPerStratum, mpSampleCountPerStratum,
                 mSampleStratumCount);
