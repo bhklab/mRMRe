@@ -101,17 +101,20 @@ compute_concordance_index(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_SampleWeights
     unsigned int const sample_stratum_count = Rcpp::as<unsigned int>(R_SampleStratumCount);
     bool const outX = Rcpp::as<bool>(R_OutX);
     unsigned int const sample_count = S_SamplesX.size();
-    unsigned int* p_sample_indices_per_stratum[sample_stratum_count];
-    float p_total_weight_per_stratum[sample_stratum_count];
-    unsigned int p_sample_count_per_stratum[sample_stratum_count];
+    unsigned int** p_sample_indices_per_stratum = new unsigned int*[sample_stratum_count];
+    float* const p_total_weight_per_stratum = new float[sample_stratum_count];
+    unsigned int* const p_sample_count_per_stratum = new unsigned int[sample_stratum_count];
     Math::placeStratificationData(&S_SampleStrata[0], &S_SampleWeights[0],
             p_sample_indices_per_stratum, p_total_weight_per_stratum, p_sample_count_per_stratum,
             sample_stratum_count, sample_count);
     float const r = Math::computeConcordanceIndex(&S_SamplesX[0], &S_SamplesY[0],
             &S_SampleWeights[0], p_sample_indices_per_stratum, p_sample_count_per_stratum,
             sample_stratum_count, outX);
+    delete[] p_sample_count_per_stratum;
+    delete[] p_total_weight_per_stratum;
     for (unsigned int i = 0; i < sample_stratum_count; ++i)
         delete[] p_sample_indices_per_stratum[i];
+    delete[] p_sample_indices_per_stratum;
     return Rcpp::wrap<float>(r);
 }
 
@@ -128,17 +131,20 @@ compute_concordance_index_with_time(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_Tim
     unsigned int const sample_stratum_count = Rcpp::as<unsigned int>(R_SampleStratumCount);
     bool const outX = Rcpp::as<bool>(R_OutX);
     unsigned int const sample_count = S_SamplesX.size();
-    unsigned int* p_sample_indices_per_stratum[sample_stratum_count];
-    float p_total_weight_per_stratum[sample_stratum_count];
-    unsigned int p_sample_count_per_stratum[sample_stratum_count];
+    unsigned int** p_sample_indices_per_stratum = new unsigned int*[sample_stratum_count];
+    float* const p_total_weight_per_stratum = new float[sample_stratum_count];
+    unsigned int* const p_sample_count_per_stratum = new unsigned int[sample_stratum_count];
     Math::placeStratificationData(&S_SampleStrata[0], &S_SampleWeights[0],
             p_sample_indices_per_stratum, p_total_weight_per_stratum, p_sample_count_per_stratum,
             sample_stratum_count, sample_count);
     float const r = Math::computeConcordanceIndexWithTime(&S_SamplesX[0], &S_SamplesY[0],
             &S_Time[0], &S_SampleWeights[0], p_sample_indices_per_stratum,
             p_sample_count_per_stratum, sample_stratum_count, outX);
+    delete[] p_sample_count_per_stratum;
+    delete[] p_total_weight_per_stratum;
     for (unsigned int i = 0; i < sample_stratum_count; ++i)
         delete[] p_sample_indices_per_stratum[i];
+    delete[] p_sample_indices_per_stratum;
     return Rcpp::wrap<float>(r);
 }
 
@@ -154,17 +160,20 @@ compute_cramers_v(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_SampleWeights, SEXP R
     unsigned int const sample_stratum_count = Rcpp::as<unsigned int>(R_SampleStratumCount);
     unsigned int const sample_count = S_SamplesX.size();
     unsigned int const bootstrap_count = Rcpp::as<unsigned int>(R_BootstrapCount);
-    unsigned int* p_sample_indices_per_stratum[sample_stratum_count];
-    float p_total_weight_per_stratum[sample_stratum_count];
-    unsigned int p_sample_count_per_stratum[sample_stratum_count];
+    unsigned int** p_sample_indices_per_stratum = new unsigned int*[sample_stratum_count];
+    float* const p_total_weight_per_stratum = new float[sample_stratum_count];
+    unsigned int* const p_sample_count_per_stratum = new unsigned int[sample_stratum_count];
     Math::placeStratificationData(&S_SampleStrata[0], &S_SampleWeights[0],
             p_sample_indices_per_stratum, p_total_weight_per_stratum, p_sample_count_per_stratum,
             sample_stratum_count, sample_count);
     float const r = Math::computeCramersV(&S_SamplesX[0], &S_SamplesY[0], &S_SampleWeights[0],
             p_sample_indices_per_stratum, p_total_weight_per_stratum, p_sample_count_per_stratum,
             sample_stratum_count, bootstrap_count);
+    delete[] p_sample_count_per_stratum;
+    delete[] p_total_weight_per_stratum;
     for (unsigned int i = 0; i < sample_stratum_count; ++i)
         delete[] p_sample_indices_per_stratum[i];
+    delete[] p_sample_indices_per_stratum;
     return Rcpp::wrap<float>(r);
 }
 
@@ -180,17 +189,20 @@ compute_pearson_correlation(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_SampleWeigh
     unsigned int const sample_stratum_count = Rcpp::as<unsigned int>(R_SampleStratumCount);
     unsigned int const sample_count = S_SamplesX.size();
     unsigned int const bootstrap_count = Rcpp::as<unsigned int>(R_BootstrapCount);
-    unsigned int* p_sample_indices_per_stratum[sample_stratum_count];
-    float p_total_weight_per_stratum[sample_stratum_count];
-    unsigned int p_sample_count_per_stratum[sample_stratum_count];
+    unsigned int** p_sample_indices_per_stratum = new unsigned int*[sample_stratum_count];
+    float* const p_total_weight_per_stratum = new float[sample_stratum_count];
+    unsigned int* const p_sample_count_per_stratum = new unsigned int[sample_stratum_count];
     Math::placeStratificationData(&S_SampleStrata[0], &S_SampleWeights[0],
             p_sample_indices_per_stratum, p_total_weight_per_stratum, p_sample_count_per_stratum,
             sample_stratum_count, sample_count);
     float const r = Math::computePearsonCorrelation(&S_SamplesX[0], &S_SamplesY[0],
             &S_SampleWeights[0], p_sample_indices_per_stratum, p_total_weight_per_stratum,
             p_sample_count_per_stratum, sample_stratum_count, bootstrap_count);
+    delete[] p_sample_count_per_stratum;
+    delete[] p_total_weight_per_stratum;
     for (unsigned int i = 0; i < sample_stratum_count; ++i)
         delete[] p_sample_indices_per_stratum[i];
+    delete[] p_sample_indices_per_stratum;
     return Rcpp::wrap<float>(r);
 }
 
@@ -208,9 +220,9 @@ compute_spearman_correlation(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_SampleWeig
     unsigned int const sample_stratum_count = Rcpp::as<unsigned int>(R_SampleStratumCount);
     unsigned int const sample_count = S_SamplesX.size();
     unsigned int const bootstrap_count = Rcpp::as<unsigned int>(R_BootstrapCount);
-    unsigned int* p_sample_indices_per_stratum[sample_stratum_count];
-    float p_total_weight_per_stratum[sample_stratum_count];
-    unsigned int p_sample_count_per_stratum[sample_stratum_count];
+    unsigned int** p_sample_indices_per_stratum = new unsigned int*[sample_stratum_count];
+    float* const p_total_weight_per_stratum = new float[sample_stratum_count];
+    unsigned int* const p_sample_count_per_stratum = new unsigned int[sample_stratum_count];
 //    float p_ordered_samples_x[sample_count];
 //    float p_ordered_samples_y[sample_count];
 //    Math::placeOrdersByFeatureIndex(&S_SamplesX[0], p_ordered_samples_x,
@@ -231,8 +243,11 @@ compute_spearman_correlation(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_SampleWeig
     float const r = Math::computePearsonCorrelation(p_ranked_samples_x, p_ranked_samples_y,
             &S_SampleWeights[0], p_sample_indices_per_stratum, p_total_weight_per_stratum,
             p_sample_count_per_stratum, sample_stratum_count, bootstrap_count);
+    delete[] p_sample_count_per_stratum;
+    delete[] p_total_weight_per_stratum;
     for (unsigned int i = 0; i < sample_stratum_count; ++i)
         delete[] p_sample_indices_per_stratum[i];
+    delete[] p_sample_indices_per_stratum;
     return Rcpp::wrap<float>(r);
 }
 

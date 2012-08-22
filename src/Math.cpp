@@ -151,7 +151,7 @@ Math::computeCramersV(float const* const pSamplesX, float const* const pSamplesY
         float const* const pTotalWeightPerStratum, unsigned int const* const pSampleCountPerStratum,
         unsigned int const sampleStratumCount, unsigned int const bootstrapCount)
 {
-    float p_error_per_stratum[sampleStratumCount];
+    float* const p_error_per_stratum = new float[sampleStratumCount];
     float const* p_weight_per_stratum = pTotalWeightPerStratum;
 
     if (bootstrapCount > 3 && sampleStratumCount > 0)
@@ -165,7 +165,7 @@ Math::computeCramersV(float const* const pSamplesX, float const* const pSamplesY
             for (unsigned int j = 0; j < sampleStratumCount; ++j)
             {
                 unsigned int const sample_count = pSampleCountPerStratum[j];
-                unsigned int p_samples[sample_count];
+                unsigned int* const p_samples = new unsigned int[sample_count];
 
                 for (unsigned int k = 0; k < sample_count; ++k)
                     p_samples[k] = pSampleIndicesPerStratum[j][rand_r(&seed) % sample_count];
@@ -173,6 +173,8 @@ Math::computeCramersV(float const* const pSamplesX, float const* const pSamplesY
                 float const correlation = computeCramersV(pSamplesX, pSamplesY, pSampleWeights,
                         p_samples, sample_count);
                 bootstraps.at(i, j) = correlation;
+
+                delete[] p_samples;
             }
         }
 
@@ -196,6 +198,8 @@ Math::computeCramersV(float const* const pSamplesX, float const* const pSamplesY
     }
 
     r /= total_weight;
+
+    delete[] p_error_per_stratum;
 
     return r;
 }
@@ -280,7 +284,7 @@ Math::computePearsonCorrelation(float const* const pSamplesX, float const* const
         float const* const pTotalWeightPerStratum, unsigned int const* const pSampleCountPerStratum,
         unsigned int const sampleStratumCount, unsigned int const bootstrapCount)
 {
-    float p_error_per_stratum[sampleStratumCount];
+    float* const p_error_per_stratum = new float[sampleStratumCount];
     float const* p_weight_per_stratum = pTotalWeightPerStratum;
 
     if (bootstrapCount > 3 && sampleStratumCount > 0)
@@ -294,7 +298,7 @@ Math::computePearsonCorrelation(float const* const pSamplesX, float const* const
             for (unsigned int j = 0; j < sampleStratumCount; ++j)
             {
                 unsigned int const sample_count = pSampleCountPerStratum[j];
-                unsigned int p_samples[sample_count];
+                unsigned int* const p_samples = new unsigned int[sample_count];
 
                 for (unsigned int k = 0; k < sample_count; ++k)
                     p_samples[k] = pSampleIndicesPerStratum[j][rand_r(&seed) % sample_count];
@@ -302,6 +306,8 @@ Math::computePearsonCorrelation(float const* const pSamplesX, float const* const
                 float const correlation = computePearsonCorrelation(pSamplesX, pSamplesY,
                         pSampleWeights, p_samples, sample_count);
                 bootstraps.at(i, j) = correlation;
+
+                delete[] p_samples;
             }
         }
 
@@ -325,6 +331,8 @@ Math::computePearsonCorrelation(float const* const pSamplesX, float const* const
     }
 
     r /= total_weight;
+
+    delete[] p_error_per_stratum;
 
     return r;
 }
@@ -403,7 +411,7 @@ Math::placeOrdersByFeatureIndex(float const* const pSamples, float* const pOrder
     {
         unsigned int const* const p_sample_indices = pSampleIndicesPerStratum[i];
         unsigned int const sample_count = pSampleCountPerStratum[i];
-        unsigned int p_order[sample_count];
+        unsigned int* const p_order = new unsigned int[sample_count];
 
         unsigned int offset = 0;
         for (unsigned int j = 0; j < sample_count; ++j)
@@ -419,6 +427,8 @@ Math::placeOrdersByFeatureIndex(float const* const pSamples, float* const pOrder
 
         for (unsigned int j = 0; j < sample_count; ++j)
             pOrders[p_sample_indices[j]] = p_order[j];
+
+        delete[] p_order;
     }
 }
 
@@ -431,7 +441,7 @@ Math::placeRanksByFeatureIndex(float const* const pSamples, float* const pRanks,
     {
         unsigned int const* const p_sample_indices = pSampleIndicesPerStratum[i];
         unsigned int const sample_count = pSampleCountPerStratum[i];
-        unsigned int p_order[sample_count];
+        unsigned int* const p_order = new unsigned int[sample_count];
 
         unsigned int offset = 0;
         for (unsigned int j = 0; j < sample_count; ++j)
@@ -452,6 +462,8 @@ Math::placeRanksByFeatureIndex(float const* const pSamples, float* const pRanks,
 
         for (unsigned int j = 0; j < sample_count - offset; ++j)
             pRanks[p_sample_indices[p_order[j]]] = j;
+
+        delete[] p_order;
     }
 }
 
@@ -512,7 +524,7 @@ Math::placeStratificationData(unsigned int const* const pSampleStrata,
         float* const pTotalWeightPerStratum, unsigned int* const pSampleCountPerStratum,
         unsigned int const sampleStratumCount, unsigned int const sampleCount)
 {
-    unsigned int p_iterator_per_stratum[sampleStratumCount];
+    unsigned int* const p_iterator_per_stratum = new unsigned int[sampleStratumCount];
 
     for (unsigned int i = 0; i < sampleStratumCount; ++i)
     {
@@ -533,4 +545,6 @@ Math::placeStratificationData(unsigned int const* const pSampleStrata,
         pSampleIndicesPerStratum[p_sample_stratum][p_iterator_per_stratum[p_sample_stratum]++] = i;
         pTotalWeightPerStratum[p_sample_stratum] += pSampleWeights[i];
     }
+
+    delete[] p_iterator_per_stratum;
 }
