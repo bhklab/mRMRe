@@ -395,6 +395,34 @@ Math::computeVariance(float const* const pSamples, unsigned int const sampleCoun
 #include <Rcpp.h>
 
 /* static */void const
+Math::placeOrdersByFeatureIndex(float const* const pSamples, float* const pOrders,
+        unsigned int const* const * const pSampleIndicesPerStratum,
+        unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount)
+{
+    for (unsigned int i = 0; i < sampleStratumCount; ++i)
+    {
+        unsigned int const* const p_sample_indices = pSampleIndicesPerStratum[i];
+        unsigned int const sample_count = pSampleCountPerStratum[i];
+        unsigned int p_order[sample_count];
+
+        unsigned int offset = 0;
+        for (unsigned int j = 0; j < sample_count; ++j)
+        {
+            if (pSamples[p_sample_indices[j]] == pSamples[p_sample_indices[j]])
+                p_order[j - offset] = j;
+            else
+                p_order[sample_count - 1 - offset++] = j;
+        }
+
+        std::sort(p_order, p_order + sample_count - offset,
+                Math::IndirectComparator(pSamples, p_sample_indices));
+
+        for (unsigned int j = 0; j < sample_count; ++j)
+            pOrders[p_sample_indices[j]] = p_order[j];
+    }
+}
+
+/* static */void const
 Math::placeRanksByFeatureIndex(float const* const pSamples, float* const pRanks,
         unsigned int const* const * const pSampleIndicesPerStratum,
         unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount)
@@ -424,6 +452,57 @@ Math::placeRanksByFeatureIndex(float const* const pSamples, float* const pRanks,
 
         for (unsigned int j = 0; j < sample_count - offset; ++j)
             pRanks[p_sample_indices[p_order[j]]] = j;
+    }
+}
+
+/* static */void const
+Math::placeRanksByFeatureIndex(float const* const pSamplesX, float const* const pSamplesY,
+        float const* const pOrdersX, float const* const pOrdersY, float* const pRanksX,
+        float* const pRanksY, unsigned int const* const * const pSampleIndicesPerStratum,
+        unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount)
+{
+    for (unsigned int i = 0; i < sampleStratumCount; ++i)
+    {
+        unsigned int const* const p_sample_indices = pSampleIndicesPerStratum[i];
+        unsigned int const stratum_sample_count = pSampleCountPerStratum[i];
+
+        unsigned int offset_x = 0;
+        unsigned int offset_y = 0;
+
+        for (unsigned int j = 0; j < stratum_sample_count; ++j)
+        {
+            unsigned int const order_x = p_sample_indices[static_cast<unsigned int>(pOrdersX[p_sample_indices[j]])];
+            unsigned int const order_y = p_sample_indices[static_cast<unsigned int>(pOrdersY[p_sample_indices[j]])];
+
+            pRanksX[order_x] = pSamplesX[order_x];
+            pRanksY[order_y] = pSamplesY[order_y];
+        }
+
+        for (unsigned int j = 0; j < stratum_sample_count; ++j)
+        {
+            unsigned int const order_x = p_sample_indices[static_cast<unsigned int>(pOrdersX[p_sample_indices[j]])];
+            unsigned int const order_y = p_sample_indices[static_cast<unsigned int>(pOrdersY[p_sample_indices[j]])];
+
+            bool const NA_x = pSamplesX[order_x] != pSamplesX[order_x];
+            bool const NA_y = pSamplesY[order_y] != pSamplesY[order_y];
+
+            if (!NA_x && !NA_y)
+            {
+                pRanksX[order_x] = j - offset_x;
+                pRanksY[order_y] = j - offset_y;
+            }
+            else
+            {
+                if (NA_x)
+                    ++offset_x;
+
+                if (NA_y)
+                    ++offset_y;
+            }
+        }
+
+        for (unsigned int j = 0; j < stratum_sample_count; ++j)
+            Rprintf("%f\t%f\n", pRanksX[p_sample_indices[j]], pRanksY[p_sample_indices[j]]);
     }
 }
 

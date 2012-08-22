@@ -10,8 +10,8 @@ class Data
 {
 private:
     Matrix const* const mpDataMatrix;
-    Matrix* const mpRankedDataMatrix;
-    bool* const mpHasFeatureRanksCached;
+    Matrix* const mpOrderMatrix;
+    bool* const mpHasOrderCached;
     unsigned int const* const mpSampleStrata;
     float const* const mpSampleWeights;
     unsigned int const* const mpFeatureTypes;

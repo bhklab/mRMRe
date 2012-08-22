@@ -85,8 +85,21 @@ public:
     computeVariance(float const* const pSamples, unsigned int const sampleCount);
 
     static void const
+    placeOrdersByFeatureIndex(float const* const pSamples, float* const pOrders,
+            unsigned int const* const * const pSampleIndicesPerStratum,
+            unsigned int const* const pSampleCountPerStratum,
+            unsigned int const sampleStratumCount);
+
+    static void const
     placeRanksByFeatureIndex(float const* const pSamples, float* const pRanks,
             unsigned int const* const * const pSampleIndicesPerStratum,
+            unsigned int const* const pSampleCountPerStratum,
+            unsigned int const sampleStratumCount);
+
+    static void const
+    placeRanksByFeatureIndex(float const* const pSamplesX, float const* const pSamplesY,
+            float const* const pOrdersX, float const* const pOrdersY, float* const pRanksX,
+            float* const pRanksY, unsigned int const* const * const pSampleIndicesPerStratum,
             unsigned int const* const pSampleCountPerStratum,
             unsigned int const sampleStratumCount);
 

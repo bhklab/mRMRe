@@ -4,8 +4,8 @@ Data::Data(float* const pData, unsigned int const sampleCount, unsigned int cons
         unsigned int const* const pSampleStrata, float const* const pSampleWeights,
         unsigned int const* const pFeatureTypes, unsigned int const sampleStratumCount,
         bool const usesRanks, bool const outX, unsigned int const bootstrapCount) :
-        mpDataMatrix(new Matrix(pData, sampleCount, featureCount)), mpRankedDataMatrix(
-                usesRanks ? new Matrix(sampleCount, featureCount) : 0), mpHasFeatureRanksCached(
+        mpDataMatrix(new Matrix(pData, sampleCount, featureCount)), mpOrderMatrix(
+                usesRanks ? new Matrix(sampleCount, featureCount) : 0), mpHasOrderCached(
                 new bool[mpDataMatrix->getColumnCount()]), mpSampleStrata(pSampleStrata), mpSampleWeights(
                 pSampleWeights), mpFeatureTypes(pFeatureTypes), mSampleStratumCount(
                 sampleStratumCount), mpSampleIndicesPerStratum(
@@ -15,7 +15,7 @@ Data::Data(float* const pData, unsigned int const sampleCount, unsigned int cons
                 bootstrapCount)
 {
     for (unsigned int i = 0; i < mpDataMatrix->getColumnCount(); ++i)
-        mpHasFeatureRanksCached[i] = false;
+        mpHasOrderCached[i] = false;
 
     Math::placeStratificationData(mpSampleStrata, mpSampleWeights, mpSampleIndicesPerStratum,
             mpTotalWeightPerStratum, mpSampleCountPerStratum, mSampleStratumCount, sampleCount);
@@ -24,9 +24,9 @@ Data::Data(float* const pData, unsigned int const sampleCount, unsigned int cons
 Data::~Data()
 {
     delete mpDataMatrix;
-    if (mpRankedDataMatrix)
-        delete mpRankedDataMatrix;
-    delete[] mpHasFeatureRanksCached;
+    if (mpOrderMatrix)
+        delete mpOrderMatrix;
+    delete[] mpHasOrderCached;
     for (unsigned int i = 0; i < mSampleStratumCount; ++i)
         delete[] mpSampleIndicesPerStratum[i];
     delete[] mpSampleIndicesPerStratum;
@@ -99,24 +99,22 @@ Data::computeCorrelationBetweenContinuousFeatures(unsigned int const i, unsigned
 {
     if (mUsesRanks)
     {
-        if (!mpHasFeatureRanksCached[i])
+        if (!mpHasOrderCached[i])
         {
-            Math::placeRanksByFeatureIndex(&(mpDataMatrix->at(0, i)),
-                    &(mpRankedDataMatrix->at(0, i)), mpSampleIndicesPerStratum,
-                    mpSampleCountPerStratum, mSampleStratumCount);
-            mpHasFeatureRanksCached[i] = true;
+            Math::placeOrdersByFeatureIndex(&(mpDataMatrix->at(0, i)), &(mpOrderMatrix->at(0, i)),
+                    mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount);
+            mpHasOrderCached[i] = true;
         }
 
-        if (!mpHasFeatureRanksCached[j])
+        if (!mpHasOrderCached[j])
         {
-            Math::placeRanksByFeatureIndex(&(mpDataMatrix->at(0, j)),
-                    &(mpRankedDataMatrix->at(0, j)), mpSampleIndicesPerStratum,
-                    mpSampleCountPerStratum, mSampleStratumCount);
-            mpHasFeatureRanksCached[j] = true;
+            Math::placeOrdersByFeatureIndex(&(mpDataMatrix->at(0, j)), &(mpOrderMatrix->at(0, j)),
+                    mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount);
+            mpHasOrderCached[j] = true;
         }
 
-        return Math::computePearsonCorrelation(&(mpRankedDataMatrix->at(0, i)),
-                &(mpRankedDataMatrix->at(0, j)), mpSampleWeights, mpSampleIndicesPerStratum,
+        return Math::computePearsonCorrelation(&(mpOrderMatrix->at(0, i)),
+                &(mpOrderMatrix->at(0, j)), mpSampleWeights, mpSampleIndicesPerStratum,
                 mpTotalWeightPerStratum, mpSampleCountPerStratum, mSampleStratumCount,
                 mBootstrapCount);
     }

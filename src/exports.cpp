@@ -194,6 +194,8 @@ compute_pearson_correlation(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_SampleWeigh
     return Rcpp::wrap<float>(r);
 }
 
+#include <Rcpp.h>
+
 extern "C" SEXP
 compute_spearman_correlation(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_SampleWeights,
         SEXP R_SampleStrata, SEXP R_SampleStratumCount, SEXP R_BootstrapCount)
@@ -209,6 +211,14 @@ compute_spearman_correlation(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_SampleWeig
     unsigned int* p_sample_indices_per_stratum[sample_stratum_count];
     float p_total_weight_per_stratum[sample_stratum_count];
     unsigned int p_sample_count_per_stratum[sample_stratum_count];
+//    float p_ordered_samples_x[sample_count];
+//    float p_ordered_samples_y[sample_count];
+//    Math::placeOrdersByFeatureIndex(&S_SamplesX[0], p_ordered_samples_x,
+//            p_sample_indices_per_stratum, p_sample_count_per_stratum, sample_stratum_count);
+//    Math::placeOrdersByFeatureIndex(&S_SamplesY[0], p_ordered_samples_y,
+//            p_sample_indices_per_stratum, p_sample_count_per_stratum, sample_stratum_count);
+//    float p_ranked_samples_x[sample_count];
+//    float p_ranked_samples_y[sample_count];
     Math::placeStratificationData(&S_SampleStrata[0], &S_SampleWeights[0],
             p_sample_indices_per_stratum, p_total_weight_per_stratum, p_sample_count_per_stratum,
             sample_stratum_count, sample_count);
