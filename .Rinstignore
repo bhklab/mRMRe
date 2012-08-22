@@ -1,2 +1,5 @@
 inst/doc/.*[.]bib$
 inst/doc/Makefile
+TODO
+README
+
