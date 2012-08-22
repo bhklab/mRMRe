@@ -1,12 +1,12 @@
-#ifndef ensemble_Tree_hpp
-#define ensemble_Tree_hpp
+#ifndef ensemble_Tree_h
+#define ensemble_Tree_h
 
 #include <cmath>
 #include <limits>
 #include <omp.h>
 #include <vector>
 
-#include "Matrix.hpp"
+#include "Matrix.h"
 
 class Tree
 {
@@ -63,4 +63,4 @@ public:
     placeElement(unsigned int const absoluteIndex, unsigned int const level);
 };
 
-#endif /* ensemble_Tree_hpp */
+#endif /* ensemble_Tree_h */

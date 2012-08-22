@@ -1,4 +1,4 @@
-#include "MutualInformationMatrix.hpp"
+#include "MutualInformationMatrix.h"
 
 MutualInformationMatrix::MutualInformationMatrix(Data const* const pData) :
         SymmetricMatrix(pData->getFeatureCount()), mpData(pData)

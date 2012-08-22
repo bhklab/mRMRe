@@ -1,4 +1,4 @@
-#include "Tree.hpp"
+#include "Tree.h"
 
 Tree::Tree(unsigned int const* const pChildrenCountPerLevel, unsigned int const levelCount,
         Matrix const* const pFeatureInformationMatrix, unsigned int const targetFeatureIndex) :

@@ -1,10 +1,10 @@
-#ifndef ensemble_Data_hpp
-#define ensemble_Data_hpp
+#ifndef ensemble_Data_h
+#define ensemble_Data_h
 
 #include <limits>
 
-#include "Math.hpp"
-#include "Matrix.hpp"
+#include "Math.h"
+#include "Matrix.h"
 
 class Data
 {
@@ -49,4 +49,4 @@ public:
     getFeatureCount() const;
 };
 
-#endif /* ensemble_Data_hpp */
+#endif /* ensemble_Data_h */

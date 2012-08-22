@@ -1,12 +1,12 @@
-#ifndef ensemble_exports_hpp
-#define ensemble_exports_hpp
+#ifndef ensemble_exports_h
+#define ensemble_exports_h
 
 #include <Rcpp.h>
 #include <vector>
 
-#include "Math.hpp"
-#include "MutualInformationMatrix.hpp"
-#include "Tree.hpp"
+#include "Math.h"
+#include "MutualInformationMatrix.h"
+#include "Tree.h"
 
 extern "C" SEXP
 build_mim(SEXP R_DataMatrix, SEXP R_SampleStrata, SEXP R_SampleWeights, SEXP R_FeatureTypes,
@@ -46,4 +46,4 @@ compute_spearman_correlation(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_SampleWeig
 extern "C" SEXP
 set_thread_count(SEXP R_ThreadCount);
 
-#endif /* ensemble_exports_hpp */
+#endif /* ensemble_exports_h */

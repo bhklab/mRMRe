@@ -1,10 +1,10 @@
-#ifndef ensemble_MutualInformationMatrix_hpp
-#define ensemble_MutualInformationMatrix_hpp
+#ifndef ensemble_MutualInformationMatrix_h
+#define ensemble_MutualInformationMatrix_h
 
 #include <omp.h>
 
-#include "Data.hpp"
-#include "SymmetricMatrix.hpp"
+#include "Data.h"
+#include "SymmetricMatrix.h"
 
 class MutualInformationMatrix : public SymmetricMatrix
 {
@@ -26,4 +26,4 @@ public:
     build();
 };
 
-#endif /* ensemble_MutualInformationMatrix_hpp */
+#endif /* ensemble_MutualInformationMatrix_h */

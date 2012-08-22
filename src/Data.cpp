@@ -1,4 +1,4 @@
-#include "Data.hpp"
+#include "Data.h"
 
 Data::Data(float* const pData, unsigned int const sampleCount, unsigned int const featureCount,
         unsigned int const* const pSampleStrata, float const* const pSampleWeights,

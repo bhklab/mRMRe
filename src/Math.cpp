@@ -1,4 +1,4 @@
-#include "Math.hpp"
+#include "Math.h"
 
 Math::IndirectComparator::IndirectComparator(float const* const pSamples,
         unsigned int const* const pSampleIndices) :

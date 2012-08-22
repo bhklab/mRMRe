@@ -1,12 +1,12 @@
-#ifndef ensemble_Math_hpp
-#define ensemble_Math_hpp
+#ifndef ensemble_Math_h
+#define ensemble_Math_h
 
 #include <algorithm>
 #include <cmath>
 #include <ctime>
 #include <limits>
 
-#include "Matrix.hpp"
+#include "Matrix.h"
 
 class Math
 {
@@ -110,4 +110,4 @@ public:
             unsigned int const sampleStratumCount, unsigned int const sampleCount);
 };
 
-#endif /* ensemble_Math_hpp */
+#endif /* ensemble_Math_h */

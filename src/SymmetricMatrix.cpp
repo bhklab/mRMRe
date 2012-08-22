@@ -1,4 +1,4 @@
-#include "SymmetricMatrix.hpp"
+#include "SymmetricMatrix.h"
 
 SymmetricMatrix::SymmetricMatrix(unsigned int const rowCount) :
         Matrix(rowCount * (rowCount + 1) / 2, rowCount, rowCount)

@@ -1,4 +1,4 @@
-#include "Matrix.hpp"
+#include "Matrix.h"
 
 Matrix::Matrix(unsigned int const rowCount, unsigned int const columnCount) :
         mpData(new float[rowCount * columnCount]), mRowCount(rowCount), mColumnCount(columnCount), mHasAllocation(

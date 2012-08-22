@@ -1,4 +1,4 @@
-#include "exports.hpp"
+#include "exports.h"
 
 extern "C" SEXP
 build_mim(SEXP R_DataMatrix, SEXP R_SampleStrata, SEXP R_SampleWeights, SEXP R_FeatureTypes,
