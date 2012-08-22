@@ -400,8 +400,6 @@ Math::computeVariance(float const* const pSamples, unsigned int const sampleCoun
     return sum_for_error / (sampleCount - 1);
 }
 
-#include <Rcpp.h>
-
 /* static */void const
 Math::placeOrdersByFeatureIndex(float const* const pSamples, float* const pOrders,
         unsigned int const* const * const pSampleIndicesPerStratum,
@@ -499,9 +497,6 @@ Math::placeRanksByFeatureIndex(float const* const pSamplesX, float const* const 
             else
                 pRanksY[order_y] = offset_y++;
         }
-
-        for (unsigned int j = 0; j < stratum_sample_count; ++j)
-            Rprintf("%f\t%f\n", pRanksX[p_sample_indices[j]], pRanksY[p_sample_indices[j]]);
     }
 }
 
