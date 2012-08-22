@@ -486,31 +486,18 @@ Math::placeRanksByFeatureIndex(float const* const pSamplesX, float const* const 
             unsigned int const order_x = p_sample_indices[static_cast<unsigned int>(pOrdersX[p_sample_indices[j]])];
             unsigned int const order_y = p_sample_indices[static_cast<unsigned int>(pOrdersY[p_sample_indices[j]])];
 
-            pRanksX[order_x] = pSamplesX[order_x];
-            pRanksY[order_y] = pSamplesY[order_y];
-        }
+            bool const NA_x = pSamplesX[order_x] != pSamplesX[order_x] || pSamplesY[order_x] != pSamplesY[order_x];
+            bool const NA_y = pSamplesY[order_y] != pSamplesY[order_y] || pSamplesX[order_y] != pSamplesX[order_y];
 
-        for (unsigned int j = 0; j < stratum_sample_count; ++j)
-        {
-            unsigned int const order_x = p_sample_indices[static_cast<unsigned int>(pOrdersX[p_sample_indices[j]])];
-            unsigned int const order_y = p_sample_indices[static_cast<unsigned int>(pOrdersY[p_sample_indices[j]])];
-
-            bool const NA_x = pSamplesX[order_x] != pSamplesX[order_x];
-            bool const NA_y = pSamplesY[order_y] != pSamplesY[order_y];
-
-            if (!NA_x && !NA_y)
-            {
-                pRanksX[order_x] = j - offset_x;
-                pRanksY[order_y] = j - offset_y;
-            }
+            if (NA_x)
+                pRanksX[order_x] = std::numeric_limits<float>::quiet_NaN();
             else
-            {
-                if (NA_x)
-                    ++offset_x;
+                pRanksX[order_x] = offset_x++;
 
-                if (NA_y)
-                    ++offset_y;
-            }
+            if (NA_y)
+                pRanksY[order_y] = std::numeric_limits<float>::quiet_NaN();
+            else
+                pRanksY[order_y] = offset_y++;
         }
 
         for (unsigned int j = 0; j < stratum_sample_count; ++j)

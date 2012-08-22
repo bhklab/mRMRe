@@ -113,10 +113,19 @@ Data::computeCorrelationBetweenContinuousFeatures(unsigned int const i, unsigned
             mpHasOrderCached[j] = true;
         }
 
-        return Math::computePearsonCorrelation(&(mpOrderMatrix->at(0, i)),
-                &(mpOrderMatrix->at(0, j)), mpSampleWeights, mpSampleIndicesPerStratum,
-                mpTotalWeightPerStratum, mpSampleCountPerStratum, mSampleStratumCount,
-                mBootstrapCount);
+        float* const p_ranked_samples_x = new float[mpDataMatrix->getRowCount()];
+        float* const p_ranked_samples_y = new float[mpDataMatrix->getRowCount()];
+        Math::placeRanksByFeatureIndex(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
+                &(mpOrderMatrix->at(0, i)), &(mpOrderMatrix->at(0, j)), p_ranked_samples_x,
+                p_ranked_samples_y, mpSampleIndicesPerStratum, mpSampleCountPerStratum,
+                mSampleStratumCount);
+        float const r = Math::computePearsonCorrelation(p_ranked_samples_x, p_ranked_samples_y,
+                mpSampleWeights, mpSampleIndicesPerStratum, mpTotalWeightPerStratum,
+                mpSampleCountPerStratum, mSampleStratumCount, mBootstrapCount);
+        delete[] p_ranked_samples_x;
+        delete[] p_ranked_samples_y;
+
+        return r;
     }
     else
         return Math::computePearsonCorrelation(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
