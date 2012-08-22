@@ -11,7 +11,7 @@ clean:
 	rm -f *.tex *.bbl *.blg *.aux *.out *.log *.tikz *.toc *.map *.sh *.dvi *.spl *tikzDictionary
 
 %.pdf: %.Rnw
-	R CMD Sweave $*
+	"$(R_HOME)/bin/R" CMD Sweave $*
 	pdflatex $*
 	bibtex $*
 	pdflatex $*
