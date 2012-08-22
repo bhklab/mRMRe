@@ -27,7 +27,7 @@ build_mim(SEXP R_DataMatrix, SEXP R_SampleStrata, SEXP R_SampleWeights, SEXP R_F
 }
 
 extern "C" SEXP
-build_mRMR_tree_from_data(SEXP R_ChildrenCountPerLevel, SEXP R_DataMatrix, SEXP R_SampleStrata,
+build_mRMR_tree(SEXP R_ChildrenCountPerLevel, SEXP R_DataMatrix, SEXP R_SampleStrata,
         SEXP R_SampleWeights, SEXP R_FeatureTypes, SEXP R_SampleCount, SEXP R_FeatureCount,
         SEXP R_SampleStratumCount, SEXP R_TargetFeatureIndex, SEXP R_UsesRanks, SEXP R_OutX,
         SEXP R_BootstrapCount)
@@ -66,27 +66,6 @@ build_mRMR_tree_from_data(SEXP R_ChildrenCountPerLevel, SEXP R_DataMatrix, SEXP 
             Rcpp::Named("paths") = Rcpp::wrap < std::vector<unsigned int> > (S_Paths),
             Rcpp::Named("scores") = Rcpp::wrap < std::vector<float> > (S_Scores),
             Rcpp::Named("mim") = Rcpp::wrap < std::vector<float> > (S_MiMatrix));
-}
-
-extern "C" SEXP
-build_mRMR_tree_from_mim(SEXP R_ChildrenCountPerLevel, SEXP R_MiMatrix, SEXP R_FeatureCount,
-        SEXP R_TargetFeatureIndex)
-{
-    std::vector<unsigned int> S_ChildrenCountPerLevel = Rcpp::as < std::vector<unsigned int>
-            > (R_ChildrenCountPerLevel);
-    std::vector<float> S_MiMatrix = Rcpp::as < std::vector<float> > (R_MiMatrix);
-    unsigned int const feature_count = Rcpp::as<unsigned int>(R_FeatureCount);
-    Matrix mi_matrix(&S_MiMatrix[0], feature_count, feature_count);
-    unsigned int const target_feature_index = Rcpp::as<unsigned int>(R_TargetFeatureIndex);
-    Tree mRMR_tree(&S_ChildrenCountPerLevel[0], S_ChildrenCountPerLevel.size(), &mi_matrix,
-            target_feature_index);
-    mRMR_tree.build();
-    std::vector<unsigned int> S_Paths = mRMR_tree.getPaths();
-    std::vector<float> S_Scores = mRMR_tree.getScores();
-    return Rcpp::List::create(
-            Rcpp::Named("paths") = Rcpp::wrap < std::vector<unsigned int> > (S_Paths),
-            Rcpp::Named("scores") = Rcpp::wrap < std::vector<float> > (S_Scores),
-            Rcpp::Named("mim") = R_NilValue);
 }
 
 extern "C" SEXP
