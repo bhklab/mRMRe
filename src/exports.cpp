@@ -86,15 +86,24 @@ compute_concordance_index(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_SampleWeights
     Math::placeStratificationData(&S_SampleStrata[0], &S_SampleWeights[0],
             p_sample_indices_per_stratum, p_total_weight_per_stratum, p_sample_count_per_stratum,
             sample_stratum_count, sample_count);
+    float concordant_weight;
+    float discordant_weight;
+    float uninformative_weight;
+    float relevant_weight;
     float const r = Math::computeConcordanceIndex(&S_SamplesX[0], &S_SamplesY[0],
             &S_SampleWeights[0], p_sample_indices_per_stratum, p_sample_count_per_stratum,
-            sample_stratum_count, outX);
+            sample_stratum_count, outX, &concordant_weight, &discordant_weight,
+            &uninformative_weight, &relevant_weight);
     delete[] p_sample_count_per_stratum;
     delete[] p_total_weight_per_stratum;
     for (unsigned int i = 0; i < sample_stratum_count; ++i)
         delete[] p_sample_indices_per_stratum[i];
     delete[] p_sample_indices_per_stratum;
-    return Rcpp::wrap<float>(r);
+    return Rcpp::List::create(Rcpp::Named("statistic") = Rcpp::wrap<float>(r),
+            Rcpp::Named("concordant_weight") = Rcpp::wrap<float>(concordant_weight),
+            Rcpp::Named("discordant_weight") = Rcpp::wrap<float>(discordant_weight),
+            Rcpp::Named("uninformative_weight") = Rcpp::wrap<float>(uninformative_weight),
+            Rcpp::Named("relevant_weight") = Rcpp::wrap<float>(relevant_weight));
 }
 
 extern "C" SEXP
@@ -116,15 +125,24 @@ compute_concordance_index_with_time(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_Tim
     Math::placeStratificationData(&S_SampleStrata[0], &S_SampleWeights[0],
             p_sample_indices_per_stratum, p_total_weight_per_stratum, p_sample_count_per_stratum,
             sample_stratum_count, sample_count);
+    float concordant_weight;
+    float discordant_weight;
+    float uninformative_weight;
+    float relevant_weight;
     float const r = Math::computeConcordanceIndexWithTime(&S_SamplesX[0], &S_SamplesY[0],
             &S_Time[0], &S_SampleWeights[0], p_sample_indices_per_stratum,
-            p_sample_count_per_stratum, sample_stratum_count, outX);
+            p_sample_count_per_stratum, sample_stratum_count, outX, &concordant_weight,
+            &discordant_weight, &uninformative_weight, &relevant_weight);
     delete[] p_sample_count_per_stratum;
     delete[] p_total_weight_per_stratum;
     for (unsigned int i = 0; i < sample_stratum_count; ++i)
         delete[] p_sample_indices_per_stratum[i];
     delete[] p_sample_indices_per_stratum;
-    return Rcpp::wrap<float>(r);
+    return Rcpp::List::create(Rcpp::Named("statistic") = Rcpp::wrap<float>(r),
+            Rcpp::Named("concordant_weight") = Rcpp::wrap<float>(concordant_weight),
+            Rcpp::Named("discordant_weight") = Rcpp::wrap<float>(discordant_weight),
+            Rcpp::Named("uninformative_weight") = Rcpp::wrap<float>(uninformative_weight),
+            Rcpp::Named("relevant_weight") = Rcpp::wrap<float>(relevant_weight));
 }
 
 extern "C" SEXP

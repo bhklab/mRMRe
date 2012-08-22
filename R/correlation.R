@@ -89,7 +89,7 @@
     else if (method == "cindex")
         value <- .Call(mRMRe:::.C_compute_concordance_index, x, y, weights, strata, stratum_count, outX)
     else if (method == "kendall")
-        value <- (.Call(mRMRe:::.C_compute_concordance_index, x, y, weights, strata, stratum_count, outX) - 0.5) * 2
+        value <- (.Call(mRMRe:::.C_compute_concordance_index, x, y, weights, strata, stratum_count, outX)$statistic - 0.5) * 2
     
     return(value)
 }

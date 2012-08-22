@@ -18,7 +18,8 @@ Math::computeConcordanceIndex(float const* const pDiscreteSamples,
         float const* const pContinuousSamples, float const* const pSampleWeights,
         unsigned int const* const * const pSampleIndicesPerStratum,
         unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
-        bool const outX)
+        bool const outX, float* const pConcordantWeight, float* const pDiscordantWeight,
+        float* const pUninformativeWeight, float* const pRelevantWeight)
 {
     float concordant_weight = 0.;
     float discordant_weight = 0.;
@@ -73,6 +74,15 @@ Math::computeConcordanceIndex(float const* const pDiscreteSamples,
         }
     }
 
+    if (pConcordantWeight)
+        *pConcordantWeight = concordant_weight;
+    if (pDiscordantWeight)
+        *pDiscordantWeight = discordant_weight;
+    if (pUninformativeWeight)
+        *pUninformativeWeight = uninformative_weight;
+    if (pRelevantWeight)
+        *pRelevantWeight = relevant_weight;
+
     return concordant_weight / relevant_weight;
 }
 
@@ -82,7 +92,8 @@ Math::computeConcordanceIndexWithTime(float const* const pDiscreteSamples,
         float const* const pSampleWeights,
         unsigned int const* const * const pSampleIndicesPerStratum,
         unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
-        bool const outX)
+        bool const outX, float* const pConcordantWeight, float* const pDiscordantWeight,
+        float* const pUninformativeWeight, float* const pRelevantWeight)
 {
     float concordant_weight = 0.;
     float discordant_weight = 0.;
@@ -140,6 +151,15 @@ Math::computeConcordanceIndexWithTime(float const* const pDiscreteSamples,
             }
         }
     }
+
+    if (pConcordantWeight)
+        *pConcordantWeight = concordant_weight;
+    if (pDiscordantWeight)
+        *pDiscordantWeight = discordant_weight;
+    if (pUninformativeWeight)
+        *pUninformativeWeight = uninformative_weight;
+    if (pRelevantWeight)
+        *pRelevantWeight = relevant_weight;
 
     return concordant_weight / relevant_weight;
 }
@@ -446,11 +466,15 @@ Math::placeRanksFromOrders(float const* const pSamplesX, float const* const pSam
 
         for (unsigned int j = 0; j < stratum_sample_count; ++j)
         {
-            unsigned int const order_x = p_sample_indices[static_cast<unsigned int>(pOrdersX[p_sample_indices[j]])];
-            unsigned int const order_y = p_sample_indices[static_cast<unsigned int>(pOrdersY[p_sample_indices[j]])];
+            unsigned int const order_x =
+                    p_sample_indices[static_cast<unsigned int>(pOrdersX[p_sample_indices[j]])];
+            unsigned int const order_y =
+                    p_sample_indices[static_cast<unsigned int>(pOrdersY[p_sample_indices[j]])];
 
-            bool const NA_x = pSamplesX[order_x] != pSamplesX[order_x] || pSamplesY[order_x] != pSamplesY[order_x];
-            bool const NA_y = pSamplesY[order_y] != pSamplesY[order_y] || pSamplesX[order_y] != pSamplesX[order_y];
+            bool const NA_x = pSamplesX[order_x] != pSamplesX[order_x]
+                    || pSamplesY[order_x] != pSamplesY[order_x];
+            bool const NA_y = pSamplesY[order_y] != pSamplesY[order_y]
+                    || pSamplesX[order_y] != pSamplesX[order_y];
 
             if (NA_x)
                 pRanksX[order_x] = std::numeric_limits<float>::quiet_NaN();
