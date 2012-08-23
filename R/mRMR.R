@@ -42,7 +42,6 @@
         stop("strata must be provided as factors")
     
     levels <- as.vector(levels)
-    
     expansion <- mRMRe:::.expand.input(feature_types=feature_types, data=data)
     data <- expansion$data
     feature_types <- expansion$feature_types
