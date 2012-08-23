@@ -80,6 +80,9 @@ public:
             float const* const pSampleWeights, unsigned int const* const pSampleIndices,
             unsigned int const sampleCount);
 
+    static int const
+    computeRandomNumber(unsigned int* const seed);
+
     static float const
     computeSomersD(float const c);
 

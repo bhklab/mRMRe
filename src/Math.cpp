@@ -188,7 +188,7 @@ Math::computeCramersV(float const* const pSamplesX, float const* const pSamplesY
                 unsigned int* const p_samples = new unsigned int[sample_count];
 
                 for (unsigned int k = 0; k < sample_count; ++k)
-                    p_samples[k] = pSampleIndicesPerStratum[j][rand_r(&seed) % sample_count];
+                    p_samples[k] = pSampleIndicesPerStratum[j][Math::computeRandomNumber(&seed) % sample_count];
 
                 float const correlation = computeCramersV(pSamplesX, pSamplesY, pSampleWeights,
                         p_samples, sample_count);
@@ -321,7 +321,7 @@ Math::computePearsonCorrelation(float const* const pSamplesX, float const* const
                 unsigned int* const p_samples = new unsigned int[sample_count];
 
                 for (unsigned int k = 0; k < sample_count; ++k)
-                    p_samples[k] = pSampleIndicesPerStratum[j][rand_r(&seed) % sample_count];
+                    p_samples[k] = pSampleIndicesPerStratum[j][Math::computeRandomNumber(&seed) % sample_count];
 
                 float const correlation = computePearsonCorrelation(pSamplesX, pSamplesY,
                         pSampleWeights, p_samples, sample_count);
@@ -392,6 +392,30 @@ Math::computePearsonCorrelation(float const* const pSamplesX, float const* const
                             * (sum_of_y_y - ((sum_of_y * sum_of_y) / sum_of_weights)));
 
     return r;
+}
+
+/* static */int const
+Math::computeRandomNumber(unsigned int* const seed)
+{
+    unsigned int next = *seed;
+    int result;
+
+    next *= 1103515245;
+    next += 12345;
+    result = (unsigned int) (next / 65536) % 2048;
+
+    next *= 1103515245;
+    next += 12345;
+    result <<= 10;
+    result ^= (unsigned int) (next / 65536) % 1024;
+
+    next *= 1103515245;
+    next += 12345;
+    result <<= 10;
+    result ^= (unsigned int) (next / 65536) % 1024;
+
+    *seed = next;
+    return result;
 }
 
 /* static */float const
