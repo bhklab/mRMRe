@@ -13,7 +13,7 @@
         offsets <- rep(0, length(paths))
         lapply(which(feature_types == 3), function(index)
         {
-            subset <- which(paths > index)
+            subset <- which(paths >= index)
             offsets[subset] <<- offsets[subset] + 1
         })
         paths <- paths - offsets
