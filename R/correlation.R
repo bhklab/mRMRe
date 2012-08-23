@@ -51,24 +51,7 @@
         outX=TRUE,
         bootstrap_count=0)
 {
-    if (length(x) != length(y))
-        stop("both sample sets must have the same length")
-    
-    if (missing(weights)) 
-        weights <- rep.int(1, length(x))
-    
-    if (missing(strata)) 
-        strata <- rep.int(0, length(x))
-    else if (is.factor(strata))
-        strata <- as.integer(strata) - 1
-    else
-        stop("strata must be provided as factors")
-    
-    weights <- as.vector(weights)
     method <- match.arg(method)
-    stratum_count <- as.integer(length(unique(strata)))
-    bootstrap_count <- as.integer(bootstrap_count)
-    value <- NA
     
     type_x <- paste(class(x), collapse="_")
     type_y <- paste(class(y), collapse="_")
@@ -77,9 +60,60 @@
     if (type_y == "ordered_factor")
         y <- as.integer(y) - 1
     
-    x <- as.numeric(x)
-    y <- as.numeric(y)
+    is_survival <- FALSE
+    if (type_x == "Surv" || type_y == "Surv")
+    {
+        is_survival <- TRUE
+        
+        if (method != "cindex")
+            stop("survival data can only be used with the concordance index")
+        else
+        {
+            if (type_y == "Surv")
+            {
+                t <- x
+                x <- y
+                y <- t
+                t <- type_x
+                type_x <- type_y
+                type_y <- t
+            }
+            
+            if (type_y != "numeric" && type_y != "integer")
+                stop("survival data must be compared to numerical data")
+        }
+        
+        x[, "status"] <- as.numeric(x[, "status"])
+        x[, "time"] <- as.numeric(x[, "time"])
+        y <- as.numeric(y)
+        
+        if (nrow(x) != length(y))
+            stop("both sample sets must have the same length")
+    }
+    else
+    {
+        x <- as.numeric(x)
+        y <- as.numeric(y)
+        
+        if (length(x) != length(y))
+            stop("both sample sets must have the same length")
+    }
     
+    if (missing(weights)) 
+        weights <- rep.int(1, length(y))
+    
+    if (missing(strata)) 
+        strata <- rep.int(0, length(y))
+    else if (is.factor(strata))
+        strata <- as.integer(strata) - 1
+    else
+        stop("strata must be provided as factors")
+    
+    weights <- as.vector(weights)
+    stratum_count <- as.integer(length(unique(strata)))
+    bootstrap_count <- as.integer(bootstrap_count)
+    value <- NA
+        
     if (method == "cramer")
         value <- .Call(mRMRe:::.C_compute_cramers_v, x, y, weights, strata, stratum_count, bootstrap_count)
     else if (method == "pearson")
@@ -87,7 +121,12 @@
     else if (method == "spearman")
         value <- .Call(mRMRe:::.C_compute_spearman_correlation, x, y, weights, strata, stratum_count, bootstrap_count)
     else if (method == "cindex")
-        value <- .Call(mRMRe:::.C_compute_concordance_index, x, y, weights, strata, stratum_count, outX)
+    {
+        if (!is_survival)
+            value <- .Call(mRMRe:::.C_compute_concordance_index, x, y, weights, strata, stratum_count, outX)
+        else
+            value <- .Call(mRMRe:::.C_compute_concordance_index_with_time, x[, "status"], y, x[, "time"], weights, strata, stratum_count, outX)
+    }
     else if (method == "kendall")
         value <- (.Call(mRMRe:::.C_compute_concordance_index, x, y, weights, strata, stratum_count, outX)$statistic - 0.5) * 2
     
