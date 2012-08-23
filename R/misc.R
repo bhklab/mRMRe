@@ -13,7 +13,7 @@
         offsets <- rep(0, length(paths))
         lapply(which(feature_types == 3), function(index)
         {
-            subset <- which(paths > index)
+            subset <- which(paths >= index)
             offsets[subset] <<- offsets[subset] + 1
         })
         paths <- paths - offsets
@@ -51,7 +51,7 @@
     rownames(new_data) <- rownames(data)
     colnames(new_data)[!new_feature_types %in% c(2, 3)] <- colnames(data)[feature_types != "Surv"]
     colnames(new_data)[new_feature_types %in% c(2, 3)] <- paste(rep(colnames(data)[feature_types == "Surv"], each=2),
-        rep(c("time", "event"), sum(feature_types == "Surv")), sep="@@@")
+        rep(c("event", "time"), sum(feature_types == "Surv")), sep="@@@")
 
     # new_mim <- sapply(seq(feature_types), function(i)
     # {
