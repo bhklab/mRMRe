@@ -22,6 +22,9 @@ public:
     virtual float&
     at(unsigned int const i, unsigned int const j);
 
+    virtual float const&
+    at(unsigned int const i, unsigned int const j) const;
+
     void const
     build();
 };

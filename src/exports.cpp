@@ -61,7 +61,7 @@ build_mRMR_tree(SEXP R_ChildrenCountPerLevel, SEXP R_DataMatrix, SEXP R_SampleSt
 #pragma omp parallel for schedule(dynamic)
     for (unsigned int i = 0; i < feature_count; ++i)
         for (unsigned int j = 0; j < feature_count; ++j)
-            S_MiMatrix[(i * feature_count) + j] = mi_matrix.SymmetricMatrix::at(i, j);
+            S_MiMatrix[(i * feature_count) + j] = static_cast<const MutualInformationMatrix>(mi_matrix).at(i, j);
     return Rcpp::List::create(
             Rcpp::Named("paths") = Rcpp::wrap < std::vector<unsigned int> > (S_Paths),
             Rcpp::Named("scores") = Rcpp::wrap < std::vector<float> > (S_Scores),

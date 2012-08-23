@@ -13,7 +13,7 @@ class Tree
 private:
     unsigned int const* const mpChildrenCountPerLevel;
     unsigned int const mLevelCount;
-    Matrix const* const mpFeatureInformationMatrix;
+    Matrix* const mpFeatureInformationMatrix;
     unsigned int* const mpStartingIndexPerLevel;
     unsigned int* mpIndexTree;
     float* mpInformativeContributionTree;
@@ -24,7 +24,7 @@ private:
 
 public:
     Tree(unsigned int const* const pChildrenCountPerLevel, unsigned int const levelCount,
-            Matrix const* const pFeatureInformationMatrix, unsigned int const targetFeatureIndex);
+            Matrix* const pFeatureInformationMatrix, unsigned int const targetFeatureIndex);
 
     ~Tree();
 

@@ -29,6 +29,12 @@ MutualInformationMatrix::at(unsigned int const i, unsigned int const j)
     return SymmetricMatrix::at(i, j);
 }
 
+/* virtual */float const&
+MutualInformationMatrix::at(unsigned int const i, unsigned int const j) const
+{
+    return SymmetricMatrix::at(i, j);
+}
+
 void const
 MutualInformationMatrix::build()
 {

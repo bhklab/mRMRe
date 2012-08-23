@@ -27,7 +27,7 @@ public:
     virtual float&
     at(unsigned int const i, unsigned int const j);
 
-    float const&
+    virtual float const&
     at(unsigned int const i, unsigned int const j) const;
 
     unsigned int const

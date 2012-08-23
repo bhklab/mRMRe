@@ -26,3 +26,12 @@ SymmetricMatrix::at(unsigned int const i, unsigned int const j)
 
     return mpData[((x * (x + 1) / 2)) + y];
 }
+
+/* virtual */float const&
+SymmetricMatrix::at(unsigned int const i, unsigned int const j) const
+{
+    unsigned int const x = (i >= j) ? i : j;
+    unsigned int const y = (i >= j) ? j : i;
+
+    return mpData[((x * (x + 1) / 2)) + y];
+}

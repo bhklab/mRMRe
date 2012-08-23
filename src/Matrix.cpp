@@ -35,10 +35,10 @@ Matrix::at(unsigned int const i, unsigned int const j)
     return mpData[(j * mRowCount) + i];
 }
 
-float const&
+/* virtual */float const&
 Matrix::at(unsigned int const i, unsigned int const j) const
 {
-    return const_cast<Matrix*>(this)->at(i, j);
+    return mpData[(j * mRowCount) + i];
 }
 
 unsigned int const
