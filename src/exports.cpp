@@ -49,10 +49,10 @@ build_mRMR_tree(SEXP R_ChildrenCountPerLevel, SEXP R_DataMatrix, SEXP R_SampleSt
     Data data(&S_DataMatrix[0], sample_count, feature_count, &S_SampleStrata[0],
             &S_SampleWeights[0], &S_FeatureTypes[0], sample_stratum_count, uses_ranks, outX,
             bootstrap_count);
-    MutualInformationMatrix mi_matrix(&data);
+    MutualInformationMatrix const mi_matrix(&data);
     unsigned int const target_feature_index = Rcpp::as<unsigned int>(R_TargetFeatureIndex);
-    Tree mRMR_tree(&S_ChildrenCountPerLevel[0], S_ChildrenCountPerLevel.size(), &mi_matrix,
-            target_feature_index);
+    Tree mRMR_tree(&S_ChildrenCountPerLevel[0], S_ChildrenCountPerLevel.size(),
+            const_cast<MutualInformationMatrix* const>(&mi_matrix), target_feature_index);
     mRMR_tree.build();
     std::vector<unsigned int> S_Paths = mRMR_tree.getPaths();
     std::vector<float> S_Scores = mRMR_tree.getScores();
@@ -61,7 +61,7 @@ build_mRMR_tree(SEXP R_ChildrenCountPerLevel, SEXP R_DataMatrix, SEXP R_SampleSt
 #pragma omp parallel for schedule(dynamic)
     for (unsigned int i = 0; i < feature_count; ++i)
         for (unsigned int j = 0; j < feature_count; ++j)
-            S_MiMatrix[(i * feature_count) + j] = static_cast<const MutualInformationMatrix>(mi_matrix).at(i, j);
+            S_MiMatrix[(i * feature_count) + j] = mi_matrix.at(i, j);
     return Rcpp::List::create(
             Rcpp::Named("paths") = Rcpp::wrap < std::vector<unsigned int> > (S_Paths),
             Rcpp::Named("scores") = Rcpp::wrap < std::vector<float> > (S_Scores),

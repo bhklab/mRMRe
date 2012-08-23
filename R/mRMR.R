@@ -47,7 +47,7 @@
     data <- expansion$data
     feature_types <- expansion$feature_types
     feature_names <- expansion$feature_names
-     
+    
     tree <- .Call(mRMRe:::.C_build_mRMR_tree, levels, as.vector(data), as.vector(strata), as.vector(weights),
             as.vector(feature_types), nrow(data), ncol(data), as.integer(length(unique(strata))),
             as.integer(target_index) - 1, as.integer(uses_ranks), as.integer(outX), as.integer(bootstrap_count))
