@@ -53,8 +53,8 @@
     }
     else if (missing(lambda))
         stop("lambda must be provided with priors")
-    else if (lambda >= 1 || lambda < 0)
-        stop("lambda must be [0, 1[")
+    else if (lambda > 1 || lambda < 0)
+        stop("lambda must be [0, 1]")
     
     levels <- as.vector(levels)
     expansion <- mRMRe:::.expand.input(feature_types=feature_types, data=data)
