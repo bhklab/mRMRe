@@ -5,6 +5,9 @@
 \usage{mRMR.classic(data, target_index, feature_count, strata, weights, uses_ranks, outX, bootstrap_count)}
 \arguments{
   \item{data}{A data frame with rows and columns respectively corresponding to samples and features. Only columns of the following types are supported: "numeric", "ordered_factor" and "Surv".}
+  \item{priors}{A non-symmetric matrix of prior causal relations between features where values can be [0, 1]; 
+  0 meaning i is not causal of j and 1 indicates that i is a cause of j.}
+  \item{lambda}{A value [0, 1] representing the weight the importance of priors for biasing the estimation of mutual information.}
   \item{target_index}{Index of the target feature (column) from the data matrix.}
   \item{feature_count}{The number of features to be selected by mRMR feature selection.}
   \item{strata}{A vector containing the stratum associated with each sample. Defaults to all samples being in the same stratum.}
