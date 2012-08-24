@@ -1,11 +1,13 @@
 #include "exports.h"
 
 extern "C" SEXP
-build_mim(SEXP R_DataMatrix, SEXP R_SampleStrata, SEXP R_SampleWeights, SEXP R_FeatureTypes,
-        SEXP R_SampleCount, SEXP R_FeatureCount, SEXP R_SampleStratumCount, SEXP R_UsesRanks,
-        SEXP R_OutX, SEXP R_BootstrapCount)
+build_mim(SEXP R_DataMatrix, SEXP R_PriorsMatrix, SEXP R_PriorsWeight, SEXP R_SampleStrata,
+        SEXP R_SampleWeights, SEXP R_FeatureTypes, SEXP R_SampleCount, SEXP R_FeatureCount,
+        SEXP R_SampleStratumCount, SEXP R_UsesRanks, SEXP R_OutX, SEXP R_BootstrapCount)
 {
     std::vector<float> S_DataMatrix = Rcpp::as < std::vector<float> > (R_DataMatrix);
+    std::vector<float> S_PriorsMatrix = Rcpp::as < std::vector<float> > (R_PriorsMatrix);
+    float const priors_weight = Rcpp::as<float>(R_PriorsWeight);
     std::vector<unsigned int> S_SampleStrata = Rcpp::as < std::vector<unsigned int>
             > (R_SampleStrata);
     std::vector<float> S_SampleWeights = Rcpp::as < std::vector<float> > (R_SampleWeights);
@@ -17,9 +19,12 @@ build_mim(SEXP R_DataMatrix, SEXP R_SampleStrata, SEXP R_SampleWeights, SEXP R_F
     bool const uses_ranks = Rcpp::as<bool>(R_UsesRanks);
     bool const outX = Rcpp::as<bool>(R_OutX);
     unsigned int const bootstrap_count = Rcpp::as<unsigned int>(R_BootstrapCount);
-    Data data(&S_DataMatrix[0], sample_count, feature_count, &S_SampleStrata[0],
-            &S_SampleWeights[0], &S_FeatureTypes[0], sample_stratum_count, uses_ranks, outX,
-            bootstrap_count);
+    Matrix const priors_matrix(&S_PriorsMatrix[0], feature_count, feature_count);
+    Matrix const* const p_priors_matrix =
+            (S_PriorsMatrix.size() == feature_count * feature_count) ? &priors_matrix : 0;
+    Data data(&S_DataMatrix[0], p_priors_matrix, priors_weight, sample_count, feature_count,
+            &S_SampleStrata[0], &S_SampleWeights[0], &S_FeatureTypes[0], sample_stratum_count,
+            uses_ranks, outX, bootstrap_count);
     MutualInformationMatrix mi_matrix(&data);
     mi_matrix.build();
     std::vector<float> S_MiMatrix = mi_matrix.getVectorizedData();
@@ -27,14 +32,16 @@ build_mim(SEXP R_DataMatrix, SEXP R_SampleStrata, SEXP R_SampleWeights, SEXP R_F
 }
 
 extern "C" SEXP
-build_mRMR_tree(SEXP R_ChildrenCountPerLevel, SEXP R_DataMatrix, SEXP R_SampleStrata,
-        SEXP R_SampleWeights, SEXP R_FeatureTypes, SEXP R_SampleCount, SEXP R_FeatureCount,
-        SEXP R_SampleStratumCount, SEXP R_TargetFeatureIndex, SEXP R_UsesRanks, SEXP R_OutX,
-        SEXP R_BootstrapCount)
+build_mRMR_tree(SEXP R_ChildrenCountPerLevel, SEXP R_DataMatrix, SEXP R_PriorsMatrix,
+        SEXP R_PriorsWeight, SEXP R_SampleStrata, SEXP R_SampleWeights, SEXP R_FeatureTypes,
+        SEXP R_SampleCount, SEXP R_FeatureCount, SEXP R_SampleStratumCount,
+        SEXP R_TargetFeatureIndex, SEXP R_UsesRanks, SEXP R_OutX, SEXP R_BootstrapCount)
 {
     std::vector<unsigned int> S_ChildrenCountPerLevel = Rcpp::as < std::vector<unsigned int>
             > (R_ChildrenCountPerLevel);
     std::vector<float> S_DataMatrix = Rcpp::as < std::vector<float> > (R_DataMatrix);
+    std::vector<float> S_PriorsMatrix = Rcpp::as < std::vector<float> > (R_PriorsMatrix);
+    float const priors_weight = Rcpp::as<float>(R_PriorsWeight);
     std::vector<unsigned int> S_SampleStrata = Rcpp::as < std::vector<unsigned int>
             > (R_SampleStrata);
     std::vector<float> S_SampleWeights = Rcpp::as < std::vector<float> > (R_SampleWeights);
@@ -46,13 +53,16 @@ build_mRMR_tree(SEXP R_ChildrenCountPerLevel, SEXP R_DataMatrix, SEXP R_SampleSt
     unsigned int const bootstrap_count = Rcpp::as<unsigned int>(R_BootstrapCount);
     bool const uses_ranks = Rcpp::as<bool>(R_UsesRanks);
     bool const outX = Rcpp::as<bool>(R_OutX);
-    Data data(&S_DataMatrix[0], sample_count, feature_count, &S_SampleStrata[0],
-            &S_SampleWeights[0], &S_FeatureTypes[0], sample_stratum_count, uses_ranks, outX,
-            bootstrap_count);
+    Matrix const priors_matrix(&S_PriorsMatrix[0], feature_count, feature_count);
+    Matrix const* const p_priors_matrix =
+            (S_PriorsMatrix.size() == feature_count * feature_count) ? &priors_matrix : 0;
+    Data data(&S_DataMatrix[0], p_priors_matrix, priors_weight, sample_count, feature_count,
+            &S_SampleStrata[0], &S_SampleWeights[0], &S_FeatureTypes[0], sample_stratum_count,
+            uses_ranks, outX, bootstrap_count);
     MutualInformationMatrix const mi_matrix(&data);
     unsigned int const target_feature_index = Rcpp::as<unsigned int>(R_TargetFeatureIndex);
     Tree mRMR_tree(&S_ChildrenCountPerLevel[0], S_ChildrenCountPerLevel.size(),
-            const_cast<MutualInformationMatrix* const>(&mi_matrix), target_feature_index);
+            const_cast<MutualInformationMatrix* const >(&mi_matrix), target_feature_index);
     mRMR_tree.build();
     std::vector<unsigned int> S_Paths = mRMR_tree.getPaths();
     std::vector<float> S_Scores = mRMR_tree.getScores();

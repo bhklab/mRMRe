@@ -11,6 +11,7 @@ class Data
 private:
     Matrix const* const mpDataMatrix;
     Matrix* const mpOrderMatrix;
+    Matrix const* const mpPriorsMatrix;
     bool* const mpHasOrderCached;
     unsigned int const* const mpSampleStrata;
     float const* const mpSampleWeights;
@@ -22,6 +23,7 @@ private:
     bool const mUsesRanks;
     bool const mOutX;
     unsigned int const mBootstrapCount;
+    float const mPriorsWeight;
 
 public:
     static unsigned int const FEATURE_CONTINUOUS = 0;
@@ -29,10 +31,11 @@ public:
     static unsigned int const FEATURE_SURVIVAL_EVENT = 2;
     static unsigned int const FEATURE_SURVIVAL_TIME = 3;
 
-    Data(float* const pData, unsigned int const sampleCount, unsigned int const featureCount,
+    Data(float* const pData, Matrix const* const pPriorsMatrix, float const priorsWeight,
+            unsigned int const sampleCount, unsigned int const featureCount,
             unsigned int const* const pSampleStrata, float const* const pSampleWeights,
             unsigned int const* const pFeatureTypes, unsigned int const sampleStratumCount,
-            bool const usesRanks, bool const outX, unsigned int const mBootstrapCount);
+            bool const usesRanks, bool const outX, unsigned int const bootstrapCount);
 
     ~Data();
 

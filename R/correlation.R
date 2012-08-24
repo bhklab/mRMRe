@@ -1,5 +1,7 @@
 `build.mim` <- function(
         data,
+        priors,
+        lambda,
         strata,
         weights,
         uses_ranks=TRUE,
@@ -24,15 +26,25 @@
     else
         stop("strata must be provided as factors")
                
+    if (missing(priors))
+    {
+        priors <- vector()
+        lambda <- 0
+    }
+    else if (missing(lambda))
+        stop("lambda must be provided with priors")
+    else if (lambda >= 1 || lambda < 0)
+        stop("lambda must be [0, 1[")
+    
     expansion <- mRMRe:::.expand.input(feature_types=feature_types, data=data)
     data <- expansion$data
     feature_types <- expansion$feature_types
     feature_names <- expansion$feature_names
     
     data <- as.matrix(data)
-    mi_matrix <- .Call(mRMRe:::.C_build_mim, as.vector(data), as.vector(strata), as.vector(weights), as.vector(feature_types),
-            as.integer(nrow(data)), as.integer(ncol(data)), as.integer(length(unique(strata))), as.integer(uses_ranks),
-            as.integer(outX), as.integer(bootstrap_count))
+    mi_matrix <- .Call(mRMRe:::.C_build_mim, as.vector(data), as.vector(priors), as.numeric(lambda), as.vector(strata),
+            as.vector(weights), as.vector(feature_types), as.integer(nrow(data)), as.integer(ncol(data)),
+            as.integer(length(unique(strata))), as.integer(uses_ranks), as.integer(outX), as.integer(bootstrap_count))
     mi_matrix <- matrix(mi_matrix, nrow=ncol(data), ncol=ncol(data))
     
     compression <- mRMRe:::.compress.output(feature_types=feature_types, feature_names=feature_names, mi_matrix=mi_matrix)

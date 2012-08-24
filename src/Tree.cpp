@@ -174,8 +174,8 @@ Tree::placeElement(unsigned int const absoluteIndex, unsigned int const level)
 {
     unsigned int max_candidate_feature_index = 0;
     float max_candidate_score = -std::numeric_limits<float>::max();
-    float max_candidate_feature_score = 0;
-    float max_candidate_ancestry_score = 0;
+    float max_candidate_feature_score = 0.;
+    float max_candidate_ancestry_score = 0.;
 
     for (unsigned int i = 0; i < mpFeatureInformationMatrix->getRowCount(); ++i)
     {
@@ -183,7 +183,8 @@ Tree::placeElement(unsigned int const absoluteIndex, unsigned int const level)
                 || hasSiblingByFeatureIndex(absoluteIndex, i, level))
             continue;
 
-        float const candidate_feature_score = mpFeatureInformationMatrix->at(i, mpIndexTree[0]);
+        float const candidate_feature_score = std::fabs(
+                mpFeatureInformationMatrix->at(i, mpIndexTree[0]));
 
         unsigned int ancestor_absolute_index = absoluteIndex;
         float ancestry_score = 0.;
@@ -192,11 +193,11 @@ Tree::placeElement(unsigned int const absoluteIndex, unsigned int const level)
             for (unsigned int j = level; j > 0; --j)
             {
                 ancestor_absolute_index = getParentAbsoluteIndex(ancestor_absolute_index, j);
-                ancestry_score += mpFeatureInformationMatrix->at(i,
-                        mpIndexTree[ancestor_absolute_index]);
+                ancestry_score += std::fabs(
+                        mpFeatureInformationMatrix->at(i, mpIndexTree[ancestor_absolute_index]));
             }
 
-        float ancestry_score_mean = ancestry_score / level; // (level + 1) gives sideChannelAttack's classic mRMR
+        float ancestry_score_mean = ancestry_score / level;
         float const candidate_score = candidate_feature_score - ancestry_score_mean;
 
         if (candidate_score > max_candidate_score && !isRedundantPath(absoluteIndex, i, level))
