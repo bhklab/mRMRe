@@ -80,6 +80,10 @@ public:
             float const* const pSampleWeights, unsigned int const* const pSampleIndices,
             unsigned int const sampleCount);
 
+    static float const
+    Math::computePress(float const* const pX, float const* const pY,
+            unsigned int const sample_count, unsigned int const feature_count, float const lambda);
+
     static int const
     computeRandomNumber(unsigned int* const seed);
 
