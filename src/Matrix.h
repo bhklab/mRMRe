@@ -40,16 +40,16 @@ public:
     getVectorizedData() const;
 
     Matrix const
-    Matrix::operator+(Matrix const& matrix) const;
+    operator+(Matrix const& matrix) const;
 
     Matrix const
-    Matrix::operator-(Matrix const& matrix) const;
+    operator-(Matrix const& matrix) const;
 
     Matrix const
-    Matrix::operator*(Matrix const& matrix) const;
+    operator*(Matrix const& matrix) const;
 
     Matrix const
-    Matrix::operator/(Matrix const& matrix) const;
+    operator/(Matrix const& matrix) const;
 };
 
 #endif /* ensemble_Matrix_h */
