@@ -401,7 +401,7 @@ Math::computePress(float const* const pX, float const* const pY, unsigned int co
         unsigned int const feature_count, float const lambda)
 {
     Matrix X = Matrix(sample_count, feature_count + 1);
-    Matrix Y = Matrix(pY, sample_count, 1);
+    Matrix const Y = Matrix(const_cast<float* const>(pY), sample_count, 1);
 
     for (unsigned int i = 0; i < sample_count; ++i)
     {
@@ -410,24 +410,17 @@ Math::computePress(float const* const pX, float const* const pY, unsigned int co
             X.at(i, j + 1) = pX[i * feature_count + j];
     }
 
-    Matrix transposed = X.transpose();
+    Matrix transposed(sample_count, feature_count + 1); // = X.getTransposedMatrix();
     Matrix temp = transposed * X;
     for (unsigned int i = 0; i < temp.getColumnCount(); ++i)
         temp.at(i, i) += lambda;
 
 // H1 has dimension (feature_count + 1) x (feature_count + 1)
 // H1 <- MASS::ginv(transposed_X %*% X + diag(x=lambda, ncol=ncol(X), nrow=ncol(X)))
-    //inverted = invert(temp);
+    Matrix inverted(sample_count, feature_count + 1); //inverted = invert(temp);
 
-// multiplied <- H1 %*% transposed_X
     Matrix multiplied = inverted * transposed;
-
-// coefficients <- multiplied %*% Y
     Matrix coefficients = multiplied * Y;
-
-    // H is a matrix of dimension sample_count x sample_count that contains
-    // the effect of each sample on each other in the model
-    // H(i,i) represents the effect of sample i on the model
     Matrix H = X * multiplied;
     Matrix Y_hat = X * coefficients;
     Matrix residuals = Y - Y_hat;
