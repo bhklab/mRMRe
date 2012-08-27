@@ -38,6 +38,18 @@ public:
 
     std::vector<float> const
     getVectorizedData() const;
+
+    Matrix const
+    Matrix::operator+(Matrix const& matrix) const;
+
+    Matrix const
+    Matrix::operator-(Matrix const& matrix) const;
+
+    Matrix const
+    Matrix::operator*(Matrix const& matrix) const;
+
+    Matrix const
+    Matrix::operator/(Matrix const& matrix) const;
 };
 
 #endif /* ensemble_Matrix_h */

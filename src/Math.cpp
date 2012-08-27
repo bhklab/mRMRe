@@ -188,7 +188,8 @@ Math::computeCramersV(float const* const pSamplesX, float const* const pSamplesY
                 unsigned int* const p_samples = new unsigned int[sample_count];
 
                 for (unsigned int k = 0; k < sample_count; ++k)
-                    p_samples[k] = pSampleIndicesPerStratum[j][Math::computeRandomNumber(&seed) % sample_count];
+                    p_samples[k] = pSampleIndicesPerStratum[j][Math::computeRandomNumber(&seed)
+                            % sample_count];
 
                 float const correlation = computeCramersV(pSamplesX, pSamplesY, pSampleWeights,
                         p_samples, sample_count);
@@ -321,7 +322,8 @@ Math::computePearsonCorrelation(float const* const pSamplesX, float const* const
                 unsigned int* const p_samples = new unsigned int[sample_count];
 
                 for (unsigned int k = 0; k < sample_count; ++k)
-                    p_samples[k] = pSampleIndicesPerStratum[j][Math::computeRandomNumber(&seed) % sample_count];
+                    p_samples[k] = pSampleIndicesPerStratum[j][Math::computeRandomNumber(&seed)
+                            % sample_count];
 
                 float const correlation = computePearsonCorrelation(pSamplesX, pSamplesY,
                         pSampleWeights, p_samples, sample_count);
@@ -392,6 +394,47 @@ Math::computePearsonCorrelation(float const* const pSamplesX, float const* const
                             * (sum_of_y_y - ((sum_of_y * sum_of_y) / sum_of_weights)));
 
     return r;
+}
+
+/* static */float const
+Math::computePress(float const* const pX, float const* const pY, unsigned int const sample_count,
+        unsigned int const feature_count, float const lambda)
+{
+    Matrix X = Matrix(sample_count, feature_count + 1);
+    Matrix Y = Matrix(pY, sample_count, 1);
+
+    for (unsigned int i = 0; i < sample_count; ++i)
+    {
+        X.at(i, 0) = 1;
+        for (unsigned int j = 0; j < feature_count; ++j)
+            X.at(i, j + 1) = pX[i * feature_count + j];
+    }
+
+    Matrix transposed = X.transpose();
+    Matrix temp = transposed * X;
+    for (unsigned int i = 0; i < temp.getColumnCount(); ++i)
+        temp.at(i, i) += lambda;
+
+// H1 has dimension (feature_count + 1) x (feature_count + 1)
+// H1 <- MASS::ginv(transposed_X %*% X + diag(x=lambda, ncol=ncol(X), nrow=ncol(X)))
+    //inverted = invert(temp);
+
+// multiplied <- H1 %*% transposed_X
+    Matrix multiplied = inverted * transposed;
+
+// coefficients <- multiplied %*% Y
+    Matrix coefficients = multiplied * Y;
+
+    // H is a matrix of dimension sample_count x sample_count that contains
+    // the effect of each sample on each other in the model
+    // H(i,i) represents the effect of sample i on the model
+    Matrix H = X * multiplied;
+    Matrix Y_hat = X * coefficients;
+    Matrix residuals = Y - Y_hat;
+    Matrix correction(sample_count, 1);
+    for (unsigned int i = 0; i < sample_count; ++i)
+        correction.at(i, 0) = 1 - H.at(i, i);
+    Matrix residuals_loo = residuals / correction;
 }
 
 /* static */int const

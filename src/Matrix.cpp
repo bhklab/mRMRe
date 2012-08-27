@@ -66,3 +66,57 @@ Matrix::getVectorizedData() const
 
     return vector;
 }
+
+Matrix const
+Matrix::getTransposedMatrix() const
+{
+    Matrix transposed(mColumnCount, mRowCount);
+    for (unsigned int i = 0; i < mColumnCount; ++i)
+        for (unsigned int j = 0; j < mRowCount; ++j)
+            transposed.at(j, i) = at(i, j);
+    return transposed;
+}
+
+Matrix const
+Matrix::operator+(Matrix const& matrix) const
+{
+    Matrix result(mRowCount, mColumnCount);
+    for (unsigned int i = 0; i < getRowCount(); ++i)
+        for (unsigned int j = 0; j < matrix.getColumnCount(); ++j)
+            result.at(i, j) = at(i, k) + matrix.at(k, j);
+    return result;
+}
+
+Matrix const
+Matrix::operator-(Matrix const& matrix) const
+{
+    Matrix result(mRowCount, mColumnCount);
+    for (unsigned int i = 0; i < getRowCount(); ++i)
+        for (unsigned int j = 0; j < matrix.getColumnCount(); ++j)
+            result.at(i, j) = at(i, k) - matrix.at(k, j);
+    return result;
+}
+
+Matrix const
+Matrix::operator*(Matrix const& matrix) const
+{
+    Matrix result(mRowCount, matrix.mColumnCount);
+    for (unsigned int i = 0; i < getRowCount(); ++i)
+        for (unsigned int j = 0; j < matrix.getColumnCount(); ++j)
+        {
+            result.at(i, j) = 0;
+            for (unsigned int k = 0; k < matrix.getRowCount(); ++k)
+                result.at(i, j) += at(i, k) * matrix.at(k, j);
+        }
+    return result;
+}
+
+Matrix const
+Matrix::operator/(Matrix const& matrix) const
+{
+    Matrix result(mRowCount, mColumnCount);
+    for (unsigned int i = 0; i < getRowCount(); ++i)
+        for (unsigned int j = 0; j < matrix.getColumnCount(); ++j)
+            result.at(i, j) = at(i, k) / matrix.at(k, j);
+    return result;
+}
