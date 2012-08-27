@@ -396,40 +396,6 @@ Math::computePearsonCorrelation(float const* const pSamplesX, float const* const
     return r;
 }
 
-/* static */float const
-Math::computePress(float const* const pX, float const* const pY, unsigned int const sample_count,
-        unsigned int const feature_count, float const lambda)
-{
-    Matrix X = Matrix(sample_count, feature_count + 1);
-    Matrix const Y = Matrix(const_cast<float* const>(pY), sample_count, 1);
-
-    for (unsigned int i = 0; i < sample_count; ++i)
-    {
-        X.at(i, 0) = 1;
-        for (unsigned int j = 0; j < feature_count; ++j)
-            X.at(i, j + 1) = pX[i * feature_count + j];
-    }
-
-    Matrix transposed(sample_count, feature_count + 1); // = X.getTransposedMatrix();
-    Matrix temp = transposed * X;
-    for (unsigned int i = 0; i < temp.getColumnCount(); ++i)
-        temp.at(i, i) += lambda;
-
-// H1 has dimension (feature_count + 1) x (feature_count + 1)
-// H1 <- MASS::ginv(transposed_X %*% X + diag(x=lambda, ncol=ncol(X), nrow=ncol(X)))
-    Matrix inverted(sample_count, feature_count + 1); //inverted = invert(temp);
-
-    Matrix multiplied = inverted * transposed;
-    Matrix coefficients = multiplied * Y;
-    Matrix H = X * multiplied;
-    Matrix Y_hat = X * coefficients;
-    Matrix residuals = Y - Y_hat;
-    Matrix correction(sample_count, 1);
-    for (unsigned int i = 0; i < sample_count; ++i)
-        correction.at(i, 0) = 1 - H.at(i, i);
-    Matrix residuals_loo = residuals / correction;
-}
-
 /* static */int const
 Math::computeRandomNumber(unsigned int* const seed)
 {
