@@ -21,6 +21,10 @@
   \item{bootstrap_count}{If a positive non-zero integer is given, samples of each stratum will be recombined by the generic inverse-variance weighted average based on sample bootstrapping. Defaults to 0.}
 }
 \details{
+'mRMR.classic' performs a mRMR feature selection where a certain number of features are selected.
+'mRMR.ensemble' performs an ensemble mRMR feature selection in which it is possible to select multiple such solutions.
+'mRMR.filter' performs a generalized mRMR feature selection for which the layout of the mRMR tree must be specified. 
+
 The resulting mutual information matrix is computed using Pearson or Spearman's rho between numeric features (depending on the uses_ranks argument);
 using Cramer's V between ordered factors; and Concordance index for any other combination.
 }

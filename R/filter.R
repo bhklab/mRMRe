@@ -1,24 +1,24 @@
 `mRMR.classic` <- function(data, priors, prior_weights, target_index, feature_count, strata, weights, uses_ranks,
-        outX, bootstrap_count)
+        outX, bootstrap_count, .is_expanded)
 {
     return(mRMRe::mRMR.ensemble(data=data, priors=priors, prior_weights=prior_weights, target=target_index,
                     feature_count=feature_count, solution_count=1, strata=strata, weights=weights,
-                    uses_ranks=uses_ranks, outX=outX, bootstrap_count=bootstrap_count))
+                    uses_ranks=uses_ranks, outX=outX, bootstrap_count=bootstrap_count, .is_expanded=.is_expanded))
 }
 
 `mRMR.ensemble` <- function(data, priors, prior_weights, target_index, feature_count, solution_count, strata, weights,
-        uses_ranks, outX, bootstrap_count)
+        uses_ranks, outX, bootstrap_count, .is_expanded)
 {
     return(mRMRe::mRMR.filter(data=data, priors=priors, prior_weights=prior_weights, target=target_index,
                     levels=c(solution_count, rep.int(1, feature_count - 1)), strata=strata, weights=weights,
-                    uses_ranks=uses_ranks, outX=outX, bootstrap_count=bootstrap_count))
+                    uses_ranks=uses_ranks, outX=outX, bootstrap_count=bootstrap_count, .is_expanded=.is_expanded))
 }
 
 `mRMR.filter` <- function(data, priors, prior_weights, target_index, levels, strata, weights, uses_ranks, outX,
-        bootstrap_count, .is_expanded=FALSE)
+        bootstrap_count, .is_expanded)
 {
     feature_names <- ncol(data)
-    if (!.is_expanded)
+    if (missing(.is_expanded) || !.is_expanded)
     {
         expansion <- mRMRe:::.expand.input(data=data, priors=priors, prior_weights=prior_weights, strata=strata,
                 weights=weights)
