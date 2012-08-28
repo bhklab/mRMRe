@@ -37,7 +37,7 @@
 }
 
 # Select the top 10 genes most correlated with phenotype
-genes<-order(apply(data_cgp, 2, cor, ic50_cgp, use="complete.obs"))[1:10]
+genes <- order(apply(data_cgp, 2, cor, ic50_cgp, use="complete.obs"))[1:10]
 
 # Create empty network
 network <- matrix(0, ncol(data_cgp), ncol(data_cgp))
@@ -49,9 +49,8 @@ sapply(1:length(genes), function(i) {
 					})
 		})
 
-# Discretize both data_sets (cgp and ccle)
+# Discretize CGP into senstive (0) and resistant (1)
 cgp_discrete <- discretize.labels(ic50_cgp, c(0.25, 0.75))
-ccle_discrete <- discretize.labels(ic50_ccle_common, c(0.25, 0.75))
 
 # Create barcodes for resistant and senstive cgp samples
 resistant_barcode <- compute.barcode(data_cgp[which(cgp_discrete == 1), ], network)
