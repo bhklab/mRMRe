@@ -50,7 +50,7 @@
     mi_matrix <- matrix(mi_matrix, nrow=ncol(data), ncol=ncol(data))
     
     compression <- mRMRe:::.compress.output(feature_types=feature_types, feature_names=feature_names, mi_matrix=mi_matrix)
-    mi_matrix <- compression$mi_matrix
+    mi_matrix <- -0.5 * log(1 - (compression$mi_matrix^2))
     
     return(mi_matrix)
 }
