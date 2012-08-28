@@ -1,15 +1,11 @@
-`compute.causality` <- function(
-        data,
-        target_index,
-        mim,
-        solutions,
+`compute.causality` <- function(data, target_index, mi_matrix, solutions,
         estimator=c("pearson", "spearman", "kendall"))
 {
     if (class(data) == "mRMReFilter")
         return(mRMRe:::.compute.causality.mRMReFilter(data=data))
 
-    if (missing(mim))
-        allcor <- as.matrix(mim)
+    if (missing(mi_matrix))
+        allcor <- as.matrix(mi_matrix)
     else
         allcor <- matrix(ncol=ncol(data), nrow=ncol(data))
         

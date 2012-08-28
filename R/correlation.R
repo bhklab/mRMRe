@@ -1,12 +1,4 @@
-`build.mim` <- function(
-        data,
-        priors,
-        lambda,
-        strata,
-        weights,
-        uses_ranks=TRUE,
-        outX=TRUE,
-        bootstrap_count=0)
+`build.mim` <- function(data, priors, prior_weights, strata, weights, uses_ranks=TRUE, outX=TRUE, bootstrap_count=0)
 {
     if (!is.data.frame(data))
         stop("data must be of type data frame")
@@ -29,19 +21,20 @@
     if (missing(priors))
     {
         priors <- vector()
-        lambda <- 0
+        prior_weights <- 0
     }
-    else if (missing(lambda))
-        stop("lambda must be provided with priors")
-    else if (lambda > 1 || lambda < 0)
-        stop("lambda must be [0, 1]")
+    else if (missing(prior_weights))
+        stop("prior_weights must be provided with priors")
+    else if (prior_weights > 1 || prior_weights < 0)
+        stop("prior_weights must be [0, 1]")
 	else if (max(priors) > 1 || min(priors) < 0)
 		stop("prior must be [0,1]")
     
-    expansion <- mRMRe:::.expand.input(feature_types=feature_types, data=data)
+    expansion <- mRMRe:::.expand.input(feature_types=feature_types, data=data, priors=priors)
     data <- expansion$data
     feature_types <- expansion$feature_types
     feature_names <- expansion$feature_names
+    priors <- expansion$priors
     
     data <- as.matrix(data)
     mi_matrix <- .Call(mRMRe:::.C_build_mim, as.vector(data), as.vector(priors), as.numeric(lambda), as.vector(strata),
@@ -55,26 +48,21 @@
     return(mi_matrix)
 }
 
-# For c-index, it is assumed that X is discrete and that Y is continuous
-`correlate` <- function(
-        x,
-        y,
-        strata,
-        weights,
-        method=c("cramer", "pearson", "spearman", "cindex", "kendall"),
-        outX=TRUE,
-        bootstrap_count=0)
+`correlate` <- function(x, y, strata, weights, method=c("cramer", "pearson", "spearman", "cindex", "kendall"),
+        outX=TRUE, bootstrap_count=0)
 {
     method <- match.arg(method)
     
     type_x <- paste(class(x), collapse="_")
     type_y <- paste(class(y), collapse="_")
+    
     if (type_x == "ordered_factor")
         x <- as.integer(x) - 1
     if (type_y == "ordered_factor")
         y <- as.integer(y) - 1
     
     is_survival <- FALSE
+    
     if (type_x == "Surv" || type_y == "Surv")
     {
         is_survival <- TRUE

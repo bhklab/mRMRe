@@ -1,50 +1,21 @@
-`mRMR.classic` <- function(
-        data,
-        priors,
-        prior_weights,
-        target_index,
-        feature_count,
-        strata,
-        weights,
-        uses_ranks=TRUE,
-        outX=TRUE,
-        bootstrap_count=0
-        )
+`mRMR.classic` <- function(data, priors, prior_weights, target_index, feature_count, strata, weights, uses_ranks,
+        outX, bootstrap_count)
 {
     return(mRMRe::mRMR.filter(levels=rep.int(1, feature_count), data=data, priors=priors,
                     prior_weights=prior_weights, target=target_index, strata=strata, weights=weights,
                     uses_ranks=uses_ranks, outX=outX, bootstrap_count=bootstrap_count))
 }
 
-`mRMR.ensemble` <- function(
-        data,
-        priors,
-        prior_weights,
-        target_index,
-        feature_count,
-        solution_count,
-        strata,
-        weights,
-        uses_ranks=TRUE,
-        outX=TRUE,
-        bootstrap_count=0)
+`mRMR.ensemble` <- function(data, priors, prior_weights, target_index, feature_count, solution_count, strata, weights,
+        uses_ranks, outX, bootstrap_count)
 {
     return(mRMRe::mRMR.filter(levels=c(solution_count, rep.int(1, feature_count - 1)), data=data, priors=priors,
                     prior_weights=prior_weights, target=target_index, strata=strata, weights=weights,
                     uses_ranks=uses_ranks, outX=outX, bootstrap_count=bootstrap_count))
 }
 
-`mRMR.filter` <- function(
-        data,
-        priors,
-        prior_weights,
-        target_index,
-        levels,
-        strata,
-        weights,
-        uses_ranks=TRUE,
-        outX=TRUE,
-        bootstrap_count=0)
+`mRMR.filter` <- function(data, priors, prior_weights, target_index, levels, strata, weights, uses_ranks=TRUE,
+        outX=TRUE, bootstrap_count=0)
 {
     if (!is.data.frame(data))
         stop("data must be of type data frame")

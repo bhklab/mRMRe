@@ -22,7 +22,7 @@
     return(list("mi_matrix"=mi_matrix, "paths"=paths))
 }
 
-`.expand.input` <- function(feature_types, data, priors) # mim
+`.expand.input` <- function(feature_types, data, priors)
 {
     new_feature_types <- unlist(lapply(feature_types, function(type)
     {
@@ -68,7 +68,7 @@
     }))
 
     return(list("data"=new_data, "feature_types"=new_feature_types, "feature_names"=colnames(data),
-                    "priors"=new_priors)) # new_mim=new_mim
+                    "priors"=new_priors))
 }
 
 `set.thread.count` <- function(thread_count)
