@@ -1,6 +1,6 @@
-`build.mim` <- function(data, priors, prior_weights, strata, weights, uses_ranks, outX, bootstrap_count)
+`build.mim` <- function(data, priors, prior_weights, strata, weights, uses_ranks, outX, bootstrap_count, as_mi=TRUE)
 {
-    ## Expansion
+    feature_names <- ncol(data)
     expansion <- mRMRe:::.expand.input(data=data, priors=priors, prior_weights=prior_weights, strata=strata,
             weights=weights)
     data <- expansion$data
@@ -9,12 +9,10 @@
     strata <- expansion$strata
     weights <- expansion$weights
     feature_types <- expansion$feature_types
-    feature_names <- expansion$feature_names
     uses_ranks <- expansion$uses_ranks
     outX <- expansion$outX
     bootstrap_count <- expansion$bootstrap_count
     
-    ## Construction
     data <- as.matrix(data)
     mi_matrix <- .Call(mRMRe:::.C_build_mim, as.vector(data), as.vector(priors), as.numeric(prior_weights),
             as.vector(strata), as.vector(weights), as.vector(feature_types), as.integer(nrow(data)),
@@ -22,12 +20,12 @@
             as.integer(bootstrap_count))
     mi_matrix <- matrix(mi_matrix, nrow=ncol(data), ncol=ncol(data))
     
-    ## Compression
     compression <- mRMRe:::.compress.output(feature_types=feature_types, feature_names=feature_names, mi_matrix=mi_matrix)
     mi_matrix <- compression$mi_matrix
     
-    ## Return
-    mi_matrix <- -0.5 * log(1 - (compression$mi_matrix^2))
+    if (as_mi)
+        mi_matrix <- -0.5 * log(1 - (compression$mi_matrix^2))
+
     return(mi_matrix)
 }
 

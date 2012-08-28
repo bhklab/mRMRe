@@ -2,7 +2,7 @@
 \alias{build.mim}
 \title{Constructs a mutual information matrix (MIM)}
 \description{This function constructs a mutual information matrix (MIM).}
-\usage{build.mim(data, priors, prior_weights, strata, weights, uses_ranks, outX, bootstrap_count)}
+\usage{build.mim(data, priors, prior_weights, strata, weights, uses_ranks, outX, bootstrap_count, as_mi)}
 \arguments{
   \item{data}{A data frame with rows and columns respectively corresponding to samples and features.
   Only columns of the following types are supported: "numeric", "ordered_factor" and "Surv".}
@@ -16,6 +16,7 @@
   \item{bootstrap_count}{If a positive non-zero integer is given,
   samples of each stratum will be recombined by the generic inverse-variance
   weighted average based on sample bootstrapping. Defaults to 0.}
+  \item{as_mi}{If set to TRUE, the function returns a MI matrix. If set to FALSE, the function returns a correlation matrix. Defaults to TRUE.}
 }
 %\details{}
 \value{A symmetric matrix whose rows and columns correspond to features. Each (i, j) in the matrix is the mutual information between the features i and j.}

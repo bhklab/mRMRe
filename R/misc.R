@@ -89,10 +89,9 @@
     if (missing(bootstrap_count))
         bootstrap_count <- 0
 
-    
     return(list("data"=new_data, "priors"=new_priors, "prior_weights"=prior_weights, "strata"=strata, 
-                    "weights"=weights, "feature_types"=new_feature_types, "feature_names"=colnames(data),
-                    "uses_ranks"=uses_ranks, "outX"=outX, "bootstrap_count"=bootstrap_count))
+                    "weights"=weights, "feature_types"=new_feature_types, "uses_ranks"=uses_ranks, "outX"=outX,
+                    "bootstrap_count"=bootstrap_count))
 }
 
 `.compress.output` <- function(feature_types, feature_names=NULL, mi_matrix=NULL, paths=NULL)
