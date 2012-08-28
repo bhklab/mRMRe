@@ -1,54 +1,33 @@
-`build.mim` <- function(data, priors, prior_weights, strata, weights, uses_ranks=TRUE, outX=TRUE, bootstrap_count=0)
+`build.mim` <- function(data, priors, prior_weights, strata, weights, uses_ranks, outX, bootstrap_count)
 {
-    if (!is.data.frame(data))
-        stop("data must be of type data frame")
-    
-    feature_types <- sapply(data, function(x) paste(class(x), collapse="_"))
-    
-    if (any(!is.element(feature_types, c("numeric", "ordered_factor", "Surv"))))
-        stop("data columns must be either of numeric, ordered factor or Surv type")
-    
-    if (missing(weights)) 
-        weights <- rep.int(1, nrow(data))
-    
-    if (missing(strata)) 
-        strata <- rep.int(0, nrow(data))
-    else if (is.factor(strata))
-        strata <- as.integer(strata) - 1
-    else
-        stop("strata must be provided as factors")
-               
-    if (missing(priors))
-    {
-        priors <- vector()
-        prior_weights <- 0
-    }
-    else if (missing(prior_weights))
-        stop("prior_weights must be provided with priors")
-    else if (prior_weights > 1 || prior_weights < 0)
-        stop("prior_weights must be [0, 1]")
-	else if (max(priors) > 1 || min(priors) < 0)
-		stop("prior must be [0, 1]")
-    
     ## Expansion
-    expansion <- mRMRe:::.expand.input(feature_types=feature_types, data=data, priors=priors)
+    expansion <- mRMRe:::.expand.input(data=data, priors=priors, prior_weights=prior_weights, strata=strata,
+            weights=weights)
     data <- expansion$data
+    priors <- expansion$priors
+    prior_weights <- expansion$prior_weights
+    strata <- expansion$strata
+    weights <- expansion$weights
     feature_types <- expansion$feature_types
     feature_names <- expansion$feature_names
-    priors <- expansion$priors
+    uses_ranks <- expansion$uses_ranks
+    outX <- expansion$outX
+    bootstrap_count <- expansion$bootstrap_count
     
+    ## Construction
     data <- as.matrix(data)
-    mi_matrix <- .Call(mRMRe:::.C_build_mim, as.vector(data), as.vector(priors), as.numeric(lambda), as.vector(strata),
-            as.vector(weights), as.vector(feature_types), as.integer(nrow(data)), as.integer(ncol(data)),
-            as.integer(length(unique(strata))), as.integer(uses_ranks), as.integer(outX), as.integer(bootstrap_count))
+    mi_matrix <- .Call(mRMRe:::.C_build_mim, as.vector(data), as.vector(priors), as.numeric(prior_weights),
+            as.vector(strata), as.vector(weights), as.vector(feature_types), as.integer(nrow(data)),
+            as.integer(ncol(data)), as.integer(length(unique(strata))), as.integer(uses_ranks), as.integer(outX),
+            as.integer(bootstrap_count))
     mi_matrix <- matrix(mi_matrix, nrow=ncol(data), ncol=ncol(data))
     
     ## Compression
     compression <- mRMRe:::.compress.output(feature_types=feature_types, feature_names=feature_names, mi_matrix=mi_matrix)
     mi_matrix <- compression$mi_matrix
     
+    ## Return
     mi_matrix <- -0.5 * log(1 - (compression$mi_matrix^2))
-    
     return(mi_matrix)
 }
 
