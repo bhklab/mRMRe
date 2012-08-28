@@ -77,10 +77,11 @@
 		stop("prior must be [0,1]")
     
     levels <- as.vector(levels)
-    expansion <- mRMRe:::.expand.input(feature_types=feature_types, data=data)
+    expansion <- mRMRe:::.expand.input(feature_types=feature_types, data=data, priors=priors)
     data <- expansion$data
     feature_types <- expansion$feature_types
     feature_names <- expansion$feature_names
+    priors <- expansion$priors
     
     tree <- .Call(mRMRe:::.C_build_mRMR_tree, levels, as.vector(data), as.vector(priors), as.numeric(prior_weights),
             as.vector(strata), as.vector(weights), as.vector(feature_types), nrow(data), ncol(data),
