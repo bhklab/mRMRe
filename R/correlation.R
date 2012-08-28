@@ -28,8 +28,9 @@
     else if (prior_weights > 1 || prior_weights < 0)
         stop("prior_weights must be [0, 1]")
 	else if (max(priors) > 1 || min(priors) < 0)
-		stop("prior must be [0,1]")
+		stop("prior must be [0, 1]")
     
+    ## Expansion
     expansion <- mRMRe:::.expand.input(feature_types=feature_types, data=data, priors=priors)
     data <- expansion$data
     feature_types <- expansion$feature_types
@@ -42,7 +43,10 @@
             as.integer(length(unique(strata))), as.integer(uses_ranks), as.integer(outX), as.integer(bootstrap_count))
     mi_matrix <- matrix(mi_matrix, nrow=ncol(data), ncol=ncol(data))
     
+    ## Compression
     compression <- mRMRe:::.compress.output(feature_types=feature_types, feature_names=feature_names, mi_matrix=mi_matrix)
+    mi_matrix <- compression$mi_matrix
+    
     mi_matrix <- -0.5 * log(1 - (compression$mi_matrix^2))
     
     return(mi_matrix)
