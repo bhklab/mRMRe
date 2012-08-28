@@ -5,8 +5,8 @@
         solutions,
         estimator=c("pearson", "spearman", "kendall"))
 {
-    if (class(data) == "mRMReObject")
-        return(mRMRe:::.compute.causality.mRMReObject(data=data))
+    if (class(data) == "mRMReFilter")
+        return(mRMRe:::.compute.causality.mRMReFilter(data=data))
 
     if (missing(mim))
         allcor <- as.matrix(mim)
@@ -60,11 +60,11 @@
     return(causality_coefficients)
 }
 
-`.compute.causality.mRMReObject` <- function(data)
+`.compute.causality.mRMReFilter` <- function(data)
 {
     tree <- data
     target_index <- 1
-    causality_coefficients <- matrix(ncol=ncol(tree$mim), nrow=ncol(tree$mim))
+    causality_coefficients <- matrix(ncol=ncol(tree$mi_matrix), nrow=ncol(tree$mi_matrix))
     apply(tree$paths, 1, function(row)
     {
         pairs <- combn(row, 2)
@@ -75,10 +75,10 @@
  
             if (is.na(causality_coefficients[i, j]))
             {
-                causality <- -1/2 * log(((1 - tree$mim[i, j]^2) * (1 - tree$mim[i, target_index]^2)
-                                    * (1 - tree$mim[j, target_index]^2)) / (1 + 2 * tree$mim[i, j] * tree$mim[i, target_index] 
-                                    * tree$mim[j, target_index] - tree$mim[i, j]^2 - tree$mim[i, target_index]^2 - 
-                                    tree$mim[j, target_index]^2))
+                causality <- -1/2 * log(((1 - tree$mi_matrix[i, j]^2) * (1 - tree$mi_matrix[i, target_index]^2)
+                                    * (1 - tree$mi_matrix[j, target_index]^2)) / (1 + 2 * tree$mi_matrix[i, j] * tree$mi_matrix[i, target_index] 
+                                    * tree$mi_matrix[j, target_index] - tree$mi_matrix[i, j]^2 - tree$mi_matrix[i, target_index]^2 - 
+                                    tree$mi_matrix[j, target_index]^2))
                 causality_coefficients[i, j] <<- causality
                 causality_coefficients[j, i] <<- causality
             }

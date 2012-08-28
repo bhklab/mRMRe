@@ -1,7 +1,7 @@
 `mRMR.classic` <- function(
         data,
         priors,
-        lambda,
+        prior_weights,
         target_index,
         feature_count,
         strata,
@@ -11,15 +11,33 @@
         bootstrap_count=0
         )
 {
-    return(mRMRe::mRMR.ensemble(levels=rep.int(1, feature_count), data=data, priors=priors, lambda=lambda,
-                    target=target_index, strata=strata, weights=weights, uses_ranks=uses_ranks, outX=outX,
-                    bootstrap_count=bootstrap_count))
+    return(mRMRe::mRMR.filter(levels=rep.int(1, feature_count), data=data, priors=priors,
+                    prior_weights=prior_weights, target=target_index, strata=strata, weights=weights,
+                    uses_ranks=uses_ranks, outX=outX, bootstrap_count=bootstrap_count))
 }
 
 `mRMR.ensemble` <- function(
         data,
         priors,
-        lambda,
+        prior_weights,
+        target_index,
+        feature_count,
+        solution_count,
+        strata,
+        weights,
+        uses_ranks=TRUE,
+        outX=TRUE,
+        bootstrap_count=0)
+{
+    return(mRMRe::mRMR.filter(levels=c(solution_count, rep.int(1, feature_count - 1)), data=data, priors=priors,
+                    prior_weights=prior_weights, target=target_index, strata=strata, weights=weights,
+                    uses_ranks=uses_ranks, outX=outX, bootstrap_count=bootstrap_count))
+}
+
+`mRMR.filter` <- function(
+        data,
+        priors,
+        prior_weights,
         target_index,
         levels,
         strata,
@@ -49,12 +67,12 @@
     if (missing(priors))
     {
         priors <- vector()
-        lambda <- 0
+        prior_weights <- 0
     }
-    else if (missing(lambda))
-        stop("lambda must be provided with priors")
-    else if (lambda > 1 || lambda < 0)
-        stop("lambda must be [0, 1]")
+    else if (missing(prior_weights))
+        stop("prior_weights must be provided with priors")
+    else if (prior_weights > 1 || prior_weights < 0)
+        stop("prior_weights must be [0, 1]")
 	else if (max(priors) > 1 || min(priors) < 0)
 		stop("prior must be [0,1]")
     
@@ -64,7 +82,7 @@
     feature_types <- expansion$feature_types
     feature_names <- expansion$feature_names
     
-    tree <- .Call(mRMRe:::.C_build_mRMR_tree, levels, as.vector(data), as.vector(priors), as.numeric(lambda),
+    tree <- .Call(mRMRe:::.C_build_mRMR_tree, levels, as.vector(data), as.vector(priors), as.numeric(prior_weights),
             as.vector(strata), as.vector(weights), as.vector(feature_types), nrow(data), ncol(data),
             as.integer(length(unique(strata))), as.integer(target_index) - 1, as.integer(uses_ranks),
             as.integer(outX), as.integer(bootstrap_count))
@@ -76,7 +94,7 @@
     mi_matrix <- compression$mi_matrix
     paths <- compression$paths + 1
     
-    object <- list("target_index"=target_index, "paths"=paths, "scores"=wrap(tree$scores), "mim"=mi_matrix)
-    class(object) <- "mRMReObject"
+    object <- list("target_index"=target_index, "paths"=paths, "scores"=wrap(tree$scores), "mi_matrix"=mi_matrix)
+    class(object) <- "mRMReFilter"
     return(object)
 }

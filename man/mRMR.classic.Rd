@@ -1,5 +1,5 @@
-\name{mRMR.classic}
-\alias{mRMR.classic}
+\name{mRMR.filter}
+\alias{mRMR.filter, mRMR.classic, mRMR.ensemble}
 \title{Performs an mRMR feature selection}
 \description{This function performs an mRMR feature selection.}
 \usage{mRMR.classic(data, target_index, feature_count, strata, weights, uses_ranks, outX, bootstrap_count)}
