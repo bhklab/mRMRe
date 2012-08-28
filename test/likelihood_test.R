@@ -44,7 +44,7 @@ network <- matrix(0, ncol(data_cgp), ncol(data_cgp))
 
 # Connect the 10 selected genes (every pair of nodes)
 sapply(1:length(genes), function(i) {
-			sapply(i:length(genes), function(j) {
+			sapply((i+1):length(genes), function(j) {
 						network[genes[i], genes[j]] <<- 1
 					})
 		})
