@@ -1,5 +1,5 @@
-load('irinotecan_cgp_ccle.RData')
-library(mRMRe)
+#load('irinotecan_cgp_ccle.RData')
+#library(mRMRe)
 
 `compute.press` <- function(X, Y, lambda=1e-16)
 {
