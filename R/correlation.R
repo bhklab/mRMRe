@@ -1,11 +1,11 @@
-`build.mim` <- function(data, priors, prior_weights, strata, weights, uses_ranks, outX, bootstrap_count, as_mi=TRUE)
+`build.mim` <- function(data, priors, prior_weight, strata, weights, uses_ranks, outX, bootstrap_count, as_mi=TRUE)
 {
     feature_names <- colnames(data)
-    expansion <- mRMRe:::.expand.input(data=data, priors=priors, prior_weights=prior_weights, strata=strata,
+    expansion <- mRMRe:::.expand.input(data=data, priors=priors, prior_weight=prior_weight, strata=strata,
             weights=weights)
     data <- expansion$data
     priors <- expansion$priors
-    prior_weights <- expansion$prior_weights
+    prior_weight <- expansion$prior_weight
     strata <- expansion$strata
     weights <- expansion$weights
     feature_types <- expansion$feature_types
@@ -14,7 +14,7 @@
     bootstrap_count <- expansion$bootstrap_count
     
     data <- as.matrix(data)
-    mi_matrix <- .Call(mRMRe:::.C_build_mim, as.vector(data), as.vector(priors), as.numeric(prior_weights),
+    mi_matrix <- .Call(mRMRe:::.C_build_mim, as.vector(data), as.vector(priors), as.numeric(prior_weight),
             as.vector(strata), as.vector(weights), as.vector(feature_types), as.integer(nrow(data)),
             as.integer(ncol(data)), as.integer(length(unique(strata))), as.integer(uses_ranks), as.integer(outX),
             as.integer(bootstrap_count))
