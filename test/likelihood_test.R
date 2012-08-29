@@ -43,21 +43,22 @@ genes <- order(apply(data_cgp, 2, cor, ic50_cgp, use="complete.obs"))[1:10]
 network <- matrix(0, ncol(data_cgp), ncol(data_cgp))
 
 # Connect the 10 selected genes (every pair of nodes)
-sapply(1:length(genes), function(i) {
-			sapply((i+1):length(genes), function(j) {
+sapply(1:(length(genes) - 1), function(i) {
+			sapply((i + 1):length(genes), function(j) {
 						network[genes[i], genes[j]] <<- 1
 					})
 		})
 
 # Discretize CGP into senstive (0) and resistant (1)
 cgp_discrete <- discretize.labels(ic50_cgp, c(0.25, 0.75))
+ccle_discrete <- discretize.labels(c(ic50_ccle_common, ic50_ccle_new), c(0.25, 0.75))
 
 # Create barcodes for resistant and senstive cgp samples
 resistant_barcode <- compute.barcode(data_cgp[which(cgp_discrete == 1), ], network)
 sensitive_barcode <- compute.barcode(data_cgp[which(cgp_discrete == 0), ], network)
 
 # Compute the likelihoods
-ccle_likelihoods <- t(apply(data_ccle_common, 1, function(sample) {
+ccle_likelihoods <- t(apply(data_cgp, 1, function(sample) {
 			resistant_like <- compute.likelihood(resistant_barcode, sample)
 			sensitive_like <- compute.likelihood(sensitive_barcode, sample)
 			return(c(resistant_like, sensitive_like))
