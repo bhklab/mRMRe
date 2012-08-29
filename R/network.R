@@ -1,33 +1,43 @@
-`mRMR.network` <- function(data, priors, prior_weights, feature_indices, feature_count, solution_count, strata,
+`mRMR.network` <- function(data, priors, prior_weights, target_indices, feature_count, solution_count, strata,
         weights, uses_ranks, outX, bootstrap_count, layers)
 {
+    if (missing(layers))
+        layers <- 1L
+
+    topologies <- list()
+    length(topologies) <- ncol(data)
+    
+    old_feature_types <- sapply(data, function(x) paste(class(x), collapse="_"))
+    
+    
+    feature_names <- colnames(data)
     expansion <- mRMRe:::.expand.input(data=data, priors=priors, prior_weights=prior_weights, strata=strata,
-            weights=weights)
+            weights=weights, target_indices=target_indices)
     data <- expansion$data
     priors <- expansion$priors
     prior_weights <- expansion$prior_weights
     strata <- expansion$strata
     weights <- expansion$weights
     feature_types <- expansion$feature_types
-    feature_names <- expansion$feature_names
     uses_ranks <- expansion$uses_ranks
     outX <- expansion$outX
     bootstrap_count <- expansion$bootstrap_count
-    
-    topologies <- list()
-    length(topologies) <- ncol(data)
-    
+    target_indices <- expansion$target_indices
+
     lapply(seq(layers), function(layer)
     {
-        feature_indices <<- intersect(unlist(lapply(feature_indices, function(target_index)
+        target_indices <<- unlist(lapply(target_indices, function(target_index)
         {
             filter <- mRMRe::mRMR.ensemble(data=data, priors=priors, prior_weights=prior_weights,
                     target_index=target_index, feature_count=feature_count, solution_count=solution_count,
                     strata=strata, weights=weights, uses_ranks=uses_ranks, outX=outX,
-                    bootstrap_count=bootstrap_count)
-            topologies[[target_index]] <- filter$paths # Add scoring scheme here
+                    bootstrap_count=bootstrap_count, .is_expanded=TRUE, .feature_types=feature_types,
+                    .feature_names=feature_names)
+            topologies[[filter$target_index]] <<- filter$paths # Add scoring scheme here
             return(as.vector(filter$paths))
-        })), which(!is.null(topologies)))
+        }))
+        target_indices <<- intersect(target_indices, which(sapply(topologies, is.null)))
+        target_indices <<- mRMRe:::.expand.feature.indices(old_feature_types, target_indices)
         return(NULL)
     })
     

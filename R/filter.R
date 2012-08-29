@@ -1,27 +1,29 @@
 `mRMR.classic` <- function(data, priors, prior_weights, target_index, feature_count, strata, weights, uses_ranks,
-        outX, bootstrap_count, .is_expanded)
+        outX, bootstrap_count, .is_expanded, .feature_types, .feature_names)
 {
     return(mRMRe::mRMR.ensemble(data=data, priors=priors, prior_weights=prior_weights, target=target_index,
                     feature_count=feature_count, solution_count=1, strata=strata, weights=weights,
-                    uses_ranks=uses_ranks, outX=outX, bootstrap_count=bootstrap_count, .is_expanded=.is_expanded))
+                    uses_ranks=uses_ranks, outX=outX, bootstrap_count=bootstrap_count, .is_expanded=.is_expanded,
+                    .feature_types=.feature_types, .feature_names=.feature_names))
 }
 
 `mRMR.ensemble` <- function(data, priors, prior_weights, target_index, feature_count, solution_count, strata, weights,
-        uses_ranks, outX, bootstrap_count, .is_expanded)
+        uses_ranks, outX, bootstrap_count, .is_expanded, .feature_types, .feature_names)
 {
     return(mRMRe::mRMR.filter(data=data, priors=priors, prior_weights=prior_weights, target=target_index,
                     levels=c(solution_count, rep.int(1, feature_count - 1)), strata=strata, weights=weights,
-                    uses_ranks=uses_ranks, outX=outX, bootstrap_count=bootstrap_count, .is_expanded=.is_expanded))
+                    uses_ranks=uses_ranks, outX=outX, bootstrap_count=bootstrap_count, .is_expanded=.is_expanded,
+                    .feature_types=.feature_types, .feature_names=.feature_names))
 }
 
 `mRMR.filter` <- function(data, priors, prior_weights, target_index, levels, strata, weights, uses_ranks, outX,
-        bootstrap_count, .is_expanded)
+        bootstrap_count, .is_expanded, .feature_types, .feature_names)
 {
-    feature_names <- ncol(data)
+    feature_names <- colnames(data)
     if (missing(.is_expanded) || !.is_expanded)
     {
         expansion <- mRMRe:::.expand.input(data=data, priors=priors, prior_weights=prior_weights, strata=strata,
-                weights=weights)
+                weights=weights, target_indices=target_index)
         data <- expansion$data
         priors <- expansion$priors
         prior_weights <- expansion$prior_weights
@@ -31,6 +33,19 @@
         uses_ranks <- expansion$uses_ranks
         outX <- expansion$outX
         bootstrap_count <- expansion$bootstrap_count
+        target_index <- expansion$target_indices
+    }
+    else
+    {
+        if (!missing(.feature_types))
+            feature_types <- .feature_types
+        else
+            stop(".feature_types must be provided when .is_expanded is set to TRUE")
+        
+        if (!missing(.feature_names))
+            feature_names <- .feature_names
+        else
+            stop(".feature_names must be provided when .is_expanded is set to TRUE")
     }
     
     wrap <- function(i) t(matrix(i[length(i):1], nrow=length(levels), ncol=length(i)/length(levels)))
@@ -44,9 +59,10 @@
     tree$scores <- wrap(tree$scores)
     
     compression <- mRMRe:::.compress.output(feature_types=feature_types, feature_names=feature_names,
-            mi_matrix=tree$mim, paths=tree$paths)
+            mi_matrix=tree$mim, paths=tree$paths, target_indices=target_index)
     mi_matrix <- compression$mi_matrix
     paths <- compression$paths + 1
+    target_index <- compression$target_indices
     
     object <- list("target_index"=target_index, "paths"=paths, "scores"=tree$scores, "mi_matrix"=mi_matrix)
     class(object) <- "mRMReFilter"

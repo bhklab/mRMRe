@@ -1,5 +1,5 @@
-`.expand.input` <- function(data=data, priors=priors, prior_weights=prior_weights, strata=strata, weights=weights,
-        uses_ranks, outX, bootstrap_count)
+`.expand.input` <- function(data, priors, prior_weights, strata, weights, uses_ranks, outX, bootstrap_count,
+        target_indices)
 {
     if (!is.data.frame(data))
         stop("data must be of type data frame")
@@ -26,10 +26,10 @@
     }
     else if (missing(prior_weights))
         stop("prior_weights must be provided with priors")
-    else if (prior_weights > 1 || prior_weights < 0)
+    else if (prior_weights >= 1 || prior_weights <= 0)
         stop("prior_weights must be [0, 1]")
     else if (max(priors) > 1 || min(priors) < 0)
-        stop("prior must be [0, 1]")
+        stop("prior matrix elements must be [0, 1]")
     
     new_feature_types <- unlist(lapply(feature_types, function(type)
     {
@@ -89,12 +89,41 @@
     if (missing(bootstrap_count))
         bootstrap_count <- 0
 
+    if (missing(target_indices))
+        new_target_indices <- NULL
+    else
+        new_target_indices <- mRMRe:::.expand.feature.indices(feature_types, target_indices)
+    
     return(list("data"=new_data, "priors"=new_priors, "prior_weights"=prior_weights, "strata"=strata, 
                     "weights"=weights, "feature_types"=new_feature_types, "uses_ranks"=uses_ranks, "outX"=outX,
-                    "bootstrap_count"=bootstrap_count))
+                    "bootstrap_count"=bootstrap_count, "target_indices"=new_target_indices))
 }
 
-`.compress.output` <- function(feature_types, feature_names=NULL, mi_matrix=NULL, paths=NULL)
+`.expand.feature.indices` <- function(feature_types, feature_indices)
+{
+    offsets <- rep(0, length(feature_indices))
+    lapply(which(feature_types == "Surv"), function(index)
+    {
+        subset <- which(feature_indices > index)
+        offsets[subset] <<- offsets[subset] + 1
+    })
+    feature_indices <- feature_indices + offsets
+    return(feature_indices)
+}
+
+`.compress.feature.indices` <- function(feature_types, feature_indices)
+{
+    offsets <- rep(0, length(feature_indices))
+    lapply(which(feature_types == 3), function(index)
+    {
+        subset <- which(feature_indices >= index)
+        offsets[subset] <<- offsets[subset] + 1
+    })
+    feature_indices <- feature_indices - offsets
+    return(feature_indices)
+}
+
+`.compress.output` <- function(feature_types, feature_names=NULL, mi_matrix=NULL, paths=NULL, target_indices=NULL)
 {
     if (!is.null(mi_matrix))
     {
@@ -105,17 +134,12 @@
     }
     
     if (!is.null(paths))
-    {
-        offsets <- rep(0, length(paths))
-        lapply(which(feature_types == 3), function(index)
-        {
-            subset <- which(paths >= index)
-            offsets[subset] <<- offsets[subset] + 1
-        })
-        paths <- paths - offsets
-    }
+        paths <- mRMRe:::.compress.feature.indices(feature_types, paths)
     
-    return(list("mi_matrix"=mi_matrix, "paths"=paths))
+    if (!is.null(target_indices))
+        target_indices <- mRMRe:::.compress.feature.indices(feature_types, target_indices)
+    
+    return(list("mi_matrix"=mi_matrix, "paths"=paths, "target_indices"=target_indices))
 }
 
 `set.thread.count` <- function(thread_count)

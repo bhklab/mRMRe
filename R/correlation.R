@@ -1,6 +1,6 @@
 `build.mim` <- function(data, priors, prior_weights, strata, weights, uses_ranks, outX, bootstrap_count, as_mi=TRUE)
 {
-    feature_names <- ncol(data)
+    feature_names <- colnames(data)
     expansion <- mRMRe:::.expand.input(data=data, priors=priors, prior_weights=prior_weights, strata=strata,
             weights=weights)
     data <- expansion$data
