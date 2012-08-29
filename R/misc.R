@@ -1,4 +1,4 @@
-`.expand.input` <- function(data, priors, prior_weights, strata, weights, uses_ranks, outX, bootstrap_count,
+`.expand.input` <- function(data, priors, prior_weight, strata, weights, uses_ranks, outX, bootstrap_count,
         target_indices)
 {
     if (!is.data.frame(data))
@@ -22,12 +22,12 @@
     if (missing(priors))
     {
         priors <- vector()
-        prior_weights <- 0
+        prior_weight <- 0
     }
-    else if (missing(prior_weights))
-        stop("prior_weights must be provided with priors")
-    else if (prior_weights >= 1 || prior_weights <= 0)
-        stop("prior_weights must be [0, 1]")
+    else if (missing(prior_weight))
+        stop("prior_weight must be provided with priors")
+    else if (prior_weight >= 1 || prior_weight <= 0)
+        stop("prior_weight must be [0, 1]")
     else if (max(priors) > 1 || min(priors) < 0)
         stop("prior matrix elements must be [0, 1]")
     
@@ -94,7 +94,7 @@
     else
         new_target_indices <- mRMRe:::.expand.feature.indices(feature_types, target_indices)
     
-    return(list("data"=new_data, "priors"=new_priors, "prior_weights"=prior_weights, "strata"=strata, 
+    return(list("data"=new_data, "priors"=new_priors, "prior_weight"=prior_weight, "strata"=strata, 
                     "weights"=weights, "feature_types"=new_feature_types, "uses_ranks"=uses_ranks, "outX"=outX,
                     "bootstrap_count"=bootstrap_count, "target_indices"=new_target_indices))
 }

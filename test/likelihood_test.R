@@ -2,6 +2,7 @@
 # Returns a matrix of 3 columns where col 1 is the higher value
 # col 2 is the lower value, and col 3 is the frequency of such a
 # relation.
+load('~/Testbed/irinotecan_cgp_ccle.RData')
 `compute.barcode` <- function(data_set, network)
 {
 	edges <- which(network == 1)
@@ -36,11 +37,18 @@
 	as.integer(classes) - 1
 }
 
+
+
+training_set <- data_cgp
+training_labels <- ic50_cgp
+validating_set <- data_cgp
+
+
 # Select the top 10 genes most correlated with phenotype
-genes <- order(apply(data_cgp, 2, cor, ic50_cgp, use="complete.obs"))[1:10]
+genes <- order(apply(training_set, 2, cor, training_labels, use="complete.obs"))[1:10]
 
 # Create empty network
-network <- matrix(0, ncol(data_cgp), ncol(data_cgp))
+network <- matrix(0, ncol(training_set), ncol(training_set))
 
 # Connect the 10 selected genes (every pair of nodes)
 sapply(1:(length(genes) - 1), function(i) {
@@ -50,22 +58,18 @@ sapply(1:(length(genes) - 1), function(i) {
 		})
 
 # Discretize CGP into senstive (0) and resistant (1)
-cgp_discrete <- discretize.labels(ic50_cgp, c(0.25, 0.75))
-ccle_discrete <- discretize.labels(c(ic50_ccle_common, ic50_ccle_new), c(0.25, 0.75))
+discrete_labels <- discretize.labels(training_labels, c(0.25, 0.75))
 
 # Create barcodes for resistant and senstive cgp samples
-resistant_barcode <- compute.barcode(data_cgp[which(cgp_discrete == 1), ], network)
-sensitive_barcode <- compute.barcode(data_cgp[which(cgp_discrete == 0), ], network)
+resistant_barcode <- compute.barcode(training_set[which(discrete_labels == 1), ], network)
+sensitive_barcode <- compute.barcode(training_set[which(discrete_labels == 0), ], network)
 
 # Compute the likelihoods
-ccle_likelihoods <- t(apply(data_cgp, 1, function(sample) {
+likelihoods <- t(apply(validating_set, 1, function(sample) {
 			resistant_like <- compute.likelihood(resistant_barcode, sample)
 			sensitive_like <- compute.likelihood(sensitive_barcode, sample)
 			return(c(resistant_like, sensitive_like))
 		}))
 
-# Compute concordance-index for likelihoods
-cor(ccle_likelihoods[,1], ic50_ccle_common, use="complete.obs", method="spearman")
-cor(ccle_likelihoods[,2], ic50_ccle_common, use="complete.obs", method="spearman")
-
+hist(likelihoods[, 1] / ( likelihoods[, 1] + likelihoods[, 2]))
 
