@@ -2,13 +2,13 @@
 \alias{build.mim}
 \title{Constructs a mutual information matrix (MIM)}
 \description{This function constructs a mutual information matrix (MIM).}
-\usage{build.mim(data, priors, prior_weights, strata, weights, uses_ranks, outX, bootstrap_count, as_mi)}
+\usage{build.mim(data, priors, prior_weight, strata, weights, uses_ranks, outX, bootstrap_count, as_mi)}
 \arguments{
   \item{data}{A data frame with rows and columns respectively corresponding to samples and features.
   Only columns of the following types are supported: "numeric", "ordered_factor" and "Surv".}
   \item{priors}{A non-symmetric matrix of prior causal relations between features where values can be [0, 1]; 
   0 meaning i is not causal of j and 1 indicates that i is a cause of j. Defaults to having no priors.}
-  \item{prior_weights}{A value [0, 1] representing the weight the importance of priors for biasing the estimation of mutual information. Defaults to 0.}
+  \item{prior_weight}{A value [0, 1] representing the weight the importance of priors for biasing the estimation of mutual information. Defaults to 0.}
   \item{strata}{A vector of factors specifying the stratum associated with each sample. Defaults to all samples being in the same stratum.}
   \item{weights}{A vector containing the weight associated with each sample. Defaults to all samples having the same weight.}
   \item{uses_ranks}{If set to TRUE, the Spearman correlation is used between numeric features. If set to FALSE, the Pearson correlation is used. Defaults to TRUE.}
