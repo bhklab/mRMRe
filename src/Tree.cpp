@@ -1,4 +1,5 @@
 #include "Tree.h"
+#include "Rcpp.h"
 
 Tree::Tree(unsigned int const* const pChildrenCountPerLevel, unsigned int const levelCount,
         Matrix* const pFeatureInformationMatrix, unsigned int const targetFeatureIndex) :
@@ -23,9 +24,15 @@ Tree::Tree(unsigned int const* const pChildrenCountPerLevel, unsigned int const 
     mpRedundantContributionTree = new float[cumulative_element_count];
     mTreeElementCount = cumulative_element_count;
 
-    mpIndexTree[0] = targetFeatureIndex;
     mpInformativeContributionTree[0] = 0.;
     mpRedundantContributionTree[0] = 0.;
+    for (unsigned int i = 1; i < mTreeElementCount; ++i)
+    {
+        mpInformativeContributionTree[i] = std::numeric_limits<float>::quiet_NaN();
+        mpRedundantContributionTree[i] = std::numeric_limits<float>::quiet_NaN();
+    }
+    mpIndexTree[0] = targetFeatureIndex;
+
 }
 
 Tree::~Tree()
@@ -44,7 +51,7 @@ Tree::build()
         unsigned int const parent_count = mpStartingIndexPerLevel[level + 1]
                 - mpStartingIndexPerLevel[level];
 
-#pragma omp parallel for schedule(dynamic)
+//#pragma omp parallel for schedule(dynamic)
         for (unsigned int parent = 0; parent < parent_count; ++parent)
             for (unsigned int child = 0; child < mpChildrenCountPerLevel[level]; ++child)
             {
@@ -158,14 +165,14 @@ Tree::isRedundantPath(unsigned int const absoluteIndex, unsigned int const featu
 {
     unsigned int const upper_bound =
             (level == mLevelCount) ? mTreeElementCount : mpStartingIndexPerLevel[level + 1];
-    float score = computeQualityScore(absoluteIndex, level);
-
+    //float score = computeQualityScore(absoluteIndex, level);
     for (unsigned int i = mpStartingIndexPerLevel[level]; i < upper_bound; ++i)
-        if (fabs(computeQualityScore(i, level) - score) > 0.00001
-                && hasAncestorByFeatureIndex(i, featureIndex, level)
+    {
+        if (/*fabs(computeQualityScore(i, level) - score) < 0.001
+                &&*/ hasAncestorByFeatureIndex(i, featureIndex, level)
                 && hasAncestorByFeatureIndex(absoluteIndex, mpIndexTree[i], level))
             return true;
-
+    }
     return false;
 }
 
@@ -176,6 +183,7 @@ Tree::placeElement(unsigned int const absoluteIndex, unsigned int const level)
     float max_candidate_score = -std::numeric_limits<float>::max();
     float max_candidate_feature_score = 0.;
     float max_candidate_ancestry_score = 0.;
+    unsigned int const parent_index = getParentAbsoluteIndex(absoluteIndex, level);
 
     for (unsigned int i = 0; i < mpFeatureInformationMatrix->getRowCount(); ++i)
     {
@@ -210,7 +218,6 @@ Tree::placeElement(unsigned int const absoluteIndex, unsigned int const level)
     }
 
     mpIndexTree[absoluteIndex] = max_candidate_feature_index;
-    unsigned int const parent_index = getParentAbsoluteIndex(absoluteIndex, level);
     mpInformativeContributionTree[absoluteIndex] = mpInformativeContributionTree[parent_index]
             + max_candidate_feature_score;
     mpRedundantContributionTree[absoluteIndex] = mpRedundantContributionTree[parent_index]
