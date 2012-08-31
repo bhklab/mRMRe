@@ -6,6 +6,12 @@
 
 class Matrix
 {
+private:
+    Matrix(const Matrix&);
+
+    Matrix&
+    operator=(const Matrix&);
+
 protected:
     float* const mpData;
     unsigned int const mRowCount;
@@ -36,8 +42,7 @@ public:
     unsigned int const
     getRowCount() const;
 
-    std::vector<float> const
-    getVectorizedData() const;
+    operator std::vector<float>() const;
 };
 
 #endif /* ensemble_Matrix_h */

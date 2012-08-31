@@ -25,6 +25,11 @@ private:
     unsigned int const mBootstrapCount;
     float const mPriorsWeight;
 
+    Data(const Data&);
+
+    Data&
+    operator=(const Data&);
+
 public:
     static unsigned int const FEATURE_CONTINUOUS = 0;
     static unsigned int const FEATURE_DISCRETE = 1;

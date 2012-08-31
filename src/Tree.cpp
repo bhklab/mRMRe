@@ -72,12 +72,6 @@ Tree::getParentAbsoluteIndex(unsigned int const absoluteIndex, unsigned int cons
             + mpStartingIndexPerLevel[level - 1];
 }
 
-std::vector<unsigned int> const&
-Tree::getPaths() const
-{
-    return mPaths;
-}
-
 bool const
 Tree::hasAncestorByFeatureIndex(unsigned int const absoluteIndex, unsigned int const featureIndex,
         unsigned int level) const
@@ -125,6 +119,11 @@ Tree::isRedundantPath(unsigned int const absoluteIndex, unsigned int const featu
     return false;
 }
 
+Tree::operator std::vector<unsigned int>() const
+{
+    return mPaths;
+}
+
 void const
 Tree::placeElements(unsigned int const startingIndex, unsigned int childrenCount,
         unsigned int const level)
@@ -141,24 +140,24 @@ Tree::placeElements(unsigned int const startingIndex, unsigned int childrenCount
         if (hasAncestorByFeatureIndex(startingIndex, i, level))
             continue;
 
-        float const candidate_feature_score = std::fabs(
-                mpFeatureInformationMatrix->at(i, mpIndexTree[0]));
-
-        unsigned int ancestor_absolute_index = startingIndex;
         float ancestry_score = 0.;
 
         if (level > 1)
+        {
+            unsigned int ancestor_absolute_index = startingIndex;
             for (unsigned int j = level; j > 0; --j)
             {
                 ancestor_absolute_index = getParentAbsoluteIndex(ancestor_absolute_index, j);
                 ancestry_score += std::fabs(
                         mpFeatureInformationMatrix->at(i, mpIndexTree[ancestor_absolute_index]));
             }
+        }
 
         p_order[counter] = counter;
         p_adaptor[counter] = counter;
         p_candidate_feature_indices[counter] = i;
-        p_candidate_scores[counter] = candidate_feature_score - (ancestry_score / level);
+        p_candidate_scores[counter] = std::fabs(mpFeatureInformationMatrix->at(i, mpIndexTree[0]))
+                - (ancestry_score / level);
         ++counter;
     }
 
