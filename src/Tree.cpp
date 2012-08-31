@@ -1,4 +1,5 @@
 #include "Tree.h"
+#include "Rcpp.h"
 
 Tree::Tree(unsigned int const* const pChildrenCountPerLevel, unsigned int const levelCount,
         Matrix* const pFeatureInformationMatrix, unsigned int const targetFeatureIndex) :
@@ -21,6 +22,9 @@ Tree::Tree(unsigned int const* const pChildrenCountPerLevel, unsigned int const 
     mTreeElementCount = cumulative_element_count;
     mpIndexTree = new unsigned int[cumulative_element_count];
     mpIndexTree[0] = targetFeatureIndex;
+
+    for (unsigned int i = 1; i < mTreeElementCount; ++i)
+        mpIndexTree[i] = 0;
 }
 
 Tree::~Tree()
