@@ -27,8 +27,7 @@ build_mim(SEXP R_DataMatrix, SEXP R_PriorsMatrix, SEXP R_PriorsWeight, SEXP R_Sa
             uses_ranks, outX, bootstrap_count);
     MutualInformationMatrix mi_matrix(&data);
     mi_matrix.build();
-    std::vector<float> S_MiMatrix = mi_matrix.getVectorizedData();
-    return Rcpp::wrap < std::vector<float> > (S_MiMatrix);
+    return Rcpp::wrap < std::vector<float> > (static_cast<std::vector<float> >(mi_matrix));
 }
 
 extern "C" SEXP
@@ -64,16 +63,11 @@ build_mRMR_tree(SEXP R_ChildrenCountPerLevel, SEXP R_DataMatrix, SEXP R_PriorsMa
     Tree mRMR_tree(&S_ChildrenCountPerLevel[0], S_ChildrenCountPerLevel.size(),
             const_cast<MutualInformationMatrix* const >(&mi_matrix), target_feature_index);
     mRMR_tree.build();
-    std::vector<unsigned int> const& S_Paths = mRMR_tree.getPaths();
-    std::vector<float> S_MiMatrix;
-    S_MiMatrix.resize(feature_count * feature_count);
-#pragma omp parallel for schedule(dynamic)
-    for (unsigned int i = 0; i < feature_count; ++i)
-        for (unsigned int j = 0; j < feature_count; ++j)
-            S_MiMatrix[(i * feature_count) + j] = mi_matrix.at(i, j);
     return Rcpp::List::create(
-            Rcpp::Named("paths") = Rcpp::wrap < std::vector<unsigned int> const& > (S_Paths),
-            Rcpp::Named("mi_matrix") = Rcpp::wrap < std::vector<float> > (S_MiMatrix));
+            Rcpp::Named("paths") = Rcpp::wrap < std::vector<unsigned int>
+                    > (static_cast<std::vector<unsigned int> >(mRMR_tree)),
+            Rcpp::Named("mi_matrix") = Rcpp::wrap < std::vector<float>
+                    > (static_cast<std::vector<float> >(mi_matrix)));
 }
 
 extern "C" SEXP

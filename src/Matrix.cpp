@@ -53,8 +53,7 @@ Matrix::getRowCount() const
     return mRowCount;
 }
 
-std::vector<float> const
-Matrix::getVectorizedData() const
+Matrix::operator std::vector<float>() const
 {
     std::vector<float> vector;
     vector.resize(mRowCount * mColumnCount);

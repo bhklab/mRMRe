@@ -25,8 +25,7 @@ Data::Data(float* const pData, Matrix const* const pPriorsMatrix, float const pr
 Data::~Data()
 {
     delete mpDataMatrix;
-    if (mpOrderMatrix)
-        delete mpOrderMatrix;
+    delete mpOrderMatrix;
     delete[] mpHasOrderCached;
     for (unsigned int i = 0; i < mSampleStratumCount; ++i)
         delete[] mpSampleIndicesPerStratum[i];
@@ -123,8 +122,8 @@ Data::computeCorrelationBetweenContinuousFeatures(unsigned int const i, unsigned
             mpHasOrderCached[j] = true;
         }
 
-        float* const p_ranked_samples_x = new float[mpDataMatrix->getRowCount()];
-        float* const p_ranked_samples_y = new float[mpDataMatrix->getRowCount()];
+        float* const p_ranked_samples_x = new float[getSampleCount()];
+        float* const p_ranked_samples_y = new float[getSampleCount()];
         Math::placeRanksFromOrders(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
                 &(mpOrderMatrix->at(0, i)), &(mpOrderMatrix->at(0, j)), p_ranked_samples_x,
                 p_ranked_samples_y, mpSampleIndicesPerStratum, mpSampleCountPerStratum,

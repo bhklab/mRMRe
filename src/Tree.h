@@ -32,9 +32,6 @@ public:
     inline unsigned int const
     getParentAbsoluteIndex(unsigned int const absoluteIndex, unsigned int const level) const;
 
-    std::vector<unsigned int> const&
-    getPaths() const;
-
     bool const
     hasAncestorByFeatureIndex(unsigned int const absoluteIndex, unsigned int const featureIndex,
             unsigned int level) const;
@@ -46,6 +43,8 @@ public:
     bool const
     isRedundantPath(unsigned int const absoluteIndex, unsigned int const featureIndex,
             unsigned int const level) const;
+
+    operator std::vector<unsigned int>() const;
 
     void const
     placeElements(unsigned int const startingIndex, unsigned int childrenCount,

@@ -36,8 +36,7 @@ public:
     unsigned int const
     getRowCount() const;
 
-    std::vector<float> const
-    getVectorizedData() const;
+    operator std::vector<float>() const;
 };
 
 #endif /* ensemble_Matrix_h */

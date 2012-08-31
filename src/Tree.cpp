@@ -45,8 +45,7 @@ Tree::build()
     }
 
     // Prepare output
-    mPaths.reserve(mLevelCount
-            * (mTreeElementCount - mpStartingIndexPerLevel[mLevelCount]));
+    mPaths.reserve(mLevelCount * (mTreeElementCount - mpStartingIndexPerLevel[mLevelCount]));
 
     for (unsigned int end_element_absolute_index = mTreeElementCount - 1;
             end_element_absolute_index >= mpStartingIndexPerLevel[mLevelCount];
@@ -67,12 +66,6 @@ Tree::getParentAbsoluteIndex(unsigned int const absoluteIndex, unsigned int cons
 {
     return (absoluteIndex - mpStartingIndexPerLevel[level]) / mpChildrenCountPerLevel[level - 1]
             + mpStartingIndexPerLevel[level - 1];
-}
-
-std::vector<unsigned int> const&
-Tree::getPaths() const
-{
-    return mPaths;
 }
 
 bool const
@@ -120,6 +113,11 @@ Tree::isRedundantPath(unsigned int const absoluteIndex, unsigned int const featu
             return true;
 
     return false;
+}
+
+Tree::operator std::vector<unsigned int>() const
+{
+    return mPaths;
 }
 
 void const
