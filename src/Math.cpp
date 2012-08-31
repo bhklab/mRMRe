@@ -259,6 +259,8 @@ Math::computeCramersV(float const* const pSamplesX, float const* const pSamplesY
     for (unsigned int i = 0; i < sampleCount; ++i)
     {
         unsigned int const index = pSampleIndices[i];
+        if (pSamplesX[index] != pSamplesX[index] || pSamplesY[index] != pSamplesY[index])
+            continue;
         float const sample_weight = pSampleWeights[index];
         contingency_table.at(pSamplesX[index], pSamplesY[index]) += sample_weight;
         contingency_table.at(x_class_count, pSamplesY[index]) += sample_weight;
