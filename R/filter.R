@@ -54,17 +54,18 @@
             as.numeric(prior_weight), as.vector(strata), as.vector(weights), as.vector(feature_types), nrow(data),
             ncol(data), as.integer(length(unique(strata))), as.integer(target_index) - 1, as.integer(uses_ranks),
             as.integer(outX), as.integer(bootstrap_count))
-    tree$mim <- matrix(tree$mim, ncol=sqrt(length(tree$mim)), nrow=sqrt(length(tree$mim)))
+    tree$mi_matrix <- matrix(tree$mi_matrix, ncol=sqrt(length(tree$mi_matrix)), nrow=sqrt(length(tree$mi_matrix)))
     tree$paths <- wrap(tree$paths)
-    tree$scores <- wrap(tree$scores)
+    
+    print(tree$paths)
     
     compression <- mRMRe:::.compress.output(feature_types=feature_types, feature_names=feature_names,
-            mi_matrix=tree$mim, paths=tree$paths, target_indices=target_index)
+            mi_matrix=tree$mi_matrix, paths=tree$paths, target_indices=target_index)
     mi_matrix <- compression$mi_matrix
     paths <- compression$paths + 1
     target_index <- compression$target_indices
     
-    object <- list("target_index"=target_index, "paths"=paths, "scores"=tree$scores, "mi_matrix"=mi_matrix)
+    object <- list("target_index"=target_index, "paths"=paths, "mi_matrix"=mi_matrix)
     class(object) <- "mRMReFilter"
     return(object)
 }

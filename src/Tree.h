@@ -17,11 +17,8 @@ private:
     Matrix* const mpFeatureInformationMatrix;
     unsigned int* const mpStartingIndexPerLevel;
     unsigned int* mpIndexTree;
-    float* mpInformativeContributionTree;
-    float* mpRedundantContributionTree;
     unsigned int mTreeElementCount;
     std::vector<unsigned int> mPaths;
-    std::vector<float> mScores;
 
 public:
     Tree(unsigned int const* const pChildrenCountPerLevel, unsigned int const levelCount,
@@ -32,17 +29,11 @@ public:
     void const
     build();
 
-    inline float const
-    computeQualityScore(unsigned int const absoluteIndex, unsigned int const level) const;
-
     inline unsigned int const
     getParentAbsoluteIndex(unsigned int const absoluteIndex, unsigned int const level) const;
 
-    std::vector<unsigned int> const
+    std::vector<unsigned int> const&
     getPaths() const;
-
-    std::vector<float> const
-    getScores() const;
 
     bool const
     hasAncestorByFeatureIndex(unsigned int const absoluteIndex, unsigned int const featureIndex,

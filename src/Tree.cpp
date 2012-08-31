@@ -20,20 +20,13 @@ Tree::Tree(unsigned int const* const pChildrenCountPerLevel, unsigned int const 
 
     mTreeElementCount = cumulative_element_count;
     mpIndexTree = new unsigned int[cumulative_element_count];
-    mpInformativeContributionTree = new float[cumulative_element_count];
-    mpRedundantContributionTree = new float[cumulative_element_count];
-
     mpIndexTree[0] = targetFeatureIndex;
-    mpInformativeContributionTree[0] = 0.;
-    mpRedundantContributionTree[0] = 0.;
 }
 
 Tree::~Tree()
 {
     delete[] mpStartingIndexPerLevel;
     delete[] mpIndexTree;
-    delete[] mpInformativeContributionTree;
-    delete[] mpRedundantContributionTree;
 }
 
 void const
@@ -52,10 +45,8 @@ Tree::build()
     }
 
     // Prepare output
-    unsigned int const size = mLevelCount
-            * (mTreeElementCount - mpStartingIndexPerLevel[mLevelCount]);
-    mPaths.reserve(size);
-    mScores.reserve(size);
+    mPaths.reserve(mLevelCount
+            * (mTreeElementCount - mpStartingIndexPerLevel[mLevelCount]));
 
     for (unsigned int end_element_absolute_index = mTreeElementCount - 1;
             end_element_absolute_index >= mpStartingIndexPerLevel[mLevelCount];
@@ -66,22 +57,9 @@ Tree::build()
         for (unsigned int level = mLevelCount; level > 0; --level)
         {
             mPaths.push_back(mpIndexTree[element_absolute_index]);
-            mScores.push_back(computeQualityScore(element_absolute_index, level));
             element_absolute_index = getParentAbsoluteIndex(element_absolute_index, level);
         }
     }
-}
-
-/* inline */float const
-Tree::computeQualityScore(unsigned int const absoluteIndex, unsigned int const level) const
-{
-    if (level == 0)
-        return 0;
-    if (level == 1)
-        return mpInformativeContributionTree[absoluteIndex]
-                - mpRedundantContributionTree[absoluteIndex];
-    return mpInformativeContributionTree[absoluteIndex]
-            - 2 * mpRedundantContributionTree[absoluteIndex] / (level - 1);
 }
 
 /* inline */unsigned int const
@@ -91,16 +69,10 @@ Tree::getParentAbsoluteIndex(unsigned int const absoluteIndex, unsigned int cons
             + mpStartingIndexPerLevel[level - 1];
 }
 
-std::vector<unsigned int> const
+std::vector<unsigned int> const&
 Tree::getPaths() const
 {
     return mPaths;
-}
-
-std::vector<float> const
-Tree::getScores() const
-{
-    return mScores;
 }
 
 bool const
