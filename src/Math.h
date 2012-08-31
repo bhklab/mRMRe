@@ -18,7 +18,8 @@ private:
     Math&
     operator=(const Math&);
 
-    ~Math();
+    virtual
+    ~Math() = 0;
 
 public:
     class IndirectComparator

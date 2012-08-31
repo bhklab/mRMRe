@@ -1,7 +1,6 @@
 #ifndef ensemble_Matrix_h
 #define ensemble_Matrix_h
 
-#include <omp.h>
 #include <vector>
 
 class Matrix

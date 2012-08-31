@@ -9,6 +9,11 @@
 class Data
 {
 private:
+    Data(const Data&);
+
+    Data&
+    operator=(const Data&);
+
     Matrix const* const mpDataMatrix;
     Matrix* const mpOrderMatrix;
     Matrix const* const mpPriorsMatrix;
@@ -24,11 +29,6 @@ private:
     bool const mOutX;
     unsigned int const mBootstrapCount;
     float const mPriorsWeight;
-
-    Data(const Data&);
-
-    Data&
-    operator=(const Data&);
 
 public:
     static unsigned int const FEATURE_CONTINUOUS = 0;

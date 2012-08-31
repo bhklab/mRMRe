@@ -43,22 +43,6 @@ Tree::build()
                     mpStartingIndexPerLevel[level + 1] + (parent * mpChildrenCountPerLevel[level]),
                     mpChildrenCountPerLevel[level], level + 1);
     }
-
-    // Prepare output
-    mPaths.reserve(mLevelCount * (mTreeElementCount - mpStartingIndexPerLevel[mLevelCount]));
-
-    for (unsigned int end_element_absolute_index = mTreeElementCount - 1;
-            end_element_absolute_index >= mpStartingIndexPerLevel[mLevelCount];
-            --end_element_absolute_index)
-    {
-        unsigned int element_absolute_index = end_element_absolute_index;
-
-        for (unsigned int level = mLevelCount; level > 0; --level)
-        {
-            mPaths.push_back(mpIndexTree[element_absolute_index]);
-            element_absolute_index = getParentAbsoluteIndex(element_absolute_index, level);
-        }
-    }
 }
 
 /* inline */unsigned int const
@@ -117,7 +101,23 @@ Tree::isRedundantPath(unsigned int const absoluteIndex, unsigned int const featu
 
 Tree::operator std::vector<unsigned int>() const
 {
-    return mPaths;
+    std::vector<unsigned int> paths;
+    paths.reserve(mLevelCount * (mTreeElementCount - mpStartingIndexPerLevel[mLevelCount]));
+
+    for (unsigned int end_element_absolute_index = mTreeElementCount - 1;
+            end_element_absolute_index >= mpStartingIndexPerLevel[mLevelCount];
+            --end_element_absolute_index)
+    {
+        unsigned int element_absolute_index = end_element_absolute_index;
+
+        for (unsigned int level = mLevelCount; level > 0; --level)
+        {
+            paths.push_back(mpIndexTree[element_absolute_index]);
+            element_absolute_index = getParentAbsoluteIndex(element_absolute_index, level);
+        }
+    }
+
+    return paths;
 }
 
 void const

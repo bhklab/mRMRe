@@ -12,18 +12,17 @@
 class Tree
 {
 private:
+    Tree(const Tree&);
+
+    Tree&
+    operator=(const Tree&);
+
     unsigned int const* const mpChildrenCountPerLevel;
     unsigned int const mLevelCount;
     Matrix* const mpFeatureInformationMatrix;
     unsigned int* const mpStartingIndexPerLevel;
     unsigned int* mpIndexTree;
     unsigned int mTreeElementCount;
-    std::vector<unsigned int> mPaths;
-
-    Tree(const Tree&);
-
-    Tree&
-    operator=(const Tree&);
 
 public:
     Tree(unsigned int const* const pChildrenCountPerLevel, unsigned int const levelCount,
