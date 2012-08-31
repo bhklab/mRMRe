@@ -53,15 +53,12 @@ public:
             unsigned int const level) const;
 
     bool const
-    hasSiblingByFeatureIndex(unsigned int const absoluteIndex, unsigned int const featureIndex,
-            unsigned int const level) const;
-
-    bool const
     isRedundantPath(unsigned int const absoluteIndex, unsigned int const featureIndex,
             unsigned int const level) const;
 
     void const
-    placeElement(unsigned int const absoluteIndex, unsigned int const level);
+    placeElements(unsigned int const startingIndex, unsigned int childrenCount,
+            unsigned int const level);
 };
 
 #endif /* ensemble_Tree_h */

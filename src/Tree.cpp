@@ -46,12 +46,9 @@ Tree::build()
 
 #pragma omp parallel for schedule(dynamic)
         for (unsigned int parent = 0; parent < parent_count; ++parent)
-            for (unsigned int child = 0; child < mpChildrenCountPerLevel[level]; ++child)
-            {
-                unsigned int const child_absolute_index = mpStartingIndexPerLevel[level + 1]
-                        + (parent * mpChildrenCountPerLevel[level]) + child;
-                placeElement(child_absolute_index, level + 1);
-            }
+            placeElements(
+                    mpStartingIndexPerLevel[level + 1] + (parent * mpChildrenCountPerLevel[level]),
+                    mpChildrenCountPerLevel[level], level + 1);
     }
 
     // Prepare output
@@ -139,20 +136,6 @@ Tree::hasSamePath(unsigned int const absoluteIndex1, unsigned int const absolute
 }
 
 bool const
-Tree::hasSiblingByFeatureIndex(unsigned int const absoluteIndex, unsigned int const featureIndex,
-        unsigned int const level) const
-{
-    unsigned int const child_number = (absoluteIndex - mpStartingIndexPerLevel[level])
-            % mpChildrenCountPerLevel[level - 1];
-
-    for (unsigned int i = absoluteIndex - child_number; i < absoluteIndex; ++i)
-        if (mpIndexTree[i] == featureIndex)
-            return true;
-
-    return false;
-}
-
-bool const
 Tree::isRedundantPath(unsigned int const absoluteIndex, unsigned int const featureIndex,
         unsigned int const level) const
 {
@@ -168,7 +151,8 @@ Tree::isRedundantPath(unsigned int const absoluteIndex, unsigned int const featu
 }
 
 void const
-Tree::placeElement(unsigned int const absoluteIndex, unsigned int const level)
+Tree::placeElements(unsigned int const startingIndex, unsigned int childrenCount,
+        unsigned int const level)
 {
     unsigned int counter = 0;
     unsigned int const feature_count = mpFeatureInformationMatrix->getRowCount();
@@ -179,14 +163,13 @@ Tree::placeElement(unsigned int const absoluteIndex, unsigned int const level)
 
     for (unsigned int i = 0; i < feature_count; ++i)
     {
-        if (hasAncestorByFeatureIndex(absoluteIndex, i, level)
-                || hasSiblingByFeatureIndex(absoluteIndex, i, level))
+        if (hasAncestorByFeatureIndex(startingIndex, i, level))
             continue;
 
         float const candidate_feature_score = std::fabs(
                 mpFeatureInformationMatrix->at(i, mpIndexTree[0]));
 
-        unsigned int ancestor_absolute_index = absoluteIndex;
+        unsigned int ancestor_absolute_index = startingIndex;
         float ancestry_score = 0.;
 
         if (level > 1)
@@ -207,13 +190,14 @@ Tree::placeElement(unsigned int const absoluteIndex, unsigned int const level)
     std::sort(p_order, p_order + counter, Math::IndirectComparator(p_candidate_scores, p_adaptor));
 
 #pragma omp critical(selection)
-    for (unsigned int i = counter - 1; i >= 0; --i)
     {
-        unsigned int const index = p_candidate_feature_indices[p_order[i]];
-        if (!isRedundantPath(absoluteIndex, index, level))
+        unsigned int children_counter = 0;
+        unsigned int i = counter - 1;
+        while (i >= 0 && children_counter < childrenCount)
         {
-            mpIndexTree[absoluteIndex] = index;
-            break;
+            unsigned int const index = p_candidate_feature_indices[p_order[i--]];
+            if (!isRedundantPath(startingIndex + children_counter, index, level))
+                mpIndexTree[startingIndex + children_counter++] = index;
         }
     }
 
