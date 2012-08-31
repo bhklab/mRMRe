@@ -34,12 +34,16 @@ Math::computeConcordanceIndex(float const* const pDiscreteSamples,
 
             if (pDiscreteSamples[i] != pDiscreteSamples[i])
                 continue;
+            if (pContinuousSamples[i] != pContinuousSamples[i])
+                continue;
 
             for (unsigned int b = 0; b < pSampleCountPerStratum[stratum]; ++b)
             {
                 unsigned int const j = pSampleIndicesPerStratum[stratum][b];
 
                 if (pDiscreteSamples[j] != pDiscreteSamples[j])
+                    continue;
+                if (pContinuousSamples[j] != pContinuousSamples[j])
                     continue;
 
                 float pair_weight = pSampleWeights[i] * pSampleWeights[j];
@@ -110,6 +114,8 @@ Math::computeConcordanceIndexWithTime(float const* const pDiscreteSamples,
                 continue;
             if (pTimeSamples[i] != pTimeSamples[i])
                 continue;
+            if (pContinuousSamples[i] != pContinuousSamples[i])
+                continue;
 
             for (unsigned int b = 0; b < pSampleCountPerStratum[stratum]; ++b)
             {
@@ -118,6 +124,8 @@ Math::computeConcordanceIndexWithTime(float const* const pDiscreteSamples,
                 if (pDiscreteSamples[j] != pDiscreteSamples[j])
                     continue;
                 if (pTimeSamples[j] != pTimeSamples[j])
+                    continue;
+                if (pContinuousSamples[j] != pContinuousSamples[j])
                     continue;
 
                 float pair_weight = pSampleWeights[i] * pSampleWeights[j];
