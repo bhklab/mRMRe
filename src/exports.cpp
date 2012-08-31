@@ -62,7 +62,7 @@ build_mRMR_tree(SEXP R_ChildrenCountPerLevel, SEXP R_DataMatrix, SEXP R_PriorsMa
             uses_ranks, outX, bootstrap_count);
     MutualInformationMatrix const mi_matrix(&data);
     unsigned int const target_feature_index = Rcpp::as<unsigned int>(R_TargetFeatureIndex);
-    Tree mRMR_tree(&S_ChildrenCountPerLevel[0], S_ChildrenCountPerLevel.size(),
+    Filter mRMR_tree(&S_ChildrenCountPerLevel[0], S_ChildrenCountPerLevel.size(),
             const_cast<MutualInformationMatrix* const >(&mi_matrix), target_feature_index);
     mRMR_tree.build();
     return Rcpp::List::create(

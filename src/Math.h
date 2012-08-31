@@ -1,5 +1,5 @@
-#ifndef ensemble_Math_h
-#define ensemble_Math_h
+#ifndef mRMRe_Math_h
+#define mRMRe_Math_h
 
 #include <algorithm>
 #include <cmath>
@@ -122,4 +122,4 @@ public:
             unsigned int const sampleStratumCount, unsigned int const sampleCount);
 };
 
-#endif /* ensemble_Math_h */
+#endif /* mRMRe_Math_h */

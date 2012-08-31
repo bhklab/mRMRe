@@ -1,5 +1,5 @@
-#ifndef ensemble_MutualInformationMatrix_h
-#define ensemble_MutualInformationMatrix_h
+#ifndef mRMRe_MutualInformationMatrix_h
+#define mRMRe_MutualInformationMatrix_h
 
 #include <omp.h>
 
@@ -35,4 +35,4 @@ public:
     build();
 };
 
-#endif /* ensemble_MutualInformationMatrix_h */
+#endif /* mRMRe_MutualInformationMatrix_h */

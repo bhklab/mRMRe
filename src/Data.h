@@ -1,5 +1,5 @@
-#ifndef ensemble_Data_h
-#define ensemble_Data_h
+#ifndef mRMRe_Data_h
+#define mRMRe_Data_h
 
 #include <limits>
 
@@ -57,4 +57,4 @@ public:
     getFeatureCount() const;
 };
 
-#endif /* ensemble_Data_h */
+#endif /* mRMRe_Data_h */
