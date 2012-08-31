@@ -1,5 +1,4 @@
 #include "Tree.h"
-#include "Rcpp.h"
 
 Tree::Tree(unsigned int const* const pChildrenCountPerLevel, unsigned int const levelCount,
         Matrix* const pFeatureInformationMatrix, unsigned int const targetFeatureIndex) :
@@ -19,20 +18,14 @@ Tree::Tree(unsigned int const* const pChildrenCountPerLevel, unsigned int const 
         cumulative_element_count += children_per_level;
     }
 
+    mTreeElementCount = cumulative_element_count;
     mpIndexTree = new unsigned int[cumulative_element_count];
     mpInformativeContributionTree = new float[cumulative_element_count];
     mpRedundantContributionTree = new float[cumulative_element_count];
-    mTreeElementCount = cumulative_element_count;
 
+    mpIndexTree[0] = targetFeatureIndex;
     mpInformativeContributionTree[0] = 0.;
     mpRedundantContributionTree[0] = 0.;
-    for (unsigned int i = 1; i < mTreeElementCount; ++i)
-    {
-        mpInformativeContributionTree[i] = std::numeric_limits<float>::quiet_NaN();
-        mpRedundantContributionTree[i] = std::numeric_limits<float>::quiet_NaN();
-    }
-    mpIndexTree[0] = targetFeatureIndex;
-
 }
 
 Tree::~Tree()
@@ -51,7 +44,7 @@ Tree::build()
         unsigned int const parent_count = mpStartingIndexPerLevel[level + 1]
                 - mpStartingIndexPerLevel[level];
 
-//#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
         for (unsigned int parent = 0; parent < parent_count; ++parent)
             for (unsigned int child = 0; child < mpChildrenCountPerLevel[level]; ++child)
             {
@@ -165,27 +158,26 @@ Tree::isRedundantPath(unsigned int const absoluteIndex, unsigned int const featu
 {
     unsigned int const upper_bound =
             (level == mLevelCount) ? mTreeElementCount : mpStartingIndexPerLevel[level + 1];
-    //float score = computeQualityScore(absoluteIndex, level);
+
     for (unsigned int i = mpStartingIndexPerLevel[level]; i < upper_bound; ++i)
-    {
-        if (/*fabs(computeQualityScore(i, level) - score) < 0.001
-                &&*/ hasAncestorByFeatureIndex(i, featureIndex, level)
+        if (hasAncestorByFeatureIndex(i, featureIndex, level)
                 && hasAncestorByFeatureIndex(absoluteIndex, mpIndexTree[i], level))
             return true;
-    }
+
     return false;
 }
 
 void const
 Tree::placeElement(unsigned int const absoluteIndex, unsigned int const level)
 {
-    unsigned int max_candidate_feature_index = 0;
-    float max_candidate_score = -std::numeric_limits<float>::max();
-    float max_candidate_feature_score = 0.;
-    float max_candidate_ancestry_score = 0.;
-    unsigned int const parent_index = getParentAbsoluteIndex(absoluteIndex, level);
+    unsigned int counter = 0;
+    unsigned int const feature_count = mpFeatureInformationMatrix->getRowCount();
+    unsigned int* const p_candidate_feature_indices = new unsigned int[feature_count];
+    unsigned int* const p_order = new unsigned int[feature_count];
+    unsigned int* const p_adaptor = new unsigned int[feature_count];
+    float* const p_candidate_scores = new float[feature_count];
 
-    for (unsigned int i = 0; i < mpFeatureInformationMatrix->getRowCount(); ++i)
+    for (unsigned int i = 0; i < feature_count; ++i)
     {
         if (hasAncestorByFeatureIndex(absoluteIndex, i, level)
                 || hasSiblingByFeatureIndex(absoluteIndex, i, level))
@@ -205,21 +197,28 @@ Tree::placeElement(unsigned int const absoluteIndex, unsigned int const level)
                         mpFeatureInformationMatrix->at(i, mpIndexTree[ancestor_absolute_index]));
             }
 
-        float ancestry_score_mean = ancestry_score / level;
-        float const candidate_score = candidate_feature_score - ancestry_score_mean;
+        p_order[counter] = counter;
+        p_adaptor[counter] = counter;
+        p_candidate_feature_indices[counter] = i;
+        p_candidate_scores[counter] = candidate_feature_score - (ancestry_score / level);
+        ++counter;
+    }
 
-        if (candidate_score > max_candidate_score && !isRedundantPath(absoluteIndex, i, level))
+    std::sort(p_order, p_order + counter, Math::IndirectComparator(p_candidate_scores, p_adaptor));
+
+#pragma omp critical(selection)
+    for (unsigned int i = counter - 1; i >= 0; --i)
+    {
+        unsigned int const index = p_candidate_feature_indices[p_order[i]];
+        if (!isRedundantPath(absoluteIndex, index, level))
         {
-            max_candidate_feature_index = i;
-            max_candidate_score = candidate_score;
-            max_candidate_feature_score = candidate_feature_score;
-            max_candidate_ancestry_score = ancestry_score;
+            mpIndexTree[absoluteIndex] = index;
+            break;
         }
     }
 
-    mpIndexTree[absoluteIndex] = max_candidate_feature_index;
-    mpInformativeContributionTree[absoluteIndex] = mpInformativeContributionTree[parent_index]
-            + max_candidate_feature_score;
-    mpRedundantContributionTree[absoluteIndex] = mpRedundantContributionTree[parent_index]
-            + max_candidate_ancestry_score;
+    delete[] p_order;
+    delete[] p_adaptor;
+    delete[] p_candidate_feature_indices;
+    delete[] p_candidate_scores;
 }

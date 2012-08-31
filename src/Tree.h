@@ -6,6 +6,7 @@
 #include <omp.h>
 #include <vector>
 
+#include "Math.h"
 #include "Matrix.h"
 
 class Tree
