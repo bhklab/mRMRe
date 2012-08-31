@@ -5,6 +5,12 @@
 
 class SymmetricMatrix : public Matrix
 {
+private:
+    SymmetricMatrix(const SymmetricMatrix&);
+
+    SymmetricMatrix&
+    operator=(const SymmetricMatrix&);
+
 public:
     SymmetricMatrix(unsigned int const rowCount);
 

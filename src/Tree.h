@@ -20,6 +20,11 @@ private:
     unsigned int mTreeElementCount;
     std::vector<unsigned int> mPaths;
 
+    Tree(const Tree&);
+
+    Tree&
+    operator=(const Tree&);
+
 public:
     Tree(unsigned int const* const pChildrenCountPerLevel, unsigned int const levelCount,
             Matrix* const pFeatureInformationMatrix, unsigned int const targetFeatureIndex);

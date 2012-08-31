@@ -8,6 +8,12 @@
 
 class MutualInformationMatrix : public SymmetricMatrix
 {
+private:
+    MutualInformationMatrix(const MutualInformationMatrix&);
+
+    MutualInformationMatrix&
+    operator=(const MutualInformationMatrix&);
+
 protected:
     Data const* const mpData;
 

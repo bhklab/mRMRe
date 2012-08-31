@@ -11,8 +11,14 @@
 class Math
 {
 private:
-    virtual
-    ~Math() = 0; // Prevent instantiation of ::Math
+    Math();
+
+    Math(const Math&);
+
+    Math&
+    operator=(const Math&);
+
+    ~Math();
 
 public:
     class IndirectComparator

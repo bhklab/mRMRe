@@ -136,24 +136,24 @@ Tree::placeElements(unsigned int const startingIndex, unsigned int childrenCount
         if (hasAncestorByFeatureIndex(startingIndex, i, level))
             continue;
 
-        float const candidate_feature_score = std::fabs(
-                mpFeatureInformationMatrix->at(i, mpIndexTree[0]));
-
-        unsigned int ancestor_absolute_index = startingIndex;
         float ancestry_score = 0.;
 
         if (level > 1)
+        {
+            unsigned int ancestor_absolute_index = startingIndex;
             for (unsigned int j = level; j > 0; --j)
             {
                 ancestor_absolute_index = getParentAbsoluteIndex(ancestor_absolute_index, j);
                 ancestry_score += std::fabs(
                         mpFeatureInformationMatrix->at(i, mpIndexTree[ancestor_absolute_index]));
             }
+        }
 
         p_order[counter] = counter;
         p_adaptor[counter] = counter;
         p_candidate_feature_indices[counter] = i;
-        p_candidate_scores[counter] = candidate_feature_score - (ancestry_score / level);
+        p_candidate_scores[counter] = std::fabs(mpFeatureInformationMatrix->at(i, mpIndexTree[0]))
+                - (ancestry_score / level);
         ++counter;
     }
 

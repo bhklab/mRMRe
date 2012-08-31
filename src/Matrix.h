@@ -6,6 +6,12 @@
 
 class Matrix
 {
+private:
+    Matrix(const Matrix&);
+
+    Matrix&
+    operator=(const Matrix&);
+
 protected:
     float* const mpData;
     unsigned int const mRowCount;
