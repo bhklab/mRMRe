@@ -94,6 +94,14 @@ public:
     computeSomersD(float const c);
 
     static float const
+    computeSpearmanCorrelation(float const* const pSamplesX, float const* const pSamplesY,
+            float const* const pSampleWeights,
+            unsigned int const* const * const pSampleIndicesPerStratum,
+            float const* const pTotalWeightPerStratum,
+            unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
+            unsigned int const bootstrapCount, unsigned int const sampleCount);
+
+    static float const
     computeVariance(float const* const pSamples, unsigned int const sampleCount);
 
     static void const

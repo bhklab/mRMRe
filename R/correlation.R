@@ -29,7 +29,7 @@
     return(mi_matrix)
 }
 
-`correlate` <- function(x, y, strata, weights, method=c("cramer", "pearson", "spearman", "cindex", "kendall"),
+`correlate` <- function(x, y, strata, weights, method=c("cramer", "pearson", "spearman", "cindex"),
         outX=TRUE, bootstrap_count=0)
 {
     method <- match.arg(method)
@@ -95,23 +95,16 @@
     weights <- as.vector(weights)
     stratum_count <- as.integer(length(unique(strata)))
     bootstrap_count <- as.integer(bootstrap_count)
-    value <- NA
-        
-    if (method == "cramer")
-        value <- .Call(mRMRe:::.C_compute_cramers_v, x, y, weights, strata, stratum_count, bootstrap_count)
-    else if (method == "pearson")
-        value <- .Call(mRMRe:::.C_compute_pearson_correlation, x, y, weights, strata, stratum_count, bootstrap_count)
-    else if (method == "spearman")
-        value <- .Call(mRMRe:::.C_compute_spearman_correlation, x, y, weights, strata, stratum_count, bootstrap_count)
-    else if (method == "cindex")
+    
+    z <- vector()
+    if (method == "cindex" && is_survival)
     {
-        if (!is_survival)
-            value <- .Call(mRMRe:::.C_compute_concordance_index, x, y, weights, strata, stratum_count, outX)
-        else
-            value <- .Call(mRMRe:::.C_compute_concordance_index_with_time, x[, "status"], y, x[, "time"], weights, strata, stratum_count, outX)
+        z <- x[, "time"]
+        y <- y
+        x <- x[, "status"]
     }
-    else if (method == "kendall")
-        value <- (.Call(mRMRe:::.C_compute_concordance_index, x, y, weights, strata, stratum_count, outX)$statistic - 0.5) * 2
+    
+    value <- .Call(mRMRe:::.C_export_association, x, y, z, strata, weights, stratum_count, outX, bootstrap_count, method)
     
     return(value)
 }

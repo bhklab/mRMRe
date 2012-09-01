@@ -1,6 +1,94 @@
 #include "exports.h"
 
 extern "C" SEXP
+export_association(SEXP R_SamplesA, SEXP R_SamplesB, SEXP R_SamplesC, SEXP R_SampleStrata,
+        SEXP R_SampleWeights, SEXP R_SampleStratumCount, SEXP R_OutX, SEXP R_BootstrapCount,
+        SEXP R_Method)
+{
+    std::vector<float> S_SamplesA = Rcpp::as < std::vector<float> > (R_SamplesA);
+    std::vector<float> S_SamplesB = Rcpp::as < std::vector<float> > (R_SamplesB);
+    std::vector<float> S_SamplesC = Rcpp::as < std::vector<float> > (R_SamplesC);
+    std::vector<unsigned int> S_SampleStrata = Rcpp::as < std::vector<unsigned int>
+            > (R_SampleStrata);
+    std::vector<float> S_SampleWeights = Rcpp::as < std::vector<float> > (R_SampleWeights);
+    unsigned int const sample_stratum_count = Rcpp::as<unsigned int>(R_SampleStratumCount);
+    bool const outX = Rcpp::as<bool>(R_OutX);
+    unsigned int const bootstrap_count = Rcpp::as<unsigned int>(R_BootstrapCount);
+    std::string S_Method = Rcpp::as < std::string > (R_Method);
+
+    unsigned int const sample_count = S_SamplesA.size();
+    unsigned int** p_sample_indices_per_stratum = new unsigned int*[sample_stratum_count];
+    float* const p_total_weight_per_stratum = new float[sample_stratum_count];
+    unsigned int* const p_sample_count_per_stratum = new unsigned int[sample_stratum_count];
+    Math::placeStratificationData(&S_SampleStrata[0], &S_SampleWeights[0],
+            p_sample_indices_per_stratum, p_total_weight_per_stratum, p_sample_count_per_stratum,
+            sample_stratum_count, sample_count);
+
+    bool const is_pearson = S_Method.compare("pearson") == 0;
+    bool const is_spearman = S_Method.compare("spearman") == 0;
+    bool const is_cramers_v = S_Method.compare("cramer") == 0;
+    bool const is_concordance_index = S_Method.compare("cindex") == 0;
+    bool const is_concordance_index_with_time = S_Method.compare("cindex_with_time")
+            == 0;
+
+    Rcpp::List result;
+
+    if (is_pearson || is_spearman || is_cramers_v)
+    {
+        float statistic;
+
+        if (is_pearson)
+            statistic = Math::computePearsonCorrelation(&S_SamplesA[0], &S_SamplesB[0],
+                    &S_SampleWeights[0], p_sample_indices_per_stratum, p_total_weight_per_stratum,
+                    p_sample_count_per_stratum, sample_stratum_count, bootstrap_count);
+        else if (is_spearman)
+            statistic = Math::computeSpearmanCorrelation(&S_SamplesA[0], &S_SamplesB[0],
+                    &S_SampleWeights[0], p_sample_indices_per_stratum, p_total_weight_per_stratum,
+                    p_sample_count_per_stratum, sample_stratum_count, bootstrap_count,
+                    sample_count);
+        else
+            statistic = Math::computeCramersV(&S_SamplesA[0], &S_SamplesB[0], &S_SampleWeights[0],
+                    p_sample_indices_per_stratum, p_total_weight_per_stratum,
+                    p_sample_count_per_stratum, sample_stratum_count, bootstrap_count);
+
+        result = Rcpp::List::create(Rcpp::Named("statistic") = Rcpp::wrap<float>(statistic));
+    }
+    else if (is_concordance_index)
+    {
+        float statistic;
+        float concordant_weight;
+        float discordant_weight;
+        float uninformative_weight;
+        float relevant_weight;
+
+        if (S_SamplesC.size() == 0)
+            statistic = Math::computeConcordanceIndex(&S_SamplesA[0], &S_SamplesB[0],
+                    &S_SampleWeights[0], p_sample_indices_per_stratum, p_sample_count_per_stratum,
+                    sample_stratum_count, outX, &concordant_weight, &discordant_weight,
+                    &uninformative_weight, &relevant_weight);
+        else
+            statistic = Math::computeConcordanceIndexWithTime(&S_SamplesA[0], &S_SamplesB[0],
+                    &S_SamplesC[0], &S_SampleWeights[0], p_sample_indices_per_stratum,
+                    p_sample_count_per_stratum, sample_stratum_count, outX, &concordant_weight,
+                    &discordant_weight, &uninformative_weight, &relevant_weight);
+
+        result = Rcpp::List::create(Rcpp::Named("statistic") = Rcpp::wrap<float>(statistic),
+                Rcpp::Named("concordant_weight") = Rcpp::wrap<float>(concordant_weight),
+                Rcpp::Named("discordant_weight") = Rcpp::wrap<float>(discordant_weight),
+                Rcpp::Named("uninformative_weight") = Rcpp::wrap<float>(uninformative_weight),
+                Rcpp::Named("relevant_weight") = Rcpp::wrap<float>(relevant_weight));
+    }
+
+    delete[] p_sample_count_per_stratum;
+    delete[] p_total_weight_per_stratum;
+    for (unsigned int i = 0; i < sample_stratum_count; ++i)
+        delete[] p_sample_indices_per_stratum[i];
+    delete[] p_sample_indices_per_stratum;
+
+    return result;
+}
+
+extern "C" SEXP
 export_filter(SEXP R_ChildrenCountPerLevel, SEXP R_DataMatrix, SEXP R_PriorsMatrix,
         SEXP R_PriorsWeight, SEXP R_SampleStrata, SEXP R_SampleWeights, SEXP R_FeatureTypes,
         SEXP R_SampleCount, SEXP R_FeatureCount, SEXP R_SampleStratumCount,
@@ -68,185 +156,6 @@ export_mim(SEXP R_DataMatrix, SEXP R_PriorsMatrix, SEXP R_PriorsWeight, SEXP R_S
     MutualInformationMatrix mi_matrix(&data);
     mi_matrix.build();
     return Rcpp::wrap < std::vector<float> > (static_cast<std::vector<float> >(mi_matrix));
-}
-
-extern "C" SEXP
-compute_concordance_index(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_SampleWeights,
-        SEXP R_SampleStrata, SEXP R_SampleStratumCount, SEXP R_OutX)
-{
-    std::vector<float> S_SamplesX = Rcpp::as < std::vector<float> > (R_SamplesX);
-    std::vector<float> S_SamplesY = Rcpp::as < std::vector<float> > (R_SamplesY);
-    std::vector<float> S_SampleWeights = Rcpp::as < std::vector<float> > (R_SampleWeights);
-    std::vector<unsigned int> S_SampleStrata = Rcpp::as < std::vector<unsigned int>
-            > (R_SampleStrata);
-    unsigned int const sample_stratum_count = Rcpp::as<unsigned int>(R_SampleStratumCount);
-    bool const outX = Rcpp::as<bool>(R_OutX);
-    unsigned int const sample_count = S_SamplesX.size();
-    unsigned int** p_sample_indices_per_stratum = new unsigned int*[sample_stratum_count];
-    float* const p_total_weight_per_stratum = new float[sample_stratum_count];
-    unsigned int* const p_sample_count_per_stratum = new unsigned int[sample_stratum_count];
-    Math::placeStratificationData(&S_SampleStrata[0], &S_SampleWeights[0],
-            p_sample_indices_per_stratum, p_total_weight_per_stratum, p_sample_count_per_stratum,
-            sample_stratum_count, sample_count);
-    float concordant_weight;
-    float discordant_weight;
-    float uninformative_weight;
-    float relevant_weight;
-    float const r = Math::computeConcordanceIndex(&S_SamplesX[0], &S_SamplesY[0],
-            &S_SampleWeights[0], p_sample_indices_per_stratum, p_sample_count_per_stratum,
-            sample_stratum_count, outX, &concordant_weight, &discordant_weight,
-            &uninformative_weight, &relevant_weight);
-    delete[] p_sample_count_per_stratum;
-    delete[] p_total_weight_per_stratum;
-    for (unsigned int i = 0; i < sample_stratum_count; ++i)
-        delete[] p_sample_indices_per_stratum[i];
-    delete[] p_sample_indices_per_stratum;
-    return Rcpp::List::create(Rcpp::Named("statistic") = Rcpp::wrap<float>(r),
-            Rcpp::Named("concordant_weight") = Rcpp::wrap<float>(concordant_weight),
-            Rcpp::Named("discordant_weight") = Rcpp::wrap<float>(discordant_weight),
-            Rcpp::Named("uninformative_weight") = Rcpp::wrap<float>(uninformative_weight),
-            Rcpp::Named("relevant_weight") = Rcpp::wrap<float>(relevant_weight));
-}
-
-extern "C" SEXP
-compute_concordance_index_with_time(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_Time,
-        SEXP R_SampleWeights, SEXP R_SampleStrata, SEXP R_SampleStratumCount, SEXP R_OutX)
-{
-    std::vector<float> S_SamplesX = Rcpp::as < std::vector<float> > (R_SamplesX);
-    std::vector<float> S_SamplesY = Rcpp::as < std::vector<float> > (R_SamplesY);
-    std::vector<float> S_Time = Rcpp::as < std::vector<float> > (R_Time);
-    std::vector<float> S_SampleWeights = Rcpp::as < std::vector<float> > (R_SampleWeights);
-    std::vector<unsigned int> S_SampleStrata = Rcpp::as < std::vector<unsigned int>
-            > (R_SampleStrata);
-    unsigned int const sample_stratum_count = Rcpp::as<unsigned int>(R_SampleStratumCount);
-    bool const outX = Rcpp::as<bool>(R_OutX);
-    unsigned int const sample_count = S_SamplesX.size();
-    unsigned int** p_sample_indices_per_stratum = new unsigned int*[sample_stratum_count];
-    float* const p_total_weight_per_stratum = new float[sample_stratum_count];
-    unsigned int* const p_sample_count_per_stratum = new unsigned int[sample_stratum_count];
-    Math::placeStratificationData(&S_SampleStrata[0], &S_SampleWeights[0],
-            p_sample_indices_per_stratum, p_total_weight_per_stratum, p_sample_count_per_stratum,
-            sample_stratum_count, sample_count);
-    float concordant_weight;
-    float discordant_weight;
-    float uninformative_weight;
-    float relevant_weight;
-    float const r = Math::computeConcordanceIndexWithTime(&S_SamplesX[0], &S_SamplesY[0],
-            &S_Time[0], &S_SampleWeights[0], p_sample_indices_per_stratum,
-            p_sample_count_per_stratum, sample_stratum_count, outX, &concordant_weight,
-            &discordant_weight, &uninformative_weight, &relevant_weight);
-    delete[] p_sample_count_per_stratum;
-    delete[] p_total_weight_per_stratum;
-    for (unsigned int i = 0; i < sample_stratum_count; ++i)
-        delete[] p_sample_indices_per_stratum[i];
-    delete[] p_sample_indices_per_stratum;
-    return Rcpp::List::create(Rcpp::Named("statistic") = Rcpp::wrap<float>(r),
-            Rcpp::Named("concordant_weight") = Rcpp::wrap<float>(concordant_weight),
-            Rcpp::Named("discordant_weight") = Rcpp::wrap<float>(discordant_weight),
-            Rcpp::Named("uninformative_weight") = Rcpp::wrap<float>(uninformative_weight),
-            Rcpp::Named("relevant_weight") = Rcpp::wrap<float>(relevant_weight));
-}
-
-extern "C" SEXP
-compute_cramers_v(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_SampleWeights, SEXP R_SampleStrata,
-        SEXP R_SampleStratumCount, SEXP R_BootstrapCount)
-{
-    std::vector<float> S_SamplesX = Rcpp::as < std::vector<float> > (R_SamplesX);
-    std::vector<float> S_SamplesY = Rcpp::as < std::vector<float> > (R_SamplesY);
-    std::vector<float> S_SampleWeights = Rcpp::as < std::vector<float> > (R_SampleWeights);
-    std::vector<unsigned int> S_SampleStrata = Rcpp::as < std::vector<unsigned int>
-            > (R_SampleStrata);
-    unsigned int const sample_stratum_count = Rcpp::as<unsigned int>(R_SampleStratumCount);
-    unsigned int const sample_count = S_SamplesX.size();
-    unsigned int const bootstrap_count = Rcpp::as<unsigned int>(R_BootstrapCount);
-    unsigned int** p_sample_indices_per_stratum = new unsigned int*[sample_stratum_count];
-    float* const p_total_weight_per_stratum = new float[sample_stratum_count];
-    unsigned int* const p_sample_count_per_stratum = new unsigned int[sample_stratum_count];
-    Math::placeStratificationData(&S_SampleStrata[0], &S_SampleWeights[0],
-            p_sample_indices_per_stratum, p_total_weight_per_stratum, p_sample_count_per_stratum,
-            sample_stratum_count, sample_count);
-    float const r = Math::computeCramersV(&S_SamplesX[0], &S_SamplesY[0], &S_SampleWeights[0],
-            p_sample_indices_per_stratum, p_total_weight_per_stratum, p_sample_count_per_stratum,
-            sample_stratum_count, bootstrap_count);
-    delete[] p_sample_count_per_stratum;
-    delete[] p_total_weight_per_stratum;
-    for (unsigned int i = 0; i < sample_stratum_count; ++i)
-        delete[] p_sample_indices_per_stratum[i];
-    delete[] p_sample_indices_per_stratum;
-    return Rcpp::wrap<float>(r);
-}
-
-extern "C" SEXP
-compute_pearson_correlation(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_SampleWeights,
-        SEXP R_SampleStrata, SEXP R_SampleStratumCount, SEXP R_BootstrapCount)
-{
-    std::vector<float> S_SamplesX = Rcpp::as < std::vector<float> > (R_SamplesX);
-    std::vector<float> S_SamplesY = Rcpp::as < std::vector<float> > (R_SamplesY);
-    std::vector<float> S_SampleWeights = Rcpp::as < std::vector<float> > (R_SampleWeights);
-    std::vector<unsigned int> S_SampleStrata = Rcpp::as < std::vector<unsigned int>
-            > (R_SampleStrata);
-    unsigned int const sample_stratum_count = Rcpp::as<unsigned int>(R_SampleStratumCount);
-    unsigned int const sample_count = S_SamplesX.size();
-    unsigned int const bootstrap_count = Rcpp::as<unsigned int>(R_BootstrapCount);
-    unsigned int** p_sample_indices_per_stratum = new unsigned int*[sample_stratum_count];
-    float* const p_total_weight_per_stratum = new float[sample_stratum_count];
-    unsigned int* const p_sample_count_per_stratum = new unsigned int[sample_stratum_count];
-    Math::placeStratificationData(&S_SampleStrata[0], &S_SampleWeights[0],
-            p_sample_indices_per_stratum, p_total_weight_per_stratum, p_sample_count_per_stratum,
-            sample_stratum_count, sample_count);
-    float const r = Math::computePearsonCorrelation(&S_SamplesX[0], &S_SamplesY[0],
-            &S_SampleWeights[0], p_sample_indices_per_stratum, p_total_weight_per_stratum,
-            p_sample_count_per_stratum, sample_stratum_count, bootstrap_count);
-    delete[] p_sample_count_per_stratum;
-    delete[] p_total_weight_per_stratum;
-    for (unsigned int i = 0; i < sample_stratum_count; ++i)
-        delete[] p_sample_indices_per_stratum[i];
-    delete[] p_sample_indices_per_stratum;
-    return Rcpp::wrap<float>(r);
-}
-
-extern "C" SEXP
-compute_spearman_correlation(SEXP R_SamplesX, SEXP R_SamplesY, SEXP R_SampleWeights,
-        SEXP R_SampleStrata, SEXP R_SampleStratumCount, SEXP R_BootstrapCount)
-{
-    std::vector<float> S_SamplesX = Rcpp::as < std::vector<float> > (R_SamplesX);
-    std::vector<float> S_SamplesY = Rcpp::as < std::vector<float> > (R_SamplesY);
-    std::vector<float> S_SampleWeights = Rcpp::as < std::vector<float> > (R_SampleWeights);
-    std::vector<unsigned int> S_SampleStrata = Rcpp::as < std::vector<unsigned int>
-            > (R_SampleStrata);
-    unsigned int const sample_stratum_count = Rcpp::as<unsigned int>(R_SampleStratumCount);
-    unsigned int const sample_count = S_SamplesX.size();
-    unsigned int const bootstrap_count = Rcpp::as<unsigned int>(R_BootstrapCount);
-    unsigned int** p_sample_indices_per_stratum = new unsigned int*[sample_stratum_count];
-    float* const p_total_weight_per_stratum = new float[sample_stratum_count];
-    unsigned int* const p_sample_count_per_stratum = new unsigned int[sample_stratum_count];
-    Math::placeStratificationData(&S_SampleStrata[0], &S_SampleWeights[0],
-            p_sample_indices_per_stratum, p_total_weight_per_stratum, p_sample_count_per_stratum,
-            sample_stratum_count, sample_count);
-    float* const p_ordered_samples_x = new float[sample_count];
-    float* const p_ordered_samples_y = new float[sample_count];
-    Math::placeOrders(&S_SamplesX[0], p_ordered_samples_x, p_sample_indices_per_stratum,
-            p_sample_count_per_stratum, sample_stratum_count);
-    Math::placeOrders(&S_SamplesY[0], p_ordered_samples_y, p_sample_indices_per_stratum,
-            p_sample_count_per_stratum, sample_stratum_count);
-    float* const p_ranked_samples_x = new float[sample_count];
-    float* const p_ranked_samples_y = new float[sample_count];
-    Math::placeRanksFromOrders(&S_SamplesX[0], &S_SamplesY[0], p_ordered_samples_x,
-            p_ordered_samples_y, p_ranked_samples_x, p_ranked_samples_y,
-            p_sample_indices_per_stratum, p_sample_count_per_stratum, sample_stratum_count);
-    float const r = Math::computePearsonCorrelation(p_ranked_samples_x, p_ranked_samples_y,
-            &S_SampleWeights[0], p_sample_indices_per_stratum, p_total_weight_per_stratum,
-            p_sample_count_per_stratum, sample_stratum_count, bootstrap_count);
-    delete[] p_ordered_samples_x;
-    delete[] p_ordered_samples_y;
-    delete[] p_ranked_samples_x;
-    delete[] p_ranked_samples_y;
-    delete[] p_sample_count_per_stratum;
-    delete[] p_total_weight_per_stratum;
-    for (unsigned int i = 0; i < sample_stratum_count; ++i)
-        delete[] p_sample_indices_per_stratum[i];
-    delete[] p_sample_indices_per_stratum;
-    return Rcpp::wrap<float>(r);
 }
 
 extern "C" SEXP

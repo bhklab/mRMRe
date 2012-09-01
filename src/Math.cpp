@@ -435,6 +435,42 @@ Math::computeSomersD(float const c)
 }
 
 /* static */float const
+Math::computeSpearmanCorrelation(float const* const pSamplesX, float const* const pSamplesY,
+        float const* const pSampleWeights,
+        unsigned int const* const * const pSampleIndicesPerStratum,
+        float const* const pTotalWeightPerStratum, unsigned int const* const pSampleCountPerStratum,
+        unsigned int const sampleStratumCount, unsigned int const bootstrapCount,
+        unsigned int const sampleCount)
+{
+    float* const p_ordered_samples_x = new float[sampleCount];
+    float* const p_ordered_samples_y = new float[sampleCount];
+
+    Math::placeOrders(&pSamplesX[0], p_ordered_samples_x, pSampleIndicesPerStratum,
+            pSampleCountPerStratum, sampleStratumCount);
+    Math::placeOrders(&pSamplesY[0], p_ordered_samples_y, pSampleIndicesPerStratum,
+            pSampleCountPerStratum, sampleStratumCount);
+
+    float* const p_ranked_samples_x = new float[sampleCount];
+    float* const p_ranked_samples_y = new float[sampleCount];
+
+    Math::placeRanksFromOrders(&pSamplesX[0], &pSamplesY[0], p_ordered_samples_x,
+            p_ordered_samples_y, p_ranked_samples_x, p_ranked_samples_y, pSampleIndicesPerStratum,
+            pSampleCountPerStratum, sampleStratumCount);
+
+    delete[] p_ordered_samples_x;
+    delete[] p_ordered_samples_y;
+
+    float const r = Math::computePearsonCorrelation(p_ranked_samples_x, p_ranked_samples_y,
+            &pSampleWeights[0], pSampleIndicesPerStratum, pTotalWeightPerStratum,
+            pSampleCountPerStratum, sampleStratumCount, bootstrapCount);
+
+    delete[] p_ranked_samples_x;
+    delete[] p_ranked_samples_y;
+
+    return r;
+}
+
+/* static */float const
 Math::computeVariance(float const* const pSamples, unsigned int const sampleCount)
 {
     if (sampleCount == 0)
