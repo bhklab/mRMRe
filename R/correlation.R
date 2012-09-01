@@ -14,7 +14,7 @@
     bootstrap_count <- expansion$bootstrap_count
     
     data <- as.matrix(data)
-    mi_matrix <- .Call(mRMRe:::.C_build_mim, as.vector(data), as.vector(priors), as.numeric(prior_weight),
+    mi_matrix <- .Call(mRMRe:::.C_export_mim, as.vector(data), as.vector(priors), as.numeric(prior_weight),
             as.vector(strata), as.vector(weights), as.vector(feature_types), as.integer(nrow(data)),
             as.integer(ncol(data)), as.integer(length(unique(strata))), as.integer(uses_ranks), as.integer(outX),
             as.integer(bootstrap_count))
