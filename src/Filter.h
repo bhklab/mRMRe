@@ -1,5 +1,5 @@
-#ifndef ensemble_Tree_h
-#define ensemble_Tree_h
+#ifndef mRMRe_Filter_h
+#define mRMRe_Filter_h
 
 #include <cmath>
 #include <limits>
@@ -9,27 +9,26 @@
 #include "Math.h"
 #include "Matrix.h"
 
-class Tree
+class Filter
 {
 private:
+    Filter(const Filter&);
+
+    Filter&
+    operator=(const Filter&);
+
     unsigned int const* const mpChildrenCountPerLevel;
     unsigned int const mLevelCount;
     Matrix* const mpFeatureInformationMatrix;
     unsigned int* const mpStartingIndexPerLevel;
     unsigned int* mpIndexTree;
     unsigned int mTreeElementCount;
-    std::vector<unsigned int> mPaths;
-
-    Tree(const Tree&);
-
-    Tree&
-    operator=(const Tree&);
 
 public:
-    Tree(unsigned int const* const pChildrenCountPerLevel, unsigned int const levelCount,
+    Filter(unsigned int const* const pChildrenCountPerLevel, unsigned int const levelCount,
             Matrix* const pFeatureInformationMatrix, unsigned int const targetFeatureIndex);
 
-    ~Tree();
+    ~Filter();
 
     void const
     build();
@@ -56,4 +55,4 @@ public:
             unsigned int const level);
 };
 
-#endif /* ensemble_Tree_h */
+#endif /* mRMRe_Filter_h */

@@ -1,6 +1,2 @@
-useDynLib(mRMRe, .fixes=".C_",
-    build_mim, build_mRMR_tree,
-    compute_concordance_index, compute_concordance_index_with_time,
-    compute_cramers_v, compute_pearson_correlation, compute_spearman_correlation,
-    set_thread_count)
+useDynLib(mRMRe, .fixes=".C_", export_association, export_filter, export_mim, set_thread_count)
 exportPattern("^[^\\.]")

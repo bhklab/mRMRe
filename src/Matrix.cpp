@@ -55,13 +55,12 @@ Matrix::getRowCount() const
 
 Matrix::operator std::vector<float>() const
 {
-    std::vector<float> vector;
-    vector.resize(mRowCount * mColumnCount);
+    std::vector<float> elements;
+    elements.reserve(mRowCount * mColumnCount);
 
-#pragma omp parallel for schedule(dynamic)
     for (unsigned int i = 0; i < mColumnCount; ++i)
         for (unsigned int j = 0; j < mRowCount; ++j)
-            vector[(i * mRowCount) + j] = at(i, j);
+            elements.push_back(at(i, j));
 
-    return vector;
+    return elements;
 }

@@ -1,5 +1,5 @@
-#ifndef ensemble_SymmetricMatrix_h
-#define ensemble_SymmetricMatrix_h
+#ifndef mRMRe_SymmetricMatrix_h
+#define mRMRe_SymmetricMatrix_h
 
 #include "Matrix.h"
 
@@ -26,4 +26,4 @@ public:
     at(unsigned int const i, unsigned int const j) const;
 };
 
-#endif /* ensemble_SymmetricMatrix_h */
+#endif /* mRMRe_SymmetricMatrix_h */

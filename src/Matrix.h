@@ -1,7 +1,6 @@
-#ifndef ensemble_Matrix_h
-#define ensemble_Matrix_h
+#ifndef mRMRe_Matrix_h
+#define mRMRe_Matrix_h
 
-#include <omp.h>
 #include <vector>
 
 class Matrix
@@ -45,4 +44,4 @@ public:
     operator std::vector<float>() const;
 };
 
-#endif /* ensemble_Matrix_h */
+#endif /* mRMRe_Matrix_h */

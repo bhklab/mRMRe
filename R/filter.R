@@ -50,7 +50,7 @@
     
     wrap <- function(i) t(matrix(i[length(i):1], nrow=length(levels), ncol=length(i)/length(levels)))
     
-    tree <- .Call(mRMRe:::.C_build_mRMR_tree, as.vector(levels), as.vector(data), as.vector(priors),
+    tree <- .Call(mRMRe:::.C_export_filter, as.vector(levels), as.vector(data), as.vector(priors),
             as.numeric(prior_weight), as.vector(strata), as.vector(weights), as.vector(feature_types), nrow(data),
             ncol(data), as.integer(length(unique(strata))), as.integer(target_index) - 1, as.integer(uses_ranks),
             as.integer(outX), as.integer(bootstrap_count))

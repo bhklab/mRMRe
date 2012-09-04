@@ -1,6 +1,8 @@
 inst/doc/.*[.]bib$
 inst/doc/Makefile
+Debug/*
 test/*
+src/*.{s,}o
 TODO
 README
 .DS_Store
