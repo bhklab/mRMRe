@@ -23,7 +23,8 @@
     if (missing(.is_expanded) || !.is_expanded)
     {
         expansion <- mRMRe:::.expand.input(data=data, priors=priors, prior_weight=prior_weight, strata=strata,
-                weights=weights, target_indices=target_index)
+                weights=weights, target_indices=target_index, uses_ranks=uses_ranks, outX=outX,
+                bootstrap_count=bootstrap_count)
         data <- expansion$data
         priors <- expansion$priors
         prior_weight <- expansion$prior_weight
