@@ -2,7 +2,7 @@
 {
     feature_names <- colnames(data)
     expansion <- mRMRe:::.expand.input(data=data, priors=priors, prior_weight=prior_weight, strata=strata,
-            weights=weights)
+            weights=weights, uses_ranks=uses_ranks, outX=outX, bootstrap_count=bootstrap_count)
     data <- expansion$data
     priors <- expansion$priors
     prior_weight <- expansion$prior_weight
