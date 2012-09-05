@@ -56,9 +56,7 @@
             as.integer(outX), as.integer(bootstrap_count))
     tree$mi_matrix <- matrix(tree$mi_matrix, ncol=sqrt(length(tree$mi_matrix)), nrow=sqrt(length(tree$mi_matrix)))
     tree$paths <- wrap(tree$paths)
-    
-    print(tree$paths)
-    
+
     compression <- mRMRe:::.compress.output(feature_types=feature_types, feature_names=feature_names,
             mi_matrix=tree$mi_matrix, paths=tree$paths, target_indices=target_index)
     mi_matrix <- compression$mi_matrix
