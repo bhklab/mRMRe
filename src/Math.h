@@ -56,14 +56,13 @@ public:
     computeCramersV(float const* const pSamplesX, float const* const pSamplesY,
             float const* const pSampleWeights,
             unsigned int const* const * const pSampleIndicesPerStratum,
-            float const* const pTotalWeightPerStratum,
             unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
             unsigned int const bootstrapCount);
 
     static float const
     computeCramersV(float const* const pSamplesX, float const* const pSamplesY,
             float const* const pSampleWeights, unsigned int const* const pSampleIndices,
-            unsigned int const sampleCount);
+            unsigned int const sampleCount, float* const pTotalWeight = 0);
 
     static float const
     computeFisherTransformation(float const r);
@@ -78,14 +77,13 @@ public:
     computePearsonCorrelation(float const* const pSamplesX, float const* const pSamplesY,
             float const* const pSampleWeights,
             unsigned int const* const * const pSampleIndicesPerStratum,
-            float const* const pTotalWeightPerStratum,
             unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
             unsigned int const bootstrapCount);
 
     static float const
     computePearsonCorrelation(float const* const pSamplesX, float const* const pSamplesY,
             float const* const pSampleWeights, unsigned int const* const pSampleIndices,
-            unsigned int const sampleCount);
+            unsigned int const sampleCount, float* const pTotalWeight = 0);
 
     static int const
     computeRandomNumber(unsigned int* const seed);
@@ -97,7 +95,6 @@ public:
     computeSpearmanCorrelation(float const* const pSamplesX, float const* const pSamplesY,
             float const* const pSampleWeights,
             unsigned int const* const * const pSampleIndicesPerStratum,
-            float const* const pTotalWeightPerStratum,
             unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
             unsigned int const bootstrapCount, unsigned int const sampleCount);
 
@@ -126,8 +123,8 @@ public:
     static void const
     placeStratificationData(unsigned int const* const pSampleStrata,
             float const* const pSampleWeights, unsigned int** const pSampleIndicesPerStratum,
-            float* const pTotalWeightPerStratum, unsigned int* const pSampleCountPerStratum,
-            unsigned int const sampleStratumCount, unsigned int const sampleCount);
+            unsigned int* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
+            unsigned int const sampleCount);
 };
 
 #endif /* mRMRe_Math_h */

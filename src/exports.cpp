@@ -18,18 +18,16 @@ export_association(SEXP R_SamplesA, SEXP R_SamplesB, SEXP R_SamplesC, SEXP R_Sam
 
     unsigned int const sample_count = S_SamplesA.size();
     unsigned int** p_sample_indices_per_stratum = new unsigned int*[sample_stratum_count];
-    float* const p_total_weight_per_stratum = new float[sample_stratum_count];
     unsigned int* const p_sample_count_per_stratum = new unsigned int[sample_stratum_count];
     Math::placeStratificationData(&S_SampleStrata[0], &S_SampleWeights[0],
-            p_sample_indices_per_stratum, p_total_weight_per_stratum, p_sample_count_per_stratum,
+            p_sample_indices_per_stratum, p_sample_count_per_stratum,
             sample_stratum_count, sample_count);
 
     bool const is_pearson = S_Method.compare("pearson") == 0;
     bool const is_spearman = S_Method.compare("spearman") == 0;
     bool const is_cramers_v = S_Method.compare("cramer") == 0;
     bool const is_concordance_index = S_Method.compare("cindex") == 0;
-    bool const is_concordance_index_with_time = S_Method.compare("cindex_with_time")
-            == 0;
+    bool const is_concordance_index_with_time = S_Method.compare("cindex_with_time") == 0;
 
     Rcpp::List result;
 
@@ -39,16 +37,16 @@ export_association(SEXP R_SamplesA, SEXP R_SamplesB, SEXP R_SamplesC, SEXP R_Sam
 
         if (is_pearson)
             statistic = Math::computePearsonCorrelation(&S_SamplesA[0], &S_SamplesB[0],
-                    &S_SampleWeights[0], p_sample_indices_per_stratum, p_total_weight_per_stratum,
+                    &S_SampleWeights[0], p_sample_indices_per_stratum,
                     p_sample_count_per_stratum, sample_stratum_count, bootstrap_count);
         else if (is_spearman)
             statistic = Math::computeSpearmanCorrelation(&S_SamplesA[0], &S_SamplesB[0],
-                    &S_SampleWeights[0], p_sample_indices_per_stratum, p_total_weight_per_stratum,
+                    &S_SampleWeights[0], p_sample_indices_per_stratum,
                     p_sample_count_per_stratum, sample_stratum_count, bootstrap_count,
                     sample_count);
         else
             statistic = Math::computeCramersV(&S_SamplesA[0], &S_SamplesB[0], &S_SampleWeights[0],
-                    p_sample_indices_per_stratum, p_total_weight_per_stratum,
+                    p_sample_indices_per_stratum,
                     p_sample_count_per_stratum, sample_stratum_count, bootstrap_count);
 
         result = Rcpp::List::create(Rcpp::Named("statistic") = Rcpp::wrap<float>(statistic));
@@ -80,7 +78,6 @@ export_association(SEXP R_SamplesA, SEXP R_SamplesB, SEXP R_SamplesC, SEXP R_Sam
     }
 
     delete[] p_sample_count_per_stratum;
-    delete[] p_total_weight_per_stratum;
     for (unsigned int i = 0; i < sample_stratum_count; ++i)
         delete[] p_sample_indices_per_stratum[i];
     delete[] p_sample_indices_per_stratum;

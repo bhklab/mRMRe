@@ -23,7 +23,6 @@ private:
     unsigned int const* const mpFeatureTypes;
     unsigned int const mSampleStratumCount;
     unsigned int** const mpSampleIndicesPerStratum;
-    float* const mpTotalWeightPerStratum;
     unsigned int* const mpSampleCountPerStratum;
     bool const mUsesRanks;
     bool const mOutX;
