@@ -86,7 +86,10 @@ setMethod("getFeatureCount", "mRMRe.Data", function(.Object)
 
 setMethod("getPriors", "mRMRe.Data", function(.Object)
 {
-    return(compressFeatureMatrix(.Object, .Object@priors))
+    if (length(.Object@priors) == 0)
+        return(.Object@priors)
+    else
+        return(compressFeatureMatrix(.Object, .Object@priors))
 })
 
 setMethod("expandFeatureMatrix", "mRMRe.Data", function(.Object, matrix)

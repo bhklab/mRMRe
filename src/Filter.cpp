@@ -155,13 +155,18 @@ Filter::placeElements(unsigned int const startingIndex, unsigned int childrenCou
             }
         }
 
-        p_order[counter] = counter;
-        p_adaptor[counter] = counter;
-        p_candidate_feature_indices[counter] = i;
-        p_candidate_scores[counter] = std::fabs(mpFeatureInformationMatrix->at(i, mpIndexTree[0]))
+        float const score = std::fabs(mpFeatureInformationMatrix->at(i, mpIndexTree[0]))
                 - (ancestry_score / level);
 
-        ++counter;
+        if (score == score)
+        {
+            p_order[counter] = counter;
+            p_adaptor[counter] = counter;
+            p_candidate_feature_indices[counter] = i;
+            p_candidate_scores[counter] = score;
+
+            ++counter;
+        }
     }
 
     std::sort(p_order, p_order + counter, Math::IndirectComparator(p_candidate_scores, p_adaptor));

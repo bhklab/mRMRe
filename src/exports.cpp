@@ -119,7 +119,7 @@ export_filter(SEXP R_ChildrenCountPerLevel, SEXP R_DataMatrix, SEXP R_PriorsMatr
             const_cast<MutualInformationMatrix* const >(&mi_matrix), target_feature_index);
     filter.build();
     return Rcpp::List::create(
-            Rcpp::Named("paths") = Rcpp::wrap < std::vector<unsigned int>
+            Rcpp::Named("solutions") = Rcpp::wrap < std::vector<unsigned int>
                     > (static_cast<std::vector<unsigned int> >(filter)),
             Rcpp::Named("mi_matrix") = Rcpp::wrap < std::vector<float>
                     > (static_cast<std::vector<float> >(mi_matrix)));
