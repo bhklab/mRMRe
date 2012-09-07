@@ -13,3 +13,11 @@ setGeneric("compressFeatureMatrix", function(.Object, matrix) standardGeneric("c
 setGeneric("expandFeatureIndices", function(.Object, indices) standardGeneric("expandFeatureIndices"))
 
 setGeneric("compressFeatureIndices", function(.Object, indices) standardGeneric("compressFeatureIndices"))
+
+setGeneric("getSolutions", function(.Object) standardGeneric("getSolutions"))
+
+setGeneric("getMutualInformationMatrix", function(.Object) standardGeneric("getMutualInformationMatrix"))
+
+setGeneric("getTargetIndex", function(.Object) standardGeneric("getTargetIndex"))
+
+setGeneric("getLevels", function(.Object) standardGeneric("getLevels"))

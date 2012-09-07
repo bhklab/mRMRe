@@ -26,6 +26,7 @@
 \seealso{mRMR.classic, mRMR.ensemble}
 \examples{
 ## Test on a dummy dataset
+set.seed(0)
 library(survival)
 dd <- data.frame("surv1"=Surv(runif(100), sample(0:1, 100, replace=TRUE)),
 	"cont1"=runif(100),
@@ -37,8 +38,10 @@ dd <- data.frame("surv1"=Surv(runif(100), sample(0:1, 100, replace=TRUE)),
 	sample(0:1, 100, replace=TRUE)),
 	"cat2"=factor(sample(1:5, 100, replace=TRUE), ordered=TRUE))
 	library(mRMRe)
+	data <- new("mRMRe.Data", data=dd)
+	filter <- new("mRMRe.Filter", data=data, target_index=1, levels=c(4))
 	#mRMR.network(data = dd, target_indices = c(1, 2), solution_count = 2, feature_count = 2)
-		mRMR.ensemble(data = dd, target_index = 1, solution_count = 2, feature_count = 2)
+		#mRMR.ensemble(data = dd, target_index = 1, solution_count = 2, feature_count = 2)
 	
 print(head(dd))
 build.mim(data=dd)
