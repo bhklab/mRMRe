@@ -54,52 +54,87 @@ setMethod("initialize", "mRMRe.Data", function(.Object, data, strata, weights, p
         if (ncol(priors) != ncol(data) || nrow(priors) != ncol(data))
             stop("priors matrix must be a symmetric matrix containing as many features as data")
         else
-            .Object@priors <- do.call(cbind, lapply(seq(feature_types), function(i)
-            {
-                column <- do.call(rbind, lapply(seq(feature_types), function(j)
-                {
-                    item <- priors[j, i]
-
-                    if (feature_types[[j]] == "Surv")
-                        return(rbind(item, item, deparse.level = 0))
-                    else
-                        return(item)
-                }))
-                
-                if (feature_types[[i]] == "Surv")
-                    return(cbind(column, column, deparse.level = 0))
-                else
-                    return(column)
-            }))
+            .Object@priors <- expandFeatureMatrix(.Object, priors)
     }
     
     return(.Object)
 })
 
-setMethod("getSampleCount", "mRMRe.Data", function(.Object) nrow(.Object@data))
-
-setMethod("getFeatureCount", "mRMRe.Data", function(.Object) length(.Object@feature_names))
-
 setMethod("getData", "mRMRe.Data", function(.Object)
 {
     data <- lapply(seq(.Object@feature_types), function(i) switch(as.character(.Object@feature_types[[i]]),
-                "3" = Surv(time = .Object@data[, i], event = .Object@data[, i - 1]),
-                "2" = NULL,
-                "1" = .Object@data[, i] + 1,
-                "0" = .Object@data[, i],
-                NULL))
+                        "3" = Surv(time = .Object@data[, i], event = .Object@data[, i - 1]),
+                        "2" = NULL,
+                        "1" = .Object@data[, i] + 1,
+                        "0" = .Object@data[, i],
+                        NULL))
     data <- data.frame(data[!sapply(data, is.null)])
     colnames(data) <- .Object@feature_names
     
     return(data)
 })
 
+setMethod("getSampleCount", "mRMRe.Data", function(.Object)
+{
+    return(nrow(.Object@data))
+})
+
+setMethod("getFeatureCount", "mRMRe.Data", function(.Object)
+{
+    return(length(.Object@feature_names))
+})
+
 setMethod("getPriors", "mRMRe.Data", function(.Object)
 {
-    indices <- which(.Object@feature_types != 3)
-    priors <- .Object@priors[indices, indices]
-    colnames(priors) <- .Object@feature_names
-    rownames(priors) <- .Object@feature_names
+    return(compressFeatureMatrix(.Object, .Object@priors))
+})
+
+setMethod("expandFeatureMatrix", "mRMRe.Data", function(.Object, matrix)
+{
+    adaptor <- which(.Object@feature_types != 3)
+    matrix <- do.call(cbind, lapply(seq(adaptor), function(i)
+    {
+        column <- do.call(rbind, lapply(seq(adaptor), function(j)
+        {
+            item <- matrix[j, i]
+            
+            if (.Object@feature_types[[adaptor[[j]]]] == 2)
+                return(rbind(item, item, deparse.level = 0))
+            else
+                return(item)
+        }))
+        
+        if (.Object@feature_types[[adaptor[[i]]]] == 2)
+            return(cbind(column, column, deparse.level = 0))
+        else
+            return(column)
+    }))
+
+    return(matrix)
+})
+
+setMethod("compressFeatureMatrix", "mRMRe.Data", function(.Object, matrix)
+{
+    adaptor <- which(.Object@feature_types != 3)
+    matrix <- matrix[adaptor, adaptor]
+    colnames(matrix) <- .Object@feature_names
+    rownames(matrix) <- .Object@feature_names
     
-    return(priors)
+    return(matrix)
+})
+
+setMethod("expandFeatureIndices", "mRMRe.Data", function(.Object, indices)
+{
+    adaptor <- which(.Object@feature_types == 3)
+    indices <- sapply(indices, function(i) i + sum(sapply(seq(adaptor), function(j) i >= (adaptor[[j]] - j + 1))))
+
+    return(indices)
+})
+
+setMethod("compressFeatureIndices", "mRMRe.Data", function(.Object, indices)
+{
+    adaptor <- which(.Object@feature_types == 3)
+    indices <- sapply(indices, function(i) i - sum(i >= adaptor))
+    
+    return(indices)
 })

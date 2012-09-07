@@ -1,7 +1,15 @@
+setGeneric("getData", function(.Object) standardGeneric("getData"))
+
 setGeneric("getSampleCount", function(.Object) standardGeneric("getSampleCount"))
 
 setGeneric("getFeatureCount", function(.Object) standardGeneric("getFeatureCount"))
 
-setGeneric("getData", function(.Object) standardGeneric("getData"))
-
 setGeneric("getPriors", function(.Object) standardGeneric("getPriors"))
+
+setGeneric("expandFeatureMatrix", function(.Object, matrix) standardGeneric("expandFeatureMatrix"))
+
+setGeneric("compressFeatureMatrix", function(.Object, matrix) standardGeneric("compressFeatureMatrix"))
+
+setGeneric("expandFeatureIndices", function(.Object, indices) standardGeneric("expandFeatureIndices"))
+
+setGeneric("compressFeatureIndices", function(.Object, indices) standardGeneric("compressFeatureIndices"))
