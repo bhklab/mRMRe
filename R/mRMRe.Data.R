@@ -92,6 +92,26 @@ setMethod("getPriors", "mRMRe.Data", function(.Object)
         return(compressFeatureMatrix(.Object, .Object@priors))
 })
 
+setMethod("getMutualInformationMatrix", "mRMRe.Data", function(.Object, prior_weight, uses_ranks = TRUE, outX = TRUE,
+                bootstrap_count = 0)
+{
+    if (length(getPriors(.Object)) != 0)
+    {
+        if (missing(prior_weight))
+            stop("prior weight must be provided if there are priors")
+        else if  (prior_weight < 0 || prior_weight > 1)
+            stop("prior weight must be a value ranging from 0 to 1")
+    }
+    else
+        prior_weight <- 0
+    
+    mi_matrix <- .Call(mRMRe:::.C_export_mim, as.vector(.Object@data), as.vector(.Object@priors),
+            as.numeric(prior_weight), data@strata, data@weights, data@feature_types, nrow(data), ncol(data),
+            as.integer(length(unique(strata))), as.integer(uses_ranks), as.integer(outX), as.integer(bootstrap_count))
+    
+    return(compressFeatureMatrix(.Object, mi_matrix))
+})
+
 setMethod("expandFeatureMatrix", "mRMRe.Data", function(.Object, matrix)
 {
     adaptor <- which(.Object@feature_types != 3)

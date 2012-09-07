@@ -10,6 +10,8 @@ setGeneric("getFeatureCount", function(.Object) standardGeneric("getFeatureCount
 
 setGeneric("getPriors", function(.Object) standardGeneric("getPriors"))
 
+setGeneric("getMutualInformationMatrix", function(.Object, ...) standardGeneric("getMutualInformationMatrix"))
+
 setGeneric("expandFeatureMatrix", function(.Object, matrix) standardGeneric("expandFeatureMatrix"))
 
 setGeneric("compressFeatureMatrix", function(.Object, matrix) standardGeneric("compressFeatureMatrix"))
