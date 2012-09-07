@@ -1,5 +1,4 @@
-setClass("mRMRe.Network", representation(topologies = "list", prior_weight = "numeric", target_indices = "integer",
-                levels = "integer"))
+setClass("mRMRe.Network", representation(topologies = "list", target_indices = "integer", levels = "integer"))
 
 setMethod("initialize", "mRMRe.Network", function(.Object, data, prior_weight, target_indices, levels, layers, ...)
 {
@@ -27,4 +26,24 @@ setMethod("initialize", "mRMRe.Network", function(.Object, data, prior_weight, t
     .Object@topologies <- topologies
 
     return(.Object)
+})
+
+setMethod("getAdjacencyMatrix", "mRMRe.Network", function(.Object)
+{
+    matrix <- sapply(seq(.Object@topologies), function(i) sapply(seq(.Object@topologies), function(j)
+    {
+        if (i %in% .Object@topologies[[j]])
+            return(1L)
+        else
+            return(0L)
+    }))
+
+    return(matrix)
+})
+
+setMethod("visualize", "mRMRe.Network", function(.Object)
+{
+    network <- getAdjacencyMatrix(.Object)
+    
+    return(plot.igraph(graph.adjacency(network)))
 })

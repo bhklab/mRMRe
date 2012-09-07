@@ -34,13 +34,21 @@ dd <- data.frame("surv1"=Surv(runif(100), sample(0:1, 100, replace=TRUE)),
 	"surv2"=Surv(runif(100), sample(0:1, 100, replace=TRUE)),
 	"cont2"=runif(100),
 	"cont3"=runif(100),
-	"surv3"=Surv(runif(100),
-	sample(0:1, 100, replace=TRUE)),
-	"cat2"=factor(sample(1:5, 100, replace=TRUE), ordered=TRUE))
+	"surv3"=Surv(runif(100), sample(0:1, 100, replace=TRUE)),
+	"cat2"=factor(sample(1:2, 100, replace=TRUE), ordered=TRUE),
+	"cat3"=factor(sample(1:3, 100, replace=TRUE), ordered=TRUE),
+	"cat4"=factor(sample(1:5, 100, replace=TRUE), ordered=TRUE),
+	"surv4"=Surv(runif(100), sample(0:1, 100, replace=TRUE)),
+	"cont4"=runif(100),
+	"cont5"=runif(100),
+	"surv5"=Surv(runif(100), sample(0:1, 100, replace=TRUE)),
+	"cat5"=factor(sample(1:5, 100, replace=TRUE), ordered=TRUE),
+	"cat6"=factor(sample(1:3, 100, replace=TRUE), ordered=TRUE)
+	)
 	library(mRMRe)
-	data <- new("mRMRe.Data", data = dd)
-	filter <- new("mRMRe.Filter", data = data, target_index=1, levels=c(1, 1))
-	network <- new("mRMRe.Network", data = data, target_indices = c(1, 2), levels = c(1, 1), layers=2)
+	DATA <- new("mRMRe.Data", data = dd)
+	#filter <- new("mRMRe.Filter", data = DATA, target_index=1, levels=c(1, 1))
+	network <- new("mRMRe.Network", data = DATA, target_indices = c(1, 2), levels = c(3, 1, 1), layers=1)
 
 	
 print(head(dd))

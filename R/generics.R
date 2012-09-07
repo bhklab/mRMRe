@@ -1,3 +1,7 @@
+## mRMRe.Data.R
+
+# initialize
+
 setGeneric("getData", function(.Object) standardGeneric("getData"))
 
 setGeneric("getSampleCount", function(.Object) standardGeneric("getSampleCount"))
@@ -14,6 +18,10 @@ setGeneric("expandFeatureIndices", function(.Object, indices) standardGeneric("e
 
 setGeneric("compressFeatureIndices", function(.Object, indices) standardGeneric("compressFeatureIndices"))
 
+## mRMRe.Filter.R
+
+# initialize
+
 setGeneric("getSolutions", function(.Object) standardGeneric("getSolutions"))
 
 setGeneric("getMutualInformationMatrix", function(.Object) standardGeneric("getMutualInformationMatrix"))
@@ -21,3 +29,11 @@ setGeneric("getMutualInformationMatrix", function(.Object) standardGeneric("getM
 setGeneric("getTargetIndex", function(.Object) standardGeneric("getTargetIndex"))
 
 setGeneric("getLevels", function(.Object) standardGeneric("getLevels"))
+
+## mRMRe.Network.R
+
+# initialize
+
+setGeneric("getAdjacencyMatrix", function(.Object) standardGeneric("getAdjacencyMatrix"))
+
+setGeneric("visualize", function(.Object) standardGeneric("visualize"))
