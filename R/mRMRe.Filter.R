@@ -1,9 +1,9 @@
-setClass("mRMRe.Filter", representation(solutions = "matrix", mi_matrix = "matrix", prior_weight = "numeric",
-                target_index = "integer", levels = "integer", uses_ranks = "logical", outX = "logical",
-                bootstrap_count = "integer"))
+setClass("mRMRe.Filter", representation(solutions = "matrix", mi_matrix = "matrix", target_index = "integer",
+                levels = "integer"))
 
 setMethod("initialize", "mRMRe.Filter",
-        function(.Object, data, prior_weight, target_index, levels, uses_ranks, outX, bootstrap_count)
+        function(.Object, data, prior_weight, target_index, levels, uses_ranks = TRUE, outX = TRUE,
+                bootstrap_count = 0)
 {
     if (class(data) != "mRMRe.Data")
         stop("data must be of type mRMRe.Data")
@@ -23,33 +23,19 @@ setMethod("initialize", "mRMRe.Filter",
             
     if (missing(levels))
         stop("levels must be provided")
-    else if (prod(levels) > gamma(getFeatureCount(data) + 1) - 1)
+    else if (prod(levels) - 1 > gamma(getFeatureCount(data)) / gamma(getFeatureCount(data) - length(levels)))
         stop("user cannot request for more solutions than is possible given the data set")
     
-    if (missing(uses_ranks))
-        uses_ranks <- TRUE
-    
-    if (missing(outX))
-        outX <- TRUE
-
-    if (missing(bootstrap_count))
-        bootstrap_count <- 0
-    
-    .Object@prior_weight <- as.numeric(prior_weight) ## No getter method
     .Object@target_index <- as.integer(c(target_index))
     .Object@levels <- as.integer(c(levels))
-    .Object@uses_ranks <- as.logical(uses_ranks) ## No getter method
-    .Object@outX <- as.logical(outX) ## No getter method
-    .Object@bootstrap_count <- as.integer(bootstrap_count) ## No getter method
     
-    target_index <- expandFeatureIndices(data, target_index)
+    target_index <- as.integer(expandFeatureIndices(data, target_index)) - 1
     
     wrap <- function(i) t(matrix(i[length(i):1], nrow=length(levels), ncol=length(i)/length(levels)))
     
     filter <- .Call(mRMRe:::.C_export_filter, .Object@levels, as.vector(data@data), as.vector(data@priors),
-            .Object@prior_weight, data@strata, data@weights, data@feature_types, nrow(data@data),
-            ncol(data@data), as.integer(length(unique(data@strata))), .Object@target_index - 1, .Object@uses_ranks,
-            .Object@outX, .Object@bootstrap_count)
+            as.numeric(prior_weight), data@strata, data@weights, data@feature_types, nrow(data@data), ncol(data@data),
+            as.integer(length(unique(data@strata))), target_index, uses_ranks, outX, bootstrap_count)
     filter$solutions <- wrap(filter$solutions)
     filter$mi_matrix <- matrix(filter$mi_matrix, ncol=sqrt(length(filter$mi_matrix)),
             nrow=sqrt(length(filter$mi_matrix)))
