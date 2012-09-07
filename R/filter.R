@@ -19,6 +19,7 @@
 `mRMR.filter` <- function(data, priors, prior_weight, target_index, levels, strata, weights, uses_ranks, outX,
         bootstrap_count, .is_expanded, .feature_types, .feature_names)
 {
+	
     feature_names <- colnames(data)
     if (missing(.is_expanded) || !.is_expanded)
     {

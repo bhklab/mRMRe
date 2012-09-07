@@ -96,6 +96,9 @@ dd <- data.frame("surv1"=Surv(runif(100), sample(0:1, 100, replace=TRUE)),
         "cat2"=factor(sample(1:5, 100, replace=TRUE), ordered=TRUE))
 @
 
+surv1 <- Surv(rep(c(5,2),4), rep(c(0,0,1,1),2)) 
+surv2 <- Surv(rep(c(2,5),4), c(0,0,1,1,1,1,0,0))
+
 <<mimres,results=verbatim,eval=TRUE>>=
 message("Dummy dataframe:")
 print(dd[1:5,1:5])

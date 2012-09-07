@@ -67,28 +67,35 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j) const
                     mSampleStratumCount, mBootstrapCount);
         else if (A_is_survival_event && B_is_continuous)
             r = Math::computeSomersD(
-                    Math::computeConcordanceIndexWithTime(&(mpDataMatrix->at(0, i)),
+                    Math::computeConcordanceIndex(&(mpDataMatrix->at(0, i)),
                             &(mpDataMatrix->at(0, j)), &(mpDataMatrix->at(0, i + 1)),
                             mpSampleWeights, mpSampleIndicesPerStratum, mpSampleCountPerStratum,
                             mSampleStratumCount, mOutX));
         else if (A_is_continuous && B_is_survival_event)
             r = Math::computeSomersD(
-                    Math::computeConcordanceIndexWithTime(&(mpDataMatrix->at(0, j)),
+                    Math::computeConcordanceIndex(&(mpDataMatrix->at(0, j)),
                             &(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j + 1)),
                             mpSampleWeights, mpSampleIndicesPerStratum, mpSampleCountPerStratum,
                             mSampleStratumCount, mOutX));
         else if (A_is_survival_event && B_is_discrete)
             r = Math::computeSomersD(
-                    Math::computeConcordanceIndexWithTime(&(mpDataMatrix->at(0, i)),
+                    Math::computeConcordanceIndex(&(mpDataMatrix->at(0, i)),
                             &(mpDataMatrix->at(0, j)), &(mpDataMatrix->at(0, i + 1)),
                             mpSampleWeights, mpSampleIndicesPerStratum, mpSampleCountPerStratum,
                             mSampleStratumCount, mOutX));
         else if (A_is_discrete && B_is_survival_event)
             r = Math::computeSomersD(
-                    Math::computeConcordanceIndexWithTime(&(mpDataMatrix->at(0, j)),
+                    Math::computeConcordanceIndex(&(mpDataMatrix->at(0, j)),
                             &(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j + 1)),
                             mpSampleWeights, mpSampleIndicesPerStratum, mpSampleCountPerStratum,
                             mSampleStratumCount, mOutX));
+        else if (A_is_survival_event && B_is_survival_event)
+            r = Math::computeSomersD(
+                    Math::computeConcordanceIndex(&(mpDataMatrix->at(0, i)),
+                            &(mpDataMatrix->at(0, j)), &(mpDataMatrix->at(0, i + 1)),
+                            &(mpDataMatrix->at(0, j + 1)), mpSampleWeights,
+                            mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount,
+                            mOutX));
     }
 
     if (mpPriorsMatrix == 0)

@@ -44,9 +44,18 @@ public:
             float* const pUninformativeWeight = 0, float* const pRelevantWeight = 0);
 
     static float const
-    computeConcordanceIndexWithTime(float const* const pDiscreteSamples,
+    computeConcordanceIndex(float const* const pDiscreteSamples,
             float const* const pContinuousSamples, float const* const pTimeSamples,
             float const* const pSampleWeights,
+            unsigned int const* const * const pSampleIndicesPerStratum,
+            unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
+            bool const outX, float* const pConcordantWeight = 0, float* const pDiscordantWeight = 0,
+            float* const pUninformativeWeight = 0, float* const pRelevantWeight = 0);
+
+    static float const
+    computeConcordanceIndex(float const* const pDiscreteSamplesX,
+            float const* const pDiscreteSamplesY, float const* const pTimeSamplesX,
+            float const* const pTimeSamplesY, float const* const pSampleWeights,
             unsigned int const* const * const pSampleIndicesPerStratum,
             unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
             bool const outX, float* const pConcordantWeight = 0, float* const pDiscordantWeight = 0,
