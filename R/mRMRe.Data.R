@@ -65,9 +65,9 @@ setMethod("initialize", signature("mRMRe.Data"), function(.Object, data, strata,
     return(.Object)
 })
 
-## getData
+## featureData
 
-setMethod("getData", signature("mRMRe.Data"), function(.Object)
+setMethod("featureData", signature("mRMRe.Data"), function(.Object)
 {
     data <- lapply(seq(.Object@feature_types), function(i) switch(as.character(.Object@feature_types[[i]]),
                         "3" = Surv(time = .Object@data[, i], event = .Object@data[, i - 1]),
@@ -81,30 +81,30 @@ setMethod("getData", signature("mRMRe.Data"), function(.Object)
     return(data)
 })
 
-## getSampleCount
+## sampleCount
 
-setMethod("getSampleCount", signature("mRMRe.Data"), function(.Object)
+setMethod("sampleCount", signature("mRMRe.Data"), function(.Object)
 {
     return(nrow(.Object@data))
 })
 
-## getFeatureCount
+## featureCount
 
-setMethod("getFeatureCount", signature("mRMRe.Data"), function(.Object)
+setMethod("featureCount", signature("mRMRe.Data"), function(.Object)
 {
     return(length(.Object@feature_names))
 })
 
-## getFeatureNames
+## featureNames
 
-setMethod("getFeatureNames", signature("mRMRe.Data"), function(.Object)
+setMethod("featureNames", signature("mRMRe.Data"), function(.Object)
 {
     return(.Object@feature_names)
 })
 
-## getPriors
+## priors
 
-setMethod("getPriors", signature("mRMRe.Data"), function(.Object)
+setMethod("priors", signature("mRMRe.Data"), function(.Object)
 {
     if (length(.Object@priors) == 0)
         return(.Object@priors)
@@ -112,9 +112,9 @@ setMethod("getPriors", signature("mRMRe.Data"), function(.Object)
         return(compressFeatureMatrix(.Object, .Object@priors))
 })
 
-## getMutualInformationMatrix
+## mim
 
-setMethod("getMutualInformationMatrix", signature("mRMRe.Data"),
+setMethod("mim", signature("mRMRe.Data"),
         function(.Object, prior_weight = 0, uses_ranks = TRUE, outX = TRUE, bootstrap_count = 0)
 {
     if (length(.Object@priors) != 0)

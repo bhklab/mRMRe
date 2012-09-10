@@ -48,11 +48,11 @@ dd <- data.frame("surv1"=Surv(runif(100), sample(0:1, 100, replace=TRUE)),
 	library(mRMRe)
 	DATA <- new("mRMRe.Data", data = dd)
 	filter <- new("mRMRe.Filter", data = DATA, target_index=1, levels=c(1, 1))
-	getCausalityMatrix(filter)
+	causalityMatrix(filter)
 	#network <- new("mRMRe.Network", data = DATA, target_indices = c(1, 2), levels = c(3, 1, 1), layers=1)
 	#visualize(network)
-	#getMutualInformationMatrix(DATA)
-	#getMutualInformationMatrix(filter)
+	mim(DATA)
+	mim(filter)
 	
 	
 print(head(dd))

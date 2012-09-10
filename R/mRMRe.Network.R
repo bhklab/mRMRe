@@ -12,7 +12,7 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
         layers <- 1L
     
     topologies <- list()
-    length(topologies) <- getFeatureCount(data)
+    length(topologies) <- featureCount(data)
     
     lapply(seq(layers), function(layer)
     {
@@ -21,23 +21,23 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
             filter <- new("mRMRe.Filter", data = data, prior_weight = prior_weight, target_index = target_index,
                     levels = levels)
 
-            topologies[[target_index]] <<- getSolutions(filter)
+            topologies[[target_index]] <<- solutions(filter)
 
-            return(as.vector(getSolutions(filter)))
+            return(as.vector(solutions(filter)))
         }))
 
         target_indices <<- intersect(target_indices, which(sapply(topologies, is.null)))
     })
 
     .Object@topologies <- topologies
-    .Object@feature_names <- getFeatureNames(data)
+    .Object@feature_names <- featureNames(data)
 
     return(.Object)
 })
 
-## getAdjacencyMatrix
+## adjacencyMatrix
 
-setMethod("getAdjacencyMatrix", signature("mRMRe.Network"), function(.Object)
+setMethod("adjacencyMatrix", signature("mRMRe.Network"), function(.Object)
 {
     matrix <- sapply(seq(.Object@topologies), function(i) sapply(seq(.Object@topologies), function(j)
     {
@@ -57,7 +57,7 @@ setMethod("getAdjacencyMatrix", signature("mRMRe.Network"), function(.Object)
 
 setMethod("visualize", signature("mRMRe.Network"), function(.Object)
 {
-    network <- getAdjacencyMatrix(.Object)
+    network <- adjacencyMatrix(.Object)
     
     return(plot.igraph(graph.adjacency(network)))
 })

@@ -1,17 +1,17 @@
-setGeneric("getData", function(.Object) standardGeneric("getData"))
+setGeneric("featureData", function(.Object) standardGeneric("featureData"))
 
-setGeneric("getSampleCount", function(.Object) standardGeneric("getSampleCount"))
+setGeneric("sampleCount", function(.Object) standardGeneric("sampleCount"))
 
-setGeneric("getFeatureCount", function(.Object) standardGeneric("getFeatureCount"))
+setGeneric("featureCount", function(.Object) standardGeneric("featureCount"))
 
-setGeneric("getFeatureNames", function(.Object) standardGeneric("getFeatureNames"))
+setGeneric("featureNames", function(.Object) standardGeneric("featureNames"))
 
-setGeneric("getPriors", function(.Object) standardGeneric("getPriors"))
+setGeneric("priors", function(.Object) standardGeneric("priors"))
 
-setGeneric("getMutualInformationMatrix", function(.Object, method = c("cor", "MI"), ...)
+setGeneric("mim", function(.Object, method = c("cor", "MI"), ...)
 {
     method <- match.arg(method)
-    matrix <- standardGeneric("getMutualInformationMatrix")
+    matrix <- standardGeneric("mim")
     
     if (method == "MI")
         matrix <- -.5 * log(1 - (matrix^2))
@@ -27,14 +27,12 @@ setGeneric("expandFeatureIndices", function(.Object, indices) standardGeneric("e
 
 setGeneric("compressFeatureIndices", function(.Object, indices) standardGeneric("compressFeatureIndices"))
 
-setGeneric("getSolutions", function(.Object) standardGeneric("getSolutions"))
+setGeneric("solutions", function(.Object) standardGeneric("solutions"))
 
-setGeneric("getCausalityMatrix", function(.Object) standardGeneric("getCausalityMatrix"))
+setGeneric("causalityMatrix", function(.Object) standardGeneric("causalityMatrix"))
 
-setGeneric("getTargetIndex", function(.Object) standardGeneric("getTargetIndex"))
+setGeneric("targetIndex", function(.Object) standardGeneric("targetIndex"))
 
-setGeneric("getLevels", function(.Object) standardGeneric("getLevels"))
-
-setGeneric("getAdjacencyMatrix", function(.Object) standardGeneric("getAdjacencyMatrix"))
+setGeneric("adjacencyMatrix", function(.Object) standardGeneric("adjacencyMatrix"))
 
 setGeneric("visualize", function(.Object) standardGeneric("visualize"))

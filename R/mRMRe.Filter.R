@@ -14,7 +14,7 @@ setMethod("initialize", signature("mRMRe.Filter"),
     
     ## Prior processing
     
-    if (length(getPriors(data)) != 0)
+    if (length(priors(data)) != 0)
     {
         if (missing(prior_weight))
             stop("prior weight must be provided if there are priors")
@@ -26,14 +26,14 @@ setMethod("initialize", signature("mRMRe.Filter"),
     
     ## Target processing
     
-    if (target_index < 1 || target_index > getFeatureCount(data))
+    if (target_index < 1 || target_index > featureCount(data))
         stop("target_index must be a value ranging from 1 to the amount of features in data")
             
     ## Level processing
     
     if (missing(levels))
         stop("levels must be provided")
-    else if (prod(levels) - 1 > gamma(getFeatureCount(data)) / gamma(getFeatureCount(data) - length(levels)))
+    else if (prod(levels) - 1 > gamma(featureCount(data)) / gamma(featureCount(data) - length(levels)))
         stop("user cannot request for more solutions than is possible given the data set")
     
     .Object@target_index <- as.integer(c(target_index))
@@ -55,28 +55,28 @@ setMethod("initialize", signature("mRMRe.Filter"),
     .Object@solutions <- matrix(compressFeatureIndices(data, as.vector(filter$solutions) + 1),
             nrow = nrow(filter$solutions), ncol = ncol(filter$solutions))
     .Object@mi_matrix <- compressFeatureMatrix(data, filter$mi_matrix)
-    .Object@feature_names <- getFeatureNames(data)
+    .Object@feature_names <- featureNames(data)
 
     return(.Object)
 })
 
-## getFeatureNames
+## featureNames
 
-setMethod("getFeatureNames", signature("mRMRe.Filter"), function(.Object)
+setMethod("featureNames", signature("mRMRe.Filter"), function(.Object)
 {
     return(.Object@feature_names)
 })
 
-## getSolutions
+## solutions
 
-setMethod("getSolutions", signature("mRMRe.Filter"), function(.Object)
+setMethod("solutions", signature("mRMRe.Filter"), function(.Object)
 {
     return(.Object@solutions)
 })
 
-## getCausalityMatrix
+## causalityMatrix
 
-setMethod("getCausalityMatrix", signature("mRMRe.Filter"), function(.Object)
+setMethod("causalityMatrix", signature("mRMRe.Filter"), function(.Object)
 {
     target_index <- .Object@target_index
     matrix <- matrix(NA, ncol = ncol(.Object@mi_matrix), nrow = ncol(.Object@mi_matrix))
@@ -107,23 +107,16 @@ setMethod("getCausalityMatrix", signature("mRMRe.Filter"), function(.Object)
     return(matrix)
 })
 
-## getMutualInformationMatrix
+## mim
 
-setMethod("getMutualInformationMatrix", signature("mRMRe.Filter"), function(.Object)
+setMethod("mim", signature("mRMRe.Filter"), function(.Object)
 {
     return(.Object@mi_matrix)
 })
 
-## getTargetIndex
+## targetIndex
 
-setMethod("getTargetIndex", signature("mRMRe.Filter"), function(.Object)
+setMethod("targetIndex", signature("mRMRe.Filter"), function(.Object)
 {
     return(.Object@target_index)
-})
-
-## getLevels
-
-setMethod("getLevels", signature("mRMRe.Filter"), function(.Object)
-{
-    return(.Object@levels)
 })
