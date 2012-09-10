@@ -1,12 +1,14 @@
 setClass("mRMRe.Filter", representation(solutions = "matrix", mi_matrix = "matrix", target_index = "integer",
                 levels = "integer"))
 
-setMethod("initialize", "mRMRe.Filter",
+setMethod("initialize", signature("mRMRe.Filter"),
         function(.Object, data, prior_weight, target_index, levels, uses_ranks = TRUE, outX = TRUE,
                 bootstrap_count = 0)
 {
     if (class(data) != "mRMRe.Data")
         stop("data must be of type mRMRe.Data")
+    
+    ## Prior processing
     
     if (length(getPriors(data)) != 0)
     {
@@ -18,9 +20,13 @@ setMethod("initialize", "mRMRe.Filter",
     else
         prior_weight <- 0
     
+    ## Target processing
+    
     if (target_index < 1 || target_index > getFeatureCount(data))
         stop("target_index must be a value ranging from 1 to the amount of features in data")
             
+    ## Level processing
+    
     if (missing(levels))
         stop("levels must be provided")
     else if (prod(levels) - 1 > gamma(getFeatureCount(data)) / gamma(getFeatureCount(data) - length(levels)))
@@ -31,38 +37,40 @@ setMethod("initialize", "mRMRe.Filter",
     
     target_index <- as.integer(expandFeatureIndices(data, target_index)) - 1
     
-    wrap <- function(i) t(matrix(i[length(i):1], nrow=length(levels), ncol=length(i)/length(levels)))
+    wrap <- function(i) t(matrix(i[length(i):1], nrow = length(levels), ncol = length(i) / length(levels)))
+    
+    ## Filter
     
     filter <- .Call(mRMRe:::.C_export_filter, .Object@levels, as.vector(data@data), as.vector(data@priors),
             as.numeric(prior_weight), data@strata, data@weights, data@feature_types, nrow(data@data), ncol(data@data),
             as.integer(length(unique(data@strata))), target_index, uses_ranks, outX, bootstrap_count)
     filter$solutions <- wrap(filter$solutions)
-    filter$mi_matrix <- matrix(filter$mi_matrix, ncol=sqrt(length(filter$mi_matrix)),
-            nrow=sqrt(length(filter$mi_matrix)))
+    filter$mi_matrix <- matrix(filter$mi_matrix, ncol = sqrt(length(filter$mi_matrix)),
+            nrow = sqrt(length(filter$mi_matrix)))
     
     .Object@solutions <- matrix(compressFeatureIndices(data, as.vector(filter$solutions) + 1),
-            nrow=nrow(filter$solutions), ncol=ncol(filter$solutions))
+            nrow = nrow(filter$solutions), ncol = ncol(filter$solutions))
     .Object@mi_matrix <- compressFeatureMatrix(data, filter$mi_matrix)
 
     return(.Object)
 })
 
-setMethod("getSolutions", "mRMRe.Filter", function(.Object)
+setMethod("getSolutions", signature("mRMRe.Filter"), function(.Object)
 {
     return(.Object@solutions)
 })
 
-setMethod("getMutualInformationMatrix", "mRMRe.Filter", function(.Object)
+setMethod("getMutualInformationMatrix", signature("mRMRe.Filter"), function(.Object)
 {
     return(.Object@mi_matrix)
 })
 
-setMethod("getTargetIndex", "mRMRe.Filter", function(.Object)
+setMethod("getTargetIndex", signature("mRMRe.Filter"), function(.Object)
 {
     return(.Object@target_index)
 })
 
-setMethod("getLevels", "mRMRe.Filter", function(.Object)
+setMethod("getLevels", signature("mRMRe.Filter"), function(.Object)
 {
     return(.Object@levels)
 })

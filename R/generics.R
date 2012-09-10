@@ -10,7 +10,7 @@ setGeneric("getFeatureCount", function(.Object) standardGeneric("getFeatureCount
 
 setGeneric("getPriors", function(.Object) standardGeneric("getPriors"))
 
-setGeneric("getMutualInformationMatrix", function(.Object, ...) standardGeneric("getMutualInformationMatrix"))
+#setGeneric("getMutualInformationMatrix", function(.Object, prior_weight, uses_ranks, outX, bootstrap_count) standardGeneric("getMutualInformationMatrix"))
 
 setGeneric("expandFeatureMatrix", function(.Object, matrix) standardGeneric("expandFeatureMatrix"))
 
