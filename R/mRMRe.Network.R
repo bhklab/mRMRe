@@ -19,7 +19,7 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
         target_indices <<- unlist(lapply(target_indices, function(target_index)
         {
             filter <- new("mRMRe.Filter", data = data, prior_weight = prior_weight, target_index = target_index,
-                    levels = levels, ...)
+                    levels = levels)
 
             topologies[[target_index]] <<- getSolutions(filter)
 
@@ -36,8 +36,6 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
 })
 
 ## getAdjacencyMatrix
-
-setGeneric("getAdjacencyMatrix", function(.Object) standardGeneric("getAdjacencyMatrix"))
 
 setMethod("getAdjacencyMatrix", signature("mRMRe.Network"), function(.Object)
 {
@@ -56,8 +54,6 @@ setMethod("getAdjacencyMatrix", signature("mRMRe.Network"), function(.Object)
 })
 
 ## visualize
-
-setGeneric("visualize", function(.Object) standardGeneric("visualize"))
 
 setMethod("visualize", signature("mRMRe.Network"), function(.Object)
 {

@@ -61,16 +61,12 @@ setMethod("initialize", signature("mRMRe.Filter"),
 
 ## getSolutions
 
-setGeneric("getSolutions", function(.Object) standardGeneric("getSolutions"))
-
 setMethod("getSolutions", signature("mRMRe.Filter"), function(.Object)
 {
     return(.Object@solutions)
 })
 
 ## getMutualInformationMatrix
-
-setGeneric("getMutualInformationMatrix", function(.Object) standardGeneric("getMutualInformationMatrix"))
 
 setMethod("getMutualInformationMatrix", signature("mRMRe.Filter"), function(.Object)
 {
@@ -79,16 +75,12 @@ setMethod("getMutualInformationMatrix", signature("mRMRe.Filter"), function(.Obj
 
 ## getTargetIndex
 
-setGeneric("getTargetIndex", function(.Object) standardGeneric("getTargetIndex"))
-
 setMethod("getTargetIndex", signature("mRMRe.Filter"), function(.Object)
 {
     return(.Object@target_index)
 })
 
 ## getLevels
-
-setGeneric("getLevels", function(.Object) standardGeneric("getLevels"))
 
 setMethod("getLevels", signature("mRMRe.Filter"), function(.Object)
 {
