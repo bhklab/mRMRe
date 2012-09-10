@@ -1,7 +1,7 @@
 ## Definition
 
-setClass("mRMRe.Filter", representation(solutions = "matrix", mi_matrix = "matrix", target_index = "integer",
-                levels = "integer"))
+setClass("mRMRe.Filter", representation(solutions = "matrix", mi_matrix = "matrix", feature_names = "character",
+                target_index = "integer", levels = "integer"))
 
 ## initialize
 
@@ -55,8 +55,16 @@ setMethod("initialize", signature("mRMRe.Filter"),
     .Object@solutions <- matrix(compressFeatureIndices(data, as.vector(filter$solutions) + 1),
             nrow = nrow(filter$solutions), ncol = ncol(filter$solutions))
     .Object@mi_matrix <- compressFeatureMatrix(data, filter$mi_matrix)
+    .Object@feature_names <- getFeatureNames(data)
 
     return(.Object)
+})
+
+## getFeatureNames
+
+setMethod("getFeatureNames", signature("mRMRe.Filter"), function(.Object)
+{
+    return(.Object@feature_names)
 })
 
 ## getSolutions
@@ -64,6 +72,39 @@ setMethod("initialize", signature("mRMRe.Filter"),
 setMethod("getSolutions", signature("mRMRe.Filter"), function(.Object)
 {
     return(.Object@solutions)
+})
+
+## getCausalityMatrix
+
+setMethod("getCausalityMatrix", signature("mRMRe.Filter"), function(.Object)
+{
+    target_index <- .Object@target_index
+    matrix <- matrix(NA, ncol = ncol(.Object@mi_matrix), nrow = ncol(.Object@mi_matrix))
+    
+    apply(.Object@solutions, 1, function(row)
+    {
+        pairs <- combn(row, 2)
+        
+        apply(pairs, 2, function(pair)
+        {
+            i <- pair[[1]]
+            j <- pair[[2]]
+            
+            if (is.na(matrix[i, j]))
+            {
+                coefficient <- -1/2 * log(((1 - .Object@mi_matrix[i, j]^2) * (1 - .Object@mi_matrix[i, target_index]^2)
+                                    * (1 - .Object@mi_matrix[j, target_index]^2)) / (1 + 2 * .Object@mi_matrix[i, j] *
+                                    .Object@mi_matrix[i, target_index] * .Object@mi_matrix[j, target_index] -
+                                    .Object@mi_matrix[i, j]^2 - .Object@mi_matrix[i, target_index]^2 -
+                                    .Object@mi_matrix[j, target_index]^2))
+                
+                matrix[i, j] <<- coefficient
+                matrix[j, i] <<- coefficient
+            }
+        })
+    })
+    
+    return(matrix)
 })
 
 ## getMutualInformationMatrix

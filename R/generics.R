@@ -29,6 +29,8 @@ setGeneric("compressFeatureIndices", function(.Object, indices) standardGeneric(
 
 setGeneric("getSolutions", function(.Object) standardGeneric("getSolutions"))
 
+setGeneric("getCausalityMatrix", function(.Object) standardGeneric("getCausalityMatrix"))
+
 setGeneric("getTargetIndex", function(.Object) standardGeneric("getTargetIndex"))
 
 setGeneric("getLevels", function(.Object) standardGeneric("getLevels"))
