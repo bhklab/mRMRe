@@ -1,5 +1,10 @@
+## Definition
+
 setClass("mRMRe.Data", representation(feature_names = "character", feature_types = "numeric", data = "matrix",
                 strata = "numeric", weights = "numeric", priors = "matrix"))
+
+
+## initialize
 
 setMethod("initialize", signature("mRMRe.Data"), function(.Object, data, strata, weights, priors)
 {
@@ -60,6 +65,10 @@ setMethod("initialize", signature("mRMRe.Data"), function(.Object, data, strata,
     return(.Object)
 })
 
+## getData
+
+setGeneric("getData", function(.Object) standardGeneric("getData"))
+
 setMethod("getData", signature("mRMRe.Data"), function(.Object)
 {
     data <- lapply(seq(.Object@feature_types), function(i) switch(as.character(.Object@feature_types[[i]]),
@@ -74,15 +83,36 @@ setMethod("getData", signature("mRMRe.Data"), function(.Object)
     return(data)
 })
 
+## getSampleCount
+
+setGeneric("getSampleCount", function(.Object) standardGeneric("getSampleCount"))
+
 setMethod("getSampleCount", signature("mRMRe.Data"), function(.Object)
 {
     return(nrow(.Object@data))
 })
 
+## getFeatureCount
+
+setGeneric("getFeatureCount", function(.Object) standardGeneric("getFeatureCount"))
+
 setMethod("getFeatureCount", signature("mRMRe.Data"), function(.Object)
 {
     return(length(.Object@feature_names))
 })
+
+## getFeatureNames
+
+setGeneric("getFeatureNames", function(.Object) standardGeneric("getFeatureNames"))
+
+setMethod("getFeatureNames", signature("mRMRe.Data"), function(.Object)
+{
+    return(.Object@feature_names)
+})
+
+## getPriors
+
+setGeneric("getPriors", function(.Object) standardGeneric("getPriors"))
 
 setMethod("getPriors", signature("mRMRe.Data"), function(.Object)
 {
@@ -92,25 +122,34 @@ setMethod("getPriors", signature("mRMRe.Data"), function(.Object)
         return(compressFeatureMatrix(.Object, .Object@priors))
 })
 
-#setMethod("getMutualInformationMatrix", "mRMRe.Data", function(.Object, prior_weight, uses_ranks = TRUE, outX = TRUE,
-#                bootstrap_count = 0)
-#{
-#    if (length(getPriors(.Object)) != 0)
-#    {
-#        if (missing(prior_weight))
-#            stop("prior weight must be provided if there are priors")
-#        else if  (prior_weight < 0 || prior_weight > 1)
-#            stop("prior weight must be a value ranging from 0 to 1")
-#    }
-#    else
-#        prior_weight <- 0
-#    
-#    mi_matrix <- .Call(mRMRe:::.C_export_mim, as.vector(.Object@data), as.vector(.Object@priors),
-#            as.numeric(prior_weight), data@strata, data@weights, data@feature_types, nrow(data), ncol(data),
-#            as.integer(length(unique(strata))), as.integer(uses_ranks), as.integer(outX), as.integer(bootstrap_count))
-#    
-#    return(compressFeatureMatrix(.Object, mi_matrix))
-#})
+## getMutualInformationMatrix
+
+setGeneric("getMutualInformationMatrix", function(.Object, prior_weight, uses_ranks, outX, bootstrap_count)
+            standardGeneric("getMutualInformationMatrix"))
+
+setMethod("getMutualInformationMatrix", signature("mRMRe.Data", "numeric", "logical", "logical", "integer"),
+        function(.Object, prior_weight, uses_ranks, outX, bootstrap_count)
+{
+    if (length(getPriors(.Object)) != 0)
+    {
+        if (missing(prior_weight))
+            stop("prior weight must be provided if there are priors")
+        else if  (prior_weight < 0 || prior_weight > 1)
+            stop("prior weight must be a value ranging from 0 to 1")
+    }
+    else
+        prior_weight <- 0
+    
+    mi_matrix <- .Call(mRMRe:::.C_export_mim, as.vector(.Object@data), as.vector(.Object@priors),
+            as.numeric(prior_weight), data@strata, data@weights, data@feature_types, nrow(data), ncol(data),
+            as.integer(length(unique(strata))), as.integer(uses_ranks), as.integer(outX), as.integer(bootstrap_count))
+    
+    return(compressFeatureMatrix(.Object, mi_matrix))
+})
+
+## expandFeatureMatrix
+
+setGeneric("expandFeatureMatrix", function(.Object, matrix) standardGeneric("expandFeatureMatrix"))
 
 setMethod("expandFeatureMatrix", signature("mRMRe.Data", "matrix"), function(.Object, matrix)
 {
@@ -136,6 +175,10 @@ setMethod("expandFeatureMatrix", signature("mRMRe.Data", "matrix"), function(.Ob
     return(matrix)
 })
 
+## compressFeatureMatrix
+
+setGeneric("compressFeatureMatrix", function(.Object, matrix) standardGeneric("compressFeatureMatrix"))
+
 setMethod("compressFeatureMatrix", signature("mRMRe.Data", "matrix"), function(.Object, matrix)
 {
     adaptor <- which(.Object@feature_types != 3)
@@ -146,6 +189,10 @@ setMethod("compressFeatureMatrix", signature("mRMRe.Data", "matrix"), function(.
     return(matrix)
 })
 
+## expandFeatureIndices
+
+setGeneric("expandFeatureIndices", function(.Object, indices) standardGeneric("expandFeatureIndices"))
+
 setMethod("expandFeatureIndices", signature("mRMRe.Data", "numeric"), function(.Object, indices)
 {
     adaptor <- which(.Object@feature_types == 3)
@@ -153,6 +200,10 @@ setMethod("expandFeatureIndices", signature("mRMRe.Data", "numeric"), function(.
 
     return(indices)
 })
+
+## compressFeatureIndices
+
+setGeneric("compressFeatureIndices", function(.Object, indices) standardGeneric("compressFeatureIndices"))
 
 setMethod("compressFeatureIndices", signature("mRMRe.Data", "numeric"), function(.Object, indices)
 {

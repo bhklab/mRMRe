@@ -1,5 +1,9 @@
+## Definition
+
 setClass("mRMRe.Network", representation(topologies = "list", feature_names = "character", target_indices = "integer",
                 levels = "integer"))
+
+## initialize
 
 setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prior_weight, target_indices, levels,
                 layers)
@@ -31,6 +35,10 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
     return(.Object)
 })
 
+## getAdjacencyMatrix
+
+setGeneric("getAdjacencyMatrix", function(.Object) standardGeneric("getAdjacencyMatrix"))
+
 setMethod("getAdjacencyMatrix", signature("mRMRe.Network"), function(.Object)
 {
     matrix <- sapply(seq(.Object@topologies), function(i) sapply(seq(.Object@topologies), function(j)
@@ -46,6 +54,10 @@ setMethod("getAdjacencyMatrix", signature("mRMRe.Network"), function(.Object)
 
     return(t(matrix))
 })
+
+## visualize
+
+setGeneric("visualize", function(.Object) standardGeneric("visualize"))
 
 setMethod("visualize", signature("mRMRe.Network"), function(.Object)
 {
