@@ -10,7 +10,7 @@ setClass("mRMRe.Network", representation(topologies = "list", mi_matrix = "matri
 ## initialize
 
 setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prior_weight, target_indices, levels,
-                layers)
+                layers, mi_threshold, causality_threshold)
 {
     if (missing(layers))
         layers <- 1L
@@ -29,20 +29,16 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
             filter <- new("mRMRe.Filter", data = data, prior_weight = prior_weight, target_index = target_index,
                     levels = levels)
 
-            solutions <- shrink(filter)
+            solutions <- shrink(filter) #, mi_threshold = mi_threshold, causality_threshold = causality_threshold)
             mi_matrix <- mim(filter, method = "cor")
             
             .Object@topologies[[target_index]] <<- solutions
 
             ## FIXME : Is there a more elegant/efficient way to combine MI matrices?
 
-            lapply(seq(featureCount(data)^2), function(i)
-            {
-                if (is.na(.Object@mi_matrix[[i]]))
-                    .Object@mi_matrix[[i]] <<- mi_matrix[[i]]
-            })
+            screen <- sapply(seq(featureCount(data)^2), function(i) is.na(.Object@mi_matrix[[i]]))
+            .Object@mi_matrix[screen] <<- mi_matrix[screen]
             
-    
             ## FIXME : Don't know yet if it is necessary to ensure symmetry in all
             ## three dimensions of the cube (-> symmetricCube)
     

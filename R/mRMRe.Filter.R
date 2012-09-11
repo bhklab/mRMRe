@@ -93,34 +93,37 @@ setMethod("featureNames", signature("mRMRe.Filter"), function(object)
 
 setMethod("shrink", signature("mRMRe.Filter"), function(object, mi_threshold, causality_threshold)
 {
-    solutions <- object@solutions
+    solutions <- apply(object@solutions, 1, as.list)
     
     if (!missing(mi_threshold))  
     {
         ## FIXME: Not sure which direction priors are in, so you may have to inverse target_index and J
         
-        solutions <- apply(solutions, 1, function(solution)
+        solutions <- lapply(solutions, function(solution)
         {
-            screen <- sapply(solution, function(feature) mi_threshold >= -.5 * log(1 -
+            screen <- sapply(solution, function(feature) mi_threshold <= -.5 * log(1 -
                                         (mim(object, method = "cor")[object@target_index, feature])))
             
-            return(as.list(solution[screen]))
+            if (sum(screen) == 0)
+                return(list())
+            else
+                return(as.list(solution[screen]))
         })
     }
                                                                    
     if (!missing(causality_threshold))
     {
-        solutions <- apply(solutions, 1, function(solution)
+        solutions <- lapply(solutions, function(solution)
         {
-            screen <- sapply(solution, function(feature) causality_threshold >=
-                                max(causality(object)[feature, solution]))
+            screen <- sapply(solution, function(feature) causality_threshold <=
+                                max(causality(object)[feature, unlist(solution)]))
             
-            return(as.list(solution[screen]))
+            if (sum(screen) == 0)
+                return(list())
+            else
+                return(as.list(solution[screen]))
         })
     }
-    
-    if (!missing(mi_threshold) && !missing(causality_threshold))
-        solutions <- apply(solutions, 1, as.list)
     
     return(solutions)
 })
