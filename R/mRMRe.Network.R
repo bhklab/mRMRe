@@ -16,7 +16,7 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
         layers <- 1L
     
     .Object@topologies <- list()
-    .Object@mi_matrix <- matrix(ncol = featureCount(data), ncol = featureCount(data))
+    .Object@mi_matrix <- matrix(nrow = featureCount(data), ncol = featureCount(data))
     .Object@causality_cube <- array(dim = rep(featureCount(data), 3))
     .Object@feature_names <- featureNames(data)
     
@@ -42,57 +42,66 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
     return(.Object)
 })
 
+## show
+
+setMethod("show", signature("mRMRe.Network"), function(object)
+{
+    ## FIXME : Implement show method for this S4 class
+    
+    stop("No show method!")
+})
+
 ## featureNames
 
-setMethod("featureNames", signature("mRMRe.Network"), function(.Object)
+setMethod("featureNames", signature("mRMRe.Network"), function(object)
 {
-    return(.Object@feature_names)
+    return(object@feature_names)
 })
 
 ## mim
 
-setMethod("mim", signature("mRMRe.Network"), function(.Object)
+setMethod("mim", signature("mRMRe.Network"), function(object)
 {
-    matrix <- .Object@mi_matrix
-    rownames(matrix) <- featureNames(.Object)
-    colnames(matrix) <- featureNames(.Object)
+    matrix <- object@mi_matrix
+    rownames(matrix) <- featureNames(object)
+    colnames(matrix) <- featureNames(object)
     
     return(matrix)
 })
 
 ## causality
 
-setMethod("causality", signature("mRMRe.Network"), function(.Object)
+setMethod("causality", signature("mRMRe.Network"), function(object)
 {
-    cube <- .Object@causality_cube
-    dimnames(cube) <- as.list(rep(featureNames(.Object), 3))
+    cube <- object@causality_cube
+    dimnames(cube) <- as.list(rep(featureNames(object), 3))
     
     return(cube)
 })
 
 ## adjacencyMatrix
 
-setMethod("adjacencyMatrix", signature("mRMRe.Network"), function(.Object)
+setMethod("adjacencyMatrix", signature("mRMRe.Network"), function(object)
 {
-    matrix <- sapply(seq(.Object@topologies), function(i) sapply(seq(.Object@topologies), function(j)
+    matrix <- sapply(seq(object@topologies), function(i) sapply(seq(object@topologies), function(j)
     {
-        if (i %in% .Object@topologies[[j]])
+        if (i %in% object@topologies[[j]])
             return(1L)
         else
             return(0L)
     }))
 
-    rownames(matrix) <- .Object@feature_names
-    colnames(matrix) <- .Object@feature_names
+    rownames(matrix) <- object@feature_names
+    colnames(matrix) <- object@feature_names
 
     return(t(matrix))
 })
 
 ## visualize
 
-setMethod("visualize", signature("mRMRe.Network"), function(.Object)
+setMethod("visualize", signature("mRMRe.Network"), function(object)
 {
-    network <- adjacencyMatrix(.Object)
+    network <- adjacencyMatrix(object)
     
     return(plot.igraph(graph.adjacency(network)))
 })

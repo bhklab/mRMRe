@@ -73,18 +73,27 @@ setMethod("initialize", signature("mRMRe.Filter"),
     return(.Object)
 })
 
+## show
+
+setMethod("show", signature("mRMRe.Filter"), function(object)
+{
+    ## FIXME : Implement show method for this S4 class
+    
+    stop("No show method!")
+})
+
 ## featureNames
 
-setMethod("featureNames", signature("mRMRe.Filter"), function(.Object)
+setMethod("featureNames", signature("mRMRe.Filter"), function(object)
 {
-    return(.Object@feature_names)
+    return(object@feature_names)
 })
 
 ## shrink
 
-setMethod("shrink", signature("mRMRe.Filter"), function(.Object, mi_threshold, causality_threshold)
+setMethod("shrink", signature("mRMRe.Filter"), function(object, mi_threshold, causality_threshold)
 {
-    solutions <- .Object@solutions
+    solutions <- object@solutions
     
     if (!missing(mi_threshold))  
     {
@@ -93,7 +102,7 @@ setMethod("shrink", signature("mRMRe.Filter"), function(.Object, mi_threshold, c
         solutions <- apply(solutions, 1, function(solution)
         {
             screen <- sapply(solution, function(feature) mi_threshold >= -.5 * log(1 -
-                                        (mim(.Object, method = "cor")[.Object@target_index, feature])))
+                                        (mim(object, method = "cor")[object@target_index, feature])))
             
             return(as.list(solution[screen]))
         })
@@ -104,7 +113,7 @@ setMethod("shrink", signature("mRMRe.Filter"), function(.Object, mi_threshold, c
         solutions <- apply(solutions, 1, function(solution)
         {
             screen <- sapply(solution, function(feature) causality_threshold >=
-                                max(causality(.Object)[feature, solution]))
+                                max(causality(object)[feature, solution]))
             
             return(as.list(solution[screen]))
         })
@@ -118,28 +127,28 @@ setMethod("shrink", signature("mRMRe.Filter"), function(.Object, mi_threshold, c
 
 ## solutions
 
-setMethod("solutions", signature("mRMRe.Filter"), function(.Object)
+setMethod("solutions", signature("mRMRe.Filter"), function(object)
 {
-    return(.Object@solutions)
+    return(object@solutions)
 })
 
 ## mim
 
-setMethod("mim", signature("mRMRe.Filter"), function(.Object)
+setMethod("mim", signature("mRMRe.Filter"), function(object)
 {
-    return(.Object@mi_matrix)
+    return(object@mi_matrix)
 })
 
 ## causality
 
-setMethod("causality", signature("mRMRe.Filter"), function(.Object)
+setMethod("causality", signature("mRMRe.Filter"), function(object)
 {
-    if (length(.Object@causality_matrix) == 0)
+    if (length(object@causality_matrix) == 0)
     {
-        target_index <- .Object@target_index
-        matrix <- matrix(NA, ncol = ncol(.Object@mi_matrix), nrow = ncol(.Object@mi_matrix))
+        target_index <- object@target_index
+        matrix <- matrix(NA, ncol = ncol(object@mi_matrix), nrow = ncol(object@mi_matrix))
         
-        apply(.Object@solutions, 1, function(row)
+        apply(object@solutions, 1, function(row)
         {
             pairs <- combn(row, 2)
             
@@ -150,11 +159,11 @@ setMethod("causality", signature("mRMRe.Filter"), function(.Object)
                 
                 if (is.na(matrix[i, j]))
                 {
-                    coefficient <- -1/2 * log(((1 - .Object@mi_matrix[i, j]^2) * (1 - .Object@mi_matrix[i, target_index]^2)
-                                        * (1 - .Object@mi_matrix[j, target_index]^2)) / (1 + 2 * .Object@mi_matrix[i, j] *
-                                        .Object@mi_matrix[i, target_index] * .Object@mi_matrix[j, target_index] -
-                                        .Object@mi_matrix[i, j]^2 - .Object@mi_matrix[i, target_index]^2 -
-                                        .Object@mi_matrix[j, target_index]^2))
+                    coefficient <- -1/2 * log(((1 - object@mi_matrix[i, j]^2) * (1 - object@mi_matrix[i, target_index]^2)
+                                        * (1 - object@mi_matrix[j, target_index]^2)) / (1 + 2 * object@mi_matrix[i, j] *
+                                        object@mi_matrix[i, target_index] * object@mi_matrix[j, target_index] -
+                                        object@mi_matrix[i, j]^2 - object@mi_matrix[i, target_index]^2 -
+                                        object@mi_matrix[j, target_index]^2))
                     
                     matrix[i, j] <<- coefficient
                     matrix[j, i] <<- coefficient
@@ -162,15 +171,15 @@ setMethod("causality", signature("mRMRe.Filter"), function(.Object)
             })
         })
 
-        .Object@causality_matrix <- matrix
+        object@causality_matrix <- matrix
     }
 
-    return(.Object@causality_matrix)
+    return(object@causality_matrix)
 })
 
 ## target
 
-setMethod("target", signature("mRMRe.Filter"), function(.Object)
+setMethod("target", signature("mRMRe.Filter"), function(object)
 {
-    return(.Object@target_index)
+    return(object@target_index)
 })

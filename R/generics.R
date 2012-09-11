@@ -1,24 +1,24 @@
-setGeneric("featureData", function(.Object) standardGeneric("featureData"))
+setGeneric("featureData", function(object) standardGeneric("featureData"))
 
-setGeneric("subsetData", function(.Object, row_indices, column_indices) standardGeneric("subsetData"))
+setGeneric("subsetData", function(object, row_indices, column_indices) standardGeneric("subsetData"))
 
-setGeneric("sampleCount", function(.Object) standardGeneric("sampleCount"))
+setGeneric("sampleCount", function(object) standardGeneric("sampleCount"))
 
-setGeneric("featureCount", function(.Object) standardGeneric("featureCount"))
+setGeneric("featureCount", function(object) standardGeneric("featureCount"))
 
-setGeneric("featureNames", function(.Object) standardGeneric("featureNames"))
+setGeneric("featureNames", function(object) standardGeneric("featureNames"))
 
-setGeneric("sampleStrata", function(.Object) standardGeneric("sampleStrata"))
+setGeneric("sampleStrata", function(object) standardGeneric("sampleStrata"))
 
-setGeneric("sampleStrata<-", function(.Object, value) standardGeneric("sampleStrata<-"))
+setGeneric("sampleStrata<-", function(object, value) standardGeneric("sampleStrata<-"))
 
-setGeneric("sampleWeights", function(.Object) standardGeneric("sampleWeights"))
+setGeneric("sampleWeights", function(object) standardGeneric("sampleWeights"))
 
-setGeneric("sampleWeights<-", function(.Object, value) standardGeneric("sampleWeights<-"))
+setGeneric("sampleWeights<-", function(object, value) standardGeneric("sampleWeights<-"))
 
-setGeneric("priors", function(.Object) standardGeneric("priors"))
+setGeneric("priors", function(object) standardGeneric("priors"))
 
-setGeneric("mim", function(.Object, method = c("MI", "cor"), ...)
+setGeneric("mim", function(object, method = c("MI", "cor"), ...)
 {
     method <- match.arg(method)
     matrix <- standardGeneric("mim")
@@ -29,22 +29,22 @@ setGeneric("mim", function(.Object, method = c("MI", "cor"), ...)
     return(matrix)
 })
 
-setGeneric("expandFeatureMatrix", function(.Object, matrix) standardGeneric("expandFeatureMatrix"))
+setGeneric("expandFeatureMatrix", function(object, matrix) standardGeneric("expandFeatureMatrix"))
 
-setGeneric("compressFeatureMatrix", function(.Object, matrix) standardGeneric("compressFeatureMatrix"))
+setGeneric("compressFeatureMatrix", function(object, matrix) standardGeneric("compressFeatureMatrix"))
 
-setGeneric("expandFeatureIndices", function(.Object, indices) standardGeneric("expandFeatureIndices"))
+setGeneric("expandFeatureIndices", function(object, indices) standardGeneric("expandFeatureIndices"))
 
-setGeneric("compressFeatureIndices", function(.Object, indices) standardGeneric("compressFeatureIndices"))
+setGeneric("compressFeatureIndices", function(object, indices) standardGeneric("compressFeatureIndices"))
 
-setGeneric("shrink", function(.Object, mi_threshold, causality_threshold) standardGeneric("shrink"))
+setGeneric("shrink", function(object, mi_threshold, causality_threshold) standardGeneric("shrink"))
 
-setGeneric("solutions", function(.Object) standardGeneric("solutions"))
+setGeneric("solutions", function(object) standardGeneric("solutions"))
 
-setGeneric("causality", function(.Object) standardGeneric("causality"))
+setGeneric("causality", function(object) standardGeneric("causality"))
 
-setGeneric("target", function(.Object) standardGeneric("target"))
+setGeneric("target", function(object) standardGeneric("target"))
 
-setGeneric("adjacencyMatrix", function(.Object) standardGeneric("adjacencyMatrix"))
+setGeneric("adjacencyMatrix", function(object) standardGeneric("adjacencyMatrix"))
 
-setGeneric("visualize", function(.Object) standardGeneric("visualize"))
+setGeneric("visualize", function(object) standardGeneric("visualize"))
