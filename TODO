@@ -1,9 +1,0 @@
-mRMRe.Data.R:
-	
-
-mRMRe.Filter.R:
-	initialize - Find an adequate algorithm for checking if the user has asked
-					for more solutions than is possible
-	** add wrapper for ensemble and classic methods
-	
-mRMRe.Network.R:

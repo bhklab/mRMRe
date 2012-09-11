@@ -5,9 +5,9 @@ setClass("mRMRe.Data", representation(feature_names = "character", feature_types
 
 ## Wrapper
 
-`mRMR.data` <- function(data, strata, weights, priors)
+`mRMR.data` <- function(...)
 {
-    return(new("mRMRe.Data", data = data, strata = strata, weights = weights, priors = priors))
+    return(new("mRMRe.Data", ...))
 }
 
 ## initialize

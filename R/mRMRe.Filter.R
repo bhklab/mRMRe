@@ -5,19 +5,14 @@ setClass("mRMRe.Filter", representation(solutions = "matrix", mi_matrix = "matri
 
 ## Wrappers
 
-`mRMR.ensemble` <- function(data, prior_weight, target_index, solution_count, feature_count, uses_ranks, outX,
-        bootstrap_count)
+`mRMR.ensemble` <- function(solution_count, feature_count, ...)
 {
-    return(new("mRMRe.Filter", data = data, prior_weight = prior_weight, target_index = target_index,
-                    levels = c(solution_count, rep(1, feature_count - 1)), uses_ranks = uses_ranks, outX = outX,
-                    bootstrap_count = bootstrap_count))
+    return(new("mRMRe.Filter", levels = c(solution_count, rep(1, feature_count - 1)), ...))
 }
 
-`mRMR.classic` <- function(data, prior_weight, target_index, feature_count, uses_ranks, outX, bootstrap_count)
+`mRMR.classic` <- function(feature_count, ...)
 {
-    return(mRMR.ensemble(data = data, prior_weight = prior_weight, target_index = target_index, solution_count = 1,
-                    feature_count = feature_count, uses_ranks = uses_ranks, outX = outX,
-                    bootstrap_count = bootstrap_count))
+    return(new("mRMRe.Filter", levels = rep(1, feature_count), ...))
 }
 
 ## initialize

@@ -18,7 +18,7 @@ setGeneric("sampleWeights<-", function(.Object, value) standardGeneric("sampleWe
 
 setGeneric("priors", function(.Object) standardGeneric("priors"))
 
-setGeneric("mim", function(.Object, method = c("cor", "MI"), ...)
+setGeneric("mim", function(.Object, method = c("MI", "cor"), ...)
 {
     method <- match.arg(method)
     matrix <- standardGeneric("mim")

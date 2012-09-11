@@ -12,11 +12,8 @@ dd <- data.frame(
         "cat2"=factor(sample(1:5, 100, replace=TRUE), ordered=TRUE)
 )
 
-data <- new("mRMRe.Data", data = dd)
-filter <- new("mRMRe.Filter", data = data, target_index = 1, levels = c(1, 1))
-
-
-#causality(filter)
+data <- mRMR.data(data = dd)
+filter <- mRMR.ensemble("mRMRe.Filter", data = data, target_index = 1, feature_count = 2, solution_count = 2)
 #network <- new("mRMRe.Network", data = DATA, target_indices = c(1, 2), levels = c(3, 1, 1), layers=1)
 #visualize(network)
 mim(DATA)
