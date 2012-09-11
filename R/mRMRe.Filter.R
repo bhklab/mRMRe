@@ -116,7 +116,7 @@ setMethod("shrink", signature("mRMRe.Filter"), function(object, mi_threshold, ca
         solutions <- lapply(solutions, function(solution)
         {
             screen <- sapply(solution, function(feature) causality_threshold <=
-                                max(causality(object)[feature, unlist(solution)]))
+                                max(causality(object)[feature, unlist(solution)], na.rm = TRUE))
             
             if (sum(screen) == 0)
                 return(list())
