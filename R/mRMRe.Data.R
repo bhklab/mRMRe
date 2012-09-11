@@ -85,6 +85,8 @@ setMethod("featureData", signature("mRMRe.Data"), function(.Object)
 
 setMethod("subsetData", signature("mRMRe.Data"), function(.Object, row_indices, column_indices)
 {
+    ## FIXME : Inefficient, as everything is compressed and then re-expanded
+    
     data <- featureData(.Object)[row_indices, column_indices, drop=FALSE]
     strata <- sampleStrata(.Object)[row_indices]
     weights <- sampleWeights(.Object)[row_indices]

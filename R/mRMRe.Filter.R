@@ -95,18 +95,26 @@ setMethod("shrink", signature("mRMRe.Filter"), function(.Object, mi_threshold, c
     {
         ## FIXME: Not sure which direction priors are in, so you may have to inverse target_index and J
         
-        screen <- apply(solutions, c(1, 2), function(feature)
-                    -.5 * log(1 - (.Object@mi_matrix[.Object@target_index, feature]^2)) >= mi_threshold)
-        solutions <- solutions[screen]
+        solutions <- apply(solutions, 1, function(solution)
+        {
+            screen <- sapply(solution, function(feature) mi_threshold >= -.5 * log(1 -
+                                        (.Object@mi_matrix[.Object@target_index, feature])))
+            
+            return(as.list(solution[screen]))
+        })
     }
     
     if (!missing(causality_threshold))
     {
-        ## FIXME: Not sure about how causality matrix behaves so the indices may be wrong
+        causality_matrix <- causalityMatrix(.Object)
         
-        screen <- apply(solutions, c(1, 2), function(feature)
-                    causalityMatrix(.Object)[.Object@target_index, feature] >= causality_threshold)
-        solutions <- solutions[screen]
+        solutions <- apply(solutions, 1, function(solution)
+        {
+            screen <- sapply(solution, function(feature) causality_threshold >=
+                                max(causality_matrix[feature, solution]))
+            
+            return(as.list(solution[screen]))
+        })
     }
     
     return(solutions)
