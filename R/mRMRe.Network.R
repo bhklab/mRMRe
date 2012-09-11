@@ -16,7 +16,7 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
         layers <- 1L
     
     .Object@topologies <- list()
-    .Object@mi_matrix <- matrix(nrow = featureCount(data), ncol = featureCount(data))
+    .Object@mi_matrix <- matrix(NA, nrow = featureCount(data), ncol = featureCount(data))
     .Object@causality_cube <- array(dim = rep(featureCount(data), 3))
     .Object@feature_names <- featureNames(data)
     
@@ -30,10 +30,25 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
                     levels = levels)
 
             solutions <- shrink(filter)
+            mi_matrix <- mim(filter, method = "cor")
             
             .Object@topologies[[target_index]] <<- solutions
 
-            return(as.vector(solutions))
+            ## FIXME : Is there a more elegant/efficient way to combine MI matrices?
+
+            lapply(seq(featureCount(data)^2), function(i)
+            {
+                if (is.na(.Object@mi_matrix[[i]]))
+                    .Object@mi_matrix[[i]] <<- mi_matrix[[i]]
+            })
+            
+    
+            ## FIXME : Don't know yet if it is necessary to ensure symmetry in all
+            ## three dimensions of the cube (-> symmetricCube)
+    
+            .Object@causality_cube[target_index, , ] <<- causality(filter)
+            
+            return(unlist(solutions))
         }))
 
         target_indices <<- intersect(target_indices, which(sapply(.Object@topologies, is.null)))
@@ -74,7 +89,9 @@ setMethod("mim", signature("mRMRe.Network"), function(object)
 setMethod("causality", signature("mRMRe.Network"), function(object)
 {
     cube <- object@causality_cube
-    dimnames(cube) <- as.list(rep(featureNames(object), 3))
+    dimnames(cube)[[1]] <- featureNames(object)
+    dimnames(cube)[[2]] <- featureNames(object)
+    dimnames(cube)[[3]] <- featureNames(object)
     
     return(cube)
 })
