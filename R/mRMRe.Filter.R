@@ -1,7 +1,7 @@
 ## Definition
 
 setClass("mRMRe.Filter", representation(solutions = "matrix", mi_matrix = "matrix", feature_names = "character",
-                target_index = "integer", levels = "integer"))
+                target_index = "integer", levels = "integer", causality_matrix = "matrix"))
 
 ## initialize
 
@@ -67,6 +67,31 @@ setMethod("featureNames", signature("mRMRe.Filter"), function(.Object)
     return(.Object@feature_names)
 })
 
+## shrink
+
+setMethod("shrink", signature("mRMRe.Filter"), function(.Object, mi_threshold, causality_threshold)
+{
+    solutions <- .Object@solutions
+    
+    if (!missing(mi_threshold))
+    {
+        ## Not sure which direction priors are in, so you may have to inverse I and J
+        
+        screen <- apply(solutions, c(1, 2), function(feature)
+                    -.5 * log(1 - (.Object@mi_matrix[.Object@target_index, feature]^2)) >= mi_threshold)
+        solutions <- solutions[screen]
+    }
+    
+    if (!missing(causality_threshold))
+    {
+        screen <- apply(solutions, c(1, 2), function(feature)
+                    causalityMatrix(.Object)[.Object@target_index, feature] >= causality_threshold)
+        solutions <- solutions[screen]
+    }
+    
+    return(solutions)
+})
+
 ## solutions
 
 setMethod("solutions", signature("mRMRe.Filter"), function(.Object)
@@ -78,33 +103,38 @@ setMethod("solutions", signature("mRMRe.Filter"), function(.Object)
 
 setMethod("causalityMatrix", signature("mRMRe.Filter"), function(.Object)
 {
-    target_index <- .Object@target_index
-    matrix <- matrix(NA, ncol = ncol(.Object@mi_matrix), nrow = ncol(.Object@mi_matrix))
-    
-    apply(.Object@solutions, 1, function(row)
+    if (length(.Object@causality_matrix) == 0)
     {
-        pairs <- combn(row, 2)
+        target_index <- .Object@target_index
+        matrix <- matrix(NA, ncol = ncol(.Object@mi_matrix), nrow = ncol(.Object@mi_matrix))
         
-        apply(pairs, 2, function(pair)
+        apply(.Object@solutions, 1, function(row)
         {
-            i <- pair[[1]]
-            j <- pair[[2]]
+            pairs <- combn(row, 2)
             
-            if (is.na(matrix[i, j]))
+            apply(pairs, 2, function(pair)
             {
-                coefficient <- -1/2 * log(((1 - .Object@mi_matrix[i, j]^2) * (1 - .Object@mi_matrix[i, target_index]^2)
-                                    * (1 - .Object@mi_matrix[j, target_index]^2)) / (1 + 2 * .Object@mi_matrix[i, j] *
-                                    .Object@mi_matrix[i, target_index] * .Object@mi_matrix[j, target_index] -
-                                    .Object@mi_matrix[i, j]^2 - .Object@mi_matrix[i, target_index]^2 -
-                                    .Object@mi_matrix[j, target_index]^2))
+                i <- pair[[1]]
+                j <- pair[[2]]
                 
-                matrix[i, j] <<- coefficient
-                matrix[j, i] <<- coefficient
-            }
+                if (is.na(matrix[i, j]))
+                {
+                    coefficient <- -1/2 * log(((1 - .Object@mi_matrix[i, j]^2) * (1 - .Object@mi_matrix[i, target_index]^2)
+                                        * (1 - .Object@mi_matrix[j, target_index]^2)) / (1 + 2 * .Object@mi_matrix[i, j] *
+                                        .Object@mi_matrix[i, target_index] * .Object@mi_matrix[j, target_index] -
+                                        .Object@mi_matrix[i, j]^2 - .Object@mi_matrix[i, target_index]^2 -
+                                        .Object@mi_matrix[j, target_index]^2))
+                    
+                    matrix[i, j] <<- coefficient
+                    matrix[j, i] <<- coefficient
+                }
+            })
         })
-    })
-    
-    return(matrix)
+
+        .Object@causality_matrix <- matrix
+    }
+
+    return(.Object@causality_matrix)
 })
 
 ## mim

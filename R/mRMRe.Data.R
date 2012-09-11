@@ -1,7 +1,7 @@
 ## Definition
 
 setClass("mRMRe.Data", representation(feature_names = "character", feature_types = "numeric", data = "matrix",
-                strata = "numeric", weights = "numeric", priors = "matrix"))
+                strata = "numeric", weights = "numeric", priors = "matrix", mi_matrix = "matrix"))
 
 
 ## initialize
@@ -36,21 +36,15 @@ setMethod("initialize", signature("mRMRe.Data"), function(.Object, data, strata,
     
     if (missing(strata)) 
         .Object@strata <- rep.int(0, nrow(data))
-    else if (is.factor(strata))
-        .Object@strata <- as.integer(strata) - 1
-    else if (length(strata) != nrow(data))
-        stop("data and strata must contain the same number of samples")
     else
-        stop("strata must be provided as factors")
+        strata(.Object) <- strata
     
     ## Sample weight processing
     
     if (missing(weights)) 
         .Object@weights <- rep(1, nrow(data))
-    else if (length(weights) == nrow(data))
-        .Object@weights <- as.numeric(weights)
     else
-        stop("data and weight must contain the same number of samples")
+        weights(.Object) <- weights
 
     ## Prior feature matrix processing
     
@@ -81,6 +75,18 @@ setMethod("featureData", signature("mRMRe.Data"), function(.Object)
     return(data)
 })
 
+## subsetData
+
+setMethod("subsetData", signature("mRMRe.Data"), function(.Object, row_indices, column_indices)
+{
+    data <- featureData(.Object)[row_indices, column_indices, drop=FALSE]
+    strata <- sampleStrata(.Object)[row_indices]
+    weights <- sampleWeights(.Object)[row_indices]
+    priors <- priors(.Object)[row_indices, column_indices, drop=FALSE]
+    
+    return(new("mRMRe.Data", data = data, strata = strata, weights = weight, priors = priors))
+})
+
 ## sampleCount
 
 setMethod("sampleCount", signature("mRMRe.Data"), function(.Object)
@@ -102,6 +108,48 @@ setMethod("featureNames", signature("mRMRe.Data"), function(.Object)
     return(.Object@feature_names)
 })
 
+## sampleStrata
+
+setMethod("sampleStrata", signature("mRMRe.Data"), function(.Object)
+{
+    strata <- .Object@strata
+    names(strata) <- rownames(.Object@data)
+    
+    return(strata)
+})
+
+## sampleStrata<-
+
+setReplaceMethod("sampleStrata", signature("mRMRe.Data"), function(.Object, value)
+{
+    if (length(value) != nrow(.Object@data))
+        stop("data and strata must contain the same number of samples")
+    else if (!is.factor(value))
+        stop("strata must be provided as factors")
+    else
+        .Object@strata <- as.integer(value) - 1
+})
+
+## sampleWeights
+
+setMethod("sampleWeights", signature("mRMRe.Data"), function(.Object)
+{
+    weights <- .Object@weights
+    names(weights) <- rownames(.Object@data)
+    
+    return(weights)
+})
+
+## sampleWeights<-
+
+setReplaceMethod("sampleWeights", signature("mRMRe.Data"), function(.Object, value)
+{
+    if (length(value) != nrow(.Object@data))
+        stop("data and weight must contain the same number of samples")
+    else
+        .Object@weights <- as.numeric(value)
+})
+
 ## priors
 
 setMethod("priors", signature("mRMRe.Data"), function(.Object)
@@ -117,23 +165,28 @@ setMethod("priors", signature("mRMRe.Data"), function(.Object)
 setMethod("mim", signature("mRMRe.Data"),
         function(.Object, prior_weight = 0, uses_ranks = TRUE, outX = TRUE, bootstrap_count = 0)
 {
-    if (length(.Object@priors) != 0)
+    if (length(.Object@mi_matrix) == 0)
     {
-        if (missing(prior_weight))
-            stop("prior weight must be provided if there are priors")
-        else if  (prior_weight < 0 || prior_weight > 1)
-            stop("prior weight must be a value ranging from 0 to 1")
+        if (length(.Object@priors) != 0)
+        {
+            if (missing(prior_weight))
+                stop("prior weight must be provided if there are priors")
+            else if  (prior_weight < 0 || prior_weight > 1)
+                stop("prior weight must be a value ranging from 0 to 1")
+        }
+        else
+            prior_weight <- 0
+        
+        mi_matrix <- .Call(mRMRe:::.C_export_mim, as.vector(.Object@data), as.vector(.Object@priors),
+                as.numeric(prior_weight), .Object@strata, .Object@weights, .Object@feature_types, nrow(.Object@data),
+                ncol(.Object@data), as.integer(length(unique(.Object@strata))), as.integer(uses_ranks), as.integer(outX),
+                as.integer(bootstrap_count))
+        mi_matrix <- matrix(mi_matrix, nrow = ncol(.Object@data), ncol = ncol(.Object@data))
+        
+        .Object@mi_matrix <- compressFeatureMatrix(.Object, mi_matrix)
     }
-    else
-        prior_weight <- 0
     
-    mi_matrix <- .Call(mRMRe:::.C_export_mim, as.vector(.Object@data), as.vector(.Object@priors),
-            as.numeric(prior_weight), .Object@strata, .Object@weights, .Object@feature_types, nrow(.Object@data),
-            ncol(.Object@data), as.integer(length(unique(.Object@strata))), as.integer(uses_ranks), as.integer(outX),
-            as.integer(bootstrap_count))
-    mi_matrix <- matrix(mi_matrix, nrow = ncol(.Object@data), ncol = ncol(.Object@data))
-    
-    return(compressFeatureMatrix(.Object, mi_matrix))
+    return(.Object@mi_matrix)
 })
 
 ## expandFeatureMatrix
