@@ -91,31 +91,32 @@ setMethod("shrink", signature("mRMRe.Filter"), function(.Object, mi_threshold, c
 {
     solutions <- .Object@solutions
     
-    if (!missing(mi_threshold))
+    if (!missing(mi_threshold))  
     {
         ## FIXME: Not sure which direction priors are in, so you may have to inverse target_index and J
         
         solutions <- apply(solutions, 1, function(solution)
         {
             screen <- sapply(solution, function(feature) mi_threshold >= -.5 * log(1 -
-                                        (.Object@mi_matrix[.Object@target_index, feature])))
+                                        (mim(.Object, method = "cor")[.Object@target_index, feature])))
+            
+            return(as.list(solution[screen]))
+        })
+    }
+                                                                   
+    if (!missing(causality_threshold))
+    {
+        solutions <- apply(solutions, 1, function(solution)
+        {
+            screen <- sapply(solution, function(feature) causality_threshold >=
+                                max(causality(.Object)[feature, solution]))
             
             return(as.list(solution[screen]))
         })
     }
     
-    if (!missing(causality_threshold))
-    {
-        causality_matrix <- causalityMatrix(.Object)
-        
-        solutions <- apply(solutions, 1, function(solution)
-        {
-            screen <- sapply(solution, function(feature) causality_threshold >=
-                                max(causality_matrix[feature, solution]))
-            
-            return(as.list(solution[screen]))
-        })
-    }
+    if (!missing(mi_threshold) && !missing(causality_threshold))
+        solutions <- apply(solutions, 1, as.list)
     
     return(solutions)
 })
@@ -134,9 +135,9 @@ setMethod("mim", signature("mRMRe.Filter"), function(.Object)
     return(.Object@mi_matrix)
 })
 
-## causalityMatrix
+## causality
 
-setMethod("causalityMatrix", signature("mRMRe.Filter"), function(.Object)
+setMethod("causality", signature("mRMRe.Filter"), function(.Object)
 {
     if (length(.Object@causality_matrix) == 0)
     {
@@ -172,9 +173,9 @@ setMethod("causalityMatrix", signature("mRMRe.Filter"), function(.Object)
     return(.Object@causality_matrix)
 })
 
-## targetIndex
+## target
 
-setMethod("targetIndex", signature("mRMRe.Filter"), function(.Object)
+setMethod("target", signature("mRMRe.Filter"), function(.Object)
 {
     return(.Object@target_index)
 })

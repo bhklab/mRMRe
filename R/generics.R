@@ -41,9 +41,9 @@ setGeneric("shrink", function(.Object, mi_threshold, causality_threshold) standa
 
 setGeneric("solutions", function(.Object) standardGeneric("solutions"))
 
-setGeneric("causalityMatrix", function(.Object) standardGeneric("causalityMatrix"))
+setGeneric("causality", function(.Object) standardGeneric("causality"))
 
-setGeneric("targetIndex", function(.Object) standardGeneric("targetIndex"))
+setGeneric("target", function(.Object) standardGeneric("target"))
 
 setGeneric("adjacencyMatrix", function(.Object) standardGeneric("adjacencyMatrix"))
 
