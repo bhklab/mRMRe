@@ -3,6 +3,12 @@
 setClass("mRMRe.Data", representation(feature_names = "character", feature_types = "numeric", data = "matrix",
                 strata = "numeric", weights = "numeric", priors = "matrix", mi_matrix = "matrix"))
 
+## Wrapper
+
+`mRMR.data` <- function(data, strata, weights, priors)
+{
+    return(new("mRMRe.Data", data = data, strata = strata, weights = weights, priors = priors))
+}
 
 ## initialize
 

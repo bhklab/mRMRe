@@ -3,6 +3,23 @@
 setClass("mRMRe.Filter", representation(solutions = "matrix", mi_matrix = "matrix", feature_names = "character",
                 target_index = "integer", levels = "integer", causality_matrix = "matrix"))
 
+## Wrappers
+
+`mRMR.ensemble` <- function(data, prior_weight, target_index, solution_count, feature_count, uses_ranks, outX,
+        bootstrap_count)
+{
+    return(new("mRMRe.Filter", data = data, prior_weight = prior_weight, target_index = target_index,
+                    levels = c(solution_count, rep(1, feature_count - 1)), uses_ranks = uses_ranks, outX = outX,
+                    bootstrap_count = bootstrap_count))
+}
+
+`mRMR.classic` <- function(data, prior_weight, target_index, feature_count, uses_ranks, outX, bootstrap_count)
+{
+    return(mRMR.ensemble(data = data, prior_weight = prior_weight, target_index = target_index, solution_count = 1,
+                    feature_count = feature_count, uses_ranks = uses_ranks, outX = outX,
+                    bootstrap_count = bootstrap_count))
+}
+
 ## initialize
 
 setMethod("initialize", signature("mRMRe.Filter"),
@@ -31,6 +48,7 @@ setMethod("initialize", signature("mRMRe.Filter"),
             
     ## Level processing
     
+    ## FIXME : Not sure algorithm for combinatorial prediction is ok
     if (missing(levels))
         stop("levels must be provided")
     else if (prod(levels) - 1 > gamma(featureCount(data)) / gamma(featureCount(data) - length(levels)))
@@ -75,7 +93,7 @@ setMethod("shrink", signature("mRMRe.Filter"), function(.Object, mi_threshold, c
     
     if (!missing(mi_threshold))
     {
-        ## Not sure which direction priors are in, so you may have to inverse I and J
+        ## FIXME: Not sure which direction priors are in, so you may have to inverse target_index and J
         
         screen <- apply(solutions, c(1, 2), function(feature)
                     -.5 * log(1 - (.Object@mi_matrix[.Object@target_index, feature]^2)) >= mi_threshold)
@@ -84,6 +102,8 @@ setMethod("shrink", signature("mRMRe.Filter"), function(.Object, mi_threshold, c
     
     if (!missing(causality_threshold))
     {
+        ## FIXME: Not sure about how causality matrix behaves so the indices may be wrong
+        
         screen <- apply(solutions, c(1, 2), function(feature)
                     causalityMatrix(.Object)[.Object@target_index, feature] >= causality_threshold)
         solutions <- solutions[screen]
@@ -97,6 +117,13 @@ setMethod("shrink", signature("mRMRe.Filter"), function(.Object, mi_threshold, c
 setMethod("solutions", signature("mRMRe.Filter"), function(.Object)
 {
     return(.Object@solutions)
+})
+
+## mim
+
+setMethod("mim", signature("mRMRe.Filter"), function(.Object)
+{
+    return(.Object@mi_matrix)
 })
 
 ## causalityMatrix
@@ -135,13 +162,6 @@ setMethod("causalityMatrix", signature("mRMRe.Filter"), function(.Object)
     }
 
     return(.Object@causality_matrix)
-})
-
-## mim
-
-setMethod("mim", signature("mRMRe.Filter"), function(.Object)
-{
-    return(.Object@mi_matrix)
 })
 
 ## targetIndex

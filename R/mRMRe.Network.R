@@ -3,6 +3,10 @@
 setClass("mRMRe.Network", representation(topologies = "list", feature_names = "character", target_indices = "integer",
                 levels = "integer"))
 
+## Wrappers
+
+## FIXME: Add wrappers for network
+
 ## initialize
 
 setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prior_weight, target_indices, levels,
@@ -11,8 +15,12 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
     if (missing(layers))
         layers <- 1L
     
-    topologies <- list()
+    topologies <- list() #array(dim = c(featureCount(data), prod(levels), 3))
     length(topologies) <- featureCount(data)
+    
+    # z = 1 is for solutions
+    # z = 2 is for MIs
+    # z = 3 is for causality
     
     lapply(seq(layers), function(layer)
     {
@@ -21,9 +29,11 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
             filter <- new("mRMRe.Filter", data = data, prior_weight = prior_weight, target_index = target_index,
                     levels = levels)
 
-            topologies[[target_index]] <<- solutions(filter)
+            solutions <- solutions(filter)
+            
+            topologies[[target_index]] <<- solutions
 
-            return(as.vector(solutions(filter)))
+            return(as.vector(solutions))
         }))
 
         target_indices <<- intersect(target_indices, which(sapply(topologies, is.null)))
