@@ -37,7 +37,7 @@ setGeneric("expandFeatureIndices", function(object, indices) standardGeneric("ex
 
 setGeneric("compressFeatureIndices", function(object, indices) standardGeneric("compressFeatureIndices"))
 
-setGeneric("shrink", function(object, ...) standardGeneric("shrink")) #mi_threshold, causality_threshold
+setGeneric("shrink", function(object, ...) standardGeneric("shrink"))
 
 setGeneric("solutions", function(object) standardGeneric("solutions"))
 

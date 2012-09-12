@@ -29,6 +29,8 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
             filter <- new("mRMRe.Filter", data = data, prior_weight = prior_weight, target_index = target_index,
                     levels = levels, ...)
 
+            ## FIXME : Code might not handle too brutal of a cutoff (mi_threshold and causality_threshold...)
+            
             solutions <- shrink(filter, mi_threshold = mi_threshold, causality_threshold = causality_threshold)
             mi_matrix <- mim(filter, method = "cor")
             
@@ -97,12 +99,7 @@ setMethod("causality", signature("mRMRe.Network"), function(object)
 setMethod("adjacencyMatrix", signature("mRMRe.Network"), function(object)
 {
     matrix <- sapply(seq(object@topologies), function(i) sapply(seq(object@topologies), function(j)
-    {
-        if (i %in% object@topologies[[j]])
-            return(1L)
-        else
-            return(0L)
-    }))
+                            ifelse(i %in% unlist(object@topologies[[j]]), 1L, 0L)))
 
     rownames(matrix) <- object@feature_names
     colnames(matrix) <- object@feature_names
@@ -114,7 +111,11 @@ setMethod("adjacencyMatrix", signature("mRMRe.Network"), function(object)
 
 setMethod("visualize", signature("mRMRe.Network"), function(object)
 {
-    network <- adjacencyMatrix(object)
+    ## FIX ME : Cannot find a way to display vertex names...
     
-    return(plot.igraph(graph.adjacency(network)))
+    adjacency <- adjacencyMatrix(object)
+    graph <- graph.adjacency(adjacency, mode = "undirected", add.rownames = TRUE)
+    V(graph)$name <- object@feature_names
+    
+    return(plot.igraph(graph))
 })

@@ -32,3 +32,5 @@ causality(filter_1)
 
 causality(network)[2, , ]
 causality(filter_2)
+
+visualize(network)

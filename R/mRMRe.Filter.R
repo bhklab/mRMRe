@@ -104,10 +104,7 @@ setMethod("shrink", signature("mRMRe.Filter"), function(object, mi_threshold, ca
             screen <- sapply(solution, function(feature) mi_threshold <= -.5 * log(1 -
                                         (mim(object, method = "cor")[object@target_index, feature])))
             
-            if (sum(screen) == 0)
-                return(list())
-            else
-                return(as.list(solution[screen]))
+            return(as.list(solution[screen]))
         })
     }
                                                                    
@@ -118,10 +115,7 @@ setMethod("shrink", signature("mRMRe.Filter"), function(object, mi_threshold, ca
             screen <- sapply(solution, function(feature) causality_threshold <=
                                 max(causality(object)[feature, unlist(solution)], na.rm = TRUE))
             
-            if (sum(screen) == 0)
-                return(list())
-            else
-                return(as.list(solution[screen]))
+            return(as.list(solution[screen]))
         })
     }
     
@@ -162,6 +156,13 @@ setMethod("causality", signature("mRMRe.Filter"), function(object)
                 
                 if (is.na(matrix[i, j]))
                 {
+                    ## FIXME : It somehow ends up on NA variables, which is not supposed to happen
+                    ## It doesn't happen all the time though
+                    
+                    
+                    #if (is.na(object@mi_matrix[i, j]) || is.na(object@mi_matrix[i, target_index]) || is.na(object@mi_matrix[j, target_index]))
+                    #    print ("WTF")
+                    
                     coefficient <- -1/2 * log(((1 - object@mi_matrix[i, j]^2) * (1 - object@mi_matrix[i, target_index]^2)
                                         * (1 - object@mi_matrix[j, target_index]^2)) / (1 + 2 * object@mi_matrix[i, j] *
                                         object@mi_matrix[i, target_index] * object@mi_matrix[j, target_index] -
