@@ -43,3 +43,11 @@ causality(filter_2)
 # I have no idea how to get igraph to print out vertex names
 
 visualize(network)
+
+## test for large network (1000 genes)
+data(cgps)
+ge <- mRMR.data(data = data.frame(cgps_ge[ ,1:100]))
+netw <- new("mRMRe.Network", data = ge, target_indices = c(1, 2), levels = c(1, 1, 1), layers = 2)
+pdf("temp.pdf", width=50, height=50)
+visualize(netw)
+dev.off()
