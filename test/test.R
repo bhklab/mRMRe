@@ -45,13 +45,18 @@ causality(filter_2)
 visualize(network)
 
 ## test for large network (1000 genes)
+## install new version of the package if needed
 library(devtools)
 install_github("mRMRe", username="bhaibeka", branch="master")
 system("chmod -R 775 /stockage/Laboratoires/HAI/Rlib")
-
+## set the number of threads
+.Call(mRMRe:::.C_set_thread_count, as.integer(8))
+## run the network inference
 data(cgps)
 ge <- mRMR.data(data = data.frame(cgps_ge[ ,1:100]))
-netw <- new("mRMRe.Network", data = ge, target_indices = c(1, 2), levels = c(1, 1, 1), layers = 2)
-pdf("temp.pdf", width=50, height=50)
+netw <- new("mRMRe.Network", data = ge, target_indices = 1:3, levels = c(3, 2, 1, 1, 1), layers = 2)
+print(table(adjacencyMatrix(netw)))
+#pdf("temp.pdf", width=14, height=14)
 visualize(netw)
-dev.off()
+#dev.off()
+
