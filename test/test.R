@@ -49,14 +49,23 @@ visualize(network)
 library(devtools)
 install_github("mRMRe", username="bhaibeka", branch="master")
 system("chmod -R 775 /stockage/Laboratoires/HAI/Rlib")
+
+
+library(mRMRe)
 ## set the number of threads
-.Call(mRMRe:::.C_set_thread_count, as.integer(8))
+.Call(mRMRe:::.C_set_thread_count, as.integer(12))
 ## run the network inference
 data(cgps)
-ge <- mRMR.data(data = data.frame(cgps_ge[ ,1:100]))
-netw <- new("mRMRe.Network", data = ge, target_indices = 1:3, levels = c(3, 2, 1, 1, 1), layers = 2)
+ge <- mRMR.data(data = data.frame(cgps_ge[ ,1:1000]))
+#Rprof(filename = "Rprof.out", append = FALSE, interval = 0.02, memory.profiling=TRUE)
+exect <- system.time(netw <- new("mRMRe.Network", data = ge, target_indices = 1:10, levels = c(12, 1, 1, 1, 1), layers = 2))
+print(exect)
+#summaryRprof(filename = "Rprof.out", chunksize = 5000, memory=c("both"), index=2, diff=TRUE, exclude=NULL)
+
+
 print(table(adjacencyMatrix(netw)))
-#pdf("temp.pdf", width=14, height=14)
+
+pdf("temp.pdf", width=14, height=14)
 visualize(netw)
-#dev.off()
+dev.off()
 

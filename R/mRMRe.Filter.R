@@ -46,7 +46,7 @@ setMethod("initialize", signature("mRMRe.Filter"),
     ## FIXME : Not sure algorithm for combinatorial prediction is ok
     if (missing(levels))
         stop("levels must be provided")
-    else if (prod(levels) - 1 > gamma(featureCount(data)) / gamma(featureCount(data) - length(levels)))
+    else if ((prod(levels) - 1) > choose(featureCount(data), length(levels)))
         stop("user cannot request for more solutions than is possible given the data set")
     
     .Object@target_index <- as.integer(c(target_index))
