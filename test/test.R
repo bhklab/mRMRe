@@ -45,6 +45,10 @@ causality(filter_2)
 visualize(network)
 
 ## test for large network (1000 genes)
+library(devtools)
+install_github("mRMRe", username="bhaibeka", branch="master")
+system("chmod -R 775 /stockage/Laboratoires/HAI/Rlib")
+
 data(cgps)
 ge <- mRMR.data(data = data.frame(cgps_ge[ ,1:100]))
 netw <- new("mRMRe.Network", data = ge, target_indices = c(1, 2), levels = c(1, 1, 1), layers = 2)

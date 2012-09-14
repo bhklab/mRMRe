@@ -249,7 +249,10 @@ setMethod("compressFeatureMatrix", signature("mRMRe.Data"), function(object, mat
 setMethod("expandFeatureIndices", signature("mRMRe.Data"), function(object, indices)
 {
     adaptor <- which(object@feature_types == 3)
-    indices <- sapply(indices, function(i) i + sum(sapply(seq(adaptor), function(j) i >= (adaptor[[j]] - j + 1))))
+    if(length(adaptor) != 0)
+    {
+        indices <- sapply(indices, function(i) i + sum(sapply(seq(adaptor), function(j) i >= (adaptor[[j]] - j + 1))))
+    }
 
     return(indices)
 })
