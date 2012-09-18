@@ -53,12 +53,12 @@ system("chmod -R 775 /stockage/Laboratoires/HAI/Rlib")
 
 library(mRMRe)
 ## set the number of threads
-.Call(mRMRe:::.C_set_thread_count, as.integer(12))
+.Call(mRMRe:::.C_set_thread_count, as.integer(8))
 ## run the network inference
 data(cgps)
 ge <- mRMR.data(data = data.frame(cgps_ge[ ,1:1000]))
 #Rprof(filename = "Rprof.out", append = FALSE, interval = 0.02, memory.profiling=TRUE)
-exect <- system.time(netw <- new("mRMRe.Network", data = ge, target_indices = 1:10, levels = c(12, 1, 1, 1, 1), layers = 2))
+exect <- system.time(netw <- new("mRMRe.Network", data = ge, target_indices = 1:10, levels = c(8, 1, 1, 1, 1), layers = 2))
 print(exect)
 #summaryRprof(filename = "Rprof.out", chunksize = 5000, memory=c("both"), index=2, diff=TRUE, exclude=NULL)
 

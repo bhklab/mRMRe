@@ -43,14 +43,14 @@ setMethod("initialize", signature("mRMRe.Data"), function(.Object, data, strata,
     if (missing(strata)) 
         .Object@strata <- rep.int(0, nrow(data))
     else
-        strata(.Object) <- strata
+        sampleStrata(.Object) <- strata
     
     ## Sample weight processing
     
     if (missing(weights)) 
         .Object@weights <- rep(1, nrow(data))
     else
-        weights(.Object) <- weights
+        sampleWeights(.Object) <- weights
 
     ## Prior feature matrix processing
     
