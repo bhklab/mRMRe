@@ -48,3 +48,8 @@ setGeneric("target", function(object) standardGeneric("target"))
 setGeneric("adjacencyMatrix", function(object) standardGeneric("adjacencyMatrix"))
 
 setGeneric("visualize", function(object) standardGeneric("visualize"))
+
+`set.thread.count` <- function(thread_count)
+{
+    .Call(mRMRe:::.C_set_thread_count, as.integer(thread_count))
+}
