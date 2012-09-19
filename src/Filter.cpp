@@ -101,6 +101,10 @@ Filter::isRedundantPath(unsigned int const absoluteIndex, unsigned int const fea
                 && hasAncestorByFeatureIndex(absoluteIndex, mpIndexTree[i], level))
             return true;
 
+//    for (unsigned int i = mpStartingIndexPerLevel[level]; i < upper_bound; ++i)
+//        if (hasSamePath(absoluteIndex, i, level))
+//            return true;
+
     return false;
 }
 
@@ -175,10 +179,12 @@ Filter::placeElements(unsigned int const startingIndex, unsigned int childrenCou
     {
         unsigned int children_counter = 0;
         unsigned int i = counter - 1;
+
         while (i >= 0 && children_counter < childrenCount)
         {
             unsigned int const index = p_candidate_feature_indices[p_order[i--]];
 
+            // FIXME: Segfault caused by isRedundantPath routine
             if (!isRedundantPath(startingIndex + children_counter, index, level))
                 mpIndexTree[startingIndex + children_counter++] = index;
         }

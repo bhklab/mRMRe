@@ -46,7 +46,7 @@ setMethod("initialize", signature("mRMRe.Filter"),
     ## FIXME : Not sure algorithm for combinatorial prediction is ok
     if (missing(levels))
         stop("levels must be provided")
-    else if ((prod(levels) - 1) > choose(featureCount(data), length(levels)))
+    else if ((prod(levels) - 1) > choose(featureCount(data) - 1, length(levels)))
         stop("user cannot request for more solutions than is possible given the data set")
     
     .Object@target_index <- as.integer(c(target_index))
@@ -95,7 +95,7 @@ setMethod("shrink", signature("mRMRe.Filter"), function(object, mi_threshold, ca
 {
     solutions <- apply(object@solutions, 1, as.list)
     
-    if (!missing(mi_threshold))  
+    if (!missing(mi_threshold) && mi_threshold != -Inf)  
     {
         ## FIXME: Not sure which direction priors are in, so you may have to inverse target_index and J
         
@@ -108,7 +108,7 @@ setMethod("shrink", signature("mRMRe.Filter"), function(object, mi_threshold, ca
         })
     }
                                                                    
-    if (!missing(causality_threshold))
+    if (!missing(causality_threshold) && causality_threshold != -Inf)
     {
         solutions <- lapply(solutions, function(solution)
         {

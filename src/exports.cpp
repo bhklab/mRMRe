@@ -1,5 +1,29 @@
 #include "exports.h"
 
+#include <R.h>
+#include <Rinternals.h>
+#include <Rdefines.h>
+
+extern "C" SEXP
+rcpp_man(SEXP bigman)
+{
+    std::vector<float> bigman2 = Rcpp::as < std::vector<float> > (bigman);
+
+    for (unsigned int i = 0; i < bigman2.size(); i++)
+        bigman2[i]++;
+
+    return R_NilValue;
+}
+
+extern "C" SEXP
+r_man(SEXP bigman)
+{
+    for (unsigned int i = 0; i < LENGTH(bigman); i++)
+        REAL(bigman)[i] = REAL(bigman)[i] + 1;
+
+    return R_NilValue;
+}
+
 extern "C" SEXP
 export_association(SEXP R_SamplesA, SEXP R_SamplesB, SEXP R_SamplesC, SEXP R_SampleStrata,
         SEXP R_SampleWeights, SEXP R_SampleStratumCount, SEXP R_OutX, SEXP R_BootstrapCount,
