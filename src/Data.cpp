@@ -2,9 +2,9 @@
 
 Data::Data(double* const pData, Matrix const* const pPriorsMatrix, double const priorsWeight,
         unsigned int const sampleCount, unsigned int const featureCount,
-        unsigned int const* const pSampleStrata, double const* const pSampleWeights,
-        unsigned int const* const pFeatureTypes, unsigned int const sampleStratumCount,
-        bool const usesRanks, bool const outX, unsigned int const bootstrapCount) :
+        int const* const pSampleStrata, double const* const pSampleWeights,
+        int const* const pFeatureTypes, unsigned int const sampleStratumCount, bool const usesRanks,
+        bool const outX, unsigned int const bootstrapCount) :
         mpDataMatrix(new Matrix(pData, sampleCount, featureCount)), mpOrderMatrix(
                 usesRanks ? new Matrix(sampleCount, featureCount) : 0), mpPriorsMatrix(
                 pPriorsMatrix), mpHasOrderCached(new bool[mpDataMatrix->getColumnCount()]), mpSampleStrata(

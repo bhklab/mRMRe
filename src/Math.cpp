@@ -680,10 +680,9 @@ Math::placeRanksFromSamples(double const* const pSamples, double* const pRanks,
 }
 
 /* static */void const
-Math::placeStratificationData(unsigned int const* const pSampleStrata,
-        double const* const pSampleWeights, unsigned int** const pSampleIndicesPerStratum,
-        unsigned int* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
-        unsigned int const sampleCount)
+Math::placeStratificationData(int const* const pSampleStrata, double const* const pSampleWeights,
+        unsigned int** const pSampleIndicesPerStratum, unsigned int* const pSampleCountPerStratum,
+        unsigned int const sampleStratumCount, unsigned int const sampleCount)
 {
     unsigned int* const p_iterator_per_stratum = new unsigned int[sampleStratumCount];
 

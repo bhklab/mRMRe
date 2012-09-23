@@ -40,8 +40,8 @@ public:
             double const* const pContinuousSamples, double const* const pSampleWeights,
             unsigned int const* const * const pSampleIndicesPerStratum,
             unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
-            bool const outX, double* const pConcordantWeight = 0, double* const pDiscordantWeight = 0,
-            double* const pUninformativeWeight = 0, double* const pRelevantWeight = 0);
+            bool const outX, double* const pConcordantWeight = 0, double* const pDiscordantWeight =
+                    0, double* const pUninformativeWeight = 0, double* const pRelevantWeight = 0);
 
     static double const
     computeConcordanceIndex(double const* const pDiscreteSamples,
@@ -49,8 +49,8 @@ public:
             double const* const pSampleWeights,
             unsigned int const* const * const pSampleIndicesPerStratum,
             unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
-            bool const outX, double* const pConcordantWeight = 0, double* const pDiscordantWeight = 0,
-            double* const pUninformativeWeight = 0, double* const pRelevantWeight = 0);
+            bool const outX, double* const pConcordantWeight = 0, double* const pDiscordantWeight =
+                    0, double* const pUninformativeWeight = 0, double* const pRelevantWeight = 0);
 
     static double const
     computeConcordanceIndex(double const* const pDiscreteSamplesX,
@@ -58,8 +58,8 @@ public:
             double const* const pTimeSamplesY, double const* const pSampleWeights,
             unsigned int const* const * const pSampleIndicesPerStratum,
             unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
-            bool const outX, double* const pConcordantWeight = 0, double* const pDiscordantWeight = 0,
-            double* const pUninformativeWeight = 0, double* const pRelevantWeight = 0);
+            bool const outX, double* const pConcordantWeight = 0, double* const pDiscordantWeight =
+                    0, double* const pUninformativeWeight = 0, double* const pRelevantWeight = 0);
 
     static double const
     computeCramersV(double const* const pSamplesX, double const* const pSamplesY,
@@ -130,8 +130,8 @@ public:
             unsigned int const sampleStratumCount);
 
     static void const
-    placeStratificationData(unsigned int const* const pSampleStrata,
-            double const* const pSampleWeights, unsigned int** const pSampleIndicesPerStratum,
+    placeStratificationData(int const* const pSampleStrata, double const* const pSampleWeights,
+            unsigned int** const pSampleIndicesPerStratum,
             unsigned int* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
             unsigned int const sampleCount);
 };

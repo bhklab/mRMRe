@@ -5,6 +5,10 @@ setClass("mRMRe.Data", representation(feature_names = "character", feature_types
 
 ## Wrapper
 
+## FIXME: If user has already computed the mim and after, changes weights... mim will still return the same thing as before! <BAD>
+
+## FIXME: Add a method for PRIORS<-
+
 `mRMR.data` <- function(...)
 {
     return(new("mRMRe.Data", ...))
@@ -194,11 +198,25 @@ setMethod("mim", signature("mRMRe.Data"),
         else
             prior_weight <- 0
         
-        mi_matrix <- .Call(mRMRe:::.C_export_mim_old, as.vector(object@data), as.vector(object@priors),
-                as.numeric(prior_weight), object@strata, object@weights, object@feature_types, nrow(object@data),
-                ncol(object@data), as.integer(length(unique(object@strata))), as.integer(uses_ranks), as.integer(outX),
-                as.integer(bootstrap_count))
-        mi_matrix <- matrix(mi_matrix, nrow = ncol(object@data), ncol = ncol(object@data))
+        mi_matrix <- as.numeric(matrix(NA, ncol = ncol(object@data), nrow = ncol(object@data)))
+        
+        .Call(mRMRe:::.C_export_mim, as.numeric(object@data), as.numeric(object@priors),
+                as.numeric(prior_weight), as.integer(object@strata), as.numeric(object@weights),
+                as.integer(object@feature_types), as.integer(nrow(object@data)), as.integer(ncol(object@data)),
+                as.integer(length(unique(object@strata))), as.integer(uses_ranks), as.integer(outX),
+                as.integer(bootstrap_count), mi_matrix)
+        
+        mi_matrix <- matrix(mi_matrix, ncol = ncol(object@data), nrow = ncol(object@data))
+        
+        #apply(combn(x = ncol(object@data), m = 2), 2, function(i)
+        #{
+        #    if (is.na(mi_matrix[i[[1]], i[[2]]]))
+        #        mi_matrix[i[[1]], i[[2]]] <<- mi_matrix[i[[2]], i[[1]]]
+        #    else if (is.na(mi_matrix[i[[2]], i[[1]]]))
+        #        mi_matrix[i[[2]], i[[1]]] <<- mi_matrix[i[[1]], i[[2]]]
+        #})
+        
+        browser()
         
         object@mi_matrix <- compressFeatureMatrix(object, mi_matrix)
     }

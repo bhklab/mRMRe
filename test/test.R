@@ -1,5 +1,7 @@
 library(mRMRe)
 
+set.seed(0)
+
 dd <- data.frame(
         "surv1"=Surv(runif(100), sample(0:1, 100, replace=TRUE)),
         "cont1"=runif(100),

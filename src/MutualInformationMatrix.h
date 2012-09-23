@@ -4,9 +4,9 @@
 #include <omp.h>
 
 #include "Data.h"
-#include "SymmetricMatrix.h"
+#include "Matrix.h"
 
-class MutualInformationMatrix : public SymmetricMatrix
+class MutualInformationMatrix : public Matrix
 {
 private:
     MutualInformationMatrix(const MutualInformationMatrix&);
