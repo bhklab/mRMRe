@@ -5,10 +5,6 @@ setClass("mRMRe.Data", representation(feature_names = "character", feature_types
 
 ## Wrapper
 
-## FIXME: If user has already computed the mim and after, changes weights... mim will still return the same thing as before! <BAD>
-
-## FIXME: Add a method for PRIORS<-
-
 `mRMR.data` <- function(...)
 {
     return(new("mRMRe.Data", ...))
@@ -59,12 +55,7 @@ setMethod("initialize", signature("mRMRe.Data"), function(.Object, data, strata,
     ## Prior feature matrix processing
     
     if (!missing(priors))
-    {
-        if (ncol(priors) != ncol(data) || nrow(priors) != ncol(data))
-            stop("priors matrix must be a symmetric matrix containing as many features as data")
-        else
-            .Object@priors <- expandFeatureMatrix(.Object, priors)
-    }
+        priors(.Object) <- priors
     
     return(.Object)
 })
@@ -149,6 +140,8 @@ setReplaceMethod("sampleStrata", signature("mRMRe.Data"), function(object, value
         stop("strata must be provided as factors")
     else
         object@strata <- as.integer(value) - 1
+    
+    object@mi_matrix <- matrix(nrow = 0, ncol = 0)
 })
 
 ## sampleWeights
@@ -169,6 +162,8 @@ setReplaceMethod("sampleWeights", signature("mRMRe.Data"), function(object, valu
         stop("data and weight must contain the same number of samples")
     else
         object@weights <- as.numeric(value)
+    
+    object@mi_matrix <- matrix(nrow = 0, ncol = 0)
 })
 
 ## priors
@@ -179,6 +174,18 @@ setMethod("priors", signature("mRMRe.Data"), function(object)
         return(object@priors)
     else
         return(compressFeatureMatrix(object, object@priors))
+})
+
+## priors<-
+
+setReplaceMethod("priors", signature("mRMRe.Data"), function(object, value)
+{
+    if (ncol(value) != ncol(data) || nrow(value) != ncol(data))
+        stop("priors matrix must be a symmetric matrix containing as many features as data")
+    else
+        .Object@priors <- expandFeatureMatrix(.Object, value)
+    
+    object@mi_matrix <- matrix(nrow = 0, ncol = 0)
 })
 
 ## mim

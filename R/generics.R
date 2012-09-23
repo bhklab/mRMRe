@@ -18,6 +18,8 @@ setGeneric("sampleWeights<-", function(object, value) standardGeneric("sampleWei
 
 setGeneric("priors", function(object) standardGeneric("priors"))
 
+setGeneric("priors<-", function(object, value) standardGeneric("priors<-"))
+
 setGeneric("mim", function(object, method = c("MI", "cor"), ...)
 {
     method <- match.arg(method)
