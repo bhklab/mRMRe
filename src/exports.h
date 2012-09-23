@@ -2,6 +2,12 @@
 #define mRMRe_exports_h
 
 #include <Rcpp.h>
+
+#include <R.h>
+#include <Rinternals.h>
+#include <Rdefines.h>
+#include <R_ext/Boolean.h>
+
 #include <string>
 #include <vector>
 
@@ -9,6 +15,7 @@
 #include "Math.h"
 #include "MutualInformationMatrix.h"
 
+/*
 extern "C" SEXP
 export_association(SEXP R_SamplesA, SEXP R_SamplesB, SEXP R_SamplesC, SEXP R_SampleStrata,
         SEXP R_SampleWeights, SEXP R_SampleStratumCount, SEXP R_OutX, SEXP R_BootstrapCount,
@@ -27,5 +34,6 @@ export_mim(SEXP R_DataMatrix, SEXP R_PriorsMatrix, SEXP R_PriorsWeight, SEXP R_S
 
 extern "C" SEXP
 set_thread_count(SEXP R_ThreadCount);
+*/
 
 #endif /* mRMRe_exports_h */

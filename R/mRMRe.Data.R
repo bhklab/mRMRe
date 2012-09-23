@@ -194,7 +194,7 @@ setMethod("mim", signature("mRMRe.Data"),
         else
             prior_weight <- 0
         
-        mi_matrix <- .Call(mRMRe:::.C_export_mim, as.vector(object@data), as.vector(object@priors),
+        mi_matrix <- .Call(mRMRe:::.C_export_mim_old, as.vector(object@data), as.vector(object@priors),
                 as.numeric(prior_weight), object@strata, object@weights, object@feature_types, nrow(object@data),
                 ncol(object@data), as.integer(length(unique(object@strata))), as.integer(uses_ranks), as.integer(outX),
                 as.integer(bootstrap_count))
