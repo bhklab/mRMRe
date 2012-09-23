@@ -42,6 +42,6 @@ MutualInformationMatrix::build()
 {
 #pragma omp parallel for schedule(dynamic)
     for (unsigned int i = 0; i < mColumnCount; ++i)
-        for (unsigned int j = i; j < mColumnCount; ++j)
+        for (unsigned int j = 0; j < mColumnCount; ++j)
             at(i, j);
 }

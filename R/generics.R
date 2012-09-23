@@ -49,7 +49,18 @@ setGeneric("adjacencyMatrix", function(object) standardGeneric("adjacencyMatrix"
 
 setGeneric("visualize", function(object) standardGeneric("visualize"))
 
+`get.thread.count` <- function()
+{
+    thread_count <- as.integer(0)
+    
+    .Call(mRMRe:::.C_get_thread_count, thread_count)
+    
+    return(thread_count)
+}
+
 `set.thread.count` <- function(thread_count)
 {
     .Call(mRMRe:::.C_set_thread_count, as.integer(thread_count))
+    
+    return(get.thread.count())
 }

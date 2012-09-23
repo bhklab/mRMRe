@@ -129,36 +129,6 @@ export_filter(SEXP R_ChildrenCountPerLevel, SEXP R_DataMatrix, SEXP R_PriorsMatr
 }
 
 extern "C" SEXP
-export_mim_old(SEXP R_DataMatrix, SEXP R_PriorsMatrix, SEXP R_PriorsWeight, SEXP R_SampleStrata,
-        SEXP R_SampleWeights, SEXP R_FeatureTypes, SEXP R_SampleCount, SEXP R_FeatureCount,
-        SEXP R_SampleStratumCount, SEXP R_UsesRanks, SEXP R_OutX, SEXP R_BootstrapCount)
-{
-    std::vector<double> S_DataMatrix = Rcpp::as < std::vector<double> > (R_DataMatrix);
-    std::vector<double> S_PriorsMatrix = Rcpp::as < std::vector<double> > (R_PriorsMatrix);
-    double const priors_weight = Rcpp::as<double>(R_PriorsWeight);
-    std::vector<int> S_SampleStrata = Rcpp::as < std::vector<int> > (R_SampleStrata);
-    std::vector<double> S_SampleWeights = Rcpp::as < std::vector<double> > (R_SampleWeights);
-    std::vector<int> S_FeatureTypes = Rcpp::as < std::vector<int> > (R_FeatureTypes);
-    unsigned int const sample_count = Rcpp::as<unsigned int>(R_SampleCount);
-    unsigned int const feature_count = Rcpp::as<unsigned int>(R_FeatureCount);
-    unsigned int const sample_stratum_count = Rcpp::as<unsigned int>(R_SampleStratumCount);
-    bool const uses_ranks = Rcpp::as<bool>(R_UsesRanks);
-    bool const outX = Rcpp::as<bool>(R_OutX);
-    unsigned int const bootstrap_count = Rcpp::as<unsigned int>(R_BootstrapCount);
-    Matrix const priors_matrix(&S_PriorsMatrix[0], feature_count, feature_count);
-
-    Matrix const* const p_priors_matrix =
-            (S_PriorsMatrix.size() == feature_count * feature_count) ? &priors_matrix : 0;
-
-    Data data(&S_DataMatrix[0], p_priors_matrix, priors_weight, sample_count, feature_count,
-            &S_SampleStrata[0], &S_SampleWeights[0], &S_FeatureTypes[0], sample_stratum_count,
-            uses_ranks, outX, bootstrap_count);
-    MutualInformationMatrix mi_matrix(&data);
-    mi_matrix.build();
-    return Rcpp::wrap < std::vector<double> > (static_cast<std::vector<double> >(mi_matrix));
-}
-
-extern "C" SEXP
 export_mim(SEXP dataMatrix, SEXP priorsMatrix, SEXP priorsWeight, SEXP sampleStrata,
         SEXP sampleWeights, SEXP featureTypes, SEXP sampleCount, SEXP featureCount,
         SEXP sampleStratumCount, SEXP usesRanks, SEXP outX, SEXP bootstrapCount, SEXP miMatrix)
@@ -179,9 +149,17 @@ export_mim(SEXP dataMatrix, SEXP priorsMatrix, SEXP priorsWeight, SEXP sampleStr
 }
 
 extern "C" SEXP
+get_thread_count(SEXP threadCount)
+{
+    INTEGER(threadCount)[0] = omp_get_num_threads();
+
+    return R_NilValue;
+}
+
+extern "C" SEXP
 set_thread_count(SEXP threadCount)
 {
     omp_set_num_threads(INTEGER(threadCount)[0]);
 
-    return threadCount;
+    return R_NilValue;
 }

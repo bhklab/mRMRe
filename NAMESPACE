@@ -1,2 +1,2 @@
-useDynLib(mRMRe, .fixes=".C_", export_association, export_filter, export_mim_old, export_mim, set_thread_count)
+useDynLib(mRMRe, .fixes=".C_", export_association, export_filter, export_mim, set_thread_count, get_thread_count)
 exportPattern("^[^\\.]")

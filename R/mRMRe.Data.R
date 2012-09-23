@@ -208,16 +208,6 @@ setMethod("mim", signature("mRMRe.Data"),
         
         mi_matrix <- matrix(mi_matrix, ncol = ncol(object@data), nrow = ncol(object@data))
         
-        #apply(combn(x = ncol(object@data), m = 2), 2, function(i)
-        #{
-        #    if (is.na(mi_matrix[i[[1]], i[[2]]]))
-        #        mi_matrix[i[[1]], i[[2]]] <<- mi_matrix[i[[2]], i[[1]]]
-        #    else if (is.na(mi_matrix[i[[2]], i[[1]]]))
-        #        mi_matrix[i[[2]], i[[1]]] <<- mi_matrix[i[[1]], i[[2]]]
-        #})
-        
-        browser()
-        
         object@mi_matrix <- compressFeatureMatrix(object, mi_matrix)
     }
     

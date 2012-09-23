@@ -40,8 +40,6 @@ public:
 
     unsigned int const
     getRowCount() const;
-
-    operator std::vector<double>() const;
 };
 
 #endif /* mRMRe_Matrix_h */

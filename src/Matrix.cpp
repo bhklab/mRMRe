@@ -52,15 +52,3 @@ Matrix::getRowCount() const
 {
     return mRowCount;
 }
-
-Matrix::operator std::vector<double>() const
-{
-    std::vector<double> elements;
-    elements.reserve(mRowCount * mColumnCount);
-
-    for (unsigned int i = 0; i < mColumnCount; ++i)
-        for (unsigned int j = 0; j < mRowCount; ++j)
-            elements.push_back(at(i, j));
-
-    return elements;
-}
