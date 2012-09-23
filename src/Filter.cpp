@@ -138,14 +138,14 @@ Filter::placeElements(unsigned int const startingIndex, unsigned int childrenCou
     unsigned int* const p_candidate_feature_indices = new unsigned int[feature_count];
     unsigned int* const p_order = new unsigned int[feature_count];
     unsigned int* const p_adaptor = new unsigned int[feature_count];
-    float* const p_candidate_scores = new float[feature_count];
+    double* const p_candidate_scores = new double[feature_count];
 
     for (unsigned int i = 0; i < feature_count; ++i)
     {
         if (hasAncestorByFeatureIndex(startingIndex, i, level))
             continue;
 
-        float ancestry_score = 0.;
+        double ancestry_score = 0.;
 
         if (level > 1)
         {
@@ -159,7 +159,7 @@ Filter::placeElements(unsigned int const startingIndex, unsigned int childrenCou
             }
         }
 
-        float const score = std::fabs(mpFeatureInformationMatrix->at(i, mpIndexTree[0]))
+        double const score = std::fabs(mpFeatureInformationMatrix->at(i, mpIndexTree[0]))
                 - (ancestry_score / level);
 
         if (score == score)

@@ -5,12 +5,12 @@ export_association(SEXP R_SamplesA, SEXP R_SamplesB, SEXP R_SamplesC, SEXP R_Sam
         SEXP R_SampleWeights, SEXP R_SampleStratumCount, SEXP R_OutX, SEXP R_BootstrapCount,
         SEXP R_Method)
 {
-    std::vector<float> S_SamplesA = Rcpp::as < std::vector<float> > (R_SamplesA);
-    std::vector<float> S_SamplesB = Rcpp::as < std::vector<float> > (R_SamplesB);
-    std::vector<float> S_SamplesC = Rcpp::as < std::vector<float> > (R_SamplesC);
+    std::vector<double> S_SamplesA = Rcpp::as < std::vector<double> > (R_SamplesA);
+    std::vector<double> S_SamplesB = Rcpp::as < std::vector<double> > (R_SamplesB);
+    std::vector<double> S_SamplesC = Rcpp::as < std::vector<double> > (R_SamplesC);
     std::vector<unsigned int> S_SampleStrata = Rcpp::as < std::vector<unsigned int>
             > (R_SampleStrata);
-    std::vector<float> S_SampleWeights = Rcpp::as < std::vector<float> > (R_SampleWeights);
+    std::vector<double> S_SampleWeights = Rcpp::as < std::vector<double> > (R_SampleWeights);
     unsigned int const sample_stratum_count = Rcpp::as<unsigned int>(R_SampleStratumCount);
     bool const outX = Rcpp::as<bool>(R_OutX);
     unsigned int const bootstrap_count = Rcpp::as<unsigned int>(R_BootstrapCount);
@@ -33,7 +33,7 @@ export_association(SEXP R_SamplesA, SEXP R_SamplesB, SEXP R_SamplesC, SEXP R_Sam
 
     if (is_pearson || is_spearman || is_cramers_v)
     {
-        float statistic;
+        double statistic;
 
         if (is_pearson)
             statistic = Math::computePearsonCorrelation(&S_SamplesA[0], &S_SamplesB[0],
@@ -48,15 +48,15 @@ export_association(SEXP R_SamplesA, SEXP R_SamplesB, SEXP R_SamplesC, SEXP R_Sam
                     p_sample_indices_per_stratum, p_sample_count_per_stratum, sample_stratum_count,
                     bootstrap_count);
 
-        result = Rcpp::List::create(Rcpp::Named("statistic") = Rcpp::wrap<float>(statistic));
+        result = Rcpp::List::create(Rcpp::Named("statistic") = Rcpp::wrap<double>(statistic));
     }
     else if (is_concordance_index)
     {
-        float statistic;
-        float concordant_weight;
-        float discordant_weight;
-        float uninformative_weight;
-        float relevant_weight;
+        double statistic;
+        double concordant_weight;
+        double discordant_weight;
+        double uninformative_weight;
+        double relevant_weight;
 
         if (S_SamplesC.size() == 0)
             statistic = Math::computeConcordanceIndex(&S_SamplesA[0], &S_SamplesB[0],
@@ -69,11 +69,11 @@ export_association(SEXP R_SamplesA, SEXP R_SamplesB, SEXP R_SamplesC, SEXP R_Sam
                     p_sample_count_per_stratum, sample_stratum_count, outX, &concordant_weight,
                     &discordant_weight, &uninformative_weight, &relevant_weight);
 
-        result = Rcpp::List::create(Rcpp::Named("statistic") = Rcpp::wrap<float>(statistic),
-                Rcpp::Named("concordant_weight") = Rcpp::wrap<float>(concordant_weight),
-                Rcpp::Named("discordant_weight") = Rcpp::wrap<float>(discordant_weight),
-                Rcpp::Named("uninformative_weight") = Rcpp::wrap<float>(uninformative_weight),
-                Rcpp::Named("relevant_weight") = Rcpp::wrap<float>(relevant_weight));
+        result = Rcpp::List::create(Rcpp::Named("statistic") = Rcpp::wrap<double>(statistic),
+                Rcpp::Named("concordant_weight") = Rcpp::wrap<double>(concordant_weight),
+                Rcpp::Named("discordant_weight") = Rcpp::wrap<double>(discordant_weight),
+                Rcpp::Named("uninformative_weight") = Rcpp::wrap<double>(uninformative_weight),
+                Rcpp::Named("relevant_weight") = Rcpp::wrap<double>(relevant_weight));
     }
 
     delete[] p_sample_count_per_stratum;
@@ -92,12 +92,12 @@ export_filter(SEXP R_ChildrenCountPerLevel, SEXP R_DataMatrix, SEXP R_PriorsMatr
 {
     std::vector<unsigned int> S_ChildrenCountPerLevel = Rcpp::as < std::vector<unsigned int>
             > (R_ChildrenCountPerLevel);
-    std::vector<float> S_DataMatrix = Rcpp::as < std::vector<float> > (R_DataMatrix);
-    std::vector<float> S_PriorsMatrix = Rcpp::as < std::vector<float> > (R_PriorsMatrix);
-    float const priors_weight = Rcpp::as<float>(R_PriorsWeight);
+    std::vector<double> S_DataMatrix = Rcpp::as < std::vector<double> > (R_DataMatrix);
+    std::vector<double> S_PriorsMatrix = Rcpp::as < std::vector<double> > (R_PriorsMatrix);
+    double const priors_weight = Rcpp::as<double>(R_PriorsWeight);
     std::vector<unsigned int> S_SampleStrata = Rcpp::as < std::vector<unsigned int>
             > (R_SampleStrata);
-    std::vector<float> S_SampleWeights = Rcpp::as < std::vector<float> > (R_SampleWeights);
+    std::vector<double> S_SampleWeights = Rcpp::as < std::vector<double> > (R_SampleWeights);
     std::vector<unsigned int> S_FeatureTypes = Rcpp::as < std::vector<unsigned int>
             > (R_FeatureTypes);
     unsigned int const sample_count = Rcpp::as<unsigned int>(R_SampleCount);
@@ -120,8 +120,8 @@ export_filter(SEXP R_ChildrenCountPerLevel, SEXP R_DataMatrix, SEXP R_PriorsMatr
     return Rcpp::List::create(
             Rcpp::Named("solutions") = Rcpp::wrap < std::vector<unsigned int>
                     > (static_cast<std::vector<unsigned int> >(filter)),
-            Rcpp::Named("mi_matrix") = Rcpp::wrap < std::vector<float>
-                    > (static_cast<std::vector<float> >(mi_matrix)));
+            Rcpp::Named("mi_matrix") = Rcpp::wrap < std::vector<double>
+                    > (static_cast<std::vector<double> >(mi_matrix)));
 }
 
 extern "C" SEXP
@@ -129,12 +129,12 @@ export_mim_old(SEXP R_DataMatrix, SEXP R_PriorsMatrix, SEXP R_PriorsWeight, SEXP
         SEXP R_SampleWeights, SEXP R_FeatureTypes, SEXP R_SampleCount, SEXP R_FeatureCount,
         SEXP R_SampleStratumCount, SEXP R_UsesRanks, SEXP R_OutX, SEXP R_BootstrapCount)
 {
-    std::vector<float> S_DataMatrix = Rcpp::as < std::vector<float> > (R_DataMatrix);
-    std::vector<float> S_PriorsMatrix = Rcpp::as < std::vector<float> > (R_PriorsMatrix);
-    float const priors_weight = Rcpp::as<float>(R_PriorsWeight);
+    std::vector<double> S_DataMatrix = Rcpp::as < std::vector<double> > (R_DataMatrix);
+    std::vector<double> S_PriorsMatrix = Rcpp::as < std::vector<double> > (R_PriorsMatrix);
+    double const priors_weight = Rcpp::as<double>(R_PriorsWeight);
     std::vector<unsigned int> S_SampleStrata = Rcpp::as < std::vector<unsigned int>
             > (R_SampleStrata);
-    std::vector<float> S_SampleWeights = Rcpp::as < std::vector<float> > (R_SampleWeights);
+    std::vector<double> S_SampleWeights = Rcpp::as < std::vector<double> > (R_SampleWeights);
     std::vector<unsigned int> S_FeatureTypes = Rcpp::as < std::vector<unsigned int>
             > (R_FeatureTypes);
     unsigned int const sample_count = Rcpp::as<unsigned int>(R_SampleCount);
@@ -153,7 +153,7 @@ export_mim_old(SEXP R_DataMatrix, SEXP R_PriorsMatrix, SEXP R_PriorsWeight, SEXP
             uses_ranks, outX, bootstrap_count);
     MutualInformationMatrix mi_matrix(&data);
     mi_matrix.build();
-    return Rcpp::wrap < std::vector<float> > (static_cast<std::vector<float> >(mi_matrix));
+    return Rcpp::wrap < std::vector<double> > (static_cast<std::vector<double> >(mi_matrix));
 }
 
 extern "C" SEXP

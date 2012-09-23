@@ -1,8 +1,8 @@
 #include "Data.h"
 
-Data::Data(float* const pData, Matrix const* const pPriorsMatrix, float const priorsWeight,
+Data::Data(double* const pData, Matrix const* const pPriorsMatrix, double const priorsWeight,
         unsigned int const sampleCount, unsigned int const featureCount,
-        unsigned int const* const pSampleStrata, float const* const pSampleWeights,
+        unsigned int const* const pSampleStrata, double const* const pSampleWeights,
         unsigned int const* const pFeatureTypes, unsigned int const sampleStratumCount,
         bool const usesRanks, bool const outX, unsigned int const bootstrapCount) :
         mpDataMatrix(new Matrix(pData, sampleCount, featureCount)), mpOrderMatrix(
@@ -32,10 +32,10 @@ Data::~Data()
     delete[] mpSampleCountPerStratum;
 }
 
-float const
+double const
 Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j) const
 {
-    float r = std::numeric_limits<float>::quiet_NaN();
+    double r = std::numeric_limits<double>::quiet_NaN();
 
     if (i == j)
         return 1.;
@@ -102,13 +102,13 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j) const
         return r;
     else
     {
-        float sign = r < 0 ? -1. : 1.;
+        double sign = r < 0 ? -1. : 1.;
         return (sign * (std::fabs(1.0 - mPriorsWeight) * r))
                 + (mPriorsWeight * mpPriorsMatrix->at(i, j));
     }
 }
 
-float const
+double const
 Data::computeCorrelationBetweenContinuousFeatures(unsigned int const i, unsigned int const j) const
 {
     if (mUsesRanks)
@@ -127,13 +127,13 @@ Data::computeCorrelationBetweenContinuousFeatures(unsigned int const i, unsigned
             mpHasOrderCached[j] = true;
         }
 
-        float* const p_ranked_samples_x = new float[getSampleCount()];
-        float* const p_ranked_samples_y = new float[getSampleCount()];
+        double* const p_ranked_samples_x = new double[getSampleCount()];
+        double* const p_ranked_samples_y = new double[getSampleCount()];
         Math::placeRanksFromOrders(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
                 &(mpOrderMatrix->at(0, i)), &(mpOrderMatrix->at(0, j)), p_ranked_samples_x,
                 p_ranked_samples_y, mpSampleIndicesPerStratum, mpSampleCountPerStratum,
                 mSampleStratumCount);
-        float const r = Math::computePearsonCorrelation(p_ranked_samples_x, p_ranked_samples_y,
+        double const r = Math::computePearsonCorrelation(p_ranked_samples_x, p_ranked_samples_y,
                 mpSampleWeights, mpSampleIndicesPerStratum, mpSampleCountPerStratum,
                 mSampleStratumCount, mBootstrapCount);
         delete[] p_ranked_samples_x;

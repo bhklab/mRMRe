@@ -19,7 +19,7 @@ private:
     Matrix const* const mpPriorsMatrix;
     bool* const mpHasOrderCached;
     unsigned int const* const mpSampleStrata;
-    float const* const mpSampleWeights;
+    double const* const mpSampleWeights;
     unsigned int const* const mpFeatureTypes;
     unsigned int const mSampleStratumCount;
     unsigned int** const mpSampleIndicesPerStratum;
@@ -27,7 +27,7 @@ private:
     bool const mUsesRanks;
     bool const mOutX;
     unsigned int const mBootstrapCount;
-    float const mPriorsWeight;
+    double const mPriorsWeight;
 
 public:
     static unsigned int const FEATURE_CONTINUOUS = 0;
@@ -35,18 +35,18 @@ public:
     static unsigned int const FEATURE_SURVIVAL_EVENT = 2;
     static unsigned int const FEATURE_SURVIVAL_TIME = 3;
 
-    Data(float* const pData, Matrix const* const pPriorsMatrix, float const priorsWeight,
+    Data(double* const pData, Matrix const* const pPriorsMatrix, double const priorsWeight,
             unsigned int const sampleCount, unsigned int const featureCount,
-            unsigned int const* const pSampleStrata, float const* const pSampleWeights,
+            unsigned int const* const pSampleStrata, double const* const pSampleWeights,
             unsigned int const* const pFeatureTypes, unsigned int const sampleStratumCount,
             bool const usesRanks, bool const outX, unsigned int const bootstrapCount);
 
     ~Data();
 
-    float const
+    double const
     computeMiBetweenFeatures(unsigned int const i, unsigned int const j) const;
 
-    float const
+    double const
     computeCorrelationBetweenContinuousFeatures(unsigned int const i, unsigned int const j) const;
 
     unsigned int const

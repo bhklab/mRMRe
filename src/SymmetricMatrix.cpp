@@ -6,7 +6,7 @@ SymmetricMatrix::SymmetricMatrix(unsigned int const rowCount) :
 
 }
 
-SymmetricMatrix::SymmetricMatrix(float* const pData, unsigned int const rowCount) :
+SymmetricMatrix::SymmetricMatrix(double* const pData, unsigned int const rowCount) :
         Matrix(pData, rowCount, rowCount)
 {
 
@@ -18,7 +18,7 @@ SymmetricMatrix::~SymmetricMatrix()
 
 }
 
-/* virtual */float&
+/* virtual */double&
 SymmetricMatrix::at(unsigned int const i, unsigned int const j)
 {
     unsigned int const x = (i >= j) ? i : j;
@@ -27,7 +27,7 @@ SymmetricMatrix::at(unsigned int const i, unsigned int const j)
     return mpData[((x * (x + 1) / 2)) + y];
 }
 
-/* virtual */float const&
+/* virtual */double const&
 SymmetricMatrix::at(unsigned int const i, unsigned int const j) const
 {
     unsigned int const x = (i >= j) ? i : j;

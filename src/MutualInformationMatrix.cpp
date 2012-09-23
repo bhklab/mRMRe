@@ -5,10 +5,10 @@ MutualInformationMatrix::MutualInformationMatrix(Data const* const pData) :
 {
     for (unsigned int i = 0; i < mColumnCount; ++i)
         for (unsigned int j = i; j < mColumnCount; ++j)
-            SymmetricMatrix::at(i, j) = std::numeric_limits<float>::quiet_NaN();
+            SymmetricMatrix::at(i, j) = std::numeric_limits<double>::quiet_NaN();
 }
 
-MutualInformationMatrix::MutualInformationMatrix(Data const* const pData, float* const pInternalData) :
+MutualInformationMatrix::MutualInformationMatrix(Data const* const pData, double* const pInternalData) :
         SymmetricMatrix(pInternalData, pData->getFeatureCount()), mpData(pData)
 {
 
@@ -20,7 +20,7 @@ MutualInformationMatrix::~MutualInformationMatrix()
 
 }
 
-/* virtual */float&
+/* virtual */double&
 MutualInformationMatrix::at(unsigned int const i, unsigned int const j)
 {
     if (SymmetricMatrix::at(i, j) != SymmetricMatrix::at(i, j))
@@ -29,7 +29,7 @@ MutualInformationMatrix::at(unsigned int const i, unsigned int const j)
     return SymmetricMatrix::at(i, j);
 }
 
-/* virtual */float const&
+/* virtual */double const&
 MutualInformationMatrix::at(unsigned int const i, unsigned int const j) const
 {
     return SymmetricMatrix::at(i, j);

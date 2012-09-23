@@ -20,15 +20,15 @@ protected:
 public:
     MutualInformationMatrix(Data const* const pData);
 
-    MutualInformationMatrix(Data const* const pData, float* const pInternalData);
+    MutualInformationMatrix(Data const* const pData, double* const pInternalData);
 
     virtual
     ~MutualInformationMatrix();
 
-    virtual float&
+    virtual double&
     at(unsigned int const i, unsigned int const j);
 
-    virtual float const&
+    virtual double const&
     at(unsigned int const i, unsigned int const j) const;
 
     void const

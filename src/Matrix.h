@@ -12,7 +12,7 @@ private:
     operator=(const Matrix&);
 
 protected:
-    float* const mpData;
+    double* const mpData;
     unsigned int const mRowCount;
     unsigned int const mColumnCount;
     bool const mHasAllocation;
@@ -24,15 +24,15 @@ public:
     Matrix(unsigned int const size, unsigned int const rowCount, unsigned int const columnCount);
 
     explicit
-    Matrix(float* const pData, unsigned int const rowCount, unsigned int const columnCount);
+    Matrix(double* const pData, unsigned int const rowCount, unsigned int const columnCount);
 
     virtual
     ~Matrix();
 
-    virtual float&
+    virtual double&
     at(unsigned int const i, unsigned int const j);
 
-    virtual float const&
+    virtual double const&
     at(unsigned int const i, unsigned int const j) const;
 
     unsigned int const
@@ -41,7 +41,7 @@ public:
     unsigned int const
     getRowCount() const;
 
-    operator std::vector<float>() const;
+    operator std::vector<double>() const;
 };
 
 #endif /* mRMRe_Matrix_h */

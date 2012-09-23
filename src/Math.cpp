@@ -1,6 +1,6 @@
 #include "Math.h"
 
-Math::IndirectComparator::IndirectComparator(float const* const pSamples,
+Math::IndirectComparator::IndirectComparator(double const* const pSamples,
         unsigned int const* const pSampleIndices) :
         mpSamples(pSamples), mpSampleIndices(pSampleIndices)
 {
@@ -13,18 +13,18 @@ Math::IndirectComparator::operator()(unsigned int const i, unsigned int const j)
     return mpSamples[mpSampleIndices[i]] < mpSamples[mpSampleIndices[j]];
 }
 
-/* static */float const
-Math::computeConcordanceIndex(float const* const pDiscreteSamples,
-        float const* const pContinuousSamples, float const* const pSampleWeights,
+/* static */double const
+Math::computeConcordanceIndex(double const* const pDiscreteSamples,
+        double const* const pContinuousSamples, double const* const pSampleWeights,
         unsigned int const* const * const pSampleIndicesPerStratum,
         unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
-        bool const outX, float* const pConcordantWeight, float* const pDiscordantWeight,
-        float* const pUninformativeWeight, float* const pRelevantWeight)
+        bool const outX, double* const pConcordantWeight, double* const pDiscordantWeight,
+        double* const pUninformativeWeight, double* const pRelevantWeight)
 {
-    float concordant_weight = 0.;
-    float discordant_weight = 0.;
-    float uninformative_weight = 0.;
-    float relevant_weight = 0.;
+    double concordant_weight = 0.;
+    double discordant_weight = 0.;
+    double uninformative_weight = 0.;
+    double relevant_weight = 0.;
 
     for (unsigned int stratum = 0; stratum < sampleStratumCount; ++stratum)
     {
@@ -44,7 +44,7 @@ Math::computeConcordanceIndex(float const* const pDiscreteSamples,
                         || pContinuousSamples[j] != pContinuousSamples[j])
                     continue;
 
-                float pair_weight = pSampleWeights[i] * pSampleWeights[j];
+                double pair_weight = pSampleWeights[i] * pSampleWeights[j];
 
                 if (pDiscreteSamples[i] > pDiscreteSamples[j])
                 {
@@ -88,19 +88,19 @@ Math::computeConcordanceIndex(float const* const pDiscreteSamples,
     return concordant_weight / relevant_weight;
 }
 
-/*static*/float const
-Math::computeConcordanceIndex(float const* const pDiscreteSamples,
-        float const* const pContinuousSamples, float const* const pTimeSamples,
-        float const* const pSampleWeights,
+/*static*/double const
+Math::computeConcordanceIndex(double const* const pDiscreteSamples,
+        double const* const pContinuousSamples, double const* const pTimeSamples,
+        double const* const pSampleWeights,
         unsigned int const* const * const pSampleIndicesPerStratum,
         unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
-        bool const outX, float* const pConcordantWeight, float* const pDiscordantWeight,
-        float* const pUninformativeWeight, float* const pRelevantWeight)
+        bool const outX, double* const pConcordantWeight, double* const pDiscordantWeight,
+        double* const pUninformativeWeight, double* const pRelevantWeight)
 {
-    float concordant_weight = 0.;
-    float discordant_weight = 0.;
-    float uninformative_weight = 0.;
-    float relevant_weight = 0.;
+    double concordant_weight = 0.;
+    double discordant_weight = 0.;
+    double uninformative_weight = 0.;
+    double relevant_weight = 0.;
 
     for (unsigned int stratum = 0; stratum < sampleStratumCount; ++stratum)
     {
@@ -120,7 +120,7 @@ Math::computeConcordanceIndex(float const* const pDiscreteSamples,
                         || pContinuousSamples[j] != pContinuousSamples[j])
                     continue;
 
-                float pair_weight = pSampleWeights[i] * pSampleWeights[j];
+                double pair_weight = pSampleWeights[i] * pSampleWeights[j];
 
                 if (pTimeSamples[i] < pTimeSamples[j] && pDiscreteSamples[i] == 1)
                 {
@@ -164,19 +164,19 @@ Math::computeConcordanceIndex(float const* const pDiscreteSamples,
     return concordant_weight / relevant_weight;
 }
 
-/*static*/float const
-Math::computeConcordanceIndex(float const* const pDiscreteSamplesX,
-        float const* const pDiscreteSamplesY, float const* const pTimeSamplesX,
-        float const* const pTimeSamplesY, float const* const pSampleWeights,
+/*static*/double const
+Math::computeConcordanceIndex(double const* const pDiscreteSamplesX,
+        double const* const pDiscreteSamplesY, double const* const pTimeSamplesX,
+        double const* const pTimeSamplesY, double const* const pSampleWeights,
         unsigned int const* const * const pSampleIndicesPerStratum,
         unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
-        bool const outX, float* const pConcordantWeight, float* const pDiscordantWeight,
-        float* const pUninformativeWeight, float* const pRelevantWeight)
+        bool const outX, double* const pConcordantWeight, double* const pDiscordantWeight,
+        double* const pUninformativeWeight, double* const pRelevantWeight)
 {
-    float concordant_weight = 0.;
-    float discordant_weight = 0.;
-    float uninformative_weight = 0.;
-    float relevant_weight = 0.;
+    double concordant_weight = 0.;
+    double discordant_weight = 0.;
+    double uninformative_weight = 0.;
+    double relevant_weight = 0.;
 
     for (unsigned int stratum = 0; stratum < sampleStratumCount; ++stratum)
     {
@@ -199,7 +199,7 @@ Math::computeConcordanceIndex(float const* const pDiscreteSamplesX,
                         || pTimeSamplesY[j] != pTimeSamplesY[j])
                     continue;
 
-                float pair_weight = pSampleWeights[i] * pSampleWeights[j];
+                double pair_weight = pSampleWeights[i] * pSampleWeights[j];
 
                 if (pTimeSamplesX[i] < pTimeSamplesX[j] && pDiscreteSamplesX[i] == 1)
                 {
@@ -243,19 +243,19 @@ Math::computeConcordanceIndex(float const* const pDiscreteSamplesX,
     return concordant_weight / relevant_weight;
 }
 
-/* static */float const
-Math::computeCramersV(float const* const pSamplesX, float const* const pSamplesY,
-        float const* const pSampleWeights,
+/* static */double const
+Math::computeCramersV(double const* const pSamplesX, double const* const pSamplesY,
+        double const* const pSampleWeights,
         unsigned int const* const * const pSampleIndicesPerStratum,
         unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
         unsigned int const bootstrapCount)
 {
     bool const useBootstrap = bootstrapCount > 3 && sampleStratumCount > 0;
-    float* p_error_per_stratum = 0;
+    double* p_error_per_stratum = 0;
 
     if (useBootstrap)
     {
-        p_error_per_stratum = new float[sampleStratumCount];
+        p_error_per_stratum = new double[sampleStratumCount];
         unsigned int seed = std::time(NULL);
         Matrix bootstraps(bootstrapCount, sampleStratumCount);
 
@@ -271,7 +271,7 @@ Math::computeCramersV(float const* const pSamplesX, float const* const pSamplesY
                     p_samples[k] = pSampleIndicesPerStratum[j][Math::computeRandomNumber(&seed)
                             % sample_count];
 
-                float const correlation = computeCramersV(pSamplesX, pSamplesY, pSampleWeights,
+                double const correlation = computeCramersV(pSamplesX, pSamplesY, pSampleWeights,
                         p_samples, sample_count);
                 bootstraps.at(i, j) = correlation;
 
@@ -284,13 +284,13 @@ Math::computeCramersV(float const* const pSamplesX, float const* const pSamplesY
                     / Math::computeVariance(&(bootstraps.at(0, i)), bootstrapCount);
     }
 
-    float r = 0.;
-    float total_weight = 0.;
+    double r = 0.;
+    double total_weight = 0.;
 
     for (unsigned int i = 0; i < sampleStratumCount; ++i)
     {
-        float weight = 0.;
-        float const correlation = computeCramersV(pSamplesX, pSamplesY, pSampleWeights,
+        double weight = 0.;
+        double const correlation = computeCramersV(pSamplesX, pSamplesY, pSampleWeights,
                 pSampleIndicesPerStratum[i], pSampleCountPerStratum[i], &weight);
 
         if (useBootstrap)
@@ -307,10 +307,10 @@ Math::computeCramersV(float const* const pSamplesX, float const* const pSamplesY
     return r;
 }
 
-/* static */float const
-Math::computeCramersV(float const* const pSamplesX, float const* const pSamplesY,
-        float const* const pSampleWeights, unsigned int const* const pSampleIndices,
-        unsigned int const sampleCount, float* const pTotalWeight)
+/* static */double const
+Math::computeCramersV(double const* const pSamplesX, double const* const pSamplesY,
+        double const* const pSampleWeights, unsigned int const* const pSampleIndices,
+        unsigned int const sampleCount, double* const pTotalWeight)
 {
     unsigned int x_class_count = 0;
     unsigned int y_class_count = 0;
@@ -338,19 +338,19 @@ Math::computeCramersV(float const* const pSamplesX, float const* const pSamplesY
         if (pSamplesX[index] != pSamplesX[index] || pSamplesY[index] != pSamplesY[index])
             continue;
 
-        float const sample_weight = pSampleWeights[index];
+        double const sample_weight = pSampleWeights[index];
         contingency_table.at(pSamplesX[index], pSamplesY[index]) += sample_weight;
         contingency_table.at(x_class_count, pSamplesY[index]) += sample_weight;
         contingency_table.at(pSamplesX[index], y_class_count) += sample_weight;
         contingency_table.at(x_class_count, y_class_count) += sample_weight;
     }
 
-    float chi_square = 0.;
+    double chi_square = 0.;
 
     for (unsigned int i = 0; i < x_class_count; ++i)
         for (unsigned int j = 0; j < y_class_count; ++j)
         {
-            float expected_value = contingency_table.at(i, y_class_count)
+            double expected_value = contingency_table.at(i, y_class_count)
                     * contingency_table.at(x_class_count, j)
                     / contingency_table.at(x_class_count, y_class_count);
 
@@ -363,43 +363,43 @@ Math::computeCramersV(float const* const pSamplesX, float const* const pSamplesY
 
     *pTotalWeight = contingency_table.at(x_class_count, y_class_count);
 
-    float const v = std::sqrt(chi_square / ((*pTotalWeight) * (min_classes - 1)));
+    double const v = std::sqrt(chi_square / ((*pTotalWeight) * (min_classes - 1)));
 
     return v;
 }
 
-/* static */float const
-Math::computeFisherTransformation(float const r)
+/* static */double const
+Math::computeFisherTransformation(double const r)
 {
     return 0.5 * std::log((1 + r) / (1 - r));
 }
 
-/* static */float const
-Math::computeFisherTransformationReverse(float const z)
+/* static */double const
+Math::computeFisherTransformationReverse(double const z)
 {
-    float const exp = std::exp(2 * z);
+    double const exp = std::exp(2 * z);
     return (exp - 1) / (exp + 1);
 }
 
-/* static */float const
-Math::computeMi(float const r)
+/* static */double const
+Math::computeMi(double const r)
 {
     return -0.5 * std::log(1 - (r * r));
 }
 
-/* static */float const
-Math::computePearsonCorrelation(float const* const pSamplesX, float const* const pSamplesY,
-        float const* const pSampleWeights,
+/* static */double const
+Math::computePearsonCorrelation(double const* const pSamplesX, double const* const pSamplesY,
+        double const* const pSampleWeights,
         unsigned int const* const * const pSampleIndicesPerStratum,
         unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
         unsigned int const bootstrapCount)
 {
     bool const useBootstrap = bootstrapCount > 3 && sampleStratumCount > 0;
-    float* p_error_per_stratum = 0;
+    double* p_error_per_stratum = 0;
 
     if (useBootstrap)
     {
-        p_error_per_stratum = new float[sampleStratumCount];
+        p_error_per_stratum = new double[sampleStratumCount];
         unsigned int seed = std::time(NULL);
         Matrix bootstraps(bootstrapCount, sampleStratumCount);
 
@@ -415,7 +415,7 @@ Math::computePearsonCorrelation(float const* const pSamplesX, float const* const
                     p_samples[k] = pSampleIndicesPerStratum[j][Math::computeRandomNumber(&seed)
                             % sample_count];
 
-                float const correlation = computeCramersV(pSamplesX, pSamplesY, pSampleWeights,
+                double const correlation = computeCramersV(pSamplesX, pSamplesY, pSampleWeights,
                         p_samples, sample_count);
                 bootstraps.at(i, j) = correlation;
 
@@ -428,13 +428,13 @@ Math::computePearsonCorrelation(float const* const pSamplesX, float const* const
                     / Math::computeVariance(&(bootstraps.at(0, i)), bootstrapCount);
     }
 
-    float r = 0.;
-    float total_weight = 0.;
+    double r = 0.;
+    double total_weight = 0.;
 
     for (unsigned int i = 0; i < sampleStratumCount; ++i)
     {
-        float weight = 0.;
-        float const correlation = computePearsonCorrelation(pSamplesX, pSamplesY, pSampleWeights,
+        double weight = 0.;
+        double const correlation = computePearsonCorrelation(pSamplesX, pSamplesY, pSampleWeights,
                 pSampleIndicesPerStratum[i], pSampleCountPerStratum[i], &weight);
 
         if (useBootstrap)
@@ -451,26 +451,26 @@ Math::computePearsonCorrelation(float const* const pSamplesX, float const* const
     return r;
 }
 
-/* static */float const
-Math::computePearsonCorrelation(float const* const pSamplesX, float const* const pSamplesY,
-        float const* const pSampleWeights, unsigned int const* const pSampleIndices,
-        unsigned int const sampleCount, float* const pTotalWeight)
+/* static */double const
+Math::computePearsonCorrelation(double const* const pSamplesX, double const* const pSamplesY,
+        double const* const pSampleWeights, unsigned int const* const pSampleIndices,
+        unsigned int const sampleCount, double* const pTotalWeight)
 {
-    float sum_of_x = 0.;
-    float sum_of_x_x = 0.;
-    float sum_of_y = 0.;
-    float sum_of_y_y = 0.;
-    float sum_of_x_y = 0.;
-    float sum_of_weights = 0.;
+    double sum_of_x = 0.;
+    double sum_of_x_x = 0.;
+    double sum_of_y = 0.;
+    double sum_of_y_y = 0.;
+    double sum_of_x_y = 0.;
+    double sum_of_weights = 0.;
 
     for (unsigned int i = 0; i < sampleCount; ++i)
     {
-        float const my_x = pSamplesX[pSampleIndices[i]];
-        float const my_y = pSamplesY[pSampleIndices[i]];
+        double const my_x = pSamplesX[pSampleIndices[i]];
+        double const my_y = pSamplesY[pSampleIndices[i]];
 
         if (my_x == my_x && my_y == my_y)
         {
-            float const my_weight = pSampleWeights[pSampleIndices[i]];
+            double const my_weight = pSampleWeights[pSampleIndices[i]];
             sum_of_x += my_x * my_weight;
             sum_of_x_x += my_x * my_x * my_weight;
             sum_of_y += my_y * my_weight;
@@ -480,7 +480,7 @@ Math::computePearsonCorrelation(float const* const pSamplesX, float const* const
         }
     }
 
-    float const r = (sum_of_x_y - ((sum_of_x * sum_of_y) / sum_of_weights))
+    double const r = (sum_of_x_y - ((sum_of_x * sum_of_y) / sum_of_weights))
             / std::sqrt(
                     (sum_of_x_x - ((sum_of_x * sum_of_x) / sum_of_weights))
                             * (sum_of_y_y - ((sum_of_y * sum_of_y) / sum_of_weights)));
@@ -514,29 +514,29 @@ Math::computeRandomNumber(unsigned int* const seed)
     return result;
 }
 
-/* static */float const
-Math::computeSomersD(float const c)
+/* static */double const
+Math::computeSomersD(double const c)
 {
     return (c - 0.5) * 2;
 }
 
-/* static */float const
-Math::computeSpearmanCorrelation(float const* const pSamplesX, float const* const pSamplesY,
-        float const* const pSampleWeights,
+/* static */double const
+Math::computeSpearmanCorrelation(double const* const pSamplesX, double const* const pSamplesY,
+        double const* const pSampleWeights,
         unsigned int const* const * const pSampleIndicesPerStratum,
         unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
         unsigned int const bootstrapCount, unsigned int const sampleCount)
 {
-    float* const p_ordered_samples_x = new float[sampleCount];
-    float* const p_ordered_samples_y = new float[sampleCount];
+    double* const p_ordered_samples_x = new double[sampleCount];
+    double* const p_ordered_samples_y = new double[sampleCount];
 
     Math::placeOrders(&pSamplesX[0], p_ordered_samples_x, pSampleIndicesPerStratum,
             pSampleCountPerStratum, sampleStratumCount);
     Math::placeOrders(&pSamplesY[0], p_ordered_samples_y, pSampleIndicesPerStratum,
             pSampleCountPerStratum, sampleStratumCount);
 
-    float* const p_ranked_samples_x = new float[sampleCount];
-    float* const p_ranked_samples_y = new float[sampleCount];
+    double* const p_ranked_samples_x = new double[sampleCount];
+    double* const p_ranked_samples_y = new double[sampleCount];
 
     Math::placeRanksFromOrders(&pSamplesX[0], &pSamplesY[0], p_ordered_samples_x,
             p_ordered_samples_y, p_ranked_samples_x, p_ranked_samples_y, pSampleIndicesPerStratum,
@@ -545,7 +545,7 @@ Math::computeSpearmanCorrelation(float const* const pSamplesX, float const* cons
     delete[] p_ordered_samples_x;
     delete[] p_ordered_samples_y;
 
-    float const r = Math::computePearsonCorrelation(p_ranked_samples_x, p_ranked_samples_y,
+    double const r = Math::computePearsonCorrelation(p_ranked_samples_x, p_ranked_samples_y,
             &pSampleWeights[0], pSampleIndicesPerStratum, pSampleCountPerStratum,
             sampleStratumCount, bootstrapCount);
 
@@ -555,19 +555,19 @@ Math::computeSpearmanCorrelation(float const* const pSamplesX, float const* cons
     return r;
 }
 
-/* static */float const
-Math::computeVariance(float const* const pSamples, unsigned int const sampleCount)
+/* static */double const
+Math::computeVariance(double const* const pSamples, unsigned int const sampleCount)
 {
     if (sampleCount == 0)
         return 0.;
 
-    float sum_for_mean = pSamples[0];
-    float sum_for_error = 0.;
+    double sum_for_mean = pSamples[0];
+    double sum_for_error = 0.;
 
     for (unsigned int i = 1; i < sampleCount; ++i)
     {
-        float const my_sum = pSamples[i] - sum_for_mean;
-        float const my_mean = ((i - 1) * my_sum) / i;
+        double const my_sum = pSamples[i] - sum_for_mean;
+        double const my_mean = ((i - 1) * my_sum) / i;
         sum_for_mean += my_mean;
         sum_for_error += my_mean * my_sum;
     }
@@ -576,7 +576,7 @@ Math::computeVariance(float const* const pSamples, unsigned int const sampleCoun
 }
 
 /* static */void const
-Math::placeOrders(float const* const pSamples, float* const pOrders,
+Math::placeOrders(double const* const pSamples, double* const pOrders,
         unsigned int const* const * const pSampleIndicesPerStratum,
         unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount)
 {
@@ -606,9 +606,9 @@ Math::placeOrders(float const* const pSamples, float* const pOrders,
 }
 
 /* static */void const
-Math::placeRanksFromOrders(float const* const pSamplesX, float const* const pSamplesY,
-        float const* const pOrdersX, float const* const pOrdersY, float* const pRanksX,
-        float* const pRanksY, unsigned int const* const * const pSampleIndicesPerStratum,
+Math::placeRanksFromOrders(double const* const pSamplesX, double const* const pSamplesY,
+        double const* const pOrdersX, double const* const pOrdersY, double* const pRanksX,
+        double* const pRanksY, unsigned int const* const * const pSampleIndicesPerStratum,
         unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount)
 {
     for (unsigned int i = 0; i < sampleStratumCount; ++i)
@@ -632,12 +632,12 @@ Math::placeRanksFromOrders(float const* const pSamplesX, float const* const pSam
                     || pSamplesX[order_y] != pSamplesX[order_y];
 
             if (NA_x)
-                pRanksX[order_x] = std::numeric_limits<float>::quiet_NaN();
+                pRanksX[order_x] = std::numeric_limits<double>::quiet_NaN();
             else
                 pRanksX[order_x] = offset_x++;
 
             if (NA_y)
-                pRanksY[order_y] = std::numeric_limits<float>::quiet_NaN();
+                pRanksY[order_y] = std::numeric_limits<double>::quiet_NaN();
             else
                 pRanksY[order_y] = offset_y++;
         }
@@ -645,7 +645,7 @@ Math::placeRanksFromOrders(float const* const pSamplesX, float const* const pSam
 }
 
 /* static */void const
-Math::placeRanksFromSamples(float const* const pSamples, float* const pRanks,
+Math::placeRanksFromSamples(double const* const pSamples, double* const pRanks,
         unsigned int const* const * const pSampleIndicesPerStratum,
         unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount)
 {
@@ -670,7 +670,7 @@ Math::placeRanksFromSamples(float const* const pSamples, float* const pRanks,
                 Math::IndirectComparator(pSamples, p_sample_indices));
 
         for (unsigned int j = 0; j < sample_count; ++j)
-            pRanks[j] = std::numeric_limits<float>::quiet_NaN();
+            pRanks[j] = std::numeric_limits<double>::quiet_NaN();
 
         for (unsigned int j = 0; j < sample_count - offset; ++j)
             pRanks[p_sample_indices[p_order[j]]] = j;
@@ -681,7 +681,7 @@ Math::placeRanksFromSamples(float const* const pSamples, float* const pRanks,
 
 /* static */void const
 Math::placeStratificationData(unsigned int const* const pSampleStrata,
-        float const* const pSampleWeights, unsigned int** const pSampleIndicesPerStratum,
+        double const* const pSampleWeights, unsigned int** const pSampleIndicesPerStratum,
         unsigned int* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
         unsigned int const sampleCount)
 {

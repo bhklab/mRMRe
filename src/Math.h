@@ -25,113 +25,113 @@ public:
     class IndirectComparator
     {
     private:
-        float const* const mpSamples;
+        double const* const mpSamples;
         unsigned int const* const mpSampleIndices;
 
     public:
-        IndirectComparator(float const* const pSamples, unsigned int const* const pSampleIndices);
+        IndirectComparator(double const* const pSamples, unsigned int const* const pSampleIndices);
 
         bool const
         operator()(unsigned int const i, unsigned int const j) const;
     };
 
-    static float const
-    computeConcordanceIndex(float const* const pDiscreteSamples,
-            float const* const pContinuousSamples, float const* const pSampleWeights,
+    static double const
+    computeConcordanceIndex(double const* const pDiscreteSamples,
+            double const* const pContinuousSamples, double const* const pSampleWeights,
             unsigned int const* const * const pSampleIndicesPerStratum,
             unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
-            bool const outX, float* const pConcordantWeight = 0, float* const pDiscordantWeight = 0,
-            float* const pUninformativeWeight = 0, float* const pRelevantWeight = 0);
+            bool const outX, double* const pConcordantWeight = 0, double* const pDiscordantWeight = 0,
+            double* const pUninformativeWeight = 0, double* const pRelevantWeight = 0);
 
-    static float const
-    computeConcordanceIndex(float const* const pDiscreteSamples,
-            float const* const pContinuousSamples, float const* const pTimeSamples,
-            float const* const pSampleWeights,
+    static double const
+    computeConcordanceIndex(double const* const pDiscreteSamples,
+            double const* const pContinuousSamples, double const* const pTimeSamples,
+            double const* const pSampleWeights,
             unsigned int const* const * const pSampleIndicesPerStratum,
             unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
-            bool const outX, float* const pConcordantWeight = 0, float* const pDiscordantWeight = 0,
-            float* const pUninformativeWeight = 0, float* const pRelevantWeight = 0);
+            bool const outX, double* const pConcordantWeight = 0, double* const pDiscordantWeight = 0,
+            double* const pUninformativeWeight = 0, double* const pRelevantWeight = 0);
 
-    static float const
-    computeConcordanceIndex(float const* const pDiscreteSamplesX,
-            float const* const pDiscreteSamplesY, float const* const pTimeSamplesX,
-            float const* const pTimeSamplesY, float const* const pSampleWeights,
+    static double const
+    computeConcordanceIndex(double const* const pDiscreteSamplesX,
+            double const* const pDiscreteSamplesY, double const* const pTimeSamplesX,
+            double const* const pTimeSamplesY, double const* const pSampleWeights,
             unsigned int const* const * const pSampleIndicesPerStratum,
             unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
-            bool const outX, float* const pConcordantWeight = 0, float* const pDiscordantWeight = 0,
-            float* const pUninformativeWeight = 0, float* const pRelevantWeight = 0);
+            bool const outX, double* const pConcordantWeight = 0, double* const pDiscordantWeight = 0,
+            double* const pUninformativeWeight = 0, double* const pRelevantWeight = 0);
 
-    static float const
-    computeCramersV(float const* const pSamplesX, float const* const pSamplesY,
-            float const* const pSampleWeights,
-            unsigned int const* const * const pSampleIndicesPerStratum,
-            unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
-            unsigned int const bootstrapCount);
-
-    static float const
-    computeCramersV(float const* const pSamplesX, float const* const pSamplesY,
-            float const* const pSampleWeights, unsigned int const* const pSampleIndices,
-            unsigned int const sampleCount, float* const pTotalWeight = 0);
-
-    static float const
-    computeFisherTransformation(float const r);
-
-    static float const
-    computeFisherTransformationReverse(float const z);
-
-    static float const
-    computeMi(float const r);
-
-    static float const
-    computePearsonCorrelation(float const* const pSamplesX, float const* const pSamplesY,
-            float const* const pSampleWeights,
+    static double const
+    computeCramersV(double const* const pSamplesX, double const* const pSamplesY,
+            double const* const pSampleWeights,
             unsigned int const* const * const pSampleIndicesPerStratum,
             unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
             unsigned int const bootstrapCount);
 
-    static float const
-    computePearsonCorrelation(float const* const pSamplesX, float const* const pSamplesY,
-            float const* const pSampleWeights, unsigned int const* const pSampleIndices,
-            unsigned int const sampleCount, float* const pTotalWeight = 0);
+    static double const
+    computeCramersV(double const* const pSamplesX, double const* const pSamplesY,
+            double const* const pSampleWeights, unsigned int const* const pSampleIndices,
+            unsigned int const sampleCount, double* const pTotalWeight = 0);
+
+    static double const
+    computeFisherTransformation(double const r);
+
+    static double const
+    computeFisherTransformationReverse(double const z);
+
+    static double const
+    computeMi(double const r);
+
+    static double const
+    computePearsonCorrelation(double const* const pSamplesX, double const* const pSamplesY,
+            double const* const pSampleWeights,
+            unsigned int const* const * const pSampleIndicesPerStratum,
+            unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
+            unsigned int const bootstrapCount);
+
+    static double const
+    computePearsonCorrelation(double const* const pSamplesX, double const* const pSamplesY,
+            double const* const pSampleWeights, unsigned int const* const pSampleIndices,
+            unsigned int const sampleCount, double* const pTotalWeight = 0);
 
     static int const
     computeRandomNumber(unsigned int* const seed);
 
-    static float const
-    computeSomersD(float const c);
+    static double const
+    computeSomersD(double const c);
 
-    static float const
-    computeSpearmanCorrelation(float const* const pSamplesX, float const* const pSamplesY,
-            float const* const pSampleWeights,
+    static double const
+    computeSpearmanCorrelation(double const* const pSamplesX, double const* const pSamplesY,
+            double const* const pSampleWeights,
             unsigned int const* const * const pSampleIndicesPerStratum,
             unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
             unsigned int const bootstrapCount, unsigned int const sampleCount);
 
-    static float const
-    computeVariance(float const* const pSamples, unsigned int const sampleCount);
+    static double const
+    computeVariance(double const* const pSamples, unsigned int const sampleCount);
 
     static void const
-    placeOrders(float const* const pSamples, float* const pOrders,
+    placeOrders(double const* const pSamples, double* const pOrders,
             unsigned int const* const * const pSampleIndicesPerStratum,
             unsigned int const* const pSampleCountPerStratum,
             unsigned int const sampleStratumCount);
 
     static void const
-    placeRanksFromOrders(float const* const pSamplesX, float const* const pSamplesY,
-            float const* const pOrdersX, float const* const pOrdersY, float* const pRanksX,
-            float* const pRanksY, unsigned int const* const * const pSampleIndicesPerStratum,
+    placeRanksFromOrders(double const* const pSamplesX, double const* const pSamplesY,
+            double const* const pOrdersX, double const* const pOrdersY, double* const pRanksX,
+            double* const pRanksY, unsigned int const* const * const pSampleIndicesPerStratum,
             unsigned int const* const pSampleCountPerStratum,
             unsigned int const sampleStratumCount);
 
     static void const
-    placeRanksFromSamples(float const* const pSamples, float* const pRanks,
+    placeRanksFromSamples(double const* const pSamples, double* const pRanks,
             unsigned int const* const * const pSampleIndicesPerStratum,
             unsigned int const* const pSampleCountPerStratum,
             unsigned int const sampleStratumCount);
 
     static void const
     placeStratificationData(unsigned int const* const pSampleStrata,
-            float const* const pSampleWeights, unsigned int** const pSampleIndicesPerStratum,
+            double const* const pSampleWeights, unsigned int** const pSampleIndicesPerStratum,
             unsigned int* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
             unsigned int const sampleCount);
 };

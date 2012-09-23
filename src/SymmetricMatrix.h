@@ -14,15 +14,15 @@ private:
 public:
     SymmetricMatrix(unsigned int const rowCount);
 
-    SymmetricMatrix(float* const pData, unsigned int const rowCount);
+    SymmetricMatrix(double* const pData, unsigned int const rowCount);
 
     virtual
     ~SymmetricMatrix();
 
-    virtual float&
+    virtual double&
     at(unsigned int const i, unsigned int const j);
 
-    virtual float const&
+    virtual double const&
     at(unsigned int const i, unsigned int const j) const;
 };
 
