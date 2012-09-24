@@ -17,7 +17,7 @@ private:
     Filter&
     operator=(const Filter&);
 
-    unsigned int const* const mpChildrenCountPerLevel;
+    int const* const mpChildrenCountPerLevel;
     unsigned int const mLevelCount;
     Matrix* const mpFeatureInformationMatrix;
     unsigned int* const mpStartingIndexPerLevel;
@@ -25,7 +25,7 @@ private:
     unsigned int mTreeElementCount;
 
 public:
-    Filter(unsigned int const* const pChildrenCountPerLevel, unsigned int const levelCount,
+    Filter(int const* const pChildrenCountPerLevel, unsigned int const levelCount,
             Matrix* const pFeatureInformationMatrix, unsigned int const targetFeatureIndex);
 
     ~Filter();
@@ -35,6 +35,9 @@ public:
 
     inline unsigned int const
     getParentAbsoluteIndex(unsigned int const absoluteIndex, unsigned int const level) const;
+
+    void const
+    getSolutions(std::vector<int>* solutions) const;
 
     bool const
     hasAncestorByFeatureIndex(unsigned int const absoluteIndex, unsigned int const featureIndex,
@@ -47,8 +50,6 @@ public:
     bool const
     isRedundantPath(unsigned int const absoluteIndex, unsigned int const featureIndex,
             unsigned int const level) const;
-
-    operator std::vector<unsigned int>() const;
 
     void const
     placeElements(unsigned int const startingIndex, unsigned int childrenCount,

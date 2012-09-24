@@ -43,7 +43,6 @@ setMethod("initialize", signature("mRMRe.Filter"),
             
     ## Level processing
     
-    ## FIXME : Not sure algorithm for combinatorial prediction is ok
     if (missing(levels))
         stop("levels must be provided")
     else if ((prod(levels) - 1) > choose(featureCount(data) - 1, length(levels)))
@@ -54,20 +53,25 @@ setMethod("initialize", signature("mRMRe.Filter"),
     
     target_index <- as.integer(expandFeatureIndices(data, target_index)) - 1
     
+    ## Filter
+
     wrap <- function(i) t(matrix(i[length(i):1], nrow = length(levels), ncol = length(i) / length(levels)))
     
-    ## Filter
+    mi_matrix <- as.numeric(matrix(NA, ncol = ncol(data@data), nrow = ncol(data@data)))
     
-    filter <- .Call(mRMRe:::.C_export_filter, .Object@levels, as.vector(data@data), as.vector(data@priors),
-            as.numeric(prior_weight), data@strata, data@weights, data@feature_types, nrow(data@data), ncol(data@data),
-            as.integer(length(unique(data@strata))), target_index, uses_ranks, outX, bootstrap_count)
-    filter$solutions <- wrap(filter$solutions)
-    filter$mi_matrix <- matrix(filter$mi_matrix, ncol = sqrt(length(filter$mi_matrix)),
-            nrow = sqrt(length(filter$mi_matrix)))
+    filter <- .Call(mRMRe:::.C_export_filter, as.integer(.Object@levels), as.numeric(data@data),
+            as.numeric(data@priors), as.numeric(prior_weight), as.integer(data@strata), as.numeric(data@weights),
+            as.integer(data@feature_types), as.integer(nrow(data@data)), as.integer(ncol(data@data)),
+            as.integer(length(unique(data@strata))), as.integer(target_index), as.integer(uses_ranks), as.integer(outX),
+            as.integer(bootstrap_count), mi_matrix)
     
-    .Object@solutions <- matrix(compressFeatureIndices(data, as.vector(filter$solutions) + 1),
-            nrow = nrow(filter$solutions), ncol = ncol(filter$solutions))
-    .Object@mi_matrix <- compressFeatureMatrix(data, filter$mi_matrix)
+    mi_matrix <- matrix(mi_matrix, ncol = ncol(data@data), nrow = ncol(data@data))
+    
+    solutions <- wrap(filter)
+    
+    .Object@solutions <- matrix(compressFeatureIndices(data, as.integer(solutions) + 1), nrow = nrow(solutions),
+            ncol = ncol(solutions))
+    .Object@mi_matrix <- compressFeatureMatrix(data, mi_matrix)
     .Object@feature_names <- featureNames(data)
 
     return(.Object)
@@ -158,7 +162,6 @@ setMethod("causality", signature("mRMRe.Filter"), function(object)
                 {
                     ## FIXME : It somehow ends up on NA variables, which is not supposed to happen
                     ## It doesn't happen all the time though
-                    
                     
                     #if (is.na(object@mi_matrix[i, j]) || is.na(object@mi_matrix[i, target_index]) || is.na(object@mi_matrix[j, target_index]))
                     #    print ("WTF")

@@ -24,7 +24,7 @@ mim(data) # Gives MI matrix
 mim(data, method = "cor") # Gives correlation matrix
 
 filter_1 <- mRMR.ensemble("mRMRe.Filter", data = data, target_index = 1, feature_count = 3, solution_count = 1)
-mim(data)
+# mim(data)
 mim(filter_1)
 
 filter_2 <- mRMR.ensemble("mRMRe.Filter", data = data, target_index = 2, feature_count = 3, solution_count = 1)

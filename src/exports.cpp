@@ -87,45 +87,33 @@ export_association(SEXP R_SamplesA, SEXP R_SamplesB, SEXP R_SamplesC, SEXP R_Sam
 }
 
 extern "C" SEXP
-export_filter(SEXP R_ChildrenCountPerLevel, SEXP R_DataMatrix, SEXP R_PriorsMatrix,
-        SEXP R_PriorsWeight, SEXP R_SampleStrata, SEXP R_SampleWeights, SEXP R_FeatureTypes,
-        SEXP R_SampleCount, SEXP R_FeatureCount, SEXP R_SampleStratumCount,
-        SEXP R_TargetFeatureIndex, SEXP R_UsesRanks, SEXP R_OutX, SEXP R_BootstrapCount)
+export_filter(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, SEXP priorsWeight,
+        SEXP sampleStrata, SEXP sampleWeights, SEXP featureTypes, SEXP sampleCount,
+        SEXP featureCount, SEXP sampleStratumCount, SEXP targetFeatureIndex, SEXP usesRanks,
+        SEXP outX, SEXP bootstrapCount, SEXP miMatrix)
 {
-//    std::vector<unsigned int> S_ChildrenCountPerLevel = Rcpp::as < std::vector<unsigned int>
-//            > (R_ChildrenCountPerLevel);
-//    std::vector<double> S_DataMatrix = Rcpp::as < std::vector<double> > (R_DataMatrix);
-//    std::vector<double> S_PriorsMatrix = Rcpp::as < std::vector<double> > (R_PriorsMatrix);
-//    double const priors_weight = Rcpp::as<double>(R_PriorsWeight);
-//    std::vector<unsigned int> S_SampleStrata = Rcpp::as < std::vector<unsigned int>
-//            > (R_SampleStrata);
-//    std::vector<double> S_SampleWeights = Rcpp::as < std::vector<double> > (R_SampleWeights);
-//    std::vector<unsigned int> S_FeatureTypes = Rcpp::as < std::vector<unsigned int>
-//            > (R_FeatureTypes);
-//    unsigned int const sample_count = Rcpp::as<unsigned int>(R_SampleCount);
-//    unsigned int const feature_count = Rcpp::as<unsigned int>(R_FeatureCount);
-//    unsigned int const sample_stratum_count = Rcpp::as<unsigned int>(R_SampleStratumCount);
-//    unsigned int const bootstrap_count = Rcpp::as<unsigned int>(R_BootstrapCount);
-//    bool const uses_ranks = Rcpp::as<bool>(R_UsesRanks);
-//    bool const outX = Rcpp::as<bool>(R_OutX);
-//    Matrix const priors_matrix(&S_PriorsMatrix[0], feature_count, feature_count);
-//    Matrix const* const p_priors_matrix =
-//            (S_PriorsMatrix.size() == feature_count * feature_count) ? &priors_matrix : 0;
-//    Data data(&S_DataMatrix[0], p_priors_matrix, priors_weight, sample_count, feature_count,
-//            &S_SampleStrata[0], &S_SampleWeights[0], &S_FeatureTypes[0], sample_stratum_count,
-//            uses_ranks, outX, bootstrap_count);
-//    MutualInformationMatrix const mi_matrix(&data);
-//    unsigned int const target_feature_index = Rcpp::as<unsigned int>(R_TargetFeatureIndex);
-//    Filter filter(&S_ChildrenCountPerLevel[0], S_ChildrenCountPerLevel.size(),
-//            const_cast<MutualInformationMatrix* const >(&mi_matrix), target_feature_index);
-//    filter.build();
-//    return Rcpp::List::create(
-//            Rcpp::Named("solutions") = Rcpp::wrap < std::vector<unsigned int>
-//                    > (static_cast<std::vector<unsigned int> >(filter)),
-//            Rcpp::Named("mi_matrix") = Rcpp::wrap < std::vector<double>
-//                    > (static_cast<std::vector<double> >(mi_matrix)));
+    Matrix const priors_matrix(REAL(priorsMatrix), INTEGER(featureCount)[0],
+            INTEGER(featureCount)[0]);
+    Matrix const* const p_priors_matrix =
+            LENGTH(priorsMatrix) == INTEGER(featureCount)[0] * INTEGER(featureCount)[0] ?
+                    &priors_matrix : 0;
+    Data data(REAL(dataMatrix), p_priors_matrix, REAL(priorsWeight)[0], INTEGER(sampleCount)[0],
+            INTEGER(featureCount)[0], INTEGER(sampleStrata), REAL(sampleWeights),
+            INTEGER(featureTypes), INTEGER(sampleStratumCount)[0], INTEGER(usesRanks)[0] != 0,
+            INTEGER(outX)[0] != 0, INTEGER(bootstrapCount)[0]);
+    MutualInformationMatrix mi_matrix(&data, REAL(miMatrix));
 
-    return R_NilValue;
+    Filter filter(INTEGER(childrenCountPerLevel), LENGTH(childrenCountPerLevel), &mi_matrix,
+            INTEGER(targetFeatureIndex)[0]);
+    filter.build();
+    std::vector<int> filter_solutions;
+    filter.getSolutions(&filter_solutions);
+    SEXP solutions;
+    PROTECT(solutions = allocVector(INTSXP, filter_solutions.size()));
+    memcpy(&filter_solutions[0], INTEGER(solutions), sizeof(int) * filter_solutions.size());
+    UNPROTECT(1);
+
+    return solutions;
 }
 
 extern "C" SEXP

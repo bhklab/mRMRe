@@ -1,6 +1,6 @@
 #include "Filter.h"
 
-Filter::Filter(unsigned int const* const pChildrenCountPerLevel, unsigned int const levelCount,
+Filter::Filter(int const* const pChildrenCountPerLevel, unsigned int const levelCount,
         Matrix* const pFeatureInformationMatrix, unsigned int const targetFeatureIndex) :
         mpChildrenCountPerLevel(pChildrenCountPerLevel), mLevelCount(levelCount), mpFeatureInformationMatrix(
                 pFeatureInformationMatrix), mpStartingIndexPerLevel(
@@ -55,6 +55,25 @@ Filter::getParentAbsoluteIndex(unsigned int const absoluteIndex, unsigned int co
             + mpStartingIndexPerLevel[level - 1];
 }
 
+void const
+Filter::getSolutions(std::vector<int>* solutions) const
+{
+    solutions->reserve(mLevelCount * (mTreeElementCount - mpStartingIndexPerLevel[mLevelCount]));
+
+    for (unsigned int end_element_absolute_index = mTreeElementCount - 1;
+            end_element_absolute_index >= mpStartingIndexPerLevel[mLevelCount];
+            --end_element_absolute_index)
+    {
+        unsigned int element_absolute_index = end_element_absolute_index;
+
+        for (unsigned int level = mLevelCount; level > 0; --level)
+        {
+            solutions->push_back(mpIndexTree[element_absolute_index]);
+            element_absolute_index = getParentAbsoluteIndex(element_absolute_index, level);
+        }
+    }
+}
+
 bool const
 Filter::hasAncestorByFeatureIndex(unsigned int const absoluteIndex, unsigned int const featureIndex,
         unsigned int level) const
@@ -106,27 +125,6 @@ Filter::isRedundantPath(unsigned int const absoluteIndex, unsigned int const fea
 //            return true;
 
     return false;
-}
-
-Filter::operator std::vector<unsigned int>() const
-{
-    std::vector<unsigned int> paths;
-    paths.reserve(mLevelCount * (mTreeElementCount - mpStartingIndexPerLevel[mLevelCount]));
-
-    for (unsigned int end_element_absolute_index = mTreeElementCount - 1;
-            end_element_absolute_index >= mpStartingIndexPerLevel[mLevelCount];
-            --end_element_absolute_index)
-    {
-        unsigned int element_absolute_index = end_element_absolute_index;
-
-        for (unsigned int level = mLevelCount; level > 0; --level)
-        {
-            paths.push_back(mpIndexTree[element_absolute_index]);
-            element_absolute_index = getParentAbsoluteIndex(element_absolute_index, level);
-        }
-    }
-
-    return paths;
 }
 
 void const
