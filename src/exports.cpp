@@ -81,7 +81,7 @@ export_filter(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, SE
     filter.getSolutions(&filter_solutions);
     SEXP solutions;
     PROTECT(solutions = allocVector(INTSXP, filter_solutions.size()));
-    memcpy(&filter_solutions[0], INTEGER(solutions), sizeof(int) * filter_solutions.size());
+    memcpy(INTEGER(solutions), &filter_solutions[0], sizeof(int) * filter_solutions.size());
     UNPROTECT(1);
 
     return solutions;
