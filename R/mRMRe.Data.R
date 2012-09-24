@@ -221,6 +221,31 @@ setMethod("mim", signature("mRMRe.Data"),
     return(object@mi_matrix)
 })
 
+## freqMim
+
+## FIXME : find a new name for this function
+## FIXME : cache it, or not? is this weighed? is this stratified?
+## FIXME : this assumes EVERYTHING is continous; how do we restrict this?
+
+setMethod("freqMim", signature("mRMRe.Data"), function(object)
+{
+    expanded_indices <- expandFeatureIndices(object, seq(object@feature_names))
+    
+    freq_mim <- sapply(expanded_indices, function(i)
+    {
+        sapply(expanded_indices, function(j)
+        {
+            mean(object@data[, i, drop = TRUE] < object@data[, j, drop = TRUE], use = "complete.obs")
+        })
+    })
+
+    diag(freq_mim) <- NA
+    rownames(freq_mim) <- object@feature_names
+    colnames(freq_mim) <- object@feature_names
+    
+    return(freq_mim)
+})
+
 ## expandFeatureMatrix
 
 setMethod("expandFeatureMatrix", signature("mRMRe.Data"), function(object, matrix)
@@ -264,10 +289,9 @@ setMethod("compressFeatureMatrix", signature("mRMRe.Data"), function(object, mat
 setMethod("expandFeatureIndices", signature("mRMRe.Data"), function(object, indices)
 {
     adaptor <- which(object@feature_types == 3)
-    if(length(adaptor) != 0)
-    {
+
+    if (length(adaptor) != 0)
         indices <- sapply(indices, function(i) i + sum(sapply(seq(adaptor), function(j) i >= (adaptor[[j]] - j + 1))))
-    }
 
     return(indices)
 })
@@ -277,10 +301,9 @@ setMethod("expandFeatureIndices", signature("mRMRe.Data"), function(object, indi
 setMethod("compressFeatureIndices", signature("mRMRe.Data"), function(object, indices)
 {
     adaptor <- which(object@feature_types == 3)
-    if(length(adaptor) != 0)
-    {
+    
+    if (length(adaptor) != 0)
         indices <- sapply(indices, function(i) i - sum(i >= adaptor))
-    }
     
     return(indices)
 })

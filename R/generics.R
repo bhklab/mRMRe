@@ -31,6 +31,9 @@ setGeneric("mim", function(object, method = c("MI", "cor"), ...)
     return(matrix)
 })
 
+## FIXME : find a new name for this function 
+setGeneric("freqMim", function(object) standardGeneric("freqMim"))
+
 setGeneric("expandFeatureMatrix", function(object, matrix) standardGeneric("expandFeatureMatrix"))
 
 setGeneric("compressFeatureMatrix", function(object, matrix) standardGeneric("compressFeatureMatrix"))
