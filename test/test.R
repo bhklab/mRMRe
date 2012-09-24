@@ -36,6 +36,8 @@ network <- new("mRMRe.Network", data = data, target_indices = c(1, 2), levels = 
 mim(data)
 mim(network)
 
+adjacencyMatrix(network)
+
 causality(network)[1, , ]
 causality(filter_1)
 

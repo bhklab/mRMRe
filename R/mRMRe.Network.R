@@ -32,7 +32,7 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
             ## FIXME : Code might not handle too brutal of a cutoff (mi_threshold and causality_threshold...)
             
             solutions <- shrink(filter, mi_threshold = mi_threshold, causality_threshold = causality_threshold)
-            mi_matrix <- mim(filter, method = "cor")
+            #mi_matrix <- mim(filter, method = "cor")
             
             .Object@topologies[[target_index]] <<- solutions
 
@@ -48,8 +48,32 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
             
             return(unlist(solutions))
         }))
-
+    
         target_indices <<- intersect(target_indices, which(sapply(.Object@topologies, is.null)))
+    })
+
+    ## Perform last-layer linking
+    
+    
+    ## FIXME: Validity checks and efficiency assessment needed here
+    
+    lapply(target_indices, function(target_index)
+    {
+        filter <- new("mRMRe.Filter", data = data, prior_weight = prior_weight, target_index = target_index,
+                levels = levels, ...)
+        
+        solutions <- shrink(filter, mi_threshold = mi_threshold, causality_threshold = causality_threshold)
+        
+        new_solutions <- lapply(solutions, function(solution)
+                    as.list(unlist(lapply(solution, function(feature)
+                                            {
+                                if (!is.null(.Object@topologies[[feature]]))
+                                    return(feature)
+                                else
+                                    return(NULL)
+                            }))))   
+            
+        .Object@topologies[[target_index]] <<- new_solutions
     })
 
     return(.Object)

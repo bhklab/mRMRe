@@ -142,6 +142,8 @@ setReplaceMethod("sampleStrata", signature("mRMRe.Data"), function(object, value
         object@strata <- as.integer(value) - 1
     
     object@mi_matrix <- matrix(nrow = 0, ncol = 0)
+    
+    return(object)
 })
 
 ## sampleWeights
@@ -164,6 +166,8 @@ setReplaceMethod("sampleWeights", signature("mRMRe.Data"), function(object, valu
         object@weights <- as.numeric(value)
     
     object@mi_matrix <- matrix(nrow = 0, ncol = 0)
+    
+    return(object)
 })
 
 ## priors
@@ -186,6 +190,8 @@ setReplaceMethod("priors", signature("mRMRe.Data"), function(object, value)
         .Object@priors <- expandFeatureMatrix(.Object, value)
     
     object@mi_matrix <- matrix(nrow = 0, ncol = 0)
+    
+    return(object)
 })
 
 ## mim
