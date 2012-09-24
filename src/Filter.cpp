@@ -115,6 +115,7 @@ Filter::isRedundantPath(unsigned int const absoluteIndex, unsigned int const fea
     unsigned int const upper_bound =
             (level == mLevelCount) ? mTreeElementCount : mpStartingIndexPerLevel[level + 1];
 
+    // FIXME: Commenting out this loop loses the segfault. Why?
     for (unsigned int i = mpStartingIndexPerLevel[level]; i < upper_bound; ++i)
         if (hasAncestorByFeatureIndex(i, featureIndex, level)
                 && hasAncestorByFeatureIndex(absoluteIndex, mpIndexTree[i], level))

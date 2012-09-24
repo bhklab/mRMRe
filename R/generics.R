@@ -55,16 +55,16 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
 {
     ## FIXME : Recode correlate function ...
     
-    #        double statistic;
-    #        double concordant_weight;
-    #        double discordant_weight;
-    #        double uninformative_weight;
-    #        double relevant_weight;
+    #        double statistic; out[0]
+    #        double concordant_weight; out[1]
+    #        double discordant_weight; out[2]
+    #        double uninformative_weight; out[3]
+    #        double relevant_weight; out[4]
 }
 
 `get.thread.count` <- function()
 {
-    thread_count <- as.integer(0)
+    thread_count <- vector(mode = "integer", length = 0)
     
     .Call(mRMRe:::.C_get_thread_count, thread_count)
     
