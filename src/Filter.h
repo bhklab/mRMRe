@@ -44,10 +44,6 @@ public:
             unsigned int level) const;
 
     bool const
-    hasSamePath(unsigned int const absoluteIndex1, unsigned int const absoluteIndex2,
-            unsigned int const level) const;
-
-    bool const
     isRedundantPath(unsigned int const absoluteIndex, unsigned int const featureIndex,
             unsigned int const level) const;
 

@@ -20,10 +20,9 @@ Filter::Filter(int const* const pChildrenCountPerLevel, unsigned int const level
 
     mTreeElementCount = cumulative_element_count;
     mpIndexTree = new unsigned int[cumulative_element_count];
-    mpIndexTree[0] = targetFeatureIndex;
 
-    for (unsigned int i = 1; i < mTreeElementCount; ++i)
-        mpIndexTree[i] = 0;
+    for (unsigned int i = 0; i < mTreeElementCount; ++i)
+        mpIndexTree[i] = targetFeatureIndex;
 }
 
 Filter::~Filter()
@@ -78,6 +77,8 @@ bool const
 Filter::hasAncestorByFeatureIndex(unsigned int const absoluteIndex, unsigned int const featureIndex,
         unsigned int level) const
 {
+    // This function only considers the ancestry of the putative absolute/featureIndex
+
     unsigned int parent_absolute_index = absoluteIndex;
 
     for (unsigned int i = level; i > 0; --i)
@@ -92,38 +93,40 @@ Filter::hasAncestorByFeatureIndex(unsigned int const absoluteIndex, unsigned int
 }
 
 bool const
-Filter::hasSamePath(unsigned int const absoluteIndex1, unsigned int const absoluteIndex2,
-        unsigned int const level) const
-{
-    unsigned int parent_absolute_index = absoluteIndex1;
-
-    for (unsigned int i = level; i > 0; --i)
-    {
-        parent_absolute_index = getParentAbsoluteIndex(parent_absolute_index, i);
-
-        if (!hasAncestorByFeatureIndex(parent_absolute_index, mpIndexTree[absoluteIndex2], i))
-            return false;
-    }
-
-    return true;
-}
-
-bool const
 Filter::isRedundantPath(unsigned int const absoluteIndex, unsigned int const featureIndex,
         unsigned int const level) const
 {
     unsigned int const upper_bound =
             (level == mLevelCount) ? mTreeElementCount : mpStartingIndexPerLevel[level + 1];
 
-    // FIXME: Commenting out this loop loses the segfault. Why?
-    for (unsigned int i = mpStartingIndexPerLevel[level]; i < upper_bound; ++i)
-        if (hasAncestorByFeatureIndex(i, featureIndex, level)
-                && hasAncestorByFeatureIndex(absoluteIndex, mpIndexTree[i], level))
-            return true;
-
 //    for (unsigned int i = mpStartingIndexPerLevel[level]; i < upper_bound; ++i)
-//        if (hasSamePath(absoluteIndex, i, level))
-//            return true;
+//    {
+//        if (mpIndexTree[i] != mpIndexTree[0])
+//        {
+//            unsigned int parent_absolute_index = absoluteIndex;
+//            unsigned int parent_feature_index = featureIndex;
+//
+//            bool is_redundant = true;
+//
+//            for (unsigned int j = level; j > 0 && is_redundant; --j)
+//            {
+//                if (!hasAncestorByFeatureIndex(i, parent_feature_index, j)
+//                        && parent_feature_index != mpIndexTree[i])
+//                    is_redundant = false;
+//
+//                parent_absolute_index = getParentAbsoluteIndex(parent_absolute_index, j);
+//                parent_feature_index = mpIndexTree[parent_absolute_index];
+//            }
+//
+//            if (is_redundant)
+//                return true;
+//        }
+//    }
+
+    for (unsigned int i = mpStartingIndexPerLevel[level]; i < upper_bound; ++i)
+         if (hasAncestorByFeatureIndex(i, featureIndex, level)
+                 && hasAncestorByFeatureIndex(absoluteIndex, mpIndexTree[i], level))
+             return true;
 
     return false;
 }
@@ -179,11 +182,14 @@ Filter::placeElements(unsigned int const startingIndex, unsigned int childrenCou
         unsigned int children_counter = 0;
         unsigned int i = counter - 1;
 
-        while (i >= 0 && children_counter < childrenCount)
+        // Sorry about this
+        //       ||
+        //       \/
+        // i < counter depends on the fact that i-- causes an overflow on the unsigned int
+        while (i < counter && children_counter < childrenCount)
         {
             unsigned int const index = p_candidate_feature_indices[p_order[i--]];
 
-            // FIXME: Segfault caused by isRedundantPath routine
             if (!isRedundantPath(startingIndex + children_counter, index, level))
                 mpIndexTree[startingIndex + children_counter++] = index;
         }
