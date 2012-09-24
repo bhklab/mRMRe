@@ -1,87 +1,58 @@
 #include "exports.h"
 
 extern "C" SEXP
-export_association(SEXP R_SamplesA, SEXP R_SamplesB, SEXP R_SamplesC, SEXP R_SampleStrata,
-        SEXP R_SampleWeights, SEXP R_SampleStratumCount, SEXP R_OutX, SEXP R_BootstrapCount,
-        SEXP R_Method)
+export_association(SEXP samplesA, SEXP samplesB, SEXP samplesC, SEXP sampleStrata,
+        SEXP sampleWeights, SEXP sampleStratumCount, SEXP outX, SEXP bootstrapCount, SEXP method,
+        SEXP out)
 {
-//    std::vector<double> S_SamplesA = Rcpp::as < std::vector<double> > (R_SamplesA);
-//    std::vector<double> S_SamplesB = Rcpp::as < std::vector<double> > (R_SamplesB);
-//    std::vector<double> S_SamplesC = Rcpp::as < std::vector<double> > (R_SamplesC);
-//    std::vector<unsigned int> S_SampleStrata = Rcpp::as < std::vector<unsigned int>
-//            > (R_SampleStrata);
-//    std::vector<double> S_SampleWeights = Rcpp::as < std::vector<double> > (R_SampleWeights);
-//    unsigned int const sample_stratum_count = Rcpp::as<unsigned int>(R_SampleStratumCount);
-//    bool const outX = Rcpp::as<bool>(R_OutX);
-//    unsigned int const bootstrap_count = Rcpp::as<unsigned int>(R_BootstrapCount);
-//    std::string S_Method = Rcpp::as < std::string > (R_Method);
-//
-//    unsigned int const sample_count = S_SamplesA.size();
-//    unsigned int** p_sample_indices_per_stratum = new unsigned int*[sample_stratum_count];
-//    unsigned int* const p_sample_count_per_stratum = new unsigned int[sample_stratum_count];
-//    Math::placeStratificationData(&S_SampleStrata[0], &S_SampleWeights[0],
-//            p_sample_indices_per_stratum, p_sample_count_per_stratum, sample_stratum_count,
-//            sample_count);
-//
-//    bool const is_pearson = S_Method.compare("pearson") == 0;
-//    bool const is_spearman = S_Method.compare("spearman") == 0;
-//    bool const is_cramers_v = S_Method.compare("cramer") == 0;
-//    bool const is_concordance_index = S_Method.compare("cindex") == 0;
-//    bool const is_concordance_index_with_time = S_Method.compare("cindex_with_time") == 0;
-//
-//    Rcpp::List result;
-//
-//    if (is_pearson || is_spearman || is_cramers_v)
-//    {
-//        double statistic;
-//
-//        if (is_pearson)
-//            statistic = Math::computePearsonCorrelation(&S_SamplesA[0], &S_SamplesB[0],
-//                    &S_SampleWeights[0], p_sample_indices_per_stratum, p_sample_count_per_stratum,
-//                    sample_stratum_count, bootstrap_count);
-//        else if (is_spearman)
-//            statistic = Math::computeSpearmanCorrelation(&S_SamplesA[0], &S_SamplesB[0],
-//                    &S_SampleWeights[0], p_sample_indices_per_stratum, p_sample_count_per_stratum,
-//                    sample_stratum_count, bootstrap_count, sample_count);
-//        else
-//            statistic = Math::computeCramersV(&S_SamplesA[0], &S_SamplesB[0], &S_SampleWeights[0],
-//                    p_sample_indices_per_stratum, p_sample_count_per_stratum, sample_stratum_count,
-//                    bootstrap_count);
-//
-//        result = Rcpp::List::create(Rcpp::Named("statistic") = Rcpp::wrap<double>(statistic));
-//    }
-//    else if (is_concordance_index)
-//    {
-//        double statistic;
-//        double concordant_weight;
-//        double discordant_weight;
-//        double uninformative_weight;
-//        double relevant_weight;
-//
-//        if (S_SamplesC.size() == 0)
-//            statistic = Math::computeConcordanceIndex(&S_SamplesA[0], &S_SamplesB[0],
-//                    &S_SampleWeights[0], p_sample_indices_per_stratum, p_sample_count_per_stratum,
-//                    sample_stratum_count, outX, &concordant_weight, &discordant_weight,
-//                    &uninformative_weight, &relevant_weight);
-//        else
-//            statistic = Math::computeConcordanceIndex(&S_SamplesA[0], &S_SamplesB[0],
-//                    &S_SamplesC[0], &S_SampleWeights[0], p_sample_indices_per_stratum,
-//                    p_sample_count_per_stratum, sample_stratum_count, outX, &concordant_weight,
-//                    &discordant_weight, &uninformative_weight, &relevant_weight);
-//
-//        result = Rcpp::List::create(Rcpp::Named("statistic") = Rcpp::wrap<double>(statistic),
-//                Rcpp::Named("concordant_weight") = Rcpp::wrap<double>(concordant_weight),
-//                Rcpp::Named("discordant_weight") = Rcpp::wrap<double>(discordant_weight),
-//                Rcpp::Named("uninformative_weight") = Rcpp::wrap<double>(uninformative_weight),
-//                Rcpp::Named("relevant_weight") = Rcpp::wrap<double>(relevant_weight));
-//    }
-//
-//    delete[] p_sample_count_per_stratum;
-//    for (unsigned int i = 0; i < sample_stratum_count; ++i)
-//        delete[] p_sample_indices_per_stratum[i];
-//    delete[] p_sample_indices_per_stratum;
-//
-//    return result;
+    unsigned int const sample_count = LENGTH(samplesA);
+    unsigned int** p_sample_indices_per_stratum = new unsigned int*[INTEGER(sampleStratumCount)[0]];
+    unsigned int* const p_sample_count_per_stratum =
+            new unsigned int[INTEGER(sampleStratumCount)[0]];
+    Math::placeStratificationData(INTEGER(sampleStrata), REAL(sampleWeights),
+            p_sample_indices_per_stratum, p_sample_count_per_stratum,
+            INTEGER(sampleStratumCount)[0], sample_count);
+
+    bool const is_pearson = INTEGER(method)[0] == 0;
+    bool const is_spearman = INTEGER(method)[0] == 1;
+    bool const is_cramers_v = INTEGER(method)[0] == 2;
+    bool const is_concordance_index = INTEGER(method)[0] == 3;
+    bool const is_concordance_index_with_time = INTEGER(method)[0] == 4;
+
+    if (is_pearson || is_spearman || is_cramers_v)
+    {
+        if (is_pearson)
+            REAL(out)[0] = Math::computePearsonCorrelation(REAL(samplesA), REAL(samplesB),
+                    REAL(sampleWeights), p_sample_indices_per_stratum, p_sample_count_per_stratum,
+                    INTEGER(sampleStratumCount)[0], INTEGER(bootstrapCount)[0]);
+        else if (is_spearman)
+            REAL(out)[0] = Math::computeSpearmanCorrelation(REAL(samplesA), REAL(samplesB),
+                    REAL(sampleWeights), p_sample_indices_per_stratum, p_sample_count_per_stratum,
+                    INTEGER(sampleStratumCount)[0], INTEGER(bootstrapCount)[0], sample_count);
+        else
+            REAL(out)[0] = Math::computeCramersV(REAL(samplesA), REAL(samplesB),
+                    REAL(sampleWeights), p_sample_indices_per_stratum, p_sample_count_per_stratum,
+                    INTEGER(sampleStratumCount)[0], INTEGER(bootstrapCount)[0]);
+    }
+    else
+    {
+        if (LENGTH(samplesC) == 0)
+            REAL(out)[0] = Math::computeConcordanceIndex(REAL(samplesA), REAL(samplesB),
+                    REAL(sampleWeights), p_sample_indices_per_stratum, p_sample_count_per_stratum,
+                    INTEGER(sampleStratumCount)[0], INTEGER(outX)[0] != 0, &(REAL(out)[1]),
+                    &(REAL(out)[2]), &(REAL(out)[3]), &(REAL(out)[4]));
+        else
+            REAL(out)[0] = Math::computeConcordanceIndex(REAL(samplesA), REAL(samplesB),
+                    REAL(samplesC), REAL(sampleWeights), p_sample_indices_per_stratum,
+                    p_sample_count_per_stratum, INTEGER(sampleStratumCount)[0],
+                    INTEGER(outX)[0] != 0, &(REAL(out)[1]), &(REAL(out)[2]), &(REAL(out)[3]),
+                    &(REAL(out)[4]));
+    }
+
+    delete[] p_sample_count_per_stratum;
+    for (unsigned int i = 0; i < INTEGER(sampleStratumCount)[0]; ++i)
+        delete[] p_sample_indices_per_stratum[i];
+    delete[] p_sample_indices_per_stratum;
 
     return R_NilValue;
 }

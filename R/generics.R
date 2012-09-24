@@ -51,6 +51,17 @@ setGeneric("adjacencyMatrix", function(object) standardGeneric("adjacencyMatrix"
 
 setGeneric("visualize", function(object) standardGeneric("visualize"))
 
+`correlate` <- function()
+{
+    ## FIXME : Recode correlate function ...
+    
+    #        double statistic;
+    #        double concordant_weight;
+    #        double discordant_weight;
+    #        double uninformative_weight;
+    #        double relevant_weight;
+}
+
 `get.thread.count` <- function()
 {
     thread_count <- as.integer(0)

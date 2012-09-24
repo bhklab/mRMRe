@@ -1,21 +1,21 @@
 #ifndef mRMRe_exports_h
 #define mRMRe_exports_h
 
-// #include <Rcpp.h>
-
 #include <R.h>
 #include <Rinternals.h>
 #include <Rdefines.h>
 
-// #include <string>
-
 #include <cstdlib>
-
 #include <vector>
 
 #include "Filter.h"
 #include "Math.h"
 #include "MutualInformationMatrix.h"
+
+extern "C" SEXP
+export_association(SEXP samplesA, SEXP samplesB, SEXP samplesC, SEXP sampleStrata,
+        SEXP sampleWeights, SEXP sampleStratumCount, SEXP outX, SEXP bootstrapCount, SEXP method,
+        SEXP out);
 
 extern "C" SEXP
 export_filter(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, SEXP priorsWeight,
