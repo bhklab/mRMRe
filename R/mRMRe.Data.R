@@ -64,9 +64,9 @@ setMethod("initialize", signature("mRMRe.Data"), function(.Object, data, strata,
 
 setMethod("show", signature("mRMRe.Data"), function(object)
 {
-    ## FIXME : Implement show method for this S4 class
+    ## FIXME: More detailed show method?
     
-    stop("No show method!")
+    print(str(object))
 })
 
 ## featureData

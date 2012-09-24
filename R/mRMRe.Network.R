@@ -59,9 +59,9 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
 
 setMethod("show", signature("mRMRe.Network"), function(object)
 {
-    ## FIXME : Implement show method for this S4 class
+    ## FIXME: More detailed show method?
     
-    stop("No show method!")
+    print(str(object))
 })
 
 ## featureNames
