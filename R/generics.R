@@ -31,9 +31,6 @@ setGeneric("mim", function(object, method = c("MI", "cor"), ...)
     return(matrix)
 })
 
-## FIXME : find a new name for this function 
-setGeneric("freqMim", function(object) standardGeneric("freqMim"))
-
 setGeneric("expandFeatureMatrix", function(object, matrix) standardGeneric("expandFeatureMatrix"))
 
 setGeneric("compressFeatureMatrix", function(object, matrix) standardGeneric("compressFeatureMatrix"))
@@ -53,6 +50,16 @@ setGeneric("target", function(object) standardGeneric("target"))
 setGeneric("adjacencyMatrix", function(object) standardGeneric("adjacencyMatrix"))
 
 setGeneric("visualize", function(object) standardGeneric("visualize"))
+
+`.map.continuous.estimator` <- function(continuous_estimator)
+{
+    value <- switch(continuous_estimator, "pearson" = 0L, "spearman" = 1L, "kendall" = 2L, "frequency" = 3L, 4L)
+    
+    if (value == 4L)
+        stop("please provide one of the following continuous estimators: pearson, spearman, kendall, frequency")
+    
+    return(value)
+}
 
 `correlate` <- function()
 {

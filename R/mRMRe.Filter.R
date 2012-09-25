@@ -18,7 +18,7 @@ setClass("mRMRe.Filter", representation(solutions = "matrix", mi_matrix = "matri
 ## initialize
 
 setMethod("initialize", signature("mRMRe.Filter"),
-        function(.Object, data, prior_weight, target_index, levels, uses_ranks = TRUE, outX = TRUE,
+        function(.Object, data, prior_weight, target_index, levels, continuous_estimator = "pearson", outX = TRUE,
                 bootstrap_count = 0)
 {
     if (class(data) != "mRMRe.Data")
@@ -62,7 +62,8 @@ setMethod("initialize", signature("mRMRe.Filter"),
     filter <- .Call(mRMRe:::.C_export_filter, as.integer(.Object@levels), as.numeric(data@data),
             as.numeric(data@priors), as.numeric(prior_weight), as.integer(data@strata), as.numeric(data@weights),
             as.integer(data@feature_types), as.integer(nrow(data@data)), as.integer(ncol(data@data)),
-            as.integer(length(unique(data@strata))), as.integer(target_index), as.integer(uses_ranks), as.integer(outX),
+            as.integer(length(unique(data@strata))), as.integer(target_index),
+            as.integer(mRMRe:::.map.continuous.estimator(continuous_estimator)), as.integer(outX),
             as.integer(bootstrap_count), mi_matrix)
     
     mi_matrix <- matrix(mi_matrix, ncol = ncol(data@data), nrow = ncol(data@data))

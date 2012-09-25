@@ -1,7 +1,7 @@
 ## Definition
 
 setClass("mRMRe.Data", representation(feature_names = "character", feature_types = "numeric", data = "matrix",
-                strata = "numeric", weights = "numeric", priors = "matrix", mi_matrix = "matrix"))
+                strata = "numeric", weights = "numeric", priors = "matrix"))
 
 ## Wrapper
 
@@ -143,8 +143,6 @@ setReplaceMethod("sampleStrata", signature("mRMRe.Data"), function(object, value
     else
         object@strata <- as.integer(value) - 1
     
-    object@mi_matrix <- matrix(nrow = 0, ncol = 0)
-    
     return(object)
 })
 
@@ -169,8 +167,6 @@ setReplaceMethod("sampleWeights", signature("mRMRe.Data"), function(object, valu
     else
         object@weights <- as.numeric(value)
     
-    object@mi_matrix <- matrix(nrow = 0, ncol = 0)
-    
     return(object)
 })
 
@@ -193,67 +189,38 @@ setReplaceMethod("priors", signature("mRMRe.Data"), function(object, value)
     else
         .Object@priors <- expandFeatureMatrix(.Object, value)
     
-    object@mi_matrix <- matrix(nrow = 0, ncol = 0)
-    
     return(object)
 })
 
 ## mim
 
 setMethod("mim", signature("mRMRe.Data"),
-        function(object, prior_weight = 0, uses_ranks = TRUE, outX = TRUE, bootstrap_count = 0)
+        function(object, prior_weight = 0, continuous_estimator = "pearson", outX = TRUE, bootstrap_count = 0)
 {
-    if (length(object@mi_matrix) == 0)
+    if (length(object@priors) != 0)
     {
-        if (length(object@priors) != 0)
-        {
-            if (missing(prior_weight))
-                stop("prior weight must be provided if there are priors")
-            else if  (prior_weight < 0 || prior_weight > 1)
-                stop("prior weight must be a value ranging from 0 to 1")
-        }
-        else
-            prior_weight <- 0
-        
-        mi_matrix <- as.numeric(matrix(NA, ncol = ncol(object@data), nrow = ncol(object@data)))
-        
-        .Call(mRMRe:::.C_export_mim, as.numeric(object@data), as.numeric(object@priors),
-                as.numeric(prior_weight), as.integer(object@strata), as.numeric(object@weights),
-                as.integer(object@feature_types), as.integer(nrow(object@data)), as.integer(ncol(object@data)),
-                as.integer(length(unique(object@strata))), as.integer(uses_ranks), as.integer(outX),
-                as.integer(bootstrap_count), mi_matrix)
-        
-        mi_matrix <- matrix(mi_matrix, ncol = ncol(object@data), nrow = ncol(object@data))
-        
-        object@mi_matrix <- compressFeatureMatrix(object, mi_matrix)
+        if (missing(prior_weight))
+            stop("prior weight must be provided if there are priors")
+        else if  (prior_weight < 0 || prior_weight > 1)
+            stop("prior weight must be a value ranging from 0 to 1")
     }
+    else
+        prior_weight <- 0
     
-    return(object@mi_matrix)
-})
-
-## freqMim
-
-## FIXME : find a new name for this function
-## FIXME : cache it, or not? is this weighed? is this stratified?
-## FIXME : this assumes EVERYTHING is continous; how do we restrict this?
-
-setMethod("freqMim", signature("mRMRe.Data"), function(object)
-{
-    expanded_indices <- expandFeatureIndices(object, seq(object@feature_names))
+    mi_matrix <- as.numeric(matrix(NA, ncol = ncol(object@data), nrow = ncol(object@data)))
     
-    freq_mim <- sapply(expanded_indices, function(i)
-    {
-        sapply(expanded_indices, function(j)
-        {
-            mean(object@data[, i, drop = TRUE] < object@data[, j, drop = TRUE], use = "complete.obs")
-        })
-    })
-
-    diag(freq_mim) <- NA
-    rownames(freq_mim) <- object@feature_names
-    colnames(freq_mim) <- object@feature_names
+    .Call(mRMRe:::.C_export_mim, as.numeric(object@data), as.numeric(object@priors),
+            as.numeric(prior_weight), as.integer(object@strata), as.numeric(object@weights),
+            as.integer(object@feature_types), as.integer(nrow(object@data)), as.integer(ncol(object@data)),
+            as.integer(length(unique(object@strata))),
+            as.integer(mRMRe:::.map.continuous.estimator(continuous_estimator)),
+            as.integer(outX), as.integer(bootstrap_count), mi_matrix)
     
-    return(freq_mim)
+    mi_matrix <- matrix(mi_matrix, ncol = ncol(object@data), nrow = ncol(object@data))
+    
+    mi_matrix <- compressFeatureMatrix(object, mi_matrix)
+    
+    return(mi_matrix)
 })
 
 ## expandFeatureMatrix
