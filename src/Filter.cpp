@@ -4,7 +4,7 @@ Filter::Filter(int const* const pChildrenCountPerLevel, unsigned int const level
         Matrix* const pFeatureInformationMatrix, unsigned int const targetFeatureIndex) :
         mpChildrenCountPerLevel(pChildrenCountPerLevel), mLevelCount(levelCount), mpFeatureInformationMatrix(
                 pFeatureInformationMatrix), mpStartingIndexPerLevel(
-                new unsigned int[mLevelCount + 1])
+                new unsigned int[mLevelCount + 2])
 {
     unsigned int cumulative_element_count = 1;
     unsigned int children_per_level = 1;
@@ -18,6 +18,7 @@ Filter::Filter(int const* const pChildrenCountPerLevel, unsigned int const level
         cumulative_element_count += children_per_level;
     }
 
+    mpStartingIndexPerLevel[mLevelCount + 1] = cumulative_element_count;
     mTreeElementCount = cumulative_element_count;
     mpIndexTree = new unsigned int[cumulative_element_count];
 
@@ -96,10 +97,8 @@ bool const
 Filter::isRedundantPath(unsigned int const absoluteIndex, unsigned int const featureIndex,
         unsigned int const level) const
 {
-    unsigned int const upper_bound =
-            (level == mLevelCount) ? mTreeElementCount : mpStartingIndexPerLevel[level + 1];
 
-//    for (unsigned int i = mpStartingIndexPerLevel[level]; i < upper_bound; ++i)
+//    for (unsigned int i = mpStartingIndexPerLevel[level]; i < mpStartingIndexPerLevel[level + 1]; ++i)
 //    {
 //        if (mpIndexTree[i] != mpIndexTree[0])
 //        {
@@ -123,10 +122,11 @@ Filter::isRedundantPath(unsigned int const absoluteIndex, unsigned int const fea
 //        }
 //    }
 
-    for (unsigned int i = mpStartingIndexPerLevel[level]; i < upper_bound; ++i)
-         if (hasAncestorByFeatureIndex(i, featureIndex, level)
-                 && hasAncestorByFeatureIndex(absoluteIndex, mpIndexTree[i], level))
-             return true;
+    for (unsigned int i = mpStartingIndexPerLevel[level]; i < mpStartingIndexPerLevel[level + 1];
+            ++i)
+        if (hasAncestorByFeatureIndex(i, featureIndex, level)
+                && hasAncestorByFeatureIndex(absoluteIndex, mpIndexTree[i], level))
+            return true;
 
     return false;
 }

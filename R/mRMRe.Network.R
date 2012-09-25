@@ -64,14 +64,13 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
         
         solutions <- shrink(filter, mi_threshold = mi_threshold, causality_threshold = causality_threshold)
         
-        new_solutions <- lapply(solutions, function(solution)
-                    as.list(unlist(lapply(solution, function(feature)
-                                            {
-                                if (!is.null(.Object@topologies[[feature]]))
-                                    return(feature)
-                                else
-                                    return(NULL)
-                            }))))   
+        new_solutions <- lapply(solutions, function(solution) as.list(unlist(lapply(solution, function(feature)
+        {
+            if (!is.null(.Object@topologies[[feature]]))
+                return(feature)
+            else
+                return(NULL)
+        }))))   
             
         .Object@topologies[[target_index]] <<- new_solutions
     })
@@ -135,7 +134,7 @@ setMethod("adjacencyMatrix", signature("mRMRe.Network"), function(object)
 
 setMethod("visualize", signature("mRMRe.Network"), function(object)
 {
-    ## FIX ME : Cannot find a way to display vertex names...
+    ## FIXME : Cannot find a way to display vertex names...
     
     adjacency <- adjacencyMatrix(object)
     graph <- graph.adjacency(adjacency, mode = "undirected", add.rownames = TRUE)
