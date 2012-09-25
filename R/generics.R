@@ -56,13 +56,26 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
     value <- switch(continuous_estimator, "pearson" = 0L, "spearman" = 1L, "kendall" = 2L, "frequency" = 3L, -1L)
     
     if (value < 0L || value > 4L || !is.character(continuous_estimator))
-        stop("please provide one of the following continuous estimators: pearson, spearman, kendall, frequency")
+        stop("estimator must be of the following: pearson, spearman, kendall, frequency")
     
     return(value)
 }
 
 `correlate` <- function(X, Y, method = "pearson", strata, weights, outX = TRUE, bootstrap_count = 0)
 {
+    if (method == "pearson" || method == "spearman" || method == "kendall")
+    {
+        X <- as.numeric(X)
+        Y <- as.numeric(Y)
+    }
+    else if (method == "cramersv")
+    {
+        X <- as.factor(X)
+        Y <- as.factor(Y)
+    }
+    else if (method != "cindex")
+        stop("estimator must be of the following: pearson, spearman, kendall, frequency, cramersv, cindex")
+    
     if (!missing(strata) && !missing(weights))
         data <- mRMR.data(data = data.frame(X, Y), strata = strata, weights = weights)
     else if (!missing(strata))
@@ -99,9 +112,11 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
         
         return(out)
     }
+    else if (method == "cramersv")
+        return(list(statistic = mim(data, method = "cor", outX = outX, bootstrap_count = bootstrap_count)[1, 2]))
     else
         return(list(statistic = mim(data, method = "cor", continuous_estimator = method, outX = outX,
-                        bootstrap_count = bootstrap_count)[1, 2]))
+                            bootstrap_count = bootstrap_count)[1, 2]))
 }
 
 `get.thread.count` <- function()
