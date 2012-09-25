@@ -13,9 +13,8 @@
 #include "MutualInformationMatrix.h"
 
 extern "C" SEXP
-export_association(SEXP samplesA, SEXP samplesB, SEXP samplesC, SEXP samplesD, SEXP sampleStrata,
-        SEXP sampleWeights, SEXP sampleStratumCount, SEXP outX, SEXP bootstrapCount, SEXP method,
-        SEXP out);
+export_concordance_index(SEXP samplesA, SEXP samplesB, SEXP samplesC, SEXP samplesD,
+        SEXP sampleStrata, SEXP sampleWeights, SEXP sampleStratumCount, SEXP outX, SEXP out);
 
 extern "C" SEXP
 export_filter(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, SEXP priorsWeight,

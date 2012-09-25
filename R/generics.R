@@ -53,23 +53,69 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
 
 `.map.continuous.estimator` <- function(continuous_estimator)
 {
-    value <- switch(continuous_estimator, "pearson" = 0L, "spearman" = 1L, "kendall" = 2L, "frequency" = 3L, 4L)
+    value <- switch(continuous_estimator, "pearson" = 0L, "spearman" = 1L, "kendall" = 2L, "frequency" = 3L, -1L)
     
-    if (value == 4L)
+    if (value < 0L || value > 4L || !is.character(continuous_estimator))
         stop("please provide one of the following continuous estimators: pearson, spearman, kendall, frequency")
     
     return(value)
 }
 
-`correlate` <- function()
+`correlate` <- function(X, Y, method = "pearson", strata, weights, outX, bootstrap_count)
 {
-    ## FIXME : Recode correlate function ...
+    data <- mRMR.data(data = data.frame(X, Y), strata = strata, weights = weights)
     
-    #        double statistic; out[0]
-    #        double concordant_weight; out[1]
-    #        double discordant_weight; out[2]
-    #        double uninformative_weight; out[3]
-    #        double relevant_weight; out[4]
+    if (method == "cindex")
+    {
+        empty <- vector(mode = "numeric", length = 0)
+        
+        a <- empty
+        b <- empty
+        c <- empty
+        d <- empty
+        
+        if (length(data@feature_types) == 2)
+        {
+            a <- data@data[, 1]
+            b <- data@data[, 2]
+        }
+        else if (length(data@feature_types) == 3)
+        {
+            if (data@feature_types[[1]] == 2)
+            {
+                a <- data@data[, 1]
+                b <- data@data[, 3]
+                c <- data@data[, 2]
+            }
+            else if (data@feature_types[[2]] == 2)
+            {
+                a <- data@data[, 2]
+                b <- data@data[, 1]
+                c <- data@data[, 3]
+            }
+        }
+        else if (length(data@feature_types) == 4)
+        {
+            a <- data@data[, 1]
+            b <- data@data[, 3]
+            c <- data@data[, 2]
+            d <- data@data[, 4]
+        }
+        
+        out <- vector(mode = "numeric", length = 5)
+        
+        .Call(mRMRe:::.C_export_concordance_index, as.numeric(a), as.numeric(b), as.numeric(c), as.numeric(d),
+                as.integer(data@strata), as.numeric(data@weights), as.integer(length(unique(data@strata))),
+                outX, out)
+        
+        names(out) <- c("statistic", "concordant_weight", "discordant_weight", "uninformative_weight",
+                "relevant_weight")
+        
+        return(out)
+    }
+    else
+        return(list(statistic = mim(data, method = "cor", continuous_estimator = method, outX = outX,
+                        bootstrap_count = bootstrap_count)[1, 2]))
 }
 
 `get.thread.count` <- function()

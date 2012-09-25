@@ -1,9 +1,8 @@
 #include "exports.h"
 
 extern "C" SEXP
-export_association(SEXP samplesA, SEXP samplesB, SEXP samplesC, SEXP samplesD, SEXP sampleStrata,
-        SEXP sampleWeights, SEXP sampleStratumCount, SEXP outX, SEXP bootstrapCount, SEXP method,
-        SEXP out)
+export_concordance_index(SEXP samplesA, SEXP samplesB, SEXP samplesC, SEXP samplesD,
+        SEXP sampleStrata, SEXP sampleWeights, SEXP sampleStratumCount, SEXP outX, SEXP out)
 {
     unsigned int const sample_count = LENGTH(samplesA);
     unsigned int** p_sample_indices_per_stratum = new unsigned int*[INTEGER(sampleStratumCount)[0]];
@@ -13,54 +12,21 @@ export_association(SEXP samplesA, SEXP samplesB, SEXP samplesC, SEXP samplesD, S
             p_sample_indices_per_stratum, p_sample_count_per_stratum,
             INTEGER(sampleStratumCount)[0], sample_count);
 
-    bool const is_pearson = INTEGER(method)[0] == 0;
-    bool const is_spearman = INTEGER(method)[0] == 1;
-    bool const is_kendall = INTEGER(method)[0] == 2;
-    bool const is_frequency = INTEGER(method)[0] == 3;
-    bool const is_cramers_v = INTEGER(method)[0] == 4;
-    bool const is_concordance_index = INTEGER(method)[0] == 5;
-
-    if (is_pearson || is_spearman || is_cramers_v)
-    {
-        if (is_pearson)
-            REAL(out)[0] = Math::computePearsonCorrelation(REAL(samplesA), REAL(samplesB),
-                    REAL(sampleWeights), p_sample_indices_per_stratum, p_sample_count_per_stratum,
-                    INTEGER(sampleStratumCount)[0], INTEGER(bootstrapCount)[0]);
-        else if (is_spearman)
-            REAL(out)[0] = Math::computeSpearmanCorrelation(REAL(samplesA), REAL(samplesB),
-                    REAL(sampleWeights), p_sample_indices_per_stratum, p_sample_count_per_stratum,
-                    INTEGER(sampleStratumCount)[0], INTEGER(bootstrapCount)[0], sample_count);
-        else if (is_kendall)
-            REAL(out)[0] = Math::computeSomersD(
-                    Math::computeConcordanceIndex(REAL(samplesA), REAL(samplesB),
-                            REAL(sampleWeights), p_sample_indices_per_stratum,
-                            p_sample_count_per_stratum, INTEGER(sampleStratumCount)[0],
-                            INTEGER(outX)[0] != 0));
-        else if (is_cramers_v)
-            REAL(out)[0] = Math::computeCramersV(REAL(samplesA), REAL(samplesB),
-                    REAL(sampleWeights), p_sample_indices_per_stratum, p_sample_count_per_stratum,
-                    INTEGER(sampleStratumCount)[0], INTEGER(bootstrapCount)[0]);
-    }
-    else if (is_concordance_index)
-    {
-        if (LENGTH(samplesD) != 0 && LENGTH(samplesC) != 0)
-            REAL(out)[0] = Math::computeConcordanceIndex(REAL(samplesA), REAL(samplesB),
-                    REAL(samplesC), REAL(samplesD), REAL(sampleWeights),
-                    p_sample_indices_per_stratum, p_sample_count_per_stratum,
-                    INTEGER(sampleStratumCount)[0], INTEGER(outX)[0] != 0, &(REAL(out)[1]),
-                    &(REAL(out)[2]), &(REAL(out)[3]), &(REAL(out)[4]));
-        else if (LENGTH(samplesC) != 0)
-            REAL(out)[0] = Math::computeConcordanceIndex(REAL(samplesA), REAL(samplesB),
-                    REAL(samplesC), REAL(sampleWeights), p_sample_indices_per_stratum,
-                    p_sample_count_per_stratum, INTEGER(sampleStratumCount)[0],
-                    INTEGER(outX)[0] != 0, &(REAL(out)[1]), &(REAL(out)[2]), &(REAL(out)[3]),
-                    &(REAL(out)[4]));
-        else
-            REAL(out)[0] = Math::computeConcordanceIndex(REAL(samplesA), REAL(samplesB),
-                    REAL(sampleWeights), p_sample_indices_per_stratum, p_sample_count_per_stratum,
-                    INTEGER(sampleStratumCount)[0], INTEGER(outX)[0] != 0, &(REAL(out)[1]),
-                    &(REAL(out)[2]), &(REAL(out)[3]), &(REAL(out)[4]));
-    }
+    if (LENGTH(samplesD) != 0 && LENGTH(samplesC) != 0)
+        REAL(out)[0] = Math::computeConcordanceIndex(REAL(samplesA), REAL(samplesB), REAL(samplesC),
+                REAL(samplesD), REAL(sampleWeights), p_sample_indices_per_stratum,
+                p_sample_count_per_stratum, INTEGER(sampleStratumCount)[0], INTEGER(outX)[0] != 0,
+                &(REAL(out)[1]), &(REAL(out)[2]), &(REAL(out)[3]), &(REAL(out)[4]));
+    else if (LENGTH(samplesC) != 0)
+        REAL(out)[0] = Math::computeConcordanceIndex(REAL(samplesA), REAL(samplesB), REAL(samplesC),
+                REAL(sampleWeights), p_sample_indices_per_stratum, p_sample_count_per_stratum,
+                INTEGER(sampleStratumCount)[0], INTEGER(outX)[0] != 0, &(REAL(out)[1]),
+                &(REAL(out)[2]), &(REAL(out)[3]), &(REAL(out)[4]));
+    else
+        REAL(out)[0] = Math::computeConcordanceIndex(REAL(samplesA), REAL(samplesB),
+                REAL(sampleWeights), p_sample_indices_per_stratum, p_sample_count_per_stratum,
+                INTEGER(sampleStratumCount)[0], INTEGER(outX)[0] != 0, &(REAL(out)[1]),
+                &(REAL(out)[2]), &(REAL(out)[3]), &(REAL(out)[4]));
 
     delete[] p_sample_count_per_stratum;
     for (unsigned int i = 0; i < INTEGER(sampleStratumCount)[0]; ++i)
