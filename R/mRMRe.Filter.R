@@ -1,7 +1,7 @@
 ## Definition
 
-setClass("mRMRe.Filter", representation(solutions = "list", mi_matrix = "matrix", feature_names = "character",
-                target_index = "integer", levels = "integer", causality_matrix = "matrix"))
+setClass("mRMRe.Filter", representation(filters = "list", mi_matrix = "matrix", feature_names = "character",
+                target_indices = "integer", levels = "integer", causality_matrix = "matrix"))
 
 ## Wrappers
 
@@ -18,7 +18,7 @@ setClass("mRMRe.Filter", representation(solutions = "list", mi_matrix = "matrix"
 ## initialize
 
 setMethod("initialize", signature("mRMRe.Filter"),
-        function(.Object, data, prior_weight, target_index, levels, continuous_estimator = "pearson", outX = TRUE,
+        function(.Object, data, prior_weight, target_indices, levels, continuous_estimator = "pearson", outX = TRUE,
                 bootstrap_count = 0)
 {
     if (class(data) != "mRMRe.Data")
@@ -38,8 +38,8 @@ setMethod("initialize", signature("mRMRe.Filter"),
     
     ## Target processing
     
-    if (target_index < 1 || target_index > featureCount(data))
-        stop("target_index must be a value ranging from 1 to the amount of features in data")
+    if (sum(sapply(target_indices, function(index) index < 1 || index > featureCount(data))) > 1)
+        stop("target_indices must only contain values ranging from 1 to the amount of features in data")
             
     ## Level processing
     
@@ -48,28 +48,39 @@ setMethod("initialize", signature("mRMRe.Filter"),
     else if ((prod(levels) - 1) > choose(featureCount(data) - 1, length(levels)))
         stop("user cannot request for more solutions than is possible given the data set")
     
-    .Object@target_index <- as.integer(c(target_index))
+    .Object@target_indices <- as.integer(c(target_indices))
     .Object@levels <- as.integer(c(levels))
     
-    target_index <- as.integer(expandFeatureIndices(data, target_index)) - 1
+    target_indices <- as.integer(expandFeatureIndices(data, target_indices)) - 1
     
     ## Filter
 
     mi_matrix <- as.numeric(matrix(NA, ncol = ncol(data@data), nrow = ncol(data@data)))
+    filters <- vector(mode = "integer", length = length(target_indices) *
+                    sum(sapply(levels, function(i) prod(levels[1:i])))) 
     
-    solutions <- .Call(mRMRe:::.C_export_filter, as.integer(.Object@levels), as.numeric(data@data),
+    .Call(mRMRe:::.C_export_filters, as.integer(.Object@levels), as.numeric(data@data),
             as.numeric(data@priors), as.numeric(prior_weight), as.integer(data@strata), as.numeric(data@weights),
             as.integer(data@feature_types), as.integer(nrow(data@data)), as.integer(ncol(data@data)),
-            as.integer(length(unique(data@strata))), as.integer(target_index),
+            as.integer(length(unique(data@strata))), as.integer(target_indices),
             as.integer(mRMRe:::.map.continuous.estimator(continuous_estimator)), as.integer(outX),
-            as.integer(bootstrap_count), mi_matrix)
+            as.integer(bootstrap_count), mi_matrix, filters)
     
-    solutions <- matrix(compressFeatureIndices(data, as.integer(rev(solutions)) + 1), nrow = length(levels),
-            ncol = length(solutions) / length(levels))
-    solutions <- split(solutions, 1:ncol(solutions))
-    names(solutions) <- NULL
+    filters <- compressFeatureIndices(data, filters + 1)
+    
+    filters <- apply(matrix(filters, ncol = length(target_indices)), 2, function(i)
+    {
+        solutions <- matrix(i, ncol = prod(levels))
+        solutions <- as.list(as.data.frame(solutions))
+        names(solutions) <- NULL
+        
+        return(solutions)
+    })
 
-    .Object@solutions <- solutions
+    names(filters) <- .Object@target_indices
+    
+    .Object@filters <- filters
+    
     .Object@mi_matrix <- compressFeatureMatrix(data, matrix(mi_matrix, ncol = ncol(data@data), nrow = ncol(data@data)))
     .Object@feature_names <- featureNames(data)
 
@@ -91,6 +102,8 @@ setMethod("featureNames", signature("mRMRe.Filter"), function(object)
 })
 
 ## shrink
+
+## FIXME: Fix this to work with new "filters"
 
 setMethod("shrink", signature("mRMRe.Filter"), function(object, mi_threshold, causality_threshold)
 {
@@ -138,7 +151,7 @@ setMethod("shrink", signature("mRMRe.Filter"), function(object, mi_threshold, ca
 
 setMethod("solutions", signature("mRMRe.Filter"), function(object)
 {
-    return(object@solutions)
+    return(object@filters)
 })
 
 ## mim
@@ -151,6 +164,7 @@ setMethod("mim", signature("mRMRe.Filter"), function(object)
 ## causality
 
 ## FIXME : cache matrix in Filter object
+## FIXME : adapt this to "filters"
 setMethod("causality", signature("mRMRe.Filter"), function(object)
 {
     if (length(object@causality_matrix) == 0)
@@ -191,5 +205,5 @@ setMethod("causality", signature("mRMRe.Filter"), function(object)
 
 setMethod("target", signature("mRMRe.Filter"), function(object)
 {
-    return(object@target_index)
+    return(object@target_indices)
 })

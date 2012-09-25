@@ -24,17 +24,18 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
     
     lapply(seq(layers), function(layer)
     {
-        target_indices <<- unlist(lapply(target_indices, function(target_index)
-        {
-            filter <- new("mRMRe.Filter", data = data, prior_weight = prior_weight, target_index = target_index,
-                    levels = levels, ...)
+        
+        #target_indices <<- unlist(lapply(target_indices, function(target_index)
+        #{
+        #    filter <- new("mRMRe.Filter", data = data, prior_weight = prior_weight, target_indices = target_indices,
+        #            levels = levels, ...)
 
             ## FIXME : Code might not handle too brutal of a cutoff (mi_threshold and causality_threshold...)
             
-            solutions <- shrink(filter, mi_threshold = mi_threshold, causality_threshold = causality_threshold)
+        #    solutions <- shrink(filter, mi_threshold = mi_threshold, causality_threshold = causality_threshold)
             #mi_matrix <- mim(filter, method = "cor")
             
-            .Object@topologies[[target_index]] <<- solutions
+        #    .Object@topologies[[target_index]] <<- solutions
 
             ## FIXME : Is there a more elegant/efficient way to combine MI matrices?
 
@@ -46,10 +47,10 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
     
             #.Object@causality_cube[target_index, , ] <<- causality(filter)
             
-            return(unlist(solutions))
-        }))
+        #    return(unlist(solutions))
+        #}))
     
-        target_indices <<- intersect(target_indices, which(sapply(.Object@topologies, is.null)))
+        #target_indices <<- intersect(target_indices, which(sapply(.Object@topologies, is.null)))
     })
 
     ## Perform last-layer linking
@@ -59,20 +60,20 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
     
     lapply(target_indices, function(target_index)
     {
-        filter <- new("mRMRe.Filter", data = data, prior_weight = prior_weight, target_index = target_index,
-                levels = levels, ...)
+        #filter <- new("mRMRe.Filter", data = data, prior_weight = prior_weight, target_index = target_index,
+        #        levels = levels, ...)
         
-        solutions <- shrink(filter, mi_threshold = mi_threshold, causality_threshold = causality_threshold)
+        #solutions <- shrink(filter, mi_threshold = mi_threshold, causality_threshold = causality_threshold)
         
-        new_solutions <- lapply(solutions, function(solution) sapply(solution, function(feature)
-        {
-            if (!is.null(.Object@topologies[[feature]]))
-                return(feature)
-            else
-                return(NULL)
-        }))
+        #new_solutions <- lapply(solutions, function(solution) sapply(solution, function(feature)
+        #{
+        #    if (!is.null(.Object@topologies[[feature]]))
+        #        return(feature)
+        #    else
+        #        return(NULL)
+        #}))
             
-        .Object@topologies[[target_index]] <<- new_solutions
+        #.Object@topologies[[target_index]] <<- new_solutions
     })
 
     return(.Object)

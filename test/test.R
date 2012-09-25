@@ -15,7 +15,17 @@ dd <- data.frame(
 )
 
 data <- mRMR.data(data = dd)
+
+filter <- mRMR.ensemble("mRMRe.Filter", data = data, target_indices = c(1, 2, 3, 4, 5, 6, 7, 8), feature_count = 2, solution_count = 1)
+
 mim(data)
+
+mim(filter)
+
+solutions(filter)
+
+
+
 
 data <- mRMR.data(data = dd,
         strata = factor(sample(1:5, 100, replace=TRUE), ordered=TRUE),
@@ -23,7 +33,8 @@ data <- mRMR.data(data = dd,
 mim(data) # Gives MI matrix
 mim(data, method = "cor") # Gives correlation matrix
 
-filter_1 <- mRMR.ensemble("mRMRe.Filter", data = data, target_index = 1, feature_count = 2, solution_count = 1)
+
+
 mim(filter_1)
 
 filter_2 <- mRMR.ensemble("mRMRe.Filter", data = data, target_index = 2, feature_count = 2, solution_count = 1)

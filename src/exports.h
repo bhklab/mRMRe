@@ -17,10 +17,10 @@ export_concordance_index(SEXP samplesA, SEXP samplesB, SEXP samplesC, SEXP sampl
         SEXP sampleStrata, SEXP sampleWeights, SEXP sampleStratumCount, SEXP outX, SEXP out);
 
 extern "C" SEXP
-export_filter(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, SEXP priorsWeight,
+export_filters(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, SEXP priorsWeight,
         SEXP sampleStrata, SEXP sampleWeights, SEXP featureTypes, SEXP sampleCount,
-        SEXP featureCount, SEXP sampleStratumCount, SEXP targetFeatureIndex,
-        SEXP continuousEstimator, SEXP outX, SEXP bootstrapCount, SEXP miMatrix);
+        SEXP featureCount, SEXP sampleStratumCount, SEXP targetFeatureIndices,
+        SEXP continuousEstimator, SEXP outX, SEXP bootstrapCount, SEXP miMatrix, SEXP filters);
 
 extern "C" SEXP
 export_mim(SEXP dataMatrix, SEXP priorsMatrix, SEXP priorsWeight, SEXP sampleStrata,

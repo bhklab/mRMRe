@@ -37,10 +37,10 @@ export_concordance_index(SEXP samplesA, SEXP samplesB, SEXP samplesC, SEXP sampl
 }
 
 extern "C" SEXP
-export_filter(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, SEXP priorsWeight,
+export_filters(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, SEXP priorsWeight,
         SEXP sampleStrata, SEXP sampleWeights, SEXP featureTypes, SEXP sampleCount,
-        SEXP featureCount, SEXP sampleStratumCount, SEXP targetFeatureIndex,
-        SEXP continuousEstimator, SEXP outX, SEXP bootstrapCount, SEXP miMatrix)
+        SEXP featureCount, SEXP sampleStratumCount, SEXP targetFeatureIndices,
+        SEXP continuousEstimator, SEXP outX, SEXP bootstrapCount, SEXP miMatrix, SEXP filters)
 {
     Matrix const priors_matrix(REAL(priorsMatrix), INTEGER(featureCount)[0],
             INTEGER(featureCount)[0]);
@@ -53,17 +53,19 @@ export_filter(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, SE
             INTEGER(outX)[0] != 0, INTEGER(bootstrapCount)[0]);
     MutualInformationMatrix mi_matrix(&data, REAL(miMatrix));
 
-    Filter filter(INTEGER(childrenCountPerLevel), LENGTH(childrenCountPerLevel), &mi_matrix,
-            INTEGER(targetFeatureIndex)[0]);
-    filter.build();
-    std::vector<int> filter_solutions;
-    filter.getSolutions(&filter_solutions);
-    SEXP solutions;
-    PROTECT(solutions = allocVector(INTSXP, filter_solutions.size()));
-    memcpy(INTEGER(solutions), &filter_solutions[0], sizeof(int) * filter_solutions.size());
-    UNPROTECT(1);
+    for (unsigned int i = 0; i < LENGTH(targetFeatureIndices); ++i)
+    {
+        Filter filter(INTEGER(childrenCountPerLevel), LENGTH(childrenCountPerLevel), &mi_matrix,
+                INTEGER(targetFeatureIndices)[i]);
+        filter.build();
+        std::vector<int> filter_solutions;
+        filter.getSolutions(&filter_solutions);
 
-    return solutions;
+        memcpy(INTEGER(filters) + (i * filter_solutions.size()), &filter_solutions[0],
+                sizeof(int) * filter_solutions.size());
+    }
+
+    return R_NilValue;
 }
 
 extern "C" SEXP
