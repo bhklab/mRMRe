@@ -82,9 +82,7 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
 
 setMethod("show", signature("mRMRe.Network"), function(object)
 {
-    ## FIXME: More detailed show method?
-    
-    print(str(object))
+    str(object)
 })
 
 ## featureNames

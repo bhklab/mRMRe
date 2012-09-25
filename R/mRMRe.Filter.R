@@ -80,9 +80,7 @@ setMethod("initialize", signature("mRMRe.Filter"),
 
 setMethod("show", signature("mRMRe.Filter"), function(object)
 {
-    ## FIXME: More detailed show method?
-    
-    print(str(object))
+    str(object)
 })
 
 ## featureNames
@@ -102,6 +100,9 @@ setMethod("shrink", signature("mRMRe.Filter"), function(object, mi_threshold, ca
     {
         solutions <- lapply(solutions, function(solution)
         {
+            if (length(solution) == 0)
+                return(solution)
+                
             screen <- sapply(solution, function(feature) mi_threshold <= 
                                 -.5 * log(1 - object@mi_matrix[feature, object@target_index]))
             
@@ -115,6 +116,9 @@ setMethod("shrink", signature("mRMRe.Filter"), function(object, mi_threshold, ca
         
         solutions <- lapply(solutions, function(solution)
         {
+            if (length(solution) == 0)
+                return(solution)
+            
             screen <- sapply(solution, function(feature) causality_threshold <=
                                 max(causality_matrix[feature, solution], na.rm = TRUE))
             
