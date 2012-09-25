@@ -13,20 +13,21 @@
 #include "MutualInformationMatrix.h"
 
 extern "C" SEXP
-export_association(SEXP samplesA, SEXP samplesB, SEXP samplesC, SEXP sampleStrata,
+export_association(SEXP samplesA, SEXP samplesB, SEXP samplesC, SEXP samplesD, SEXP sampleStrata,
         SEXP sampleWeights, SEXP sampleStratumCount, SEXP outX, SEXP bootstrapCount, SEXP method,
         SEXP out);
 
 extern "C" SEXP
 export_filter(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, SEXP priorsWeight,
         SEXP sampleStrata, SEXP sampleWeights, SEXP featureTypes, SEXP sampleCount,
-        SEXP featureCount, SEXP sampleStratumCount, SEXP targetFeatureIndex, SEXP usesRanks,
-        SEXP outX, SEXP bootstrapCount, SEXP miMatrix);
+        SEXP featureCount, SEXP sampleStratumCount, SEXP targetFeatureIndex,
+        SEXP continuousEstimator, SEXP outX, SEXP bootstrapCount, SEXP miMatrix);
 
 extern "C" SEXP
 export_mim(SEXP dataMatrix, SEXP priorsMatrix, SEXP priorsWeight, SEXP sampleStrata,
         SEXP sampleWeights, SEXP featureTypes, SEXP sampleCount, SEXP featureCount,
-        SEXP sampleStratumCount, SEXP usesRanks, SEXP outX, SEXP bootstrapCount, SEXP miMatrix);
+        SEXP sampleStratumCount, SEXP continuousEstimator, SEXP outX, SEXP bootstrapCount,
+        SEXP miMatrix);
 
 extern "C" SEXP
 get_thread_count(SEXP threadCount);

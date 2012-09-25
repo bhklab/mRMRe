@@ -1,7 +1,7 @@
 #include "exports.h"
 
 extern "C" SEXP
-export_association(SEXP samplesA, SEXP samplesB, SEXP samplesC, SEXP sampleStrata,
+export_association(SEXP samplesA, SEXP samplesB, SEXP samplesC, SEXP samplesD, SEXP sampleStrata,
         SEXP sampleWeights, SEXP sampleStratumCount, SEXP outX, SEXP bootstrapCount, SEXP method,
         SEXP out)
 {
@@ -15,9 +15,10 @@ export_association(SEXP samplesA, SEXP samplesB, SEXP samplesC, SEXP sampleStrat
 
     bool const is_pearson = INTEGER(method)[0] == 0;
     bool const is_spearman = INTEGER(method)[0] == 1;
-    bool const is_cramers_v = INTEGER(method)[0] == 2;
-    bool const is_concordance_index = INTEGER(method)[0] == 3;
-    bool const is_concordance_index_with_time = INTEGER(method)[0] == 4;
+    bool const is_kendall = INTEGER(method)[0] == 2;
+    bool const is_frequency = INTEGER(method)[0] == 3;
+    bool const is_cramers_v = INTEGER(method)[0] == 4;
+    bool const is_concordance_index = INTEGER(method)[0] == 5;
 
     if (is_pearson || is_spearman || is_cramers_v)
     {
@@ -29,24 +30,36 @@ export_association(SEXP samplesA, SEXP samplesB, SEXP samplesC, SEXP sampleStrat
             REAL(out)[0] = Math::computeSpearmanCorrelation(REAL(samplesA), REAL(samplesB),
                     REAL(sampleWeights), p_sample_indices_per_stratum, p_sample_count_per_stratum,
                     INTEGER(sampleStratumCount)[0], INTEGER(bootstrapCount)[0], sample_count);
-        else
+        else if (is_kendall)
+            REAL(out)[0] = Math::computeSomersD(
+                    Math::computeConcordanceIndex(REAL(samplesA), REAL(samplesB),
+                            REAL(sampleWeights), p_sample_indices_per_stratum,
+                            p_sample_count_per_stratum, INTEGER(sampleStratumCount)[0],
+                            INTEGER(outX)[0] != 0));
+        else if (is_cramers_v)
             REAL(out)[0] = Math::computeCramersV(REAL(samplesA), REAL(samplesB),
                     REAL(sampleWeights), p_sample_indices_per_stratum, p_sample_count_per_stratum,
                     INTEGER(sampleStratumCount)[0], INTEGER(bootstrapCount)[0]);
     }
-    else
+    else if (is_concordance_index)
     {
-        if (LENGTH(samplesC) == 0)
+        if (LENGTH(samplesD) != 0 && LENGTH(samplesC) != 0)
             REAL(out)[0] = Math::computeConcordanceIndex(REAL(samplesA), REAL(samplesB),
-                    REAL(sampleWeights), p_sample_indices_per_stratum, p_sample_count_per_stratum,
+                    REAL(samplesC), REAL(samplesD), REAL(sampleWeights),
+                    p_sample_indices_per_stratum, p_sample_count_per_stratum,
                     INTEGER(sampleStratumCount)[0], INTEGER(outX)[0] != 0, &(REAL(out)[1]),
                     &(REAL(out)[2]), &(REAL(out)[3]), &(REAL(out)[4]));
-        else
+        else if (LENGTH(samplesC) != 0)
             REAL(out)[0] = Math::computeConcordanceIndex(REAL(samplesA), REAL(samplesB),
                     REAL(samplesC), REAL(sampleWeights), p_sample_indices_per_stratum,
                     p_sample_count_per_stratum, INTEGER(sampleStratumCount)[0],
                     INTEGER(outX)[0] != 0, &(REAL(out)[1]), &(REAL(out)[2]), &(REAL(out)[3]),
                     &(REAL(out)[4]));
+        else
+            REAL(out)[0] = Math::computeConcordanceIndex(REAL(samplesA), REAL(samplesB),
+                    REAL(sampleWeights), p_sample_indices_per_stratum, p_sample_count_per_stratum,
+                    INTEGER(sampleStratumCount)[0], INTEGER(outX)[0] != 0, &(REAL(out)[1]),
+                    &(REAL(out)[2]), &(REAL(out)[3]), &(REAL(out)[4]));
     }
 
     delete[] p_sample_count_per_stratum;
@@ -60,8 +73,8 @@ export_association(SEXP samplesA, SEXP samplesB, SEXP samplesC, SEXP sampleStrat
 extern "C" SEXP
 export_filter(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, SEXP priorsWeight,
         SEXP sampleStrata, SEXP sampleWeights, SEXP featureTypes, SEXP sampleCount,
-        SEXP featureCount, SEXP sampleStratumCount, SEXP targetFeatureIndex, SEXP usesRanks,
-        SEXP outX, SEXP bootstrapCount, SEXP miMatrix)
+        SEXP featureCount, SEXP sampleStratumCount, SEXP targetFeatureIndex,
+        SEXP continuousEstimator, SEXP outX, SEXP bootstrapCount, SEXP miMatrix)
 {
     Matrix const priors_matrix(REAL(priorsMatrix), INTEGER(featureCount)[0],
             INTEGER(featureCount)[0]);
@@ -70,7 +83,7 @@ export_filter(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, SE
                     &priors_matrix : 0;
     Data data(REAL(dataMatrix), p_priors_matrix, REAL(priorsWeight)[0], INTEGER(sampleCount)[0],
             INTEGER(featureCount)[0], INTEGER(sampleStrata), REAL(sampleWeights),
-            INTEGER(featureTypes), INTEGER(sampleStratumCount)[0], INTEGER(usesRanks)[0] != 0,
+            INTEGER(featureTypes), INTEGER(sampleStratumCount)[0], INTEGER(continuousEstimator)[0],
             INTEGER(outX)[0] != 0, INTEGER(bootstrapCount)[0]);
     MutualInformationMatrix mi_matrix(&data, REAL(miMatrix));
 
@@ -90,7 +103,8 @@ export_filter(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, SE
 extern "C" SEXP
 export_mim(SEXP dataMatrix, SEXP priorsMatrix, SEXP priorsWeight, SEXP sampleStrata,
         SEXP sampleWeights, SEXP featureTypes, SEXP sampleCount, SEXP featureCount,
-        SEXP sampleStratumCount, SEXP usesRanks, SEXP outX, SEXP bootstrapCount, SEXP miMatrix)
+        SEXP sampleStratumCount, SEXP continuousEstimator, SEXP outX, SEXP bootstrapCount,
+        SEXP miMatrix)
 {
     Matrix const priors_matrix(REAL(priorsMatrix), INTEGER(featureCount)[0],
             INTEGER(featureCount)[0]);
@@ -99,7 +113,7 @@ export_mim(SEXP dataMatrix, SEXP priorsMatrix, SEXP priorsWeight, SEXP sampleStr
                     &priors_matrix : 0;
     Data data(REAL(dataMatrix), p_priors_matrix, REAL(priorsWeight)[0], INTEGER(sampleCount)[0],
             INTEGER(featureCount)[0], INTEGER(sampleStrata), REAL(sampleWeights),
-            INTEGER(featureTypes), INTEGER(sampleStratumCount)[0], INTEGER(usesRanks)[0] != 0,
+            INTEGER(featureTypes), INTEGER(sampleStratumCount)[0], INTEGER(continuousEstimator)[0],
             INTEGER(outX)[0] != 0, INTEGER(bootstrapCount)[0]);
     MutualInformationMatrix mi_matrix(&data, REAL(miMatrix));
     mi_matrix.build();

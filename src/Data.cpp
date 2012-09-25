@@ -3,16 +3,16 @@
 Data::Data(double* const pData, Matrix const* const pPriorsMatrix, double const priorsWeight,
         unsigned int const sampleCount, unsigned int const featureCount,
         int const* const pSampleStrata, double const* const pSampleWeights,
-        int const* const pFeatureTypes, unsigned int const sampleStratumCount, bool const usesRanks,
-        bool const outX, unsigned int const bootstrapCount) :
+        int const* const pFeatureTypes, unsigned int const sampleStratumCount,
+        unsigned int const continuousEstimator, bool const outX, unsigned int const bootstrapCount) :
         mpDataMatrix(new Matrix(pData, sampleCount, featureCount)), mpOrderMatrix(
-                usesRanks ? new Matrix(sampleCount, featureCount) : 0), mpPriorsMatrix(
+                continuousEstimator ? new Matrix(sampleCount, featureCount) : 0), mpPriorsMatrix(
                 pPriorsMatrix), mpHasOrderCached(new bool[mpDataMatrix->getColumnCount()]), mpSampleStrata(
                 pSampleStrata), mpSampleWeights(pSampleWeights), mpFeatureTypes(pFeatureTypes), mSampleStratumCount(
                 sampleStratumCount), mpSampleIndicesPerStratum(
                 new unsigned int*[sampleStratumCount]), mpSampleCountPerStratum(
-                new unsigned int[sampleStratumCount]), mUsesRanks(usesRanks), mOutX(outX), mBootstrapCount(
-                bootstrapCount), mPriorsWeight(priorsWeight)
+                new unsigned int[sampleStratumCount]), mContinuousEstimator(continuousEstimator), mOutX(
+                outX), mBootstrapCount(bootstrapCount), mPriorsWeight(priorsWeight)
 {
     for (unsigned int i = 0; i < mpDataMatrix->getColumnCount(); ++i)
         mpHasOrderCached[i] = false;
@@ -55,12 +55,12 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j) const
             r = Math::computeSomersD(
                     Math::computeConcordanceIndex(&(mpDataMatrix->at(0, i)),
                             &(mpDataMatrix->at(0, j)), mpSampleWeights, mpSampleIndicesPerStratum,
-                            mpSampleCountPerStratum, mSampleStratumCount, true));
+                            mpSampleCountPerStratum, mSampleStratumCount, mOutX));
         else if (A_is_continuous && B_is_discrete)
             r = Math::computeSomersD(
                     Math::computeConcordanceIndex(&(mpDataMatrix->at(0, j)),
                             &(mpDataMatrix->at(0, i)), mpSampleWeights, mpSampleIndicesPerStratum,
-                            mpSampleCountPerStratum, mSampleStratumCount, true));
+                            mpSampleCountPerStratum, mSampleStratumCount, mOutX));
         else if (A_is_discrete && B_is_discrete)
             r = Math::computeCramersV(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
                     mpSampleWeights, mpSampleIndicesPerStratum, mpSampleCountPerStratum,
@@ -111,7 +111,14 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j) const
 double const
 Data::computeCorrelationBetweenContinuousFeatures(unsigned int const i, unsigned int const j) const
 {
-    if (mUsesRanks)
+    switch (mContinuousEstimator)
+    {
+    case PEARSON_ESTIMATOR:
+        return Math::computePearsonCorrelation(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
+                mpSampleWeights, mpSampleIndicesPerStratum, mpSampleCountPerStratum,
+                mSampleStratumCount, mBootstrapCount);
+
+    case SPEARMAN_ESTIMATOR:
     {
         if (!mpHasOrderCached[i])
         {
@@ -141,10 +148,20 @@ Data::computeCorrelationBetweenContinuousFeatures(unsigned int const i, unsigned
 
         return r;
     }
-    else
-        return Math::computePearsonCorrelation(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
+
+    case KENDALL_ESTIMATOR:
+        return Math::computeSomersD(
+                Math::computeConcordanceIndex(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
+                        mpSampleWeights, mpSampleIndicesPerStratum, mpSampleCountPerStratum,
+                        mSampleStratumCount, mOutX));
+
+    case FREQUENCY_ESTIMATOR:
+        return Math::computeFrequency(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
                 mpSampleWeights, mpSampleIndicesPerStratum, mpSampleCountPerStratum,
                 mSampleStratumCount, mBootstrapCount);
+    }
+
+    return std::numeric_limits<double>::quiet_NaN();
 }
 
 unsigned int const

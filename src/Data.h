@@ -24,7 +24,7 @@ private:
     unsigned int const mSampleStratumCount;
     unsigned int** const mpSampleIndicesPerStratum;
     unsigned int* const mpSampleCountPerStratum;
-    bool const mUsesRanks;
+    unsigned int const mContinuousEstimator;
     bool const mOutX;
     unsigned int const mBootstrapCount;
     double const mPriorsWeight;
@@ -35,11 +35,17 @@ public:
     static int const FEATURE_SURVIVAL_EVENT = 2;
     static int const FEATURE_SURVIVAL_TIME = 3;
 
+    static int const PEARSON_ESTIMATOR = 0;
+    static int const SPEARMAN_ESTIMATOR = 1;
+    static int const KENDALL_ESTIMATOR = 2;
+    static int const FREQUENCY_ESTIMATOR = 3;
+
     Data(double* const pData, Matrix const* const pPriorsMatrix, double const priorsWeight,
             unsigned int const sampleCount, unsigned int const featureCount,
             int const* const pSampleStrata, double const* const pSampleWeights,
             int const* const pFeatureTypes, unsigned int const sampleStratumCount,
-            bool const usesRanks, bool const outX, unsigned int const bootstrapCount);
+            unsigned int const continuousEstimator, bool const outX,
+            unsigned int const bootstrapCount);
 
     ~Data();
 
