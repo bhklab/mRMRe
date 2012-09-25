@@ -126,7 +126,12 @@ setMethod("shrink", signature("mRMRe.Filter"), function(object, mi_threshold, ca
         })
     }
     
-    return(solutions)
+    solutions <- solutions[sapply(solutions, function(i) length(i) != 0)]
+    
+    if (length(solutions) == 0)
+        return(NULL)
+    else
+        return(solutions)
 })
 
 ## solutions

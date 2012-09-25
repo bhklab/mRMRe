@@ -64,13 +64,13 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
         
         solutions <- shrink(filter, mi_threshold = mi_threshold, causality_threshold = causality_threshold)
         
-        new_solutions <- lapply(solutions, function(solution) as.list(unlist(lapply(solution, function(feature)
+        new_solutions <- lapply(solutions, function(solution) sapply(solution, function(feature)
         {
             if (!is.null(.Object@topologies[[feature]]))
                 return(feature)
             else
                 return(NULL)
-        }))))   
+        }))
             
         .Object@topologies[[target_index]] <<- new_solutions
     })
