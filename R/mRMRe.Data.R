@@ -138,6 +138,8 @@ setReplaceMethod("sampleStrata", signature("mRMRe.Data"), function(object, value
         stop("data and strata must contain the same number of samples")
     else if (!is.factor(value))
         stop("strata must be provided as factors")
+    else if (sum(is.na(value)) > 0)
+        stop("cannot have missing values in strata")
     else
         object@strata <- as.integer(value) - 1
     
@@ -162,6 +164,8 @@ setReplaceMethod("sampleWeights", signature("mRMRe.Data"), function(object, valu
 {
     if (length(value) != nrow(object@data))
         stop("data and weight must contain the same number of samples")
+    else if (sum(is.na(value)) > 0)
+        stop("cannot have missing values in weights")
     else
         object@weights <- as.numeric(value)
     
