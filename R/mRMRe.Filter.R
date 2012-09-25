@@ -19,7 +19,7 @@ setClass("mRMRe.Filter", representation(solutions = "list", mi_matrix = "matrix"
 
 setMethod("initialize", signature("mRMRe.Filter"),
         function(.Object, data, prior_weight, target_index, levels, continuous_estimator = "pearson", outX = TRUE,
-                bootstrap_count = 0)
+                bootstrap_count = 0, mi_matrix)
 {
     if (class(data) != "mRMRe.Data")
         stop("data must be of type mRMRe.Data")
@@ -55,7 +55,15 @@ setMethod("initialize", signature("mRMRe.Filter"),
     
     ## Filter
 
-    mi_matrix <- as.numeric(matrix(NA, ncol = ncol(data@data), nrow = ncol(data@data)))
+    if (!missing(mi_matrix))
+    {
+        if (nrow(mi_matrix) != ncol(data@data) || ncol(mi_matrix) != ncol(data@data))
+            stop("provided mutual information matrix must be of dimensions: features * features")
+        
+        mi_matrix <- as.numeric(mi_matrix)
+    }
+    else
+        mi_matrix <- as.numeric(matrix(NA, ncol = ncol(data@data), nrow = ncol(data@data)))
     
     solutions <- .Call(mRMRe:::.C_export_filter, as.integer(.Object@levels), as.numeric(data@data),
             as.numeric(data@priors), as.numeric(prior_weight), as.integer(data@strata), as.numeric(data@weights),
