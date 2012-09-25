@@ -369,6 +369,99 @@ Math::computeCramersV(double const* const pSamplesX, double const* const pSample
 }
 
 /* static */double const
+Math::computeFrequency(double const* const pSamplesX, double const* const pSamplesY,
+        double const* const pSampleWeights,
+        unsigned int const* const * const pSampleIndicesPerStratum,
+        unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
+        unsigned int const bootstrapCount)
+{
+    bool const useBootstrap = bootstrapCount > 3 && sampleStratumCount > 0;
+    double* p_error_per_stratum = 0;
+
+    if (useBootstrap)
+    {
+        p_error_per_stratum = new double[sampleStratumCount];
+        unsigned int seed = std::time(NULL);
+        Matrix bootstraps(bootstrapCount, sampleStratumCount);
+
+#pragma omp parallel for schedule(dynamic) firstprivate(seed)
+        for (unsigned int i = 0; i < bootstrapCount; ++i)
+        {
+            for (unsigned int j = 0; j < sampleStratumCount; ++j)
+            {
+                unsigned int const sample_count = pSampleCountPerStratum[j];
+                unsigned int* const p_samples = new unsigned int[sample_count];
+
+                for (unsigned int k = 0; k < sample_count; ++k)
+                    p_samples[k] = pSampleIndicesPerStratum[j][Math::computeRandomNumber(&seed)
+                            % sample_count];
+
+                double const correlation = computeFrequency(pSamplesX, pSamplesY, pSampleWeights,
+                        p_samples, sample_count);
+                bootstraps.at(i, j) = correlation;
+
+                delete[] p_samples;
+            }
+        }
+
+        for (unsigned int i = 0; i < sampleStratumCount; ++i)
+            p_error_per_stratum[i] = 1.
+                    / Math::computeVariance(&(bootstraps.at(0, i)), bootstrapCount);
+    }
+
+    double r = 0.;
+    double total_weight = 0.;
+
+    for (unsigned int i = 0; i < sampleStratumCount; ++i)
+    {
+        double weight = 0.;
+        double const correlation = computeFrequency(pSamplesX, pSamplesY, pSampleWeights,
+                pSampleIndicesPerStratum[i], pSampleCountPerStratum[i], &weight);
+
+        if (useBootstrap)
+            weight = p_error_per_stratum[i];
+
+        r += weight * correlation;
+        total_weight += weight;
+    }
+
+    r /= total_weight;
+
+    delete[] p_error_per_stratum;
+
+    return r;
+}
+
+/* static */double const
+Math::computeFrequency(double const* const pSamplesX, double const* const pSamplesY,
+        double const* const pSampleWeights, unsigned int const* const pSampleIndices,
+        unsigned int const sampleCount, double* const pTotalWeight)
+{
+    double sum = 0.;
+    double total_weight = 0.;
+
+    for (unsigned int i = 0; i < sampleCount; ++i)
+    {
+        unsigned int const sample_index = pSampleIndices[i];
+        double const sample_weight = pSampleWeights[sample_index];
+
+        if (pSamplesX[sample_index] == pSamplesX[sample_index]
+                && pSamplesY[sample_index] == pSamplesY[sample_index])
+        {
+            total_weight += sample_weight;
+
+            if (pSamplesX[sample_index] > pSamplesY[sample_index])
+                sum += sample_weight;
+        }
+    }
+
+    if (pTotalWeight != 0)
+        *pTotalWeight = total_weight;
+
+    return sum / total_weight;
+}
+
+/* static */double const
 Math::computeFisherTransformation(double const r)
 {
     return 0.5 * std::log((1 + r) / (1 - r));

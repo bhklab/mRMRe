@@ -80,6 +80,18 @@ public:
     computeFisherTransformationReverse(double const z);
 
     static double const
+    computeFrequency(double const* const pSamplesX, double const* const pSamplesY,
+            double const* const pSampleWeights,
+            unsigned int const* const * const pSampleIndicesPerStratum,
+            unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
+            unsigned int const bootstrapCount);
+
+    static double const
+    computeFrequency(double const* const pSamplesX, double const* const pSamplesY,
+            double const* const pSampleWeights, unsigned int const* const pSamplesIndices,
+            unsigned int const sampleCount, double* const pTotalWeight = 0);
+
+    static double const
     computeMi(double const r);
 
     static double const
