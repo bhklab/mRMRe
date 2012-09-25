@@ -167,8 +167,13 @@ Filter::placeElements(unsigned int const startingIndex, unsigned int childrenCou
             for (unsigned int j = level; j > 0; --j)
             {
                 ancestor_absolute_index = getParentAbsoluteIndex(ancestor_absolute_index, j);
-                ancestry_score += std::fabs(
+
+                double ancestry_score_ij = std::fabs(
                         mpFeatureInformationMatrix->at(i, mpIndexTree[ancestor_absolute_index]));
+                double ancestry_score_ji = std::fabs(
+                        mpFeatureInformationMatrix->at(mpIndexTree[ancestor_absolute_index], i));
+
+                ancestry_score += std::max(ancestry_score_ij, ancestry_score_ji);
             }
         }
 

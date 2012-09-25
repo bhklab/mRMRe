@@ -1,8 +1,8 @@
 #include "MutualInformationMatrix.h"
 
 MutualInformationMatrix::MutualInformationMatrix(Data const* const pData) :
-        Matrix(pData->getFeatureCount() * pData->getFeatureCount(),
-                pData->getFeatureCount(), pData->getFeatureCount()), mpData(pData)
+        Matrix(pData->getFeatureCount() * pData->getFeatureCount(), pData->getFeatureCount(),
+                pData->getFeatureCount()), mpData(pData)
 {
     for (unsigned int i = 0; i < mColumnCount; ++i)
         for (unsigned int j = i; j < mColumnCount; ++j)
@@ -26,7 +26,7 @@ MutualInformationMatrix::~MutualInformationMatrix()
 MutualInformationMatrix::at(unsigned int const i, unsigned int const j)
 {
     if (Matrix::at(i, j) != Matrix::at(i, j))
-        Matrix::at(i, j) = mpData->computeMiBetweenFeatures(i, j);
+        mpData->computeMiBetweenFeatures(i, j, &Matrix::at(i, j), &Matrix::at(j, i));
 
     return Matrix::at(i, j);
 }

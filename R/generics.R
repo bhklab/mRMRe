@@ -1,6 +1,6 @@
 setGeneric("featureData", function(object) standardGeneric("featureData"))
 
-setGeneric("subsetData", function(object, row_indices, column_indices) standardGeneric("subsetData"))
+setGeneric("subsetData", function(object, ...) standardGeneric("subsetData"))
 
 setGeneric("sampleCount", function(object) standardGeneric("sampleCount"))
 
@@ -31,13 +31,13 @@ setGeneric("mim", function(object, method = c("MI", "cor"), ...)
     return(matrix)
 })
 
-setGeneric("expandFeatureMatrix", function(object, matrix) standardGeneric("expandFeatureMatrix"))
+setGeneric("expandFeatureMatrix", function(object, ...) standardGeneric("expandFeatureMatrix"))
 
-setGeneric("compressFeatureMatrix", function(object, matrix) standardGeneric("compressFeatureMatrix"))
+setGeneric("compressFeatureMatrix", function(object, ...) standardGeneric("compressFeatureMatrix"))
 
-setGeneric("expandFeatureIndices", function(object, indices) standardGeneric("expandFeatureIndices"))
+setGeneric("expandFeatureIndices", function(object, ...) standardGeneric("expandFeatureIndices"))
 
-setGeneric("compressFeatureIndices", function(object, indices) standardGeneric("compressFeatureIndices"))
+setGeneric("compressFeatureIndices", function(object, ...) standardGeneric("compressFeatureIndices"))
 
 setGeneric("shrink", function(object, ...) standardGeneric("shrink"))
 

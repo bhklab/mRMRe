@@ -49,11 +49,9 @@ public:
 
     ~Data();
 
-    double const
-    computeMiBetweenFeatures(unsigned int const i, unsigned int const j) const;
-
-    double const
-    computeCorrelationBetweenContinuousFeatures(unsigned int const i, unsigned int const j) const;
+    void const
+    computeMiBetweenFeatures(unsigned int const i, unsigned int const j, double* const mi_ij,
+            double* const mi_ji) const;
 
     unsigned int const
     getSampleCount() const;
