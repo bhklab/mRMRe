@@ -67,7 +67,7 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
 
 `get.thread.count` <- function()
 {
-    thread_count <- vector(mode = "integer", length = 0)
+    thread_count <- vector(mode = "integer", length = 1)
     
     .Call(mRMRe:::.C_get_thread_count, thread_count)
     
@@ -76,7 +76,9 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
 
 `set.thread.count` <- function(thread_count)
 {
-    .Call(mRMRe:::.C_set_thread_count, as.integer(thread_count))
+    thread_count <- as.integer(thread_count)
     
-    return(get.thread.count())
+    .Call(mRMRe:::.C_set_thread_count, thread_count)
+    
+    return(thread_count)
 }

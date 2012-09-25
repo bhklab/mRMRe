@@ -98,30 +98,6 @@ Filter::isRedundantPath(unsigned int const absoluteIndex, unsigned int const fea
         unsigned int const level) const
 {
 
-//    for (unsigned int i = mpStartingIndexPerLevel[level]; i < mpStartingIndexPerLevel[level + 1]; ++i)
-//    {
-//        if (mpIndexTree[i] != mpIndexTree[0])
-//        {
-//            unsigned int parent_absolute_index = absoluteIndex;
-//            unsigned int parent_feature_index = featureIndex;
-//
-//            bool is_redundant = true;
-//
-//            for (unsigned int j = level; j > 0 && is_redundant; --j)
-//            {
-//                if (!hasAncestorByFeatureIndex(i, parent_feature_index, j)
-//                        && parent_feature_index != mpIndexTree[i])
-//                    is_redundant = false;
-//
-//                parent_absolute_index = getParentAbsoluteIndex(parent_absolute_index, j);
-//                parent_feature_index = mpIndexTree[parent_absolute_index];
-//            }
-//
-//            if (is_redundant)
-//                return true;
-//        }
-//    }
-
     for (unsigned int i = mpStartingIndexPerLevel[level]; i < mpStartingIndexPerLevel[level + 1];
             ++i)
         if (hasAncestorByFeatureIndex(i, featureIndex, level)
