@@ -1,7 +1,3 @@
-##
-## Preparation
-##
-
 library(Hmisc)
 library(mRMRe)
 

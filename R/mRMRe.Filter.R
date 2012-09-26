@@ -137,7 +137,7 @@ setMethod("solutions", signature("mRMRe.Filter"), function(object, mi_threshold 
         
         lapply(seq(prod(object@levels)), function(solution_index)
         {
-            lapply(seq(length(object@levels)), function(feature_index_index)
+            lapply(seq(object@levels), function(feature_index_index)
             {
                 feature_index <- object@filters[feature_index_index, solution_index, target_index_index]
                 
