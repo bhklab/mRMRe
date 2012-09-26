@@ -87,11 +87,15 @@ setMethod("featureNames", signature("mRMRe.Filter"), function(object)
     return(object@feature_names)
 })
 
+## solutions
+
 setMethod("solutions", signature("mRMRe.Filter"), function(object, mi_threshold = -Inf, causality_threshold = Inf)
 {
     # filters[[target]][solution, ] is a vector of selected features
-    # in a solution for a target
-
+    # in a solution for a target; missing values denote removed features
+            
+    # FIXME : Add methods for purgin mi_threshold and causality threshold
+            
     return(object@filters)
 })
 

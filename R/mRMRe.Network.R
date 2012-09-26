@@ -45,9 +45,9 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
     {
         solution <- solutions[[as.character(target_index)]]
         new_solutions <- apply(solution, c(1, 2), function(feature_index)
-                    ifelse(as.character(feature_index) %in% names(.Object@topologies), feature_index, 0))
+                    ifelse(as.character(feature_index) %in% names(.Object@topologies), feature_index, NA))
         
-        if (sum(new_solutions == 0) > 0)
+        if (sum(is.na(new_solutions)) > 0)
             .Object@topologies[[as.character(target_index)]] <<- new_solutions
     })
     
@@ -68,25 +68,53 @@ setMethod("featureNames", signature("mRMRe.Network"), function(object)
     return(object@feature_names)
 })
 
+## solutions
+
+setMethod("solutions", signature("mRMRe.Network"), function(object)
+{
+    # filters[[target]][solution, ] is a vector of selected features
+    # in a solution for a target; missing values denote removed features
+            
+    ## FIXME: Add thresholds for mi and causality
+    
+    return(object@solutions)
+})
+
 ## mim
 
 setMethod("mim", signature("mRMRe.Network"), function(object)
 {
-
+    # mi_matrix[i, j] contains the biased correlation between
+    # features i and j (i -> j directionality)
+            
+    return(object@mi_matrix)
 })
 
 ## causality
 
 setMethod("causality", signature("mRMRe.Network"), function(object)
 {
-
+    # causality_matrix[[target]][feature] contains the causality coefficient
+    # between feature and target (feature -> target directionality)
+            
+    return(object@causality_list)
 })
 
 ## adjacencyMatrix
 
 setMethod("adjacencyMatrix", signature("mRMRe.Network"), function(object)
 {
+    adjacency_matrix <- matrix(0, nrow = length(object@feature_names), ncol = length(object@feature_names))
     
+    lapply(names(object@topologies), function(target_index)
+    {
+        connected_indices <- unlist(object@topologies[[target_index]])
+        
+        adjacency_matrix[as.integer(target_index), connected_indices] <<- 1
+        adjacency_matrix[connected_indices, as.integer(target_index)] <<- 1
+    })
+
+    return(adjacency_matrix)
 })
 
 ## visualize
@@ -95,9 +123,9 @@ setMethod("visualize", signature("mRMRe.Network"), function(object)
 {
     ## FIXME : Cannot find a way to display vertex names...
     
-    #adjacency <- adjacencyMatrix(object)
-    #graph <- graph.adjacency(adjacency, mode = "undirected", add.rownames = TRUE)
+    adjacency <- adjacencyMatrix(object)
+    graph <- graph.adjacency(adjacency, mode = "undirected", add.rownames = TRUE)
     #V(graph)$name <- object@feature_names
     
-    #return(plot.igraph(graph))
+    return(plot.igraph(graph))
 })

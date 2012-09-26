@@ -42,7 +42,9 @@ dd <- data.frame(
 
 data <- mRMR.data(data = dd)
 network <- new("mRMRe.Network", data = data, target_indices = c(1, 2), levels = c(2, 1), layers = 1)
-
+network@topologies
+adjacencyMatrix(network)
+visualize(network)
 
 
 data <- mRMR.data(data = dd,
