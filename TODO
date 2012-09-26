@@ -1,6 +1,11 @@
-- Finish mRMRe.Network S4 class
-- See what can still be threaded
-- Revise everything for "DROP = FALSE"
-- Fix FIXMEs
-- Documentation
+- Address all issues conveyed via FIXME statements
+- Determine multi-threading and -process issues
+- Implement more functions to existing S4 classes (especially mRMRe.Network)
+	- Compute Likelihood
+	- Linear Regression Models??
+- Implement the causality inference methods for both mRMRe.Network and .Filter classes
+- Implement the post-filtering methods for both mRMRe.Network and .Filter classes based on MI or causality coefficients
+- Revise R code for imperfections and inefficiencies
+
+- Finish documentation
 - Vignettes
