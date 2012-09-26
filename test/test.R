@@ -25,14 +25,6 @@ solutions(filter)
 
 
 
-
-
-
-
-
-
-
-
 data <- mRMR.data(data = dd,
         strata = factor(sample(1:5, 100, replace=TRUE), ordered=TRUE),
         weights = runif(100))

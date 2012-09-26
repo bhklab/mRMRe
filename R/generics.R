@@ -63,7 +63,7 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
 
 `correlate` <- function(X, Y, method = "pearson", strata, weights, outX = TRUE, bootstrap_count = 0)
 {
-    if (method == "pearson" || method == "spearman" || method == "kendall")
+    if (method == "pearson" || method == "spearman" || method == "kendall" || method == "frequency")
     {
         X <- as.numeric(X)
         Y <- as.numeric(Y)
@@ -110,7 +110,7 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
         names(out) <- c("statistic", "concordant_weight", "discordant_weight", "uninformative_weight",
                 "relevant_weight")
         
-        return(out)
+        return(as.list(out))
     }
     else if (method == "cramersv")
         return(list(statistic = mim(data, method = "cor", outX = outX, bootstrap_count = bootstrap_count)[1, 2]))
