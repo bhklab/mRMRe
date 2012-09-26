@@ -14,7 +14,7 @@ setClass("mRMRe.Data", representation(feature_names = "character", feature_types
 
 setMethod("initialize", signature("mRMRe.Data"), function(.Object, data, strata, weights, priors)
 {
-    ## Data processing
+    ## Data Processing
     
     if (!is.data.frame(data))
         stop("data must be of type data frame")
@@ -38,21 +38,21 @@ setMethod("initialize", signature("mRMRe.Data"), function(.Object, data, strata,
     colnames(.Object@data)[.Object@feature_types %in% c(2, 3)] <- paste(rep(colnames(data)[feature_types == "Surv"],
                     each = 2), rep(c("event", "time"), sum(feature_types == "Surv")), sep = "_")
     
-    ## Sample stratum processing
+    ## Sample Stratum Processing
     
     if (missing(strata)) 
         .Object@strata <- rep.int(0, nrow(data))
     else
         sampleStrata(.Object) <- strata
     
-    ## Sample weight processing
+    ## Sample Weight Processing
     
     if (missing(weights)) 
         .Object@weights <- rep(1, nrow(data))
     else
         sampleWeights(.Object) <- weights
 
-    ## Prior feature matrix processing
+    ## Prior Feature Matrix Processing
     
     if (!missing(priors))
         priors(.Object) <- priors

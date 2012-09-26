@@ -1,7 +1,7 @@
 ## Definition
 
-setClass("mRMRe.Filter", representation(filters = "array", mi_matrix = "matrix", feature_names = "character",
-                target_indices = "integer", levels = "integer", causality_matrix = "matrix"))
+setClass("mRMRe.Filter", representation(filters = "array", mi_matrix = "matrix", causality_matrix = "matrix",
+                feature_names = "character", target_indices = "integer", levels = "integer"))
 
 ## Wrappers
 
@@ -24,7 +24,7 @@ setMethod("initialize", signature("mRMRe.Filter"),
     if (class(data) != "mRMRe.Data")
         stop("data must be of type mRMRe.Data")
     
-    ## Prior processing
+    ## Prior Processing
     
     if (length(priors(data)) != 0)
     {
@@ -36,12 +36,12 @@ setMethod("initialize", signature("mRMRe.Filter"),
     else
         prior_weight <- 0
     
-    ## Target processing
+    ## Target Processing
     
     if (sum(sapply(target_indices, function(index) index < 1 || index > featureCount(data))) > 1)
         stop("target_indices must only contain values ranging from 1 to the amount of features in data")
             
-    ## Level processing
+    ## Level Processing
     
     if (missing(levels))
         stop("levels must be provided")
@@ -53,7 +53,7 @@ setMethod("initialize", signature("mRMRe.Filter"),
     
     target_indices <- as.integer(expandFeatureIndices(data, target_indices)) - 1
     
-    ## Filter
+    ## Filter; Mutual Information and Causality Matrix
 
     mi_matrix <- as.numeric(matrix(NA, ncol = ncol(data@data), nrow = ncol(data@data)))
     filters <- vector(mode = "integer", length = length(target_indices) * prod(levels) * length(levels))
@@ -65,13 +65,48 @@ setMethod("initialize", signature("mRMRe.Filter"),
             as.integer(mRMRe:::.map.continuous.estimator(continuous_estimator)), as.integer(outX),
             as.integer(bootstrap_count), mi_matrix, filters)
     
-    filters <- array(compressFeatureIndices(data, filters + 1), dim = c(length(levels), prod(levels),
+    .Object@feature_names <- featureNames(data)
+    
+    .Object@filters <- array(compressFeatureIndices(data, filters + 1), dim = c(length(levels), prod(levels),
                     length(target_indices)))
-        
-    .Object@filters <- filters
+    .Object@filters <- apply(.Object@filters, c(2, 3), rev) # C code has feature vectors compiled from the bottom-up
+    dimnames(.Object@filters) <- list(NULL, NULL, .Object@feature_names[.Object@target_indices])
     
     .Object@mi_matrix <- compressFeatureMatrix(data, matrix(mi_matrix, ncol = ncol(data@data), nrow = ncol(data@data)))
-    .Object@feature_names <- featureNames(data)
+    
+    .Object@causality_matrix <- matrix(ncol = length(target_indices), nrow = ncol(.Object@mi_matrix),
+            dimnames = list(.Object@feature_names, .Object@feature_names[.Object@target_indices]))
+    
+    lapply(seq(target_indices), function(target_index_index)
+    {
+        target_index <- .Object@target_indices[[target_index_index]]
+        
+        apply(.Object@filters[, , target_index_index, drop = FALSE], 2, function(solution)
+        {
+            apply(combn(solution, 2), 2, function(pair)
+            {
+                i <- pair[[1]]
+                j <- pair[[2]]
+                
+                cor_ij <- .Object@mi_matrix[i, j]
+                
+                if (abs(cor_ij) < abs(.Object@mi_matrix[j, i]))
+                    cor_ij <- .Object@mi_matrix[j, i]
+                
+                coefficient <- -.5 * log(((1 - cor_ij^2) * (1 - .Object@mi_matrix[i, target_index]^2)
+                                    * (1 - .Object@mi_matrix[j, target_index]^2)) / (1 + 2 * cor_ij *
+                                    .Object@mi_matrix[i, target_index] * .Object@mi_matrix[j, target_index] -
+                                    cor_ij^2 - .Object@mi_matrix[i, target_index]^2 -
+                                    .Object@mi_matrix[j, target_index]^2))
+                
+                .Object@causality_matrix[i, target_index_index] <<- max(.Object@causality_matrix[i,
+                                target_index_index], coefficient, na.rm = TRUE)
+                
+                .Object@causality_matrix[j, target_index_index] <<- max(.Object@causality_matrix[j, 
+                                target_index_index], coefficient, na.rm = TRUE)
+            })
+        })
+    })
 
     return(.Object)
 })
@@ -90,61 +125,29 @@ setMethod("featureNames", signature("mRMRe.Filter"), function(object)
     return(object@feature_names)
 })
 
-## shrink
-
-## FIXME: Fix this to work with new "filters"
-
-setMethod("shrink", signature("mRMRe.Filter"), function(object, mi_threshold, causality_threshold)
+setMethod("solutions", signature("mRMRe.Filter"), function(object, mi_threshold, causality_threshold)
 {
-    solutions <- object@solutions
- 
-    if (TRUE == FALSE)
-    {
+    # filters[, solution, target] is a vector of selected features
+    # in a solution for a target. Features denoted by a missing value
+    # have been purged by shrinkage
     
-    if (!missing(mi_threshold) && mi_threshold != -Inf)  
+    lapply(seq(object@target_indices), function(target_index_index)
     {
-        solutions <- lapply(solutions, function(solution)
-        {
-            if (length(solution) == 0)
-                return(solution)
-                
-            screen <- sapply(solution, function(feature) mi_threshold <= 
-                                -.5 * log(1 - object@mi_matrix[feature, object@target_index]))
-            
-            return(solution[screen])
-        })
-    }
-                                                                   
-    if (!missing(causality_threshold) && causality_threshold != -Inf)
-    {
-        causality_matrix <- causality(object)
+        target_index <- object@target_indices[[target_index_index]]
         
-        solutions <- lapply(solutions, function(solution)
+        lapply(seq(prod(levels)), function(solution_index)
         {
-            if (length(solution) == 0)
-                return(solution)
-            
-            screen <- sapply(solution, function(feature) causality_threshold <=
-                                max(causality_matrix[feature, solution], na.rm = TRUE))
-            
-            return(solution[screen])
+            lapply(seq(length(levels)), function(feature_index)
+            {
+                if ((!missing(mi_threshold) && mi_threshold > -.5 *
+                        log(1 - object@mi_matrix[feature_index, target_index])) ||
+                    (!missing(causality_threshold) && causality_threshold >
+                        object@causality_matrix[feature_index, target_index]))
+                    object@filters[feature_index, solution_index, target_index_index] <<- NA
+            })
         })
-    }
+    })
     
-    solutions <- solutions[sapply(solutions, function(i) length(i) != 0)]
-    
-    if (length(solutions) == 0)
-        return(NULL)
-    else
-        return(solutions)
-    
-    }
-})
-
-## solutions
-
-setMethod("solutions", signature("mRMRe.Filter"), function(object)
-{
     return(object@filters)
 })
 
@@ -152,53 +155,22 @@ setMethod("solutions", signature("mRMRe.Filter"), function(object)
 
 setMethod("mim", signature("mRMRe.Filter"), function(object)
 {
+    # mi_matrix[i, j] contains the biased correlation between
+    # features i and j (i -> j directionality)
+    
     return(object@mi_matrix)
 })
 
 ## causality
 
-## FIXME : cache matrix in Filter object
-## FIXME : adapt this to "filters"
 setMethod("causality", signature("mRMRe.Filter"), function(object)
 {
-    if (TRUE == FALSE)
-    {
+    # causality_matrix[feature, target] contains the causality coefficient
+    # between feature and target (feature -> target directionality)
     
-    if (length(object@causality_matrix) == 0)
-    {
-        target_index <- object@target_index
-        object@causality_matrix <- matrix(NA, ncol = ncol(object@mi_matrix), nrow = ncol(object@mi_matrix))
-        
-        lapply(object@solutions, function(row)
-        {
-            pairs <- combn(row, 2)
-            
-            apply(pairs, 2, function(pair)
-            {
-                j <- pair[[1]]
-                i <- pair[[2]]
-                
-                if (is.na(object@causality_matrix[i, j]))
-                {   
-                    cor_ij <- max(object@mi_matrix[i, j], object@mi_matrix[j, i])
-                    
-                    coefficient <- -1/2 * log(((1 - cor_ij^2) * (1 - object@mi_matrix[i, target_index]^2)
-                                        * (1 - object@mi_matrix[j, target_index]^2)) / (1 + 2 * cor_ij *
-                                        object@mi_matrix[i, target_index] * object@mi_matrix[j, target_index] -
-                                        cor_ij^2 - object@mi_matrix[i, target_index]^2 -
-                                        object@mi_matrix[j, target_index]^2))
-                    
-                    object@causality_matrix[i, j] <<- coefficient
-                    object@causality_matrix[j, i] <<- coefficient
-                }
-            })
-        })
-    }
-
     return(object@causality_matrix)
-    }
 })
-
+    
 ## target
 
 setMethod("target", signature("mRMRe.Filter"), function(object)

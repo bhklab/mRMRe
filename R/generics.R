@@ -39,9 +39,7 @@ setGeneric("expandFeatureIndices", function(object, ...) standardGeneric("expand
 
 setGeneric("compressFeatureIndices", function(object, ...) standardGeneric("compressFeatureIndices"))
 
-setGeneric("shrink", function(object, ...) standardGeneric("shrink"))
-
-setGeneric("solutions", function(object) standardGeneric("solutions"))
+setGeneric("solutions", function(object, ...) standardGeneric("solutions"))
 
 setGeneric("causality", function(object) standardGeneric("causality"))
 

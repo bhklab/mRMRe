@@ -58,6 +58,8 @@ export_filters(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, S
         chunk_size *= INTEGER(childrenCountPerLevel)[i];
     chunk_size *= LENGTH(childrenCountPerLevel);
 
+    // Potential for parallelizing this loop right here
+
     for (unsigned int i = 0; i < LENGTH(targetFeatureIndices); ++i)
     {
         Filter filter(INTEGER(childrenCountPerLevel), LENGTH(childrenCountPerLevel), &mi_matrix,
