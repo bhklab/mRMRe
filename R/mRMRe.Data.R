@@ -215,6 +215,9 @@ setMethod("mim", signature("mRMRe.Data"),
     mi_matrix <- matrix(mi_matrix, ncol = ncol(object@data), nrow = ncol(object@data))
     
     mi_matrix <- compressFeatureMatrix(object, mi_matrix)
+
+    # mi_matrix[i, j] contains the biased correlation between
+    # features i and j (i -> j directionality)
     
     return(mi_matrix)
 })

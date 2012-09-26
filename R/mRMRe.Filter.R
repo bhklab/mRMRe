@@ -73,11 +73,11 @@ setMethod("initialize", signature("mRMRe.Filter"),
     dimnames(.Object@filters) <- list(NULL, NULL, .Object@feature_names[.Object@target_indices])
     
     .Object@mi_matrix <- compressFeatureMatrix(data, matrix(mi_matrix, ncol = ncol(data@data), nrow = ncol(data@data)))
-    
+ 
     .Object@causality_matrix <- matrix(ncol = length(target_indices), nrow = ncol(.Object@mi_matrix),
             dimnames = list(.Object@feature_names, .Object@feature_names[.Object@target_indices]))
     
-    lapply(seq(target_indices), function(target_index_index)
+    lapply(seq(length(.Object@target_indices)), function(target_index_index)
     {
         target_index <- .Object@target_indices[[target_index_index]]
         
@@ -131,18 +131,18 @@ setMethod("solutions", signature("mRMRe.Filter"), function(object, mi_threshold 
     # in a solution for a target. Features denoted by a missing value
     # have been purged by shrinkage
     
-    lapply(seq(object@target_indices), function(target_index_index)
+    lapply(seq(length(object@target_indices)), function(target_index_index)
     {
         target_index <- object@target_indices[[target_index_index]]
         
         lapply(seq(prod(object@levels)), function(solution_index)
         {
-            lapply(seq(object@levels), function(feature_index_index)
+            lapply(seq(length(object@levels)), function(feature_index_index)
             {
                 feature_index <- object@filters[feature_index_index, solution_index, target_index_index]
-                
+                browser()
                 if (mi_threshold > -.5 * log(1 - object@mi_matrix[feature_index, target_index]) ||
-                        causality_threshold < object@causality_matrix[feature_index, target_index])
+                        causality_threshold < object@causality_matrix[feature_index, target_index_index])
                     object@filters[feature_index_index, solution_index, target_index_index] <<- NA
             })
         })
