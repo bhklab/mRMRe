@@ -1,6 +1,8 @@
 #ifndef mRMRe_exports_h
 #define mRMRe_exports_h
 
+#define USE_RINTERNALS
+
 #include <R.h>
 #include <Rinternals.h>
 #include <Rdefines.h>
@@ -20,7 +22,7 @@ extern "C" SEXP
 export_filters(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, SEXP priorsWeight,
         SEXP sampleStrata, SEXP sampleWeights, SEXP featureTypes, SEXP sampleCount,
         SEXP featureCount, SEXP sampleStratumCount, SEXP targetFeatureIndices,
-        SEXP continuousEstimator, SEXP outX, SEXP bootstrapCount, SEXP miMatrix, SEXP filters);
+        SEXP continuousEstimator, SEXP outX, SEXP bootstrapCount, SEXP miMatrix);
 
 extern "C" SEXP
 export_mim(SEXP dataMatrix, SEXP priorsMatrix, SEXP priorsWeight, SEXP sampleStrata,

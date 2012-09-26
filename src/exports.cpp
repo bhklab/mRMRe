@@ -40,7 +40,7 @@ extern "C" SEXP
 export_filters(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, SEXP priorsWeight,
         SEXP sampleStrata, SEXP sampleWeights, SEXP featureTypes, SEXP sampleCount,
         SEXP featureCount, SEXP sampleStratumCount, SEXP targetFeatureIndices,
-        SEXP continuousEstimator, SEXP outX, SEXP bootstrapCount, SEXP miMatrix, SEXP filters)
+        SEXP continuousEstimator, SEXP outX, SEXP bootstrapCount, SEXP miMatrix)
 {
     Matrix const priors_matrix(REAL(priorsMatrix), INTEGER(featureCount)[0],
             INTEGER(featureCount)[0]);
@@ -58,6 +58,9 @@ export_filters(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, S
         chunk_size *= INTEGER(childrenCountPerLevel)[i];
     chunk_size *= LENGTH(childrenCountPerLevel);
 
+    SEXP filters;
+    PROTECT(filters = allocVector(VECSXP, LENGTH(targetFeatureIndices)));
+
     // Potential for parallelizing this loop right here
 
     for (unsigned int i = 0; i < LENGTH(targetFeatureIndices); ++i)
@@ -65,11 +68,14 @@ export_filters(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, S
         Filter filter(INTEGER(childrenCountPerLevel), LENGTH(childrenCountPerLevel), &mi_matrix,
                 INTEGER(targetFeatureIndices)[i]);
         filter.build();
-        std::vector<int> filter_solutions;
-        filter.getSolutions(INTEGER(filters) + (i * chunk_size));
+
+        SET_VECTOR_ELT(filters, i, allocVector(INTSXP, chunk_size));
+        filter.getSolutions(INTEGER(VECTOR_ELT(filters, i)));
     }
 
-    return R_NilValue;
+    UNPROTECT(1);
+
+    return filters;
 }
 
 extern "C" SEXP

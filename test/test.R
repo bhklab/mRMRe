@@ -22,7 +22,7 @@ dd <- data.frame(
         "cat2"=factor(sample(1:5, 100, replace = TRUE), ordered = TRUE))
 
 data <- mRMR.data(data = dd)
-filter <- mRMR.ensemble("mRMRe.Filter", data = data, target_indices = 2, feature_count = 2, solution_count = 2)
+filter <- mRMR.ensemble("mRMRe.Filter", data = data, target_indices = 3:5, feature_count = 2, solution_count = 2)
 
 
 

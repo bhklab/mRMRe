@@ -1,6 +1,6 @@
 ## Definition
 
-setClass("mRMRe.Filter", representation(filters = "array", mi_matrix = "matrix", causality_matrix = "matrix",
+setClass("mRMRe.Filter", representation(filters = "list", mi_matrix = "matrix", causality_list = "list",
                 feature_names = "character", target_indices = "integer", levels = "integer"))
 
 ## Wrappers
@@ -56,59 +56,25 @@ setMethod("initialize", signature("mRMRe.Filter"),
     ## Filter; Mutual Information and Causality Matrix
 
     mi_matrix <- as.numeric(matrix(NA, ncol = ncol(data@data), nrow = ncol(data@data)))
-    filters <- vector(mode = "integer", length = length(target_indices) * prod(levels) * length(levels))
+    #filters <- lapply(seq(length(target_indices)), function(i) vector(mode = "integer",
+    #                    length = prod(levels) * length(levels)))
     
-    .Call(mRMRe:::.C_export_filters, as.integer(.Object@levels), as.numeric(data@data),
+    # filters <- vector(mode = "integer", length = length(target_indices) * prod(levels) * length(levels))
+    
+    .Object@filters <- .Call(mRMRe:::.C_export_filters, as.integer(.Object@levels), as.numeric(data@data),
             as.numeric(data@priors), as.numeric(prior_weight), as.integer(data@strata), as.numeric(data@weights),
             as.integer(data@feature_types), as.integer(nrow(data@data)), as.integer(ncol(data@data)),
             as.integer(length(unique(data@strata))), as.integer(target_indices),
             as.integer(mRMRe:::.map.continuous.estimator(continuous_estimator)), as.integer(outX),
-            as.integer(bootstrap_count), mi_matrix, filters)
+            as.integer(bootstrap_count), mi_matrix)
+    
+    .Object@filters <- lapply(.Object@filters, function(solutions) matrix(compressFeatureIndices(data, solutions + 1),
+                        nrow = length(levels), ncol = prod(levels)))
+    names(.Object@filters) <- .Object@target_indices
+
+    .Object@mi_matrix <- compressFeatureMatrix(data, matrix(mi_matrix, ncol = ncol(data@data), nrow = ncol(data@data)))
     
     .Object@feature_names <- featureNames(data)
-    
-    .Object@filters <- array(compressFeatureIndices(data, filters + 1), dim = c(length(levels), prod(levels),
-                    length(target_indices)))
-    .Object@filters <- apply(.Object@filters, c(2, 3), rev) # C code has feature vectors compiled from the bottom-up
-    dimnames(.Object@filters) <- list(NULL, NULL, .Object@feature_names[.Object@target_indices])
-    
-    .Object@mi_matrix <- compressFeatureMatrix(data, matrix(mi_matrix, ncol = ncol(data@data), nrow = ncol(data@data)))
- 
-    .Object@causality_matrix <- matrix(ncol = length(target_indices), nrow = ncol(.Object@mi_matrix),
-            dimnames = list(.Object@feature_names, .Object@feature_names[.Object@target_indices]))
-    
-    lapply(seq(length(.Object@target_indices)), function(target_index_index)
-    {
-        target_index <- .Object@target_indices[[target_index_index]]
-        
-        apply(.Object@filters[, , target_index_index, drop = FALSE], 2, function(solution)
-        {
-			apply(combn(solution, 2), 2, function(pair)
-            {
-                i <- pair[[1]]
-                j <- pair[[2]]
-                
-                cor_ij <- .Object@mi_matrix[i, j]
-                
-                if (abs(cor_ij) < abs(.Object@mi_matrix[j, i]))
-                    cor_ij <- .Object@mi_matrix[j, i]
-                
-                coefficient <- -.5 * log(((1 - cor_ij^2) * (1 - .Object@mi_matrix[i, target_index]^2)
-                                    * (1 - .Object@mi_matrix[j, target_index]^2)) / (1 + 2 * cor_ij *
-                                    .Object@mi_matrix[i, target_index] * .Object@mi_matrix[j, target_index] -
-                                    cor_ij^2 - .Object@mi_matrix[i, target_index]^2 -
-                                    .Object@mi_matrix[j, target_index]^2))
-                
-				if(is.na(.Object@causality_matrix[i, target_index_index]) || 
-						.Object@causality_matrix[i, target_index_index]  > coefficient)
-					.Object@causality_matrix[i, target_index_index] <<- coefficient
-				
-				if(is.na(.Object@causality_matrix[j, target_index_index]) || 
-						.Object@causality_matrix[j, target_index_index]  > coefficient)
-					.Object@causality_matrix[j, target_index_index] <<- coefficient
-            })
-        })
-    })
 
     return(.Object)
 })
@@ -129,26 +95,9 @@ setMethod("featureNames", signature("mRMRe.Filter"), function(object)
 
 setMethod("solutions", signature("mRMRe.Filter"), function(object, mi_threshold = -Inf, causality_threshold = Inf)
 {
-    # filters[, solution, target] is a vector of selected features
-    # in a solution for a target. Features denoted by a missing value
-    # have been purged by shrinkage
-    
-    lapply(seq(length(object@target_indices)), function(target_index_index)
-    {
-        target_index <- object@target_indices[[target_index_index]]
-        
-        lapply(seq(prod(object@levels)), function(solution_index)
-        {
-            lapply(seq(length(object@levels)), function(feature_index_index)
-            {
-                feature_index <- object@filters[feature_index_index, solution_index, target_index_index]
-                if (mi_threshold > -.5 * log(1 - object@mi_matrix[feature_index, target_index]) ||
-                        causality_threshold < object@causality_matrix[feature_index, target_index_index])
-                    object@filters[feature_index_index, solution_index, target_index_index] <<- NA
-            })
-        })
-    })
-    
+    # filters[[target]][solution, ] is a vector of selected features
+    # in a solution for a target
+
     return(object@filters)
 })
 
@@ -166,10 +115,10 @@ setMethod("mim", signature("mRMRe.Filter"), function(object)
 
 setMethod("causality", signature("mRMRe.Filter"), function(object)
 {
-    # causality_matrix[feature, target] contains the causality coefficient
+    # causality_matrix[[target]][feature] contains the causality coefficient
     # between feature and target (feature -> target directionality)
     
-    return(object@causality_matrix)
+    return(object@causality_list)
 })
     
 ## target
