@@ -51,64 +51,61 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j, doubl
     {
         switch (mContinuousEstimator)
         {
-            case PEARSON_ESTIMATOR:
+        case PEARSON_ESTIMATOR:
+        {
+            val_ij = val_ji = Math::computePearsonCorrelation(&(mpDataMatrix->at(0, i)),
+                    &(mpDataMatrix->at(0, j)), mpSampleWeights, mpSampleIndicesPerStratum,
+                    mpSampleCountPerStratum, mSampleStratumCount, mBootstrapCount);
+        }
+            break;
+
+        case SPEARMAN_ESTIMATOR:
+        {
+            if (!mpHasOrderCached[i])
             {
-                val_ij = val_ji = Math::computePearsonCorrelation(&(mpDataMatrix->at(0, i)),
-                        &(mpDataMatrix->at(0, j)), mpSampleWeights, mpSampleIndicesPerStratum,
-                        mpSampleCountPerStratum, mSampleStratumCount, mBootstrapCount);
+                Math::placeOrders(&(mpDataMatrix->at(0, i)), &(mpOrderMatrix->at(0, i)),
+                        mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount);
+                mpHasOrderCached[i] = true;
             }
-                break;
 
-            case SPEARMAN_ESTIMATOR:
+            if (!mpHasOrderCached[j])
             {
-                if (!mpHasOrderCached[i])
-                {
-                    Math::placeOrders(&(mpDataMatrix->at(0, i)), &(mpOrderMatrix->at(0, i)),
-                            mpSampleIndicesPerStratum, mpSampleCountPerStratum,
-                            mSampleStratumCount);
-                    mpHasOrderCached[i] = true;
-                }
-
-                if (!mpHasOrderCached[j])
-                {
-                    Math::placeOrders(&(mpDataMatrix->at(0, j)), &(mpOrderMatrix->at(0, j)),
-                            mpSampleIndicesPerStratum, mpSampleCountPerStratum,
-                            mSampleStratumCount);
-                    mpHasOrderCached[j] = true;
-                }
-
-                double* const p_ranked_samples_x = new double[getSampleCount()];
-                double* const p_ranked_samples_y = new double[getSampleCount()];
-                Math::placeRanksFromOrders(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
-                        &(mpOrderMatrix->at(0, i)), &(mpOrderMatrix->at(0, j)), p_ranked_samples_x,
-                        p_ranked_samples_y, mpSampleIndicesPerStratum, mpSampleCountPerStratum,
-                        mSampleStratumCount);
-                val_ij = val_ji = Math::computePearsonCorrelation(p_ranked_samples_x,
-                        p_ranked_samples_y, mpSampleWeights, mpSampleIndicesPerStratum,
-                        mpSampleCountPerStratum, mSampleStratumCount, mBootstrapCount);
-                delete[] p_ranked_samples_x;
-                delete[] p_ranked_samples_y;
+                Math::placeOrders(&(mpDataMatrix->at(0, j)), &(mpOrderMatrix->at(0, j)),
+                        mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount);
+                mpHasOrderCached[j] = true;
             }
-                break;
 
-            case KENDALL_ESTIMATOR:
-            {
-                val_ij = val_ji = Math::computeSomersD(
-                        Math::computeConcordanceIndex(&(mpDataMatrix->at(0, i)),
-                                &(mpDataMatrix->at(0, j)), mpSampleWeights,
-                                mpSampleIndicesPerStratum, mpSampleCountPerStratum,
-                                mSampleStratumCount, mOutX));
-            }
-                break;
+            double* const p_ranked_samples_x = new double[getSampleCount()];
+            double* const p_ranked_samples_y = new double[getSampleCount()];
+            Math::placeRanksFromOrders(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
+                    &(mpOrderMatrix->at(0, i)), &(mpOrderMatrix->at(0, j)), p_ranked_samples_x,
+                    p_ranked_samples_y, mpSampleIndicesPerStratum, mpSampleCountPerStratum,
+                    mSampleStratumCount);
+            val_ij = val_ji = Math::computePearsonCorrelation(p_ranked_samples_x,
+                    p_ranked_samples_y, mpSampleWeights, mpSampleIndicesPerStratum,
+                    mpSampleCountPerStratum, mSampleStratumCount, mBootstrapCount);
+            delete[] p_ranked_samples_x;
+            delete[] p_ranked_samples_y;
+        }
+            break;
 
-            case FREQUENCY_ESTIMATOR:
-            {
-                val_ij = Math::computeFrequency(&(mpDataMatrix->at(0, i)),
-                        &(mpDataMatrix->at(0, j)), mpSampleWeights, mpSampleIndicesPerStratum,
-                        mpSampleCountPerStratum, mSampleStratumCount, mBootstrapCount);
-                val_ji = 1 - val_ij;
-            }
-                break;
+        case KENDALL_ESTIMATOR:
+        {
+            val_ij = val_ji = Math::computeSomersD(
+                    Math::computeConcordanceIndex(&(mpDataMatrix->at(0, i)),
+                            &(mpDataMatrix->at(0, j)), mpSampleWeights, mpSampleIndicesPerStratum,
+                            mpSampleCountPerStratum, mSampleStratumCount, mOutX));
+        }
+            break;
+
+        case FREQUENCY_ESTIMATOR:
+        {
+            val_ij = Math::computeFrequency(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
+                    mpSampleWeights, mpSampleIndicesPerStratum, mpSampleCountPerStratum,
+                    mSampleStratumCount, mBootstrapCount);
+            val_ji = 1 - val_ij;
+        }
+            break;
         }
     }
     else if (A_is_discrete && B_is_continuous) // Not symmetrical
@@ -122,9 +119,9 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j, doubl
                         mpSampleWeights, mpSampleIndicesPerStratum, mpSampleCountPerStratum,
                         mSampleStratumCount, mOutX));
     else if (A_is_discrete && B_is_discrete)
-        val_ij = val_ji = Math::computeCramersV(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
-                mpSampleWeights, mpSampleIndicesPerStratum, mpSampleCountPerStratum,
-                mSampleStratumCount, mBootstrapCount);
+        val_ij = val_ji = Math::computeCramersV(&(mpDataMatrix->at(0, i)),
+                &(mpDataMatrix->at(0, j)), mpSampleWeights, mpSampleIndicesPerStratum,
+                mpSampleCountPerStratum, mSampleStratumCount, mBootstrapCount);
     else if (A_is_survival_event && B_is_continuous)
         val_ij = val_ji = Math::computeSomersD(
                 Math::computeConcordanceIndex(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
