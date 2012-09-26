@@ -83,7 +83,7 @@ setMethod("initialize", signature("mRMRe.Filter"),
         
         apply(.Object@filters[, , target_index_index, drop = FALSE], 2, function(solution)
         {
-            apply(combn(solution, 2), 2, function(pair)
+			apply(combn(solution, 2), 2, function(pair)
             {
                 i <- pair[[1]]
                 j <- pair[[2]]
@@ -99,11 +99,13 @@ setMethod("initialize", signature("mRMRe.Filter"),
                                     cor_ij^2 - .Object@mi_matrix[i, target_index]^2 -
                                     .Object@mi_matrix[j, target_index]^2))
                 
-                .Object@causality_matrix[i, target_index_index] <<- min(.Object@causality_matrix[i,
-                                target_index_index], coefficient, na.rm = TRUE)
-                
-                .Object@causality_matrix[j, target_index_index] <<- min(.Object@causality_matrix[j, 
-                                target_index_index], coefficient, na.rm = TRUE)
+				if(is.na(.Object@causality_matrix[i, target_index_index]) || 
+						.Object@causality_matrix[i, target_index_index]  > coefficient)
+					.Object@causality_matrix[i, target_index_index] <<- coefficient
+				
+				if(is.na(.Object@causality_matrix[j, target_index_index]) || 
+						.Object@causality_matrix[j, target_index_index]  > coefficient)
+					.Object@causality_matrix[j, target_index_index] <<- coefficient
             })
         })
     })
