@@ -180,10 +180,10 @@ setMethod("priors", signature("mRMRe.Data"), function(object)
 
 setReplaceMethod("priors", signature("mRMRe.Data"), function(object, value)
 {
-    if (ncol(value) != ncol(data) || nrow(value) != ncol(data))
+    if (ncol(value) != ncol(object@data) || nrow(value) != ncol(object@data))
         stop("priors matrix must be a symmetric matrix containing as many features as data")
     else
-        .Object@priors <- expandFeatureMatrix(.Object, value)
+        object@priors <- expandFeatureMatrix(object, value)
     
     return(object)
 })
