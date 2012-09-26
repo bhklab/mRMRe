@@ -37,7 +37,7 @@ public:
     getParentAbsoluteIndex(unsigned int const absoluteIndex, unsigned int const level) const;
 
     void const
-    getSolutions(std::vector<int>* solutions) const;
+    getSolutions(int* const solutions) const;
 
     bool const
     hasAncestorByFeatureIndex(unsigned int const absoluteIndex, unsigned int const featureIndex,

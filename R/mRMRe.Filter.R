@@ -1,6 +1,6 @@
 ## Definition
 
-setClass("mRMRe.Filter", representation(filters = "list", mi_matrix = "matrix", feature_names = "character",
+setClass("mRMRe.Filter", representation(filters = "integer", mi_matrix = "matrix", feature_names = "character",
                 target_indices = "integer", levels = "integer", causality_matrix = "matrix"))
 
 ## Wrappers
@@ -56,8 +56,7 @@ setMethod("initialize", signature("mRMRe.Filter"),
     ## Filter
 
     mi_matrix <- as.numeric(matrix(NA, ncol = ncol(data@data), nrow = ncol(data@data)))
-    filters <- vector(mode = "integer", length = length(target_indices) *
-                    sum(sapply(levels, function(i) prod(levels[1:i])))) 
+    filters <- vector(mode = "integer", length = length(target_indices) * prod(levels) * length(levels))
     
     .Call(mRMRe:::.C_export_filters, as.integer(.Object@levels), as.numeric(data@data),
             as.numeric(data@priors), as.numeric(prior_weight), as.integer(data@strata), as.numeric(data@weights),
@@ -68,16 +67,16 @@ setMethod("initialize", signature("mRMRe.Filter"),
     
     filters <- compressFeatureIndices(data, filters + 1)
     
-    filters <- apply(matrix(filters, ncol = length(target_indices)), 2, function(i)
-    {
-        solutions <- matrix(i, ncol = prod(levels))
-        solutions <- as.list(as.data.frame(solutions))
-        names(solutions) <- NULL
+    #filters <- apply(matrix(filters, ncol = length(target_indices)), 2, function(i)
+    #{
+    #    solutions <- matrix(i, ncol = prod(levels))
+    #    solutions <- as.list(as.data.frame(solutions))
+    #    names(solutions) <- NULL
         
-        return(solutions)
-    })
+    #    return(solutions)
+    #})
 
-    names(filters) <- .Object@target_indices
+    #names(filters) <- .Object@target_indices
     
     .Object@filters <- filters
     
@@ -108,6 +107,9 @@ setMethod("featureNames", signature("mRMRe.Filter"), function(object)
 setMethod("shrink", signature("mRMRe.Filter"), function(object, mi_threshold, causality_threshold)
 {
     solutions <- object@solutions
+ 
+    if (TRUE == FALSE)
+    {
     
     if (!missing(mi_threshold) && mi_threshold != -Inf)  
     {
@@ -145,6 +147,8 @@ setMethod("shrink", signature("mRMRe.Filter"), function(object, mi_threshold, ca
         return(NULL)
     else
         return(solutions)
+    
+    }
 })
 
 ## solutions
@@ -167,6 +171,9 @@ setMethod("mim", signature("mRMRe.Filter"), function(object)
 ## FIXME : adapt this to "filters"
 setMethod("causality", signature("mRMRe.Filter"), function(object)
 {
+    if (TRUE == FALSE)
+    {
+    
     if (length(object@causality_matrix) == 0)
     {
         target_index <- object@target_index
@@ -199,6 +206,7 @@ setMethod("causality", signature("mRMRe.Filter"), function(object)
     }
 
     return(object@causality_matrix)
+    }
 })
 
 ## target

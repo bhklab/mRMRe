@@ -266,7 +266,7 @@ setMethod("expandFeatureIndices", signature("mRMRe.Data"), function(object, indi
     if (length(adaptor) != 0)
         indices <- sapply(indices, function(i) i + sum(sapply(seq(adaptor), function(j) i >= (adaptor[[j]] - j + 1))))
 
-    return(indices)
+    return(as.integer(indices))
 })
 
 ## compressFeatureIndices
@@ -278,5 +278,5 @@ setMethod("compressFeatureIndices", signature("mRMRe.Data"), function(object, in
     if (length(adaptor) != 0)
         indices <- sapply(indices, function(i) i - sum(i >= adaptor))
     
-    return(indices)
+    return(as.integer(indices))
 })

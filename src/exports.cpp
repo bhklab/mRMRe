@@ -53,16 +53,18 @@ export_filters(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, S
             INTEGER(outX)[0] != 0, INTEGER(bootstrapCount)[0]);
     MutualInformationMatrix mi_matrix(&data, REAL(miMatrix));
 
+    unsigned int chunk_size = 1;
+    for (unsigned int i = 0; i < LENGTH(childrenCountPerLevel); ++i)
+        chunk_size *= INTEGER(childrenCountPerLevel)[i];
+    chunk_size *= LENGTH(childrenCountPerLevel);
+
     for (unsigned int i = 0; i < LENGTH(targetFeatureIndices); ++i)
     {
         Filter filter(INTEGER(childrenCountPerLevel), LENGTH(childrenCountPerLevel), &mi_matrix,
                 INTEGER(targetFeatureIndices)[i]);
         filter.build();
         std::vector<int> filter_solutions;
-        filter.getSolutions(&filter_solutions);
-
-        memcpy(INTEGER(filters) + (i * filter_solutions.size()), &filter_solutions[0],
-                sizeof(int) * filter_solutions.size());
+        filter.getSolutions(INTEGER(filters) + (i * chunk_size));
     }
 
     return R_NilValue;

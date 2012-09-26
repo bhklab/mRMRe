@@ -56,9 +56,9 @@ Filter::getParentAbsoluteIndex(unsigned int const absoluteIndex, unsigned int co
 }
 
 void const
-Filter::getSolutions(std::vector<int>* solutions) const
+Filter::getSolutions(int* const solutions) const
 {
-    solutions->reserve(mLevelCount * (mTreeElementCount - mpStartingIndexPerLevel[mLevelCount]));
+    unsigned int counter = 0;
 
     for (unsigned int end_element_absolute_index = mTreeElementCount - 1;
             end_element_absolute_index >= mpStartingIndexPerLevel[mLevelCount];
@@ -68,7 +68,7 @@ Filter::getSolutions(std::vector<int>* solutions) const
 
         for (unsigned int level = mLevelCount; level > 0; --level)
         {
-            solutions->push_back(mpIndexTree[element_absolute_index]);
+            solutions[counter++] = mpIndexTree[element_absolute_index];
             element_absolute_index = getParentAbsoluteIndex(element_absolute_index, level);
         }
     }
