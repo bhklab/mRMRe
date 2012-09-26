@@ -140,7 +140,6 @@ setMethod("solutions", signature("mRMRe.Filter"), function(object, mi_threshold 
             lapply(seq(length(object@levels)), function(feature_index_index)
             {
                 feature_index <- object@filters[feature_index_index, solution_index, target_index_index]
-                browser()
                 if (mi_threshold > -.5 * log(1 - object@mi_matrix[feature_index, target_index]) ||
                         causality_threshold < object@causality_matrix[feature_index, target_index_index])
                     object@filters[feature_index_index, solution_index, target_index_index] <<- NA
