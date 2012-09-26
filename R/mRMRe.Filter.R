@@ -1,6 +1,6 @@
 ## Definition
 
-setClass("mRMRe.Filter", representation(filters = "integer", mi_matrix = "matrix", feature_names = "character",
+setClass("mRMRe.Filter", representation(filters = "array", mi_matrix = "matrix", feature_names = "character",
                 target_indices = "integer", levels = "integer", causality_matrix = "matrix"))
 
 ## Wrappers
@@ -65,19 +65,9 @@ setMethod("initialize", signature("mRMRe.Filter"),
             as.integer(mRMRe:::.map.continuous.estimator(continuous_estimator)), as.integer(outX),
             as.integer(bootstrap_count), mi_matrix, filters)
     
-    filters <- compressFeatureIndices(data, filters + 1)
-    
-    #filters <- apply(matrix(filters, ncol = length(target_indices)), 2, function(i)
-    #{
-    #    solutions <- matrix(i, ncol = prod(levels))
-    #    solutions <- as.list(as.data.frame(solutions))
-    #    names(solutions) <- NULL
+    filters <- array(compressFeatureIndices(data, filters + 1), dim = c(length(levels), prod(levels),
+                    length(target_indices)))
         
-    #    return(solutions)
-    #})
-
-    #names(filters) <- .Object@target_indices
-    
     .Object@filters <- filters
     
     .Object@mi_matrix <- compressFeatureMatrix(data, matrix(mi_matrix, ncol = ncol(data@data), nrow = ncol(data@data)))
