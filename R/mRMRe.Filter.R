@@ -99,10 +99,10 @@ setMethod("initialize", signature("mRMRe.Filter"),
                                     cor_ij^2 - .Object@mi_matrix[i, target_index]^2 -
                                     .Object@mi_matrix[j, target_index]^2))
                 
-                .Object@causality_matrix[i, target_index_index] <<- max(.Object@causality_matrix[i,
+                .Object@causality_matrix[i, target_index_index] <<- min(.Object@causality_matrix[i,
                                 target_index_index], coefficient, na.rm = TRUE)
                 
-                .Object@causality_matrix[j, target_index_index] <<- max(.Object@causality_matrix[j, 
+                .Object@causality_matrix[j, target_index_index] <<- min(.Object@causality_matrix[j, 
                                 target_index_index], coefficient, na.rm = TRUE)
             })
         })
@@ -125,7 +125,7 @@ setMethod("featureNames", signature("mRMRe.Filter"), function(object)
     return(object@feature_names)
 })
 
-setMethod("solutions", signature("mRMRe.Filter"), function(object, mi_threshold = -Inf, causality_threshold = -Inf)
+setMethod("solutions", signature("mRMRe.Filter"), function(object, mi_threshold = -Inf, causality_threshold = Inf)
 {
     # filters[, solution, target] is a vector of selected features
     # in a solution for a target. Features denoted by a missing value
@@ -142,7 +142,7 @@ setMethod("solutions", signature("mRMRe.Filter"), function(object, mi_threshold 
                 feature_index <- object@filters[feature_index_index, solution_index, target_index_index]
                 
                 if (mi_threshold > -.5 * log(1 - object@mi_matrix[feature_index, target_index]) ||
-                        causality_threshold > object@causality_matrix[feature_index, target_index])
+                        causality_threshold < object@causality_matrix[feature_index, target_index])
                     object@filters[feature_index_index, solution_index, target_index_index] <<- NA
             })
         })

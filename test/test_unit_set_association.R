@@ -1,37 +1,79 @@
+##
+## Preparation
+##
+
+library(Hmisc)
+library(mRMRe)
+
+##
+## Tests
+##
+
+#
+# correlate - Testing the correlate method against other known and proven methods
+#
+
 ## Cont vs Cont
+
 a <- runif(100)
 b <- runif(100)
-test_correlate(a,b, method="pearson")
-test_correlate(a,b, method="spearman")
-test_correlate(a,b, method="kendall")
-test_correlate(a,b, method="cindex")
-test_correlate(a,b, method="frequency")
+
+test_correlate(a,b, method = "pearson")
+test_correlate(a,b, method = "spearman")
+test_correlate(a,b, method = "kendall")
+test_correlate(a,b, method = "cindex")
+test_correlate(a,b, method = "frequency")
 
 ## Cat vs Cont
-a <- sample(c(0,1,2,3), 100, T)
+
+a <- sample(0:3, 100, T)
 b <- runif(100)
-test_correlate(a,b, method="pearson")
-test_correlate(a,b, method="spearman")
-test_correlate(a,b, method="kendall")
-test_correlate(a,b, method="cindex")
-test_correlate(a,b, method="frequency")
+
+test_correlate(a,b, method = "pearson")
+test_correlate(a,b, method = "spearman")
+test_correlate(a,b, method = "kendall")
+test_correlate(a,b, method = "cindex")
+test_correlate(a,b, method = "frequency")
 
 ## Cat vs Cat
-a <- sample(c(0,1,2,3), 100, T)
-b <- sample(c(0,1,2,3,4,5), 100, T)
-test_correlate(a,b, method="pearson")
-test_correlate(a,b, method="spearman")
-test_correlate(a,b, method="kendall")
-test_correlate(a,b, method="cindex")
-test_correlate(a,b, method="frequency")
-test_correlate(a,b, method="cramersv")
 
+a <- sample(0:3, 100, T)
+b <- sample(0:5, 100, T)
+
+test_correlate(a,b, method = "pearson")
+test_correlate(a,b, method = "spearman")
+test_correlate(a,b, method = "kendall")
+test_correlate(a,b, method = "cindex")
+test_correlate(a,b, method = "frequency")
+test_correlate(a,b, method = "cramersv")
+
+#
+# mim - Testing the mim method against the correlate method
+#
+
+dd <- data.frame(
+        "surv1" = Surv(runif(100), sample(0:1, 100, replace = TRUE)),
+        "cont1" = runif(100),
+        "cat1"  = factor(sample(1:5, 100, replace = TRUE), ordered = TRUE),
+        "surv2" = Surv(runif(100), sample(0:1, 100, replace = TRUE)),
+        "cont2" = runif(100),
+        "cat2"  = factor(sample(1:5, 100, replace = TRUE), ordered = TRUE))
+
+data <- mRMR.data(data = dd)
+cors <- mim(data, method = "cor")
+combinations <- combn(featureNames(data), 2)
+# results <- apply(combinations, 2, function(i) cors[i[[1]], i[[2]]] == correlate(i, j))
+# FIXME: Finish this test
+
+##
+## Methods
+##
 
 test_correlate <- function(a,b, method)
 {
 	run_correlate_test(a, b, method)
-	a[sample(1:length(a), round(length(a)/10))] <- NA
-	b[sample(1:length(b), round(length(b)/10))] <- NA
+	a[sample(1:length(a), round(length(a) / 10))] <- NA
+	b[sample(1:length(b), round(length(b) / 10))] <- NA
 	message("Test with NA")
 	run_correlate_test(a, b, method)
 }
@@ -40,9 +82,9 @@ run_correlate_test <- function(a, b, method)
 {
 	message("Testing with 3rd party")
 	if (method == "pearson" || method == "spearman" || method == "kendall")
-		confirmation <- cor(a,b, method=method, use="complete.obs")
+		confirmation <- cor(a, b, method = method, use = "complete.obs")
 	else if (method == "frequency")
-		confirmation <- mean (a > b, na.rm=T)
+		confirmation <- mean (a > b, na.rm = T)
 	else if (method == "cindex")
 		confirmation <- as.numeric(Hmisc::rcorr.cens(a,b)[1])
 	else if (method == "cramersv")

@@ -20,12 +20,12 @@ setGeneric("priors", function(object) standardGeneric("priors"))
 
 setGeneric("priors<-", function(object, value) standardGeneric("priors<-"))
 
-setGeneric("mim", function(object, method = c("MI", "cor"), ...)
+setGeneric("mim", function(object, method = c("mi", "cor"), ...)
 {
     method <- match.arg(method)
     matrix <- standardGeneric("mim")
     
-    if (method == "MI")
+    if (method == "mi")
         matrix <- -.5 * log(1 - (matrix^2))
     
     return(matrix)
