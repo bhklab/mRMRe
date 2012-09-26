@@ -7,6 +7,7 @@ data <- mRMR.data(data = as.data.frame(cgps_ge))
 system.time(filter <- mRMR.ensemble("mRMRe.Filter", data = data, target_indices = c(1, 2, 3, 4, 5, 6, 7, 8), feature_count = 500, solution_count = 10))
 print(object.size(filter), units = "Mb")
 
+
 ## Simple Test
 
 library(mRMRe)
@@ -23,6 +24,24 @@ dd <- data.frame(
 
 data <- mRMR.data(data = dd)
 filter <- mRMR.ensemble("mRMRe.Filter", data = data, target_indices = 3:5, feature_count = 2, solution_count = 2)
+
+
+## NETWORK TEST
+
+library(mRMRe)
+set.seed(0)
+dd <- data.frame(
+        "surv1" = Surv(runif(100), sample(0:1, 100, replace = TRUE)),
+        "cont1" = runif(100),
+        "cat1"  = factor(sample(1:5, 100, replace = TRUE), ordered = TRUE),
+        "surv2" = Surv(runif(100), sample(0:1, 100, replace = TRUE)),
+        "cont2" = runif(100),
+        "cont3" = runif(100),
+        "surv3" = Surv(runif(100), sample(0:1, 100, replace = TRUE)),
+        "cat2"=factor(sample(1:5, 100, replace = TRUE), ordered = TRUE))
+
+data <- mRMR.data(data = dd)
+network <- new("mRMRe.Network", data = data, target_indices = c(1, 2), levels = c(2, 1), layers = 1)
 
 
 

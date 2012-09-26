@@ -56,10 +56,6 @@ setMethod("initialize", signature("mRMRe.Filter"),
     ## Filter; Mutual Information and Causality Matrix
 
     mi_matrix <- as.numeric(matrix(NA, ncol = ncol(data@data), nrow = ncol(data@data)))
-    #filters <- lapply(seq(length(target_indices)), function(i) vector(mode = "integer",
-    #                    length = prod(levels) * length(levels)))
-    
-    # filters <- vector(mode = "integer", length = length(target_indices) * prod(levels) * length(levels))
     
     .Object@filters <- .Call(mRMRe:::.C_export_filters, as.integer(.Object@levels), as.numeric(data@data),
             as.numeric(data@priors), as.numeric(prior_weight), as.integer(data@strata), as.numeric(data@weights),
@@ -67,13 +63,11 @@ setMethod("initialize", signature("mRMRe.Filter"),
             as.integer(length(unique(data@strata))), as.integer(target_indices),
             as.integer(mRMRe:::.map.continuous.estimator(continuous_estimator)), as.integer(outX),
             as.integer(bootstrap_count), mi_matrix)
-    
     .Object@filters <- lapply(.Object@filters, function(solutions) matrix(compressFeatureIndices(data, solutions + 1),
                         nrow = length(levels), ncol = prod(levels)))
     names(.Object@filters) <- .Object@target_indices
 
     .Object@mi_matrix <- compressFeatureMatrix(data, matrix(mi_matrix, ncol = ncol(data@data), nrow = ncol(data@data)))
-    
     .Object@feature_names <- featureNames(data)
 
     return(.Object)

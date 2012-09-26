@@ -1,6 +1,6 @@
 ## Definition
 
-setClass("mRMRe.Network", representation(topologies = "array", mi_matrix = "matrix", causality_matrix = "matrix",
+setClass("mRMRe.Network", representation(topologies = "list", mi_matrix = "matrix", causality_matrix = "list",
                 feature_names = "character", target_indices = "integer"))
 
 ## Wrappers
@@ -15,68 +15,42 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
     if (missing(layers))
         layers <- 1L
     
-    .Object@topologies <-
     .Object@mi_matrix <- matrix(nrow = featureCount(data), ncol = featureCount(data))
-    #.Object@causality_matrix <- matrix(nrow = featureCount(data), ncol = featureCount(data))
     .Object@feature_names <- featureNames(data)
     .Object@target_indices <- as.integer(target_indices)
-    
-    length(.Object@topologies) <- featureCount(data)
+    .Object@topologies <- list()
     
     lapply(seq(layers), function(layer)
     {
+        filter <- new("mRMRe.Filter", data = data, prior_weight = prior_weight, target_indices = target_indices,
+                levels = levels, ...)
+        solutions <- solutions(filter, mi_threshold = mi_threshold, causality_threshold = causality_threshold)
+        lapply(names(solutions), function(i) .Object@topologies[[i]] <<- solutions[[i]])
         
-        #target_indices <<- unlist(lapply(target_indices, function(target_index)
-        #{
-        #    filter <- new("mRMRe.Filter", data = data, prior_weight = prior_weight, target_indices = target_indices,
-        #            levels = levels, ...)
-
-            ## FIXME : Code might not handle too brutal of a cutoff (mi_threshold and causality_threshold...)
-            
-        #    solutions <- shrink(filter, mi_threshold = mi_threshold, causality_threshold = causality_threshold)
-            #mi_matrix <- mim(filter, method = "cor")
-            
-        #    .Object@topologies[[target_index]] <<- solutions
-
-            ## FIXME : Is there a more elegant/efficient way to combine MI matrices?
-
-            #screen <- sapply(seq(featureCount(data)^2), function(i) is.na(.Object@mi_matrix[[i]]))
-            #.Object@mi_matrix[screen] <<- mi_matrix[screen]
-            
-            ## FIXME : Don't know yet if it is necessary to ensure symmetry in all
-            ## three dimensions of the cube (-> symmetricCube)
-    
-            #.Object@causality_cube[target_index, , ] <<- causality(filter)
-            
-        #    return(unlist(solutions))
-        #}))
-    
-        #target_indices <<- intersect(target_indices, which(sapply(.Object@topologies, is.null)))
+        # mi matrix
+                        
+        # causality
+                        
+        new_target_indices <- unique(unlist(solutions))
+        target_indices <<- new_target_indices[!as.character(new_target_indices) %in% names(.Object@topologies)]
     })
 
     ## Perform last-layer linking
     
+    filter <- new("mRMRe.Filter", data = data, prior_weight = prior_weight, target_indices = target_indices,
+            levels = levels, ...)
+    solutions <- solutions(filter, mi_threshold = mi_threshold, causality_threshold = causality_threshold)
     
-    ## FIXME: Validity checks and efficiency assessment needed here
+    lapply(target_indices, function(target_index)
+    {
+        solution <- solutions[[as.character(target_index)]]
+        new_solutions <- apply(solution, c(1, 2), function(feature_index)
+                    ifelse(as.character(feature_index) %in% names(.Object@topologies), feature_index, 0))
+        
+        if (sum(new_solutions == 0) > 0)
+            .Object@topologies[[as.character(target_index)]] <<- new_solutions
+    })
     
-    #lapply(target_indices, function(target_index)
-    #{
-        #filter <- new("mRMRe.Filter", data = data, prior_weight = prior_weight, target_index = target_index,
-        #        levels = levels, ...)
-        
-        #solutions <- shrink(filter, mi_threshold = mi_threshold, causality_threshold = causality_threshold)
-        
-        #new_solutions <- lapply(solutions, function(solution) sapply(solution, function(feature)
-        #{
-        #    if (!is.null(.Object@topologies[[feature]]))
-        #        return(feature)
-        #    else
-        #        return(NULL)
-        #}))
-            
-        #.Object@topologies[[target_index]] <<- new_solutions
-    #})
-
     return(.Object)
 })
 
@@ -98,36 +72,21 @@ setMethod("featureNames", signature("mRMRe.Network"), function(object)
 
 setMethod("mim", signature("mRMRe.Network"), function(object)
 {
-    #matrix <- object@mi_matrix
-    #rownames(matrix) <- featureNames(object)
-    #colnames(matrix) <- featureNames(object)
-    
-    #return(matrix)
+
 })
 
 ## causality
 
 setMethod("causality", signature("mRMRe.Network"), function(object)
 {
-    #cube <- object@causality_cube
-    #dimnames(cube)[[1]] <- featureNames(object)
-    #dimnames(cube)[[2]] <- featureNames(object)
-    #dimnames(cube)[[3]] <- featureNames(object)
-    
-    #return(cube)
+
 })
 
 ## adjacencyMatrix
 
 setMethod("adjacencyMatrix", signature("mRMRe.Network"), function(object)
 {
-    #matrix <- sapply(seq(object@topologies), function(i) sapply(seq(object@topologies), function(j)
-    #                        ifelse(i %in% unlist(object@topologies[[j]]), 1L, 0L)))
-
-    #rownames(matrix) <- object@feature_names
-    #colnames(matrix) <- object@feature_names
-
-    #return(t(matrix))
+    
 })
 
 ## visualize
