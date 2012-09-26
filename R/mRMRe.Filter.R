@@ -125,7 +125,7 @@ setMethod("featureNames", signature("mRMRe.Filter"), function(object)
     return(object@feature_names)
 })
 
-setMethod("solutions", signature("mRMRe.Filter"), function(object, mi_threshold, causality_threshold)
+setMethod("solutions", signature("mRMRe.Filter"), function(object, mi_threshold = -Inf, causality_threshold = -Inf)
 {
     # filters[, solution, target] is a vector of selected features
     # in a solution for a target. Features denoted by a missing value
@@ -135,15 +135,15 @@ setMethod("solutions", signature("mRMRe.Filter"), function(object, mi_threshold,
     {
         target_index <- object@target_indices[[target_index_index]]
         
-        lapply(seq(prod(levels)), function(solution_index)
+        lapply(seq(prod(object@levels)), function(solution_index)
         {
-            lapply(seq(length(levels)), function(feature_index)
+            lapply(seq(length(object@levels)), function(feature_index_index)
             {
-                if ((!missing(mi_threshold) && mi_threshold > -.5 *
-                        log(1 - object@mi_matrix[feature_index, target_index])) ||
-                    (!missing(causality_threshold) && causality_threshold >
-                        object@causality_matrix[feature_index, target_index]))
-                    object@filters[feature_index, solution_index, target_index_index] <<- NA
+                feature_index <- object@filters[feature_index_index, solution_index, target_index_index]
+                
+                if (mi_threshold > -.5 * log(1 - object@mi_matrix[feature_index, target_index]) ||
+                        causality_threshold > object@causality_matrix[feature_index, target_index])
+                    object@filters[feature_index_index, solution_index, target_index_index] <<- NA
             })
         })
     })
