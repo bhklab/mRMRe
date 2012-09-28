@@ -14,6 +14,16 @@ Math::IndirectComparator::operator()(unsigned int const i, unsigned int const j)
 }
 
 /* static */double const
+Math::computeCoInfomartionLattice(double const cor_ij, double const cor_ik, double const cor_jk)
+{
+    return -0.5
+            * log(
+                    ((1 - pow(cor_ij, 2)) * (1 - pow(cor_ik, 2)) * (1 - pow(cor_jk, 2)))
+                            / (1 + 2 * cor_ij * cor_ik * cor_jk - pow(cor_ij, 2) - pow(cor_ik, 2)
+                                    - pow(cor_jk, 2)));
+}
+
+/* static */double const
 Math::computeConcordanceIndex(double const* const pDiscreteSamples,
         double const* const pContinuousSamples, double const* const pSampleWeights,
         unsigned int const* const * const pSampleIndicesPerStratum,

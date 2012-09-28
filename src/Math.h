@@ -36,6 +36,9 @@ public:
     };
 
     static double const
+    computeCoInfomartionLattice(double const cor_ij, double const cor_ik, double const cor_jk);
+
+    static double const
     computeConcordanceIndex(double const* const pDiscreteSamples,
             double const* const pContinuousSamples, double const* const pSampleWeights,
             unsigned int const* const * const pSampleIndicesPerStratum,
