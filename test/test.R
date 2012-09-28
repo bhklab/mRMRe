@@ -1,12 +1,16 @@
 ## Size
 
 library(mRMRe)
-set.seed(0)
 data(cgps)
 data <- mRMR.data(data = as.data.frame(cgps_ge))
-system.time(filter <- mRMR.ensemble("mRMRe.Filter", data = data, target_indices = c(1, 2, 3, 4, 5, 6, 7, 8), feature_count = 500, solution_count = 10))
+system.time(filter <- mRMR.ensemble("mRMRe.Filter", data = data, target_indices = c(1), feature_count = 200, solution_count = 160))
 print(object.size(filter), units = "Mb")
 
+
+library(mRMRe)
+load('~/Downloads/irinotecan_cgp_ccle.RData')
+data <- mRMR.data(data = data.frame(data_cgp[, 1:10000]))
+system.time(mim(data))
 
 ## Simple Test
 

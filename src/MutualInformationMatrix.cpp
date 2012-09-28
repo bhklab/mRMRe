@@ -40,7 +40,7 @@ MutualInformationMatrix::at(unsigned int const i, unsigned int const j) const
 void const
 MutualInformationMatrix::build()
 {
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(static)
     for (unsigned int i = 0; i < mColumnCount; ++i)
         for (unsigned int j = 0; j < mColumnCount; ++j)
             at(i, j);
