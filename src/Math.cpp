@@ -13,6 +13,48 @@ Math::IndirectComparator::operator()(unsigned int const i, unsigned int const j)
     return mpSamples[mpSampleIndices[i]] < mpSamples[mpSampleIndices[j]];
 }
 
+#include <R.h>
+#include <Rdefines.h>
+#include <Rinternals.h>
+
+/* static */void const
+Math::computeCausality(double* const pCausalityArray, Matrix const* const pMiMatrix,
+        int const* const pSolutions, unsigned int const solutionCount,
+        unsigned int const featureCountPerSolution, unsigned int const featureCount,
+        unsigned int const targetFeatureIndex)
+{
+    for (unsigned int i = 0; i < featureCount; ++i)
+        pCausalityArray[i] = std::numeric_limits<double>::quiet_NaN();
+
+    for (unsigned int s = 0; s < solutionCount; ++s)
+    {
+        for (unsigned int i = 0; i < featureCountPerSolution - 1; ++i)
+        {
+            for (unsigned int j = i + 1; j < featureCountPerSolution; ++j)
+            {
+                int const a = pSolutions[(featureCountPerSolution * s) + i];
+                int const b = pSolutions[(featureCountPerSolution * s) + j];
+
+                double const cor_ij =
+                        (std::fabs(pMiMatrix->at(a, b)) > std::fabs(pMiMatrix->at(b, a))) ?
+                                pMiMatrix->at(a, b) : pMiMatrix->at(b, a);
+
+                double const cor_ik = pMiMatrix->at(a, targetFeatureIndex);
+                double const cor_jk = pMiMatrix->at(b, targetFeatureIndex);
+
+                double const coefficient = Math::computeCoInformationLattice(cor_ij, cor_ik,
+                        cor_jk);
+
+                if (pCausalityArray[a] != pCausalityArray[a] || pCausalityArray[a] > coefficient)
+                    pCausalityArray[a] = coefficient;
+
+                if (pCausalityArray[b] != pCausalityArray[b] || pCausalityArray[b] > coefficient)
+                    pCausalityArray[b] = coefficient;
+            }
+        }
+    }
+}
+
 /* static */double const
 Math::computeCoInformationLattice(double const cor_ij, double const cor_ik, double const cor_jk)
 {

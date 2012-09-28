@@ -35,6 +35,12 @@ public:
         operator()(unsigned int const i, unsigned int const j) const;
     };
 
+    static void const
+    computeCausality(double* const pCausalityArray, Matrix const* const pMiMatrix,
+            int const* const pSolutions, unsigned int const solutionCount,
+            unsigned int const featureCountPerSolution, unsigned int const featureCount,
+            unsigned int const targetFeatureIndex);
+
     static double const
     computeCoInformationLattice(double const cor_ij, double const cor_ik, double const cor_jk);
 

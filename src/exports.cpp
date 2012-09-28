@@ -53,15 +53,17 @@ export_filters(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, S
             INTEGER(outX)[0] != 0, INTEGER(bootstrapCount)[0]);
     MutualInformationMatrix mi_matrix(&data, REAL(miMatrix));
 
-    unsigned int chunk_size = 1;
+    unsigned int solution_count = 1;
     for (unsigned int i = 0; i < LENGTH(childrenCountPerLevel); ++i)
-        chunk_size *= INTEGER(childrenCountPerLevel)[i];
-    chunk_size *= LENGTH(childrenCountPerLevel);
+        solution_count *= INTEGER(childrenCountPerLevel)[i];
+    unsigned int const feature_count_per_solution = LENGTH(childrenCountPerLevel);
+    unsigned int const chunk_size = solution_count * feature_count_per_solution;
 
-    SEXP filters;
-    PROTECT(filters = allocVector(VECSXP, LENGTH(targetFeatureIndices)));
+    SEXP result;
+    PROTECT(result = allocVector(VECSXP, 2));
 
-    // Potential for parallelizing this loop right here
+    SET_VECTOR_ELT(result, 0, allocVector(VECSXP, LENGTH(targetFeatureIndices)));
+    SET_VECTOR_ELT(result, 1, allocVector(VECSXP, LENGTH(targetFeatureIndices)));
 
     for (unsigned int i = 0; i < LENGTH(targetFeatureIndices); ++i)
     {
@@ -69,13 +71,20 @@ export_filters(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, S
                 INTEGER(targetFeatureIndices)[i]);
         filter.build();
 
-        SET_VECTOR_ELT(filters, i, allocVector(INTSXP, chunk_size));
-        filter.getSolutions(INTEGER(VECTOR_ELT(filters, i)));
+        SET_VECTOR_ELT(VECTOR_ELT(result, 0), i, allocVector(INTSXP, chunk_size));
+        SET_VECTOR_ELT(VECTOR_ELT(result, 1), i, allocVector(REALSXP, INTEGER(featureCount)[0]));
+
+        filter.getSolutions(INTEGER(VECTOR_ELT(VECTOR_ELT(result, 0), i)));
+
+        Math::computeCausality(REAL(VECTOR_ELT(VECTOR_ELT(result, 1), i)), &mi_matrix,
+                INTEGER(VECTOR_ELT(VECTOR_ELT(result, 0), i)), solution_count,
+                feature_count_per_solution, INTEGER(featureCount)[0],
+                INTEGER(targetFeatureIndices)[i]);
     }
 
     UNPROTECT(1);
 
-    return filters;
+    return result;
 }
 
 extern "C" SEXP

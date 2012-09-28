@@ -57,16 +57,24 @@ setMethod("initialize", signature("mRMRe.Filter"),
 
     mi_matrix <- as.numeric(matrix(NA, ncol = ncol(data@data), nrow = ncol(data@data)))
     
-    .Object@filters <- .Call(mRMRe:::.C_export_filters, as.integer(.Object@levels), as.numeric(data@data),
+    result <- .Call(mRMRe:::.C_export_filters, as.integer(.Object@levels), as.numeric(data@data),
             as.numeric(data@priors), as.numeric(prior_weight), as.integer(data@strata), as.numeric(data@weights),
             as.integer(data@feature_types), as.integer(nrow(data@data)), as.integer(ncol(data@data)),
             as.integer(length(unique(data@strata))), as.integer(target_indices),
             as.integer(mRMRe:::.map.continuous.estimator(continuous_estimator)), as.integer(outX),
             as.integer(bootstrap_count), mi_matrix)
-    .Object@filters <- lapply(.Object@filters, function(solutions) matrix(compressFeatureIndices(data, solutions + 1),
+    
+    .Object@filters <- lapply(result[[1]], function(solutions) matrix(compressFeatureIndices(data, solutions + 1),
                         nrow = length(levels), ncol = prod(levels)))
     names(.Object@filters) <- .Object@target_indices
+    
+    .Object@causality_list <- result[[2]]
 
+    cols_to_drop <- duplicated(compressFeatureIndices(data, seq(ncol(data@data))))
+    
+    .Object@causality_list <- lapply(result[[2]], function(causality_array) causality_array[!cols_to_drop])
+    names(.Object@causality_list) <- .Object@target_indices
+    
     .Object@mi_matrix <- compressFeatureMatrix(data, matrix(mi_matrix, ncol = ncol(data@data), nrow = ncol(data@data)))
     .Object@feature_names <- featureNames(data)
 
