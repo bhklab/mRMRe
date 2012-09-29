@@ -27,9 +27,9 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
         solutions <- solutions(filter, mi_threshold = mi_threshold, causality_threshold = causality_threshold)
         lapply(names(solutions), function(i) .Object@topologies[[i]] <<- solutions[[i]])
         
-        # mi matrix
+        # FIXME: merge? mi matrix
                         
-        # causality
+        # FIXME: merge? causality
                         
         new_target_indices <- unique(unlist(solutions))
         target_indices <<- new_target_indices[!as.character(new_target_indices) %in% names(.Object@topologies)]
@@ -75,8 +75,6 @@ setMethod("solutions", signature("mRMRe.Network"), function(object)
     # filters[[target]][solution, ] is a vector of selected features
     # in a solution for a target; missing values denote removed features
             
-    ## FIXME: Add thresholds for mi and causality
-    
     return(object@solutions)
 })
 

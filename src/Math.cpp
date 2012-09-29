@@ -13,10 +13,6 @@ Math::IndirectComparator::operator()(unsigned int const i, unsigned int const j)
     return mpSamples[mpSampleIndices[i]] < mpSamples[mpSampleIndices[j]];
 }
 
-#include <R.h>
-#include <Rdefines.h>
-#include <Rinternals.h>
-
 /* static */void const
 Math::computeCausality(double* const pCausalityArray, Matrix const* const pMiMatrix,
         int const* const pSolutions, unsigned int const solutionCount,
