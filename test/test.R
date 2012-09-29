@@ -28,7 +28,7 @@ dd <- data.frame(
 
 data <- mRMR.data(data = dd)
 filter <- mRMR.ensemble("mRMRe.Filter", data = data, target_indices = 3:5, feature_count = 2, solution_count = 2)
-
+solutions(filter)
 
 ## NETWORK TEST
 

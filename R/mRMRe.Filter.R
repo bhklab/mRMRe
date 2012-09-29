@@ -102,9 +102,20 @@ setMethod("solutions", signature("mRMRe.Filter"), function(object, mi_threshold 
     # filters[[target]][solution, ] is a vector of selected features
     # in a solution for a target; missing values denote removed features
             
-    # FIXME : Add methods for purgin mi_threshold and causality threshold
+    filters <- lapply(object@target_indices, function(target_index)
+    {
+        result_matrix <- object@filters[[as.character(target_index)]]
+        col <- ncol(result_matrix)
+        causality_dropped <- which(object@causality_list[[as.character(target_index)]] > causality_threshold &
+                        !is.na(object@causality_list[[as.character(target_index)]]))
+        mi_dropped <- which(-.5 * log(1 - object@mi_matrix[, target_index, drop = TRUE]^2) < mi_threshold)
+        result_matrix[result_matrix %in% c(causality_dropped, mi_dropped)] <- NA
+
+        return(as.matrix(result_matrix, ncol = col))
+    })
+    names(filters) <- object@target_indices
             
-    return(object@filters)
+    return(filters)
 })
 
 ## mim
