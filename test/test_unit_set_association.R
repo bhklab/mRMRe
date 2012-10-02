@@ -80,7 +80,7 @@ run_correlate_test <- function(a, b, method)
 	if (method == "pearson" || method == "spearman" || method == "kendall")
 		confirmation <- cor(a, b, method = method, use = "complete.obs")
 	else if (method == "frequency")
-		confirmation <- (mean (a > b, na.rm = T) - 0.5) * 2
+		confirmation <- mean (a > b, na.rm = T)
 	else if (method == "cindex")
 		confirmation <- as.numeric(Hmisc::rcorr.cens(a,b)[1])
 	else if (method == "cramersv")

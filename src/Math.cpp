@@ -477,7 +477,6 @@ Math::computeFrequency(double const* const pSamplesX, double const* const pSampl
     }
 
     r /= total_weight;
-    r = (r - 0.5) * 2;
 
     delete[] p_error_per_stratum;
 
@@ -511,7 +510,7 @@ Math::computeFrequency(double const* const pSamplesX, double const* const pSampl
     if (pTotalWeight != 0)
         *pTotalWeight = total_weight;
     
-    r = ((sum / total_weight) - 0.5) * 2;
+    r = sum / total_weight;
     
     return r;
 }
