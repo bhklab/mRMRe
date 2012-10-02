@@ -191,8 +191,9 @@ setReplaceMethod("priors", signature("mRMRe.Data"), function(object, value)
 ## mim
 
 setMethod("mim", signature("mRMRe.Data"),
-        function(object, prior_weight = 0, continuous_estimator = "pearson", outX = TRUE, bootstrap_count = 0)
+        function(object, prior_weight = 0, continuous_estimator = c("pearson", "spearman", "kendall", "frequency"), outX = TRUE, bootstrap_count = 0)
 {
+    continuous_estimator <- match.arg(continuous_estimator)
     if (length(object@priors) != 0)
     {
         if (missing(prior_weight))
