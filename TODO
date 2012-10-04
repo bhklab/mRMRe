@@ -35,3 +35,10 @@ Error in sum(sapply(target_indices, function(index) index < 1 || index >  :
 Error in if (sum(sapply(target_indices, function(index) index < 1 || index >  : 
   missing value where TRUE/FALSE needed
 
+4) Too many solutions:
+> data(cgps)
+> dd <- mRMR.data(data=data.frame(cgps_ge))
+> netw <- new("mRMRe.Network", data=dd, target_indices=1:10, levels = c(100, 1, 1, 1, 1), layers = 3)
+Error in sum(sapply(target_indices, function(index) index < 1 || index >  : 
+  invalid 'type' (list) of argument
+
