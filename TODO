@@ -9,3 +9,21 @@
 
 - Finish documentation
 - Vignettes
+
+BHK:
+
+Fix the following bugs:
+
+1) Too many target_indices
+> data(cgps)
+> dd <- mRMR.data(data=data.frame(cgps_ge))
+> netw <- new("mRMRe.Network", data=dd, target_indices=1:1000, levels = c(10, 1, 1, 1, 1), layers = 1)
+Error in sum(sapply(target_indices, function(index) index < 1 || index >  : 
+  invalid 'type' (list) of argument
+
+2) Too many layers
+> data(cgps)
+> dd <- mRMR.data(data=data.frame(cgps_ge))
+> netw <- new("mRMRe.Network", data=dd, target_indices=1:10, levels = c(10, 1, 1, 1, 1), layers = 1000)
+Error in sum(sapply(target_indices, function(index) index < 1 || index >  : 
+  invalid 'type' (list) of argument
