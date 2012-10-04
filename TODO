@@ -42,3 +42,23 @@ Error in if (sum(sapply(target_indices, function(index) index < 1 || index >  :
 Error in sum(sapply(target_indices, function(index) index < 1 || index >  : 
   invalid 'type' (list) of argument
 
+
+
+
+Stuff to fix:
+
+- I do not understand what MIM with frequency is actually computing. Try this piece of code:
+> data(cgps)
+> ge <- mRMR.data(data=data.frame(cgps_ge))
+> rr <- mim(object=ges[[i]], continuous_estimator="frequency", method="cor")
+> hist(rr)
+The scale of the estimations is between -3 and 4 what does not make any sense to me.
+
+- barcode and likelihood:  these functions still require to be fully integrated in the package. Simon, when do you think you'll get the chance to do it?
+
+- you should not use the variable data in R as this function already exists
+
+- I do not fully understand your standards when you build wrappers. For instance 'mRMR.data' is the wrapper for 'mRMRe.Data'. What is the logic behind?
+wrappers
+
+
