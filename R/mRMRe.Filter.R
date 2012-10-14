@@ -37,8 +37,7 @@ setMethod("initialize", signature("mRMRe.Filter"),
         prior_weight <- 0
     
     ## Target Processing
-    if(length(target_indices) == 0)
-    	return(.Object)
+
     if (sum(sapply(target_indices, function(index) index < 1 || index > featureCount(data))) > 1)
         stop("target_indices must only contain values ranging from 1 to the amount of features in data")
             

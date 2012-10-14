@@ -20,7 +20,7 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
     .Object@target_indices <- as.integer(target_indices)
     .Object@topologies <- list()
     
-    lapply(seq(layers), function(layer)
+    for(i in 1:layers)
     {
         filter <- new("mRMRe.Filter", data = data, prior_weight = prior_weight, target_indices = target_indices,
                 levels = levels, ...)
@@ -32,11 +32,13 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
         # FIXME: merge? causality
                         
         new_target_indices <- unique(unlist(solutions))
-        target_indices <<- new_target_indices[!as.character(new_target_indices) %in% names(.Object@topologies)]
-    })
-
-    ## Perform last-layer linking
-    
+        target_indices <- new_target_indices[!as.character(new_target_indices) %in% names(.Object@topologies)]
+        if(length(target_indices) == 0)
+        	break()
+    }
+    if(length(target_indices) == 0)
+        return(.Object)
+    ## Perform last-layer linking  
     filter <- new("mRMRe.Filter", data = data, prior_weight = prior_weight, target_indices = target_indices,
             levels = levels, ...)
     solutions <- solutions(filter, mi_threshold = mi_threshold, causality_threshold = causality_threshold)
