@@ -35,6 +35,9 @@ Error in sum(sapply(target_indices, function(index) index < 1 || index >  :
 Error in sum(sapply(target_indices, function(index) index < 1 || index >  : 
   invalid 'type' (list) of argument
 
+# FIXED :
+# the solution() method sets the filtered out features to NA, therefore the set of target_indices for next layer contains NA
+# and the features that did pass the filter.  I removed the NA's
 3) mi_threshold is not working:
 > data(cgps)
 > dd <- mRMR.data(data=data.frame(cgps_ge))
