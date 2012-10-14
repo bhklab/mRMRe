@@ -1,20 +1,18 @@
 - Address all issues conveyed via FIXME statements
-- Determine multi-threading and -process issues
+- Barcode and Likelihood
+- Remove usade of data as a variable
+- Standardize object rappers ('mRMR.data' is the wrapper for 'mRMRe.Data'. What is the logic behind?)
+- Implement the causality inference methods for both mRMRe.Network and .Filter classes
+- Implement the post-filtering methods for both mRMRe.Network and .Filter classes based on MI or causality coefficients
 - Implement more functions to existing S4 classes (especially mRMRe.Network)
 	- Compute Likelihood
 	- Linear Regression Models??
-- Implement the causality inference methods for both mRMRe.Network and .Filter classes
-- Implement the post-filtering methods for both mRMRe.Network and .Filter classes based on MI or causality coefficients
 - Revise R code for imperfections and inefficiencies
-
+- Determine multi-threading and -process issues
 - Finish documentation
 - Vignettes
 
-BHK:
-
-Fix the following bugs:
-
-# FIXED : 
+##### RECENTLY FIXED ######
 # This is not a bug, you are requesting a seed of 1000 indices with a layer 1, this means that it will process the mRMRe on the 1000 features
 # and try to expand on those.  In this particular case, it will expand on the 1000 mRMRe but the cgps_ge dataset has 1000 features.
 # This causes the 1st layer to be empty as all possible features already have been processed.
@@ -25,7 +23,6 @@ Fix the following bugs:
 Error in sum(sapply(target_indices, function(index) index < 1 || index >  : 
   invalid 'type' (list) of argument
 
-# FIXED : 
 # Same scenario as the previous "bug".  The network has processed all 1000 features after only a couple of layers, therefore
 # the list of features to process is empty.
 2) Too many layers
@@ -35,7 +32,6 @@ Error in sum(sapply(target_indices, function(index) index < 1 || index >  :
 Error in sum(sapply(target_indices, function(index) index < 1 || index >  : 
   invalid 'type' (list) of argument
 
-# FIXED :
 # the solution() method sets the filtered out features to NA, therefore the set of target_indices for next layer contains NA
 # and the features that did pass the filter.  I removed the NA's
 3) mi_threshold is not working:
@@ -45,7 +41,6 @@ Error in sum(sapply(target_indices, function(index) index < 1 || index >  :
 Error in if (sum(sapply(target_indices, function(index) index < 1 || index >  : 
   missing value where TRUE/FALSE needed
 
-# FIXED :
 # Same scenario as bug 1 and 2, the # of solution required caused all the features to be processed through mRMR therefore rendering 3rd layer
 # target_feature empty.  It was de facto fixed previously
 4) Too many solutions:
@@ -55,30 +50,15 @@ Error in if (sum(sapply(target_indices, function(index) index < 1 || index >  :
 Error in sum(sapply(target_indices, function(index) index < 1 || index >  : 
   invalid 'type' (list) of argument
 
-
-
-
-Stuff to fix:
-
-- I do not understand what MIM with frequency is actually computing. Try this piece of code:
 # I think the usage of the code is wrong...
 # Use :
 # data(cgps)
 # ge <- mRMR.data(data=data.frame(cgps_ge))
 # rr <- mim(object=ge, continuous_estimator="frequency", method="cor")
 # hist(rr)
-##########
+- I do not understand what MIM with frequency is actually computing. Try this piece of code:
 > data(cgps)
 > ge <- mRMR.data(data=data.frame(cgps_ge))
 > rr <- mim(object=ges[[i]], continuous_estimator="frequency", method="cor")
 > hist(rr)
 The scale of the estimations is between -3 and 4 what does not make any sense to me.
-
-- barcode and likelihood:  these functions still require to be fully integrated in the package. Simon, when do you think you'll get the chance to do it?
-
-- you should not use the variable data in R as this function already exists
-
-- I do not fully understand your standards when you build wrappers. For instance 'mRMR.data' is the wrapper for 'mRMRe.Data'. What is the logic behind?
-wrappers
-
-
