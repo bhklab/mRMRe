@@ -14,6 +14,10 @@ BHK:
 
 Fix the following bugs:
 
+
+# This is not a bug, you are requesting a seed of 1000 indices with a layer 1, this means that it will process the mRMRe on the 1000 features
+# and try to expand on those.  In this particular case, it will expand on the 1000 mRMRe but the cgps_ge dataset has 1000 features.
+# This causes the 1st layer to be empty as all possible features already have been processed.
 1) Too many target_indices
 > data(cgps)
 > dd <- mRMR.data(data=data.frame(cgps_ge))
