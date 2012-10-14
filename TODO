@@ -61,6 +61,13 @@ Error in sum(sapply(target_indices, function(index) index < 1 || index >  :
 Stuff to fix:
 
 - I do not understand what MIM with frequency is actually computing. Try this piece of code:
+# I think the usage of the code is wrong...
+# Use :
+# data(cgps)
+# ge <- mRMR.data(data=data.frame(cgps_ge))
+# rr <- mim(object=ge, continuous_estimator="frequency", method="cor")
+# hist(rr)
+##########
 > data(cgps)
 > ge <- mRMR.data(data=data.frame(cgps_ge))
 > rr <- mim(object=ges[[i]], continuous_estimator="frequency", method="cor")
