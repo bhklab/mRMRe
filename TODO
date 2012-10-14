@@ -14,7 +14,7 @@ BHK:
 
 Fix the following bugs:
 
-
+# FIXED : 
 # This is not a bug, you are requesting a seed of 1000 indices with a layer 1, this means that it will process the mRMRe on the 1000 features
 # and try to expand on those.  In this particular case, it will expand on the 1000 mRMRe but the cgps_ge dataset has 1000 features.
 # This causes the 1st layer to be empty as all possible features already have been processed.
@@ -25,6 +25,7 @@ Fix the following bugs:
 Error in sum(sapply(target_indices, function(index) index < 1 || index >  : 
   invalid 'type' (list) of argument
 
+# FIXED : 
 # Same scenario as the previous "bug".  The network has processed all 1000 features after only a couple of layers, therefore
 # the list of features to process is empty.
 2) Too many layers
