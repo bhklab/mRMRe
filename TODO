@@ -45,6 +45,9 @@ Error in sum(sapply(target_indices, function(index) index < 1 || index >  :
 Error in if (sum(sapply(target_indices, function(index) index < 1 || index >  : 
   missing value where TRUE/FALSE needed
 
+# FIXED :
+# Same scenario as bug 1 and 2, the # of solution required caused all the features to be processed through mRMR therefore rendering 3rd layer
+# target_feature empty.  It was de facto fixed previously
 4) Too many solutions:
 > data(cgps)
 > dd <- mRMR.data(data=data.frame(cgps_ge))
