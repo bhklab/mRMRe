@@ -25,6 +25,8 @@ Fix the following bugs:
 Error in sum(sapply(target_indices, function(index) index < 1 || index >  : 
   invalid 'type' (list) of argument
 
+# Same scenario as the previous "bug".  The network has processed all 1000 features after only a couple of layers, therefore
+# the list of features to process is empty.
 2) Too many layers
 > data(cgps)
 > dd <- mRMR.data(data=data.frame(cgps_ge))
