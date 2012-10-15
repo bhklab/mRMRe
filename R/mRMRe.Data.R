@@ -18,6 +18,9 @@ setMethod("initialize", signature("mRMRe.Data"), function(.Object, data, strata,
     
     if (!is.data.frame(data))
         stop("data must be of type data frame")
+        
+    if(ncol(data) > (sqrt((2^31) - 1)))
+        stop("Too many features, the number of features should be <= 46340!")
     
     feature_types <- sapply(data, function(feature) paste(class(feature), collapse = "_"))
     
@@ -266,9 +269,9 @@ setMethod("compressFeatureMatrix", signature("mRMRe.Data"), function(object, mat
 setMethod("expandFeatureIndices", signature("mRMRe.Data"), function(object, indices)
 {
     adaptor <- which(object@feature_types == 3)
-
-    if (length(adaptor) != 0)
-        indices <- sapply(indices, function(i) i + sum(sapply(seq(adaptor), function(j) i >= (adaptor[[j]] - j + 1))))
+    # browser()
+    if (length(adaptor) > 0 && any(indices >= adaptor))
+        indices <- sapply(indices, function(i) i + sum(sapply(1:length(adaptor), function(j) i >= (adaptor[[j]] - j + 1))))
 
     return(as.integer(indices))
 })
@@ -279,7 +282,7 @@ setMethod("compressFeatureIndices", signature("mRMRe.Data"), function(object, in
 {
     adaptor <- which(object@feature_types == 3)
     
-    if (length(adaptor) != 0)
+    if (length(adaptor) > 0)
         indices <- sapply(indices, function(i) i - sum(i >= adaptor))
     
     return(as.integer(indices))
