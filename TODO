@@ -1,14 +1,11 @@
-- Address all issues conveyed via FIXME statements
 - Barcode and Likelihood
 - Remove usade of data as a variable
 - Standardize object rappers ('mRMR.data' is the wrapper for 'mRMRe.Data'. What is the logic behind?)
-- Implement the causality inference methods for both mRMRe.Network and .Filter classes
-- Implement the post-filtering methods for both mRMRe.Network and .Filter classes based on MI or causality coefficients
 - Implement more functions to existing S4 classes (especially mRMRe.Network)
 	- Compute Likelihood
 	- Linear Regression Models??
 - Revise R code for imperfections and inefficiencies
-- Determine multi-threading and -process issues
+- MPI
 - Finish documentation
 - Vignettes
 
