@@ -168,16 +168,16 @@ Filter::placeElements(unsigned int const startingIndex, unsigned int childrenCou
             {
                 ancestor_absolute_index = getParentAbsoluteIndex(ancestor_absolute_index, j);
 
-                double ancestry_score_ij = std::fabs(
+                double ancestry_score_ij = Math::computeMi(
                         mpFeatureInformationMatrix->at(i, mpIndexTree[ancestor_absolute_index]));
-                double ancestry_score_ji = std::fabs(
+                double ancestry_score_ji = Math::computeMi(
                         mpFeatureInformationMatrix->at(mpIndexTree[ancestor_absolute_index], i));
 
                 ancestry_score += std::max(ancestry_score_ij, ancestry_score_ji);
             }
         }
 
-        double const score = std::fabs(mpFeatureInformationMatrix->at(i, mpIndexTree[0]))
+        double const score = Math::computeMi(mpFeatureInformationMatrix->at(i, mpIndexTree[0]))
                 - (ancestry_score / level);
 
         if (score == score)
