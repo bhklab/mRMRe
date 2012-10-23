@@ -39,7 +39,7 @@ setMethod("initialize", signature("mRMRe.Filter"),
     ## Target Processing
 
     if (sum(sapply(target_indices, function(index) index < 1 || index > featureCount(data))) > 1)
-        stop("target_indices must only contain values ranging from 1 to the amount of features in data")
+        stop("target_indices must only contain values ranging from 1 to the number of features in data")
             
     ## Level Processing
     

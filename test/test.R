@@ -2,7 +2,7 @@
 
 library(mRMRe)
 data(cgps)
-data <- mRMR.data(data = as.data.frame(cgps_ge))
+data <- mRMR.data(data = as.data.frame(cgps.ge))
 system.time(filter <- mRMR.ensemble("mRMRe.Filter", data = data, target_indices = c(1), feature_count = 200, solution_count = 160))
 print(object.size(filter), units = "Mb")
 
@@ -95,7 +95,7 @@ library(mRMRe)
 set.thread.count(8)
 ## run the network inference
 data(cgps)
-ge <- mRMR.data(data = data.frame(cgps_ge[ ,1:1000]))
+ge <- mRMR.data(data = data.frame(cgps.ge[ ,1:1000]))
 #Rprof(filename = "Rprof.out", append = FALSE, interval = 0.02, memory.profiling=TRUE)
 exect <- system.time(netw <- new("mRMRe.Network", data = ge, target_indices = 1:10, levels = c(8, 1, 1, 1, 1), layers = 2))
 print(exect)

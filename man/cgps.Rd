@@ -1,7 +1,7 @@
 \name{cgps}
-\alias{cgps_annot}
-\alias{cgps_ge}
-\alias{cgps_ic50}
+\alias{cgps.annot}
+\alias{cgps.ge}
+\alias{cgps.ic50}
 \docType{data}
 \title{Part of the large pharmacogenomic dataset published by Carnett et al. in the Cancer Genome Project (CGP)}
 \description{This dataset contains gene expression of 200 cancer cell lines for which sensitivity (IC50) to Irinotecan was measured.}
@@ -9,9 +9,9 @@
 \format{
 The \code{\link[mRMRe]{cgps}} dataset is composed of three objects
  \describe{
-    \item{cgps_annot}{Dataframe containing gene annotations}
-    \item{cgps_ge}{Matrix containing expressions of 1000 genes; cell lines in rows, genes in columns}
-    \item{cgps_ic50}{Drug sensitivity measurements (IC50) for Irinotecan}
+    \item{cgps.annot}{Dataframe containing gene annotations}
+    \item{cgps.ge}{Matrix containing expressions of 1000 genes; cell lines in rows, genes in columns}
+    \item{cgps.ic50}{Drug sensitivity measurements (IC50) for Irinotecan}
 }
 }
 \details{Irinotecan is a drug mainly used in colorectal cancer.}
@@ -24,12 +24,12 @@ The \code{\link[mRMRe]{cgps}} dataset is composed of three objects
   data(cgps)
 
   message("Gene expression data:")
-  print(cgps_ge[1:3, 1:3])
+  print(cgps.ge[1:3, 1:3])
 
   message("Gene annotations:")
-  print(head(cgps_annot))
+  print(head(cgps.annot))
 
   message("Drug sensitivity (IC50) values:")
-  print(head(cgps_ic50))
+  print(head(cgps.ic50))
 }
 \keyword{datasets}
