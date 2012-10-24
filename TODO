@@ -1,5 +1,5 @@
 - Barcode and Likelihood
-- Remove usade of data as a variable
+- Remove usage of data as a variable
 - Standardize object rappers ('mRMR.data' is the wrapper for 'mRMRe.Data'. What is the logic behind?)
 - Implement more functions to existing S4 classes (especially mRMRe.Network)
 	- Compute Likelihood
@@ -9,3 +9,5 @@
 - Finish documentation
 - Vignettes
 
+- I find weird that 'solutions()' returns a list with one item; why not a vector or matrix directly? Why a list?
+- The order of solutions should be reversed, the top indices should be the most relevant ones. Currently the last ones are the first selected by the method

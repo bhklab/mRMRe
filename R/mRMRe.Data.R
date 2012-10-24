@@ -90,6 +90,14 @@ setMethod("featureData", signature("mRMRe.Data"), function(object)
 
 setMethod("subsetData", signature("mRMRe.Data"), function(object, row_indices, column_indices)
 {
+    if(missing(row_indices) && missing(column_indices))
+        return(object)
+        
+    if(missing(row_indices))
+        row_indices <- 1:sampleCount(object)
+    if(missing(column_indices))
+        column_indices <- 1:featureCount(object)
+    
     data <- featureData(object)[row_indices, column_indices, drop=FALSE]
     strata <- sampleStrata(object)[row_indices]
     weights <- sampleWeights(object)[row_indices]
