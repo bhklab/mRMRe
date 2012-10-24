@@ -101,7 +101,9 @@ setMethod("subsetData", signature("mRMRe.Data"), function(object, row_indices, c
     data <- featureData(object)[row_indices, column_indices, drop=FALSE]
     strata <- factor(sampleStrata(object)[row_indices])
     weights <- sampleWeights(object)[row_indices]
-    priors <- priors(object)[column_indices, column_indices, drop=FALSE]
+    priors <- priors(object)
+    if(nrow(priors) > 0 && ncol(priors) > 0)
+        priros <- priors[column_indices, column_indices, drop=FALSE]
     
     return(new("mRMRe.Data", data = data, strata = strata, weights = weights, priors = priors))
 })
