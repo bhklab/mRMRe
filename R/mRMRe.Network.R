@@ -1,7 +1,7 @@
 ## Definition
 
 setClass("mRMRe.Network", representation(topologies = "list", mi_matrix = "matrix", causality_matrix = "list",
-                feature_names = "character", target_indices = "integer"))
+                sample_names = "character", feature_names = "character", target_indices = "integer"))
 
 ## Wrappers
 
@@ -16,6 +16,7 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
         layers <- 1L
     
     .Object@mi_matrix <- matrix(nrow = featureCount(data), ncol = featureCount(data))
+    .Object@sample_names <- sampleNames(data)
     .Object@feature_names <- featureNames(data)
     .Object@target_indices <- as.integer(target_indices)
     .Object@topologies <- list()
@@ -68,6 +69,13 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
 setMethod("show", signature("mRMRe.Network"), function(object)
 {
     str(object)
+})
+
+## sampleNames
+
+setMethod("sampleNames", signature("mRMRe.Network"), function(object)
+{
+    return(object@sample_names)
 })
 
 ## featureNames

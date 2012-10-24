@@ -1,6 +1,6 @@
 ## Definition
 
-setClass("mRMRe.Data", representation(feature_names = "character", feature_types = "numeric", data = "matrix",
+setClass("mRMRe.Data", representation(sample_names = "character", feature_names = "character", feature_types = "numeric", data = "matrix",
                 strata = "numeric", weights = "numeric", priors = "matrix"))
 
 ## Wrapper
@@ -275,7 +275,7 @@ setMethod("compressFeatureMatrix", signature("mRMRe.Data"), function(object, mat
     adaptor <- which(object@feature_types != 3)
     matrix <- matrix[adaptor, adaptor]
     colnames(matrix) <- object@feature_names
-    rownames(matrix) <- object@feature_names
+    rownames(matrix) <- object@sample_names
     
     return(matrix)
 })

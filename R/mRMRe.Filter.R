@@ -1,7 +1,7 @@
 ## Definition
 
 setClass("mRMRe.Filter", representation(filters = "list", mi_matrix = "matrix", causality_list = "list",
-                feature_names = "character", target_indices = "integer", levels = "integer"))
+                sample_names = "character", feature_names = "character", target_indices = "integer", levels = "integer"))
 
 ## Wrappers
 
@@ -77,6 +77,7 @@ setMethod("initialize", signature("mRMRe.Filter"),
     
     .Object@mi_matrix <- compressFeatureMatrix(data, matrix(mi_matrix, ncol = ncol(data@data), nrow = ncol(data@data)))
     .Object@feature_names <- featureNames(data)
+    .Object@sample_names <- sampleNames(data)
 
     return(.Object)
 })
@@ -86,6 +87,13 @@ setMethod("initialize", signature("mRMRe.Filter"),
 setMethod("show", signature("mRMRe.Filter"), function(object)
 {
     str(object)
+})
+
+## sampleNames
+
+setMethod("sampleNames", signature("mRMRe.Filter"), function(object)
+{
+    return(object@sample_names)
 })
 
 ## featureNames
