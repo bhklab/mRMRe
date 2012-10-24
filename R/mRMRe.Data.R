@@ -57,7 +57,7 @@ setMethod("initialize", signature("mRMRe.Data"), function(.Object, data, strata,
 
     ## Prior Feature Matrix Processing
     
-    if (!missing(priors))
+    if (!missing(priors) && !is.null(priors))
         priors(.Object) <- priors
     
     return(.Object)
@@ -102,8 +102,10 @@ setMethod("subsetData", signature("mRMRe.Data"), function(object, row_indices, c
     strata <- factor(sampleStrata(object)[row_indices])
     weights <- sampleWeights(object)[row_indices]
     priors <- priors(object)
-    if(nrow(priors) > 0 && ncol(priors) > 0)
-        priros <- priors[column_indices, column_indices, drop=FALSE]
+    if(length(priors) > 0)
+        priors <- priors[column_indices, column_indices, drop=FALSE]
+    else
+        priors <- NULL
     
     return(new("mRMRe.Data", data = data, strata = strata, weights = weights, priors = priors))
 })
