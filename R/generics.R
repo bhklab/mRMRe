@@ -2,6 +2,8 @@ setGeneric("featureData", function(object) standardGeneric("featureData"))
 
 setGeneric("subsetData", function(object, ...) standardGeneric("subsetData"))
 
+setGeneric("sampleNames", function(object) standardGeneric("sampleNames"))
+
 setGeneric("sampleCount", function(object) standardGeneric("sampleCount"))
 
 setGeneric("featureCount", function(object) standardGeneric("featureCount"))

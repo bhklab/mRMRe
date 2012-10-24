@@ -26,7 +26,8 @@ setMethod("initialize", signature("mRMRe.Data"), function(.Object, data, strata,
     
     if (any(!is.element(feature_types, c("numeric", "ordered_factor", "Surv"))))
         stop("data columns must be either of numeric, ordered factor or Surv type")
-    
+
+    .Object@sample_names <- rownames(data)
     .Object@feature_names <- colnames(data)
     .Object@feature_types <- unlist(lapply(feature_types, switch, "Surv" = c(2, 3), "ordered_factor" = 1, 0))
     names(.Object@feature_types) <- NULL
@@ -99,11 +100,11 @@ setMethod("subsetData", signature("mRMRe.Data"), function(object, row_indices, c
         column_indices <- 1:featureCount(object)
     
     data <- featureData(object)[row_indices, column_indices, drop=FALSE]
-    strata <- sampleStrata(object)[row_indices]
+    strata <- factor(sampleStrata(object)[row_indices])
     weights <- sampleWeights(object)[row_indices]
-    priors <- priors(object)[row_indices, column_indices, drop=FALSE]
+    priors <- priors(object)[column_indices, column_indices, drop=FALSE]
     
-    return(new("mRMRe.Data", data = data, strata = strata, weights = weight, priors = priors))
+    return(new("mRMRe.Data", data = data, strata = strata, weights = weights, priors = priors))
 })
 
 ## sampleCount
@@ -111,6 +112,13 @@ setMethod("subsetData", signature("mRMRe.Data"), function(object, row_indices, c
 setMethod("sampleCount", signature("mRMRe.Data"), function(object)
 {
     return(nrow(object@data))
+})
+
+## sampleNames
+
+setMethod("sampleNames", signature("mRMRe.Data"), function(object)
+{
+    return(object@sample_names)
 })
 
 ## featureCount
