@@ -1,6 +1,6 @@
 ## Definition
 
-setClass("mRMRe.Network", representation(topologies = "list", mi_matrix = "matrix", causality_matrix = "list",
+setClass("mRMRe.Network", representation(topologies = "list", mi_matrix = "matrix", causality_matrix = "matrix",
                 sample_names = "character", feature_names = "character", target_indices = "integer"))
 
 ## Wrappers
