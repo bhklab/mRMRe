@@ -15,7 +15,10 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
     if (missing(layers))
         layers <- 1L
     
-    .Object@mi_matrix <- matrix(nrow = featureCount(data), ncol = featureCount(data))
+    if(causality_threshold < Inf)
+        .Object@causality_matrix <- matrix(nrow = featureCount(data), ncol = featureCount(data), dimnames = list(featureNames(data), featureNames(data)))
+
+    .Object@mi_matrix <- matrix(nrow = featureCount(data), ncol = featureCount(data), dimnames = list(featureNames(data), featureNames(data)))
     .Object@sample_names <- sampleNames(data)
     .Object@feature_names <- featureNames(data)
     .Object@target_indices <- as.integer(target_indices)
@@ -124,11 +127,15 @@ setMethod("adjacencyMatrix", signature("mRMRe.Network"), function(object)
     lapply(names(object@topologies), function(target_index)
     {
         connected_indices <- unlist(object@topologies[[target_index]])
-        
-        adjacency_matrix[as.integer(target_index), connected_indices] <<- 1
-        adjacency_matrix[connected_indices, as.integer(target_index)] <<- 1
+        connected_indices <- connected_indices[!is.na(connected_indices)]
+        if(length(connected_indices) > 0) {
+            adjacency_matrix[connected_indices, as.integer(target_index)] <<- 1
+            if(length(causality(object)) == 0)
+                adjacency_matrix[as.integer(target_index), connected_indices] <<- 1
+        }
     })
 
+    # adjacency matrix: parents (seletected features) in rows, children (target features) in columns
     return(adjacency_matrix)
 })
 
@@ -141,11 +148,15 @@ setMethod("adjacencyMatrixSum", signature("mRMRe.Network"), function(object)
     lapply(names(object@topologies), function(target_index)
     {
         connected_indices <- unlist(object@topologies[[target_index]])
-        
-        adjacency_matrix[as.integer(target_index), connected_indices] <<- adjacency_matrix[as.integer(target_index), connected_indices] + 1
-        adjacency_matrix[connected_indices, as.integer(target_index)] <<- adjacency_matrix[connected_indices, as.integer(target_index)] + 1
+        connected_indices <- connected_indices[!is.na(connected_indices)]
+        if(length(connected_indices) > 0) {
+            adjacency_matrix[connected_indices, as.integer(target_index)] <<- adjacency_matrix[connected_indices, as.integer(target_index)] + 1
+            if(length(causality(object)) == 0)
+                adjacency_matrix[as.integer(target_index), connected_indices] <<- adjacency_matrix[as.integer(target_index), connected_indices] + 1
+        }
     })
 
+    # adjacency matrix: parents (seletected features) in rows, children (target features) in columns
     return(adjacency_matrix)
 })
 
