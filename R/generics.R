@@ -49,6 +49,8 @@ setGeneric("target", function(object) standardGeneric("target"))
 
 setGeneric("adjacencyMatrix", function(object) standardGeneric("adjacencyMatrix"))
 
+setGeneric("adjacencyMatrixSum", function(object) standardGeneric("adjacencyMatrixSum"))
+
 setGeneric("visualize", function(object) standardGeneric("visualize"))
 
 `.map.continuous.estimator` <- function(continuous_estimator)

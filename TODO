@@ -10,5 +10,15 @@
 - Vignettes
 
 - I find weird that 'solutions()' returns a list with one item; why not a vector or matrix directly? Why a list?
+
 - The order of solutions should be reversed, the top indices should be the most relevant ones. Currently the last ones are the first selected by the method
+
 - We need to optimize the building of mRMRe.Data objects and the function subsetData. If one wants to study the stability of our methods one must perform many resampling of the data and most of the time is then spent in building mRMRe.Data objects
+
+- When users specify the threshold for MI or causality scores, one should check the redundancy of the variable selection again as many shrunk solutions may be identical
+
+- Causality matrix is not stored in the network object:
+data(cgps)
+dd <- mRMR.data(data = data.frame(cgps.ge[ ,1:100]))
+netw <- new("mRMRe.Network", data=dd, target_indices=c(1, 2, 3), levels=c(5, 1, 1), layers=3, causality_threshold=0)
+causality(netw)

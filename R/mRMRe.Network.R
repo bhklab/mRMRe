@@ -112,14 +112,14 @@ setMethod("causality", signature("mRMRe.Network"), function(object)
     # causality_matrix[[target]][feature] contains the causality coefficient
     # between feature and target (feature -> target directionality)
             
-    return(object@causality_list)
+    return(object@causality_matrix)
 })
 
 ## adjacencyMatrix
 
 setMethod("adjacencyMatrix", signature("mRMRe.Network"), function(object)
 {
-    adjacency_matrix <- matrix(0, nrow = length(object@feature_names), ncol = length(object@feature_names))
+    adjacency_matrix <- matrix(0, nrow = length(object@feature_names), ncol = length(object@feature_names), dimnames=list(object@feature_names, object@feature_names))
     
     lapply(names(object@topologies), function(target_index)
     {
@@ -127,6 +127,23 @@ setMethod("adjacencyMatrix", signature("mRMRe.Network"), function(object)
         
         adjacency_matrix[as.integer(target_index), connected_indices] <<- 1
         adjacency_matrix[connected_indices, as.integer(target_index)] <<- 1
+    })
+
+    return(adjacency_matrix)
+})
+
+## adjacencyMatrixSum
+
+setMethod("adjacencyMatrixSum", signature("mRMRe.Network"), function(object)
+{
+    adjacency_matrix <- matrix(0, nrow = length(object@feature_names), ncol = length(object@feature_names), dimnames=list(object@feature_names, object@feature_names))
+    
+    lapply(names(object@topologies), function(target_index)
+    {
+        connected_indices <- unlist(object@topologies[[target_index]])
+        
+        adjacency_matrix[as.integer(target_index), connected_indices] <<- adjacency_matrix[as.integer(target_index), connected_indices] + 1
+        adjacency_matrix[connected_indices, as.integer(target_index)] <<- adjacency_matrix[connected_indices, as.integer(target_index)] + 1
     })
 
     return(adjacency_matrix)
