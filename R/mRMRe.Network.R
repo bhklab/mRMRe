@@ -126,8 +126,8 @@ setMethod("adjacencyMatrix", signature("mRMRe.Network"), function(object)
     
     lapply(names(object@topologies), function(target_index)
     {
-        connected_indices <- unlist(object@topologies[[target_index]])
-        connected_indices <- connected_indices[!is.na(connected_indices)]
+        connected_indices <- as.vector(object@topologies[[target_index]])
+        connected_indices <- unique(connected_indices[!is.na(connected_indices)])
         if(length(connected_indices) > 0) {
             adjacency_matrix[connected_indices, as.integer(target_index)] <<- 1
             if(length(causality(object)) == 0)
@@ -147,12 +147,14 @@ setMethod("adjacencyMatrixSum", signature("mRMRe.Network"), function(object)
     
     lapply(names(object@topologies), function(target_index)
     {
-        connected_indices <- unlist(object@topologies[[target_index]])
-        connected_indices <- connected_indices[!is.na(connected_indices)]
+        connected_indices <- as.vector(object@topologies[[target_index]])
+        connected_indices <- sort(connected_indices[!is.na(connected_indices)])
+        connected_indices_count <- table(connected_indices)
+        connected_indices <- unique(connected_indices)
         if(length(connected_indices) > 0) {
-            adjacency_matrix[connected_indices, as.integer(target_index)] <<- adjacency_matrix[connected_indices, as.integer(target_index)] + 1
+            adjacency_matrix[connected_indices, as.integer(target_index)] <<- connected_indices_count
             if(length(causality(object)) == 0)
-                adjacency_matrix[as.integer(target_index), connected_indices] <<- adjacency_matrix[as.integer(target_index), connected_indices] + 1
+                adjacency_matrix[as.integer(target_index), connected_indices] <<- connected_indices_count
         }
     })
 
