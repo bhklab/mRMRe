@@ -24,3 +24,5 @@ netw <- new("mRMRe.Network", data=dd, target_indices=c(1, 2, 3), levels=c(5, 1, 
 causality(netw)
 
 - Adjacency matrix should be directed if causality inference is performed: parents (selected features) in rows, children (target features) in columns
+
+ 
