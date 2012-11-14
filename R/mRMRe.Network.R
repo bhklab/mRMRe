@@ -31,8 +31,7 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
         solutions <- solutions(filter, mi_threshold = mi_threshold, causality_threshold = causality_threshold)
        
         lapply(names(solutions), function(i) .Object@topologies[[i]] <<- solutions[[i]])
-        
-        screen <- which(!is.na(mim(filter)))
+        screen <- which(!is.na(mim(filter, method="cor")))
         .Object@mi_matrix[screen] <- mim(filter)[screen]
                         
         # FIXME: merge? causality
