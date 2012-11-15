@@ -137,15 +137,10 @@ setMethod("mim", signature("mRMRe.Filter"), function(object)
 
 ## causality
 
-setMethod("causality", signature("mRMRe.Filter"), function(object, merge=FALSE)
+setMethod("causality", signature("mRMRe.Filter"), function(object)
 {
     # causality_matrix[[target]][feature] contains the causality coefficient
     # between feature and target (feature -> target directionality)
-    if(merge)
-	{
-		mat <- sapply(object@causality_list, function(i){ return(i)})
-		return(apply(mat, 1, min, na.rm=T))
-	}
     return(object@causality_list)
 })
     
