@@ -1,6 +1,6 @@
 ## Definition
 
-setClass("mRMRe.Network", representation(topologies = "list", mi_matrix = "matrix", causality_vector = "numeric",
+setClass("mRMRe.Network", representation(topologies = "list", mi_matrix = "matrix", causality_list = "list",
                 sample_names = "character", feature_names = "character", target_indices = "integer"))
 
 ## Wrappers
@@ -16,28 +16,30 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
         layers <- 1L
     
     
-    .Object@causality_vector <- as.numeric(sapply(seq(featureCount(data)), function(i){ return(NA) }))
+    #.Object@causality_vector <- as.numeric(sapply(seq(featureCount(data)), function(i){ return(NA) }))
 
     .Object@mi_matrix <- matrix(nrow = featureCount(data), ncol = featureCount(data), dimnames = list(featureNames(data), featureNames(data)))
     .Object@sample_names <- sampleNames(data)
     .Object@feature_names <- featureNames(data)
     .Object@target_indices <- as.integer(target_indices)
     .Object@topologies <- list()
+	.Object@causality_list <- list()
     
     for (i in 1:layers)
     {
         filter <- new("mRMRe.Filter", data = data, prior_weight = prior_weight, target_indices = target_indices,
                 levels = levels, ...)
+
         solutions <- solutions(filter, mi_threshold = mi_threshold, causality_threshold = causality_threshold)
-       
-        lapply(names(solutions), function(i) .Object@topologies[[i]] <<- solutions[[i]])
+       	causality <- causality(filter)
+		
+        lapply(names(solutions), function(i) { 
+					.Object@topologies[[i]] <<- solutions[[i]]
+					.Object@causality_list[[i]] <<- causality[[i]]
+				})
 		screen <- which(!is.na(mim(filter, method="cor")))
         .Object@mi_matrix[screen] <- mim(filter, method="cor")[screen]
 
-		.Object@causality_vector <- pmin(.Object@causality_vector, causality(filter, merge=T), na.rm=T)
-        
-		# FIXME: merge? causality
-                        
         new_target_indices <- unique(unlist(solutions))
         new_target_indices <- new_target_indices[!is.na(new_target_indices)]
         target_indices <- new_target_indices[!as.character(new_target_indices) %in% names(.Object@topologies)]
@@ -116,7 +118,7 @@ setMethod("causality", signature("mRMRe.Network"), function(object)
     # causality_matrix[[target]][feature] contains the causality coefficient
     # between feature and target (feature -> target directionality)
             
-    return(object@causality_vector)
+    return(object@causality_list)
 })
 
 ## adjacencyMatrix
