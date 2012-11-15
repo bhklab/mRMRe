@@ -1,6 +1,6 @@
 ## Definition
 
-setClass("mRMRe.Network", representation(topologies = "list", mi_matrix = "matrix", causality_matrix = "matrix",
+setClass("mRMRe.Network", representation(topologies = "list", mi_matrix = "matrix", causality_vector = "numeric",
                 sample_names = "character", feature_names = "character", target_indices = "integer"))
 
 ## Wrappers
@@ -15,8 +15,8 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
     if (missing(layers))
         layers <- 1L
     
-    if(causality_threshold < Inf)
-        .Object@causality_matrix <- matrix(nrow = featureCount(data), ncol = featureCount(data), dimnames = list(featureNames(data), featureNames(data)))
+    
+    .Object@causality_vector <- as.numeric(sapply(seq(featureCount(data)), function(i){ return(NA) }))
 
     .Object@mi_matrix <- matrix(nrow = featureCount(data), ncol = featureCount(data), dimnames = list(featureNames(data), featureNames(data)))
     .Object@sample_names <- sampleNames(data)
@@ -33,8 +33,10 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
         lapply(names(solutions), function(i) .Object@topologies[[i]] <<- solutions[[i]])
 		screen <- which(!is.na(mim(filter, method="cor")))
         .Object@mi_matrix[screen] <- mim(filter, method="cor")[screen]
-                        
-        # FIXME: merge? causality
+
+		.Object@causality_vector <- pmin(.Object@causality_vector, causality(filter, merge=T), na.rm=T)
+        
+		# FIXME: merge? causality
                         
         new_target_indices <- unique(unlist(solutions))
         new_target_indices <- new_target_indices[!is.na(new_target_indices)]
@@ -114,7 +116,7 @@ setMethod("causality", signature("mRMRe.Network"), function(object)
     # causality_matrix[[target]][feature] contains the causality coefficient
     # between feature and target (feature -> target directionality)
             
-    return(object@causality_matrix)
+    return(object@causality_vector)
 })
 
 ## adjacencyMatrix

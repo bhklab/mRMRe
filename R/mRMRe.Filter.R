@@ -67,7 +67,6 @@ setMethod("initialize", signature("mRMRe.Filter"),
     .Object@filters <- lapply(result[[1]], function(solutions) matrix(compressFeatureIndices(data, solutions + 1),
                         nrow = length(levels), ncol = prod(levels)))
     names(.Object@filters) <- .Object@target_indices
-    
     .Object@causality_list <- result[[2]]
 
     cols_to_drop <- duplicated(compressFeatureIndices(data, seq(ncol(data@data))))
@@ -138,11 +137,15 @@ setMethod("mim", signature("mRMRe.Filter"), function(object)
 
 ## causality
 
-setMethod("causality", signature("mRMRe.Filter"), function(object)
+setMethod("causality", signature("mRMRe.Filter"), function(object, merge=FALSE)
 {
     # causality_matrix[[target]][feature] contains the causality coefficient
     # between feature and target (feature -> target directionality)
-    
+    if(merge)
+	{
+		mat <- sapply(object@causality_list, function(i){ return(i)})
+		return(apply(mat, 1, min, na.rm=T))
+	}
     return(object@causality_list)
 })
     

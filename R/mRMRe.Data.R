@@ -288,7 +288,6 @@ setMethod("compressFeatureMatrix", signature("mRMRe.Data"), function(object, mat
 setMethod("expandFeatureIndices", signature("mRMRe.Data"), function(object, indices)
 {
     adaptor <- which(object@feature_types == 3)
-    # browser()
     if (length(adaptor) > 0 && any(indices >= adaptor))
         indices <- sapply(indices, function(i) i + sum(sapply(1:length(adaptor), function(j) i >= (adaptor[[j]] - j + 1))))
 
