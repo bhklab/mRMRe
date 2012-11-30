@@ -3,7 +3,7 @@ Priorities
 (1) Refactor R objects and routines. Figure out an appropriate naming
     convention for these.
 
-(2) Implement and wrap resampled ensemble feature selection.
+(2) Implement and wrap resampled ensemble feature selection. Implement and wrap function to return the mRMR score for each solution.
 
 (3) Provide documentation for all public methods.
 
@@ -11,14 +11,21 @@ Priorities
 
   (b) Vignette
 
-(4) Update the article to reflect these changes.
+(4) Perform stability-diversity and GO analysis to compare classic, resampled and parallel mRMR feature selections
+  (a) Resolve the feature # vs solution length debacle.
+
+(5) Update the article.
 
   (a) Regenerate (and document) experiments discussed (with the resampled
-      ensemble feature selection.)
+        ensemble feature selection and use only 100 solutions, show the distribution of mRMR scores)
 
-  (b) Stability and diversity studies.
+  (b) Add mRMR formula
 
-  (c) Resolve the feature # vs solution length debacle.
+  (c) Clearly state the 2 ensemble appraoches we have implemented
+        resampled: multiple datasets / 1 solution each
+        parallel: 1 dataset / multiple solutions
+
+  (d) Add stability-diversity analysis and update GO analysis results
 
 Would be awesome to have
 
@@ -27,7 +34,7 @@ Would be awesome to have
     the Installation section of the vignette (I have thought of several hacks
     that could mitigate the issues we've been experiencing). 
 
-(*) A Nobel prize for our awesome work.
+(*) A Nobel prize for our awesome work (it could be in the luxury section).
 
 Luxury (move to the section above if deemed necessary)
 
