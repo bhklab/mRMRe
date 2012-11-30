@@ -1,0 +1,43 @@
+Priorities
+
+(1) Refactor R objects and routines. Figure out an appropriate naming
+    convention for these.
+
+(2) Implement and wrap resampled ensemble feature selection.
+
+(3) Provide documentation for all public methods.
+
+  (a) Man pages
+
+  (b) Vignette
+
+(4) Update the article to reflect these changes.
+
+  (a) Regenerate (and document) experiments discussed (with the resampled
+      ensemble feature selection.)
+
+  (b) Stability and diversity studies.
+
+  (c) Resolve the feature # vs solution length debacle.
+
+Would be awesome to have
+
+(*) Try to solve compiler issues with the package. I propose that we avoid
+    hard-coding any hacks and that we instead provide the user with tips in
+    the Installation section of the vignette (I have thought of several hacks
+    that could mitigate the issues we've been experiencing). 
+
+(*) A Nobel prize for our awesome work.
+
+Luxury (move to the section above if deemed necessary)
+
+( ) Sit down and think really hard about how sample weighing and stratification
+    is implemented for measuring association between features.
+
+( ) Improve, automate and integrate the workflow.
+
+  ( ) Bug-tracking system. (JIRA?)
+
+  ( ) Unit, integrative and systems testing
+
+( ) Document internal C++ code.
