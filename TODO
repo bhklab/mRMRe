@@ -8,7 +8,7 @@
 - MPI
 - Finish documentation
 - Vignettes
-
+  
 - I find weird that 'solutions()' returns a list with one item; why not a vector or matrix directly? Why a list?
 
 - The order of solutions should be reversed, the top indices should be the most relevant ones. Currently the last ones are the first selected by the method
