@@ -30,8 +30,11 @@ setMethod("initialize", signature("mRMRe.Data"), function(.Object, data, strata,
     .Object@feature_names <- colnames(data)
     .Object@feature_types <- unlist(lapply(feature_types, switch, "Surv" = c(2, 3), "ordered_factor" = 1, 0))
     names(.Object@feature_types) <- NULL
-    
-    .Object@data <- do.call(cbind, lapply(seq(feature_types), function(i) switch(feature_types[[i]],
+    # Optimize the case when all features are continuous
+    if(sum(.Object@feature_types) == 0)
+	.Object@data <- as.matrix(data) 
+    else
+        .Object@data <- do.call(cbind, lapply(seq(feature_types), function(i) switch(feature_types[[i]],
                                 "Surv" = cbind(event = data[, i][, "status"], time = data[, i][, "time"]),
                                 "ordered_factor" = as.numeric(as.integer(data[, i]) - 1),
                                 as.numeric(data[, i]))))
