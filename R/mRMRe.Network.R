@@ -4,6 +4,11 @@ setClass("mRMRe.Network", representation(topologies = "list", mi_matrix = "matri
                 sample_names = "character", feature_names = "character", target_indices = "integer"))
 
 ## Wrappers
+`mRMR.network` <- function(...)
+{
+    return(new("mRMRe.Network", ...)) 
+}
+
 
 ## FIXME: Add wrappers for network
 

@@ -1,6 +1,5 @@
 - Barcode and Likelihood
 - Remove usage of data as a variable
-- Standardize object rappers ('mRMR.data' is the wrapper for 'mRMRe.Data'. What is the logic behind?)
 - Implement more functions to existing S4 classes (especially mRMRe.Network)
 	- Compute Likelihood
 	- Linear Regression Models??
@@ -16,12 +15,6 @@
 - We need to optimize the building of mRMRe.Data objects and the function subsetData. If one wants to study the stability of our methods one must perform many resampling of the data and most of the time is then spent in building mRMRe.Data objects
 
 - When users specify the threshold for MI or causality scores, one should check the redundancy of the variable selection again as many shrunk solutions may be identical
-
-- Causality matrix is not stored in the network object:
-data(cgps)
-dd <- mRMR.data(data = data.frame(cgps.ge[ ,1:100]))
-netw <- new("mRMRe.Network", data=dd, target_indices=c(1, 2, 3), levels=c(5, 1, 1), layers=3, causality_threshold=0)
-causality(netw)
 
 - Adjacency matrix should be directed if causality inference is performed: parents (selected features) in rows, children (target features) in columns
 
