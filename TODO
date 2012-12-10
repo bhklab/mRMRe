@@ -8,8 +8,6 @@
 - Finish documentation
 - Vignettes
   
-- I find weird that 'solutions()' returns a list with one item; why not a vector or matrix directly? Why a list?
-
 - The order of solutions should be reversed, the top indices should be the most relevant ones. Currently the last ones are the first selected by the method
 
 - We need to optimize the building of mRMRe.Data objects and the function subsetData. If one wants to study the stability of our methods one must perform many resampling of the data and most of the time is then spent in building mRMRe.Data objects
