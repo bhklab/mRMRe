@@ -22,7 +22,7 @@
 
 \title{Class \code{"mRMRe.Data"}}
 \description{
-%%  ~~ A concise (1-5 lines) description of what the class is. ~~
+	This class is a wrapper for data sets.  mRMRe operates using this mRMRe.Data class as input in order to simplify parameter passing.  Instanciate an mMRMe.Data object with a data frame contaning your data and optionally with strata, weights and priors.  In addition to basic accession functions, the mim() function can be called on an instance of this class that will produce a mutual information matrix based on the demanded estimator, strata, sample weights and priors.
 }
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("mRMRe.Data", data, strata, weights, priors)}.
