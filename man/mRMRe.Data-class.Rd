@@ -30,13 +30,13 @@ Objects can be created by calls of the form \code{new("mRMRe.Data", data, strata
 }
 \section{Slots}{
   \describe{
-    \item{\code{sample_names}:}{Object of class \code{"character"} ~~ }
-    \item{\code{feature_names}:}{Object of class \code{"character"} ~~ }
-    \item{\code{feature_types}:}{Object of class \code{"numeric"} ~~ }
-    \item{\code{data}:}{Object of class \code{"matrix"} ~~ }
-    \item{\code{strata}:}{Object of class \code{"numeric"} ~~ }
-    \item{\code{weights}:}{Object of class \code{"numeric"} ~~ }
-    \item{\code{priors}:}{Object of class \code{"matrix"} ~~ }
+    \item{\code{sample_names}:}{Object of class \code{"character"} Names of the samples for data rows}
+    \item{\code{feature_names}:}{Object of class \code{"character"} Names of the feature for data columns}
+    \item{\code{feature_types}:}{Object of class \code{"numeric"} Class of each feature (column), accepted values :{numeric, ordered factor, Surv}}
+    \item{\code{data}:}{Object of class \code{"matrix"} The actual data set containing features as columns and obsverations as rows}
+    \item{\code{strata}:}{Object of class \code{"numeric"} Sample stratification}
+    \item{\code{weights}:}{Object of class \code{"numeric"}  Sample weights}
+    \item{\code{priors}:}{Object of class \code{"matrix"} Feature priors (or weight) }
   }
 }
 \section{Methods}{
