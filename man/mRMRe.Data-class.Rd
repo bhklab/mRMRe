@@ -42,10 +42,10 @@ Objects can be created by calls of the form \code{new("mRMRe.Data", data, strata
 \section{Methods}{
   \describe{
     \item{compressFeatureIndices}{\code{signature(object = "mRMRe.Data")}: ... }
-    \item{compressFeatureMatrix}{\code{signature(object = "mRMRe.Data")}: ... }
-    \item{expandFeatureIndices}{\code{signature(object = "mRMRe.Data")}: ... }
-    \item{expandFeatureMatrix}{\code{signature(object = "mRMRe.Data")}: ... }
-    \item{featureCount}{\code{signature(object = "mRMRe.Data")}: ... }
+    \item{compressFeatureMatrix}{\code{signature(object = "mRMRe.Data")}: Compresses multidimensional }
+    \item{expandFeatureIndices}{\code{signature(object = "mRMRe.Data")}: }
+    \item{expandFeatureMatrix}{\code{signature(object = "mRMRe.Data")}: Expands multidimensional feature (of type Surv) in unidimensional columns to simplify data passing between R and C}
+    \item{featureCount}{\code{signature(object = "mRMRe.Data")}: Returns the number of features in the data set}
     \item{featureData}{\code{signature(object = "mRMRe.Data")}: ... }
     \item{featureNames}{\code{signature(object = "mRMRe.Data")}: ... }
     \item{mim}{\code{signature(object = "mRMRe.Data")}: ... }
