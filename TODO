@@ -16,4 +16,4 @@
 
 - Adjacency matrix should be directed if causality inference is performed: parents (selected features) in rows, children (target features) in columns
 
- 
+ - mRMR score of each solution should be stored in the mRMR.Filter and mRMR.Network objects
