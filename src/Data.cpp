@@ -10,6 +10,7 @@ Data::Data(double* const pData, Matrix const* const pPriorsMatrix, double const 
                 pPriorsMatrix), mpHasOrderCached(new bool[mpDataMatrix->getColumnCount()]), mpSampleStrata(
                 pSampleStrata), mpSampleWeights(pSampleWeights), mpFeatureTypes(pFeatureTypes), mSampleStratumCount(
                 sampleStratumCount), mpSampleIndicesPerStratum(
+                new unsigned int*[sampleStratumCount]), mpMasterSampleIndicesPerStratum(
                 new unsigned int*[sampleStratumCount]), mpSampleCountPerStratum(
                 new unsigned int[sampleStratumCount]), mContinuousEstimator(continuousEstimator), mOutX(
                 outX), mBootstrapCount(bootstrapCount), mPriorsWeight(priorsWeight)
@@ -19,6 +20,10 @@ Data::Data(double* const pData, Matrix const* const pPriorsMatrix, double const 
 
     Math::placeStratificationData(mpSampleStrata, mpSampleWeights, mpSampleIndicesPerStratum,
             mpSampleCountPerStratum, mSampleStratumCount, sampleCount);
+
+    for (unsigned int i = 0; i < mSampleStratumCount; ++i)
+        for (unsigned int j = 0; j < mpSampleCountPerStratum[i]; ++j)
+            mpMasterSampleIndicesPerStratum[i][j] = mpSampleIndicesPerStratum[i][j];
 }
 
 Data::~Data()
@@ -27,9 +32,25 @@ Data::~Data()
     delete mpOrderMatrix;
     delete[] mpHasOrderCached;
     for (unsigned int i = 0; i < mSampleStratumCount; ++i)
+    {
         delete[] mpSampleIndicesPerStratum[i];
+        delete[] mpMasterSampleIndicesPerStratum[i];
+    }
     delete[] mpSampleIndicesPerStratum;
+    delete[] mpMasterSampleIndicesPerStratum;
     delete[] mpSampleCountPerStratum;
+}
+
+void const
+Data::bootstrap()
+{
+    unsigned int seed = std::time(NULL);
+    for (unsigned int i = 0; i < mSampleStratumCount; ++i)
+        for (unsigned int j = 0; j < mpSampleCountPerStratum[i]; ++j)
+        {
+            unsigned int index = Math::computeRandomNumber(&seed) % mpSampleCountPerStratum[i];
+            mpSampleIndicesPerStratum[i][j] = mpMasterSampleIndicesPerStratum[i][index];
+        }
 }
 
 void const

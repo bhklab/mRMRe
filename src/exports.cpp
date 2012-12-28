@@ -88,6 +88,62 @@ export_filters(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, S
 }
 
 extern "C" SEXP
+export_boostrap_filters(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, SEXP priorsWeight,
+        SEXP sampleStrata, SEXP sampleWeights, SEXP featureTypes, SEXP sampleCount,
+        SEXP featureCount, SEXP sampleStratumCount, SEXP targetFeatureIndices,
+        SEXP continuousEstimator, SEXP outX, SEXP bootstrapCount, SEXP miMatrix)
+{
+    Matrix const priors_matrix(REAL(priorsMatrix), INTEGER(featureCount)[0],
+            INTEGER(featureCount)[0]);
+    Matrix const* const p_priors_matrix =
+            LENGTH(priorsMatrix) == INTEGER(featureCount)[0] * INTEGER(featureCount)[0] ?
+                    &priors_matrix : 0;
+
+    unsigned int solution_count = 1;
+    for (unsigned int i = 0; i < LENGTH(childrenCountPerLevel); ++i)
+        solution_count *= INTEGER(childrenCountPerLevel)[i];
+    unsigned int const feature_count_per_solution = LENGTH(childrenCountPerLevel);
+    unsigned int const chunk_size = solution_count * feature_count_per_solution;
+
+    SEXP result;
+    PROTECT(result = allocVector(VECSXP, 2));
+
+    SET_VECTOR_ELT(result, 0, allocVector(VECSXP, LENGTH(targetFeatureIndices)));
+    SET_VECTOR_ELT(result, 1, allocVector(VECSXP, LENGTH(targetFeatureIndices)));
+    for (unsigned int j = 0; j < INTEGER(childrenCountPerLevel)[0]; ++j)
+    {
+
+
+    	Data data(REAL(dataMatrix), p_priors_matrix, REAL(priorsWeight)[0], INTEGER(sampleCount)[0],
+    	            INTEGER(featureCount)[0], INTEGER(sampleStrata), REAL(sampleWeights),
+    	            INTEGER(featureTypes), INTEGER(sampleStratumCount)[0], INTEGER(continuousEstimator)[0],
+    	            INTEGER(outX)[0] != 0, INTEGER(bootstrapCount)[0]);
+    	MutualInformationMatrix mi_matrix(&data, REAL(miMatrix));
+
+        for (unsigned int i = 0; i < LENGTH(targetFeatureIndices); ++i)
+        {
+            Filter filter(1, LENGTH(childrenCountPerLevel), &mi_matrix,
+                    INTEGER(targetFeatureIndices)[i]);
+            filter.build();
+
+            SET_VECTOR_ELT(VECTOR_ELT(result, 0), i, allocVector(INTSXP, chunk_size));
+            SET_VECTOR_ELT(VECTOR_ELT(result, 1), i, allocVector(REALSXP, INTEGER(featureCount)[0]));
+
+            filter.getSolutions(INTEGER(VECTOR_ELT(VECTOR_ELT(result, 0), i)));
+
+            Math::computeCausality(REAL(VECTOR_ELT(VECTOR_ELT(result, 1), i)), &mi_matrix,
+                    INTEGER(VECTOR_ELT(VECTOR_ELT(result, 0), i)), solution_count,
+                    feature_count_per_solution, INTEGER(featureCount)[0],
+                    INTEGER(targetFeatureIndices)[i]);
+        }
+    }
+
+    UNPROTECT(1);
+
+    return result;
+}
+
+extern "C" SEXP
 export_mim(SEXP dataMatrix, SEXP priorsMatrix, SEXP priorsWeight, SEXP sampleStrata,
         SEXP sampleWeights, SEXP featureTypes, SEXP sampleCount, SEXP featureCount,
         SEXP sampleStratumCount, SEXP continuousEstimator, SEXP outX, SEXP bootstrapCount,

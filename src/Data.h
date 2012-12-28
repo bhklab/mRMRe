@@ -23,6 +23,7 @@ private:
     int const* const mpFeatureTypes;
     unsigned int const mSampleStratumCount;
     unsigned int** const mpSampleIndicesPerStratum;
+    unsigned int** const mpMasterSampleIndicesPerStratum;
     unsigned int* const mpSampleCountPerStratum;
     unsigned int const mContinuousEstimator;
     bool const mOutX;
@@ -48,6 +49,9 @@ public:
             unsigned int const bootstrapCount);
 
     ~Data();
+
+    void const
+    bootstrap();
 
     void const
     computeMiBetweenFeatures(unsigned int const i, unsigned int const j, double* const mi_ij,
