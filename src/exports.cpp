@@ -76,6 +76,9 @@ export_filters(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, S
 
         filter.getSolutions(INTEGER(VECTOR_ELT(VECTOR_ELT(result, 0), i)));
 
+        for (unsigned int k = 0; k < INTEGER(featureCount)[0]; ++k)
+            REAL(VECTOR_ELT(VECTOR_ELT(result, 1), i))[k] = std::numeric_limits<double>::quiet_NaN();
+
         Math::computeCausality(REAL(VECTOR_ELT(VECTOR_ELT(result, 1), i)), &mi_matrix,
                 INTEGER(VECTOR_ELT(VECTOR_ELT(result, 0), i)), solution_count,
                 feature_count_per_solution, INTEGER(featureCount)[0],
@@ -88,9 +91,9 @@ export_filters(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, S
 }
 
 extern "C" SEXP
-export_boostrap_filters(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, SEXP priorsWeight,
-        SEXP sampleStrata, SEXP sampleWeights, SEXP featureTypes, SEXP sampleCount,
-        SEXP featureCount, SEXP sampleStratumCount, SEXP targetFeatureIndices,
+export_filters_bootstrap(SEXP solutionCount, SEXP solutionLength, SEXP dataMatrix, SEXP priorsMatrix,
+        SEXP priorsWeight, SEXP sampleStrata, SEXP sampleWeights, SEXP featureTypes,
+        SEXP sampleCount, SEXP featureCount, SEXP sampleStratumCount, SEXP targetFeatureIndices,
         SEXP continuousEstimator, SEXP outX, SEXP bootstrapCount, SEXP miMatrix)
 {
     Matrix const priors_matrix(REAL(priorsMatrix), INTEGER(featureCount)[0],
@@ -98,44 +101,54 @@ export_boostrap_filters(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priors
     Matrix const* const p_priors_matrix =
             LENGTH(priorsMatrix) == INTEGER(featureCount)[0] * INTEGER(featureCount)[0] ?
                     &priors_matrix : 0;
+    Data data(REAL(dataMatrix), p_priors_matrix, REAL(priorsWeight)[0], INTEGER(sampleCount)[0],
+            INTEGER(featureCount)[0], INTEGER(sampleStrata), REAL(sampleWeights),
+            INTEGER(featureTypes), INTEGER(sampleStratumCount)[0], INTEGER(continuousEstimator)[0],
+            INTEGER(outX)[0] != 0, INTEGER(bootstrapCount)[0]);
+    //MutualInformationMatrix mi_matrix(&data, REAL(miMatrix));
 
-    unsigned int solution_count = 1;
-    for (unsigned int i = 0; i < LENGTH(childrenCountPerLevel); ++i)
-        solution_count *= INTEGER(childrenCountPerLevel)[i];
-    unsigned int const feature_count_per_solution = LENGTH(childrenCountPerLevel);
+    unsigned int solution_count = INTEGER(solutionCount)[0];
+    unsigned int const feature_count_per_solution = INTEGER(solutionLength)[0];
     unsigned int const chunk_size = solution_count * feature_count_per_solution;
+
+    unsigned int* const p_children_count_per_level = new unsigned int[feature_count_per_solution];
+    for(unsigned int i = 0; i < feature_count_per_solution; ++i)
+        p_children_count_per_level[i] = 1;
 
     SEXP result;
     PROTECT(result = allocVector(VECSXP, 2));
 
     SET_VECTOR_ELT(result, 0, allocVector(VECSXP, LENGTH(targetFeatureIndices)));
     SET_VECTOR_ELT(result, 1, allocVector(VECSXP, LENGTH(targetFeatureIndices)));
-    for (unsigned int j = 0; j < INTEGER(childrenCountPerLevel)[0]; ++j)
+
+    for (unsigned int i = 0; i < LENGTH(targetFeatureIndices); ++i)
     {
+        SET_VECTOR_ELT(VECTOR_ELT(result, 0), i, allocVector(INTSXP, chunk_size));
+        SET_VECTOR_ELT(VECTOR_ELT(result, 1), i,
+                allocVector(REALSXP, INTEGER(featureCount)[0]));
 
+        for (unsigned int k = 0; k < INTEGER(featureCount)[0]; ++k)
+            REAL(VECTOR_ELT(VECTOR_ELT(result, 1), i))[k] = std::numeric_limits<double>::quiet_NaN();
+    }
 
-    	Data data(REAL(dataMatrix), p_priors_matrix, REAL(priorsWeight)[0], INTEGER(sampleCount)[0],
-    	            INTEGER(featureCount)[0], INTEGER(sampleStrata), REAL(sampleWeights),
-    	            INTEGER(featureTypes), INTEGER(sampleStratumCount)[0], INTEGER(continuousEstimator)[0],
-    	            INTEGER(outX)[0] != 0, INTEGER(bootstrapCount)[0]);
-    	MutualInformationMatrix mi_matrix(&data, REAL(miMatrix));
+    for (unsigned int i = 0; i < solution_count; ++i)
+    {
+        MutualInformationMatrix mi_matrix(&data);
 
-        for (unsigned int i = 0; i < LENGTH(targetFeatureIndices); ++i)
+        for (unsigned int j = 0; j < LENGTH(targetFeatureIndices); ++j)
         {
-            Filter filter(1, LENGTH(childrenCountPerLevel), &mi_matrix,
-                    INTEGER(targetFeatureIndices)[i]);
+            Filter filter(p_children_count_per_level, feature_count_per_solution, &mi_matrix,
+                    INTEGER(targetFeatureIndices)[j]);
             filter.build();
-
-            SET_VECTOR_ELT(VECTOR_ELT(result, 0), i, allocVector(INTSXP, chunk_size));
-            SET_VECTOR_ELT(VECTOR_ELT(result, 1), i, allocVector(REALSXP, INTEGER(featureCount)[0]));
-
-            filter.getSolutions(INTEGER(VECTOR_ELT(VECTOR_ELT(result, 0), i)));
+            filter.getSolutions(INTEGER(VECTOR_ELT(VECTOR_ELT(result, 0), j)) + (i * chunk_size));
 
             Math::computeCausality(REAL(VECTOR_ELT(VECTOR_ELT(result, 1), i)), &mi_matrix,
-                    INTEGER(VECTOR_ELT(VECTOR_ELT(result, 0), i)), solution_count,
+                    INTEGER(VECTOR_ELT(VECTOR_ELT(result, 0), i)) + (i * chunk_size), 1,
                     feature_count_per_solution, INTEGER(featureCount)[0],
                     INTEGER(targetFeatureIndices)[i]);
         }
+
+        data.bootstrap();
     }
 
     UNPROTECT(1);

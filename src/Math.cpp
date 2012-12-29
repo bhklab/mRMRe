@@ -19,9 +19,6 @@ Math::computeCausality(double* const pCausalityArray, Matrix const* const pMiMat
         unsigned int const featureCountPerSolution, unsigned int const featureCount,
         unsigned int const targetFeatureIndex)
 {
-    for (unsigned int i = 0; i < featureCount; ++i)
-        pCausalityArray[i] = std::numeric_limits<double>::quiet_NaN();
-
     for (unsigned int s = 0; s < solutionCount; ++s)
     {
         for (unsigned int i = 0; i < featureCountPerSolution - 1; ++i)
