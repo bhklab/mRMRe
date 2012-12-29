@@ -22,8 +22,11 @@ Data::Data(double* const pData, Matrix const* const pPriorsMatrix, double const 
             mpSampleCountPerStratum, mSampleStratumCount, sampleCount);
 
     for (unsigned int i = 0; i < mSampleStratumCount; ++i)
+    {
+        mpMasterSampleIndicesPerStratum[i] = new unsigned int[mpSampleCountPerStratum[i]];
         for (unsigned int j = 0; j < mpSampleCountPerStratum[i]; ++j)
             mpMasterSampleIndicesPerStratum[i][j] = mpSampleIndicesPerStratum[i][j];
+    }
 }
 
 Data::~Data()

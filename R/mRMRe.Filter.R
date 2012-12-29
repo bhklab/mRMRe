@@ -65,7 +65,7 @@ setMethod("initialize", signature("mRMRe.Filter"),
             	as.integer(mRMRe:::.map.continuous.estimator(continuous_estimator)), as.integer(outX),
             	as.integer(bootstrap_count), mi_matrix)
 	else if(method == "bootstrap")
-		result <- .Call(mRMRe:::.C_export_filters_bootstrap, as.integer(.Object@levels[0]), as.integer(length(.Object@levels)),
+		result <- .Call(mRMRe:::.C_export_filters_bootstrap, as.integer(.Object@levels[1]), as.integer(length(.Object@levels)),
 				as.numeric(data@data), as.numeric(data@priors), as.numeric(prior_weight), as.integer(data@strata),
 				as.numeric(data@weights), as.integer(data@feature_types), as.integer(nrow(data@data)),
 				as.integer(ncol(data@data)), as.integer(length(unique(data@strata))), as.integer(target_indices),
