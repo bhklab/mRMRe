@@ -142,9 +142,8 @@ export_filters_bootstrap(SEXP solutionCount, SEXP solutionLength, SEXP dataMatri
             Filter filter(p_children_count_per_level, feature_count_per_solution, &mi_matrix,
                     INTEGER(targetFeatureIndices)[j]);
             filter.build();
-            filter.getSolutions(
-                    INTEGER(VECTOR_ELT(VECTOR_ELT(result, 0), j))
-                            + (i * feature_count_per_solution));
+            filter.getSolutions(INTEGER(VECTOR_ELT(VECTOR_ELT(result, 0), j))
+                               + (i * feature_count_per_solution));
 
 /*            Math::computeCausality(REAL(VECTOR_ELT(VECTOR_ELT(result, 1), i)), &mi_matrix,
                     INTEGER(VECTOR_ELT(VECTOR_ELT(result, 0), i)) + (i * chunk_size), 1,
@@ -152,7 +151,7 @@ export_filters_bootstrap(SEXP solutionCount, SEXP solutionLength, SEXP dataMatri
                     INTEGER(targetFeatureIndices)[i]);*/
         }
 
-        //data.bootstrap();
+        data.bootstrap();
     }
 
     UNPROTECT(1);
