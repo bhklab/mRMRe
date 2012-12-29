@@ -18,7 +18,7 @@ setClass("mRMRe.Filter", representation(filters = "list", mi_matrix = "matrix", 
 ## initialize
 
 setMethod("initialize", signature("mRMRe.Filter"),
-        function(.Object, data, prior_weight, target_indices, levels, continuous_estimator = "pearson", outX = TRUE,
+        function(.Object, data, prior_weight, target_indices, levels, method = "exhaustive", continuous_estimator = "pearson", outX = TRUE,
                 bootstrap_count = 0)
 {
     if (class(data) != "mRMRe.Data")
@@ -57,12 +57,22 @@ setMethod("initialize", signature("mRMRe.Filter"),
 
     mi_matrix <- as.numeric(matrix(NA, ncol = ncol(data@data), nrow = ncol(data@data)))
     
-    result <- .Call(mRMRe:::.C_export_filters, as.integer(.Object@levels), as.numeric(data@data),
-            as.numeric(data@priors), as.numeric(prior_weight), as.integer(data@strata), as.numeric(data@weights),
-            as.integer(data@feature_types), as.integer(nrow(data@data)), as.integer(ncol(data@data)),
-            as.integer(length(unique(data@strata))), as.integer(target_indices),
-            as.integer(mRMRe:::.map.continuous.estimator(continuous_estimator)), as.integer(outX),
-            as.integer(bootstrap_count), mi_matrix)
+	if(method == "exhaustive")
+    	result <- .Call(mRMRe:::.C_export_filters, as.integer(.Object@levels), as.numeric(data@data),
+        	    as.numeric(data@priors), as.numeric(prior_weight), as.integer(data@strata), as.numeric(data@weights),
+            	as.integer(data@feature_types), as.integer(nrow(data@data)), as.integer(ncol(data@data)),
+            	as.integer(length(unique(data@strata))), as.integer(target_indices),
+            	as.integer(mRMRe:::.map.continuous.estimator(continuous_estimator)), as.integer(outX),
+            	as.integer(bootstrap_count), mi_matrix)
+	else if(method == "bootstrap")
+		result <- .Call(mRMRe:::.C_export_filters_bootstrap, as.integer(.Object@levels[0]), as.integer(length(.Object@levels)),
+				as.numeric(data@data), as.numeric(data@priors), as.numeric(prior_weight), as.integer(data@strata),
+				as.numeric(data@weights), as.integer(data@feature_types), as.integer(nrow(data@data)),
+				as.integer(ncol(data@data)), as.integer(length(unique(data@strata))), as.integer(target_indices),
+				as.integer(mRMRe:::.map.continuous.estimator(continuous_estimator)), as.integer(outX),
+				as.integer(bootstrap_count), mi_matrix)
+	else
+		stop("Unrecognized method: use exhaustive or bootstrap")
     
     .Object@filters <- lapply(result[[1]], function(solutions) matrix(compressFeatureIndices(data, solutions + 1),
                         nrow = length(levels), ncol = prod(levels)))
