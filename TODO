@@ -8,6 +8,8 @@
 - Finish documentation
 - Vignettes
   
+- The C code for the concordance index, namely mRMRe:::.C_export_concordance_index, should return the same objects than the C code in survcomp, namely concordanceIndexC. More precisely the objects ch, dh, uh and rph (concordant, discordant informative and relevant pairs) should be vectors, not a single value
+
 - The order of solutions should be reversed, the top indices should be the most relevant ones. Currently the last ones are the first selected by the method
 
 - We need to optimize the building of mRMRe.Data objects and the function subsetData. If one wants to study the stability of our methods one must perform many resampling of the data and most of the time is then spent in building mRMRe.Data objects
