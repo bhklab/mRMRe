@@ -65,6 +65,15 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
 
 `correlate` <- function(X, Y, method = "pearson", strata, weights, outX = TRUE, bootstrap_count = 0)
 {
+    if (missing(weights)) {
+      weights <- rep(1, length(X))
+      names(weights) <- names(X)
+    }
+    if (missing(strata)) {
+      strata <- factor(rep(1, length(X)))
+      names(strata) <- names(X)
+    }
+  
     if (method == "pearson" || method == "spearman" || method == "kendall" || method == "frequency")
     {
         X <- as.numeric(X)
@@ -78,14 +87,7 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
     else if (method != "cindex")
         stop("estimator must be of the following: pearson, spearman, kendall, frequency, cramersv, cindex")
     
-    if (!missing(strata) && !missing(weights))
-        data <- mRMR.data(data = data.frame(X, Y), strata = strata, weights = weights)
-    else if (!missing(strata))
-        data <- mRMR.data(data = data.frame(X, Y), strata = strata)
-    else if (!missing(weights))
-        data <- mRMR.data(data = data.frame(X, Y), weights = weights)
-    else
-        data <- mRMR.data(data = data.frame(X, Y))
+    data <- mRMR.data(data = data.frame(X, Y), strata = strata, weights = weights)
     
     if (method == "cindex")
     {
@@ -109,8 +111,28 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
                 as.numeric(input[[3]]), as.numeric(input[[4]]), as.integer(data@strata), as.numeric(data@weights),
                 as.integer(length(unique(data@strata))), outX, out)
         
-        names(out) <- c("statistic", "concordant_weight", "discordant_weight", "uninformative_weight",
-                "relevant_weight")
+        names(out) <- c("statistic", "concordant_weight", "discordant_weight", "uninformative_weight", "relevant_weight")
+        
+      #         cindex <- out[1]
+      #         ch <- out[2]
+      #         dh <- out[3]
+      #         N <- sum(weights, na.rm=TRUE)
+      #         pc <- (1 / (N * (N - 1))) * sum(ch)
+      #         pd  <- (1 / (N * (N - 1))) * sum(dh)
+      #         pcc <- (1 / (N * (N - 1) * (N - 2))) * sum(ch * (ch - 1))
+      #         pdd <- (1 / (N * (N - 1) * (N - 2))) * sum(dh * (dh - 1))
+      #         pcd <- (1 / (N * (N - 1) * (N - 2))) * sum(ch * dh)
+      #         varp <- (4 / (pc + pd)^4) * (pd^2 * pcc - 2 * pc * pd * pcd + pc^2 * pdd)
+      #         if((varp / N) > 0) {
+      #           ci <- qnorm(p=alpha / 2, lower.tail=FALSE) * sqrt(varp / N)
+      #           lower <- cindex - ci
+      #           upper <- cindex + ci
+      #           switch(alternative, 
+      #   "two.sided"={ p <- pnorm((cindex - 0.5) / sqrt(varp / N), lower.tail=cindex < 0.5) * 2 }, 
+      #   "less"={ p <- pnorm((cindex - 0.5) / sqrt(varp / N), lower.tail=TRUE) }, 
+      #   "greater"={  p <- pnorm((cindex - 0.5) / sqrt(varp / N), lower.tail=FALSE) }
+      # )
+      #         } else { ci <- lower <- upper <- p <- NA } 
         
         return(as.list(out))
     }
