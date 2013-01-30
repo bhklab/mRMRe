@@ -128,10 +128,12 @@ setMethod("solutions", signature("mRMRe.Filter"), function(object, mi_threshold 
         mi_dropped <- which(-.5 * log(1 - object@mi_matrix[, target_index, drop = TRUE]^2) < mi_threshold)
         result_matrix[result_matrix %in% c(causality_dropped, mi_dropped)] <- NA
 
-        return(as.matrix(result_matrix, ncol = col))
+        pre_return_matrix <- apply(as.matrix(result_matrix, ncol = ncol), 2, rev)
+
+        return(pre_return_matrix)
     })
     names(filters) <- object@target_indices
-            
+
     return(filters)
 })
 

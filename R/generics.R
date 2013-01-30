@@ -78,14 +78,14 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
     else if (method != "cindex")
         stop("estimator must be of the following: pearson, spearman, kendall, frequency, cramersv, cindex")
 
-		if (!missing(strata) && !missing(weights))
-				data <- mRMR.data(data = data.frame(X, Y), strata = strata, weights = weights)
+    if (!missing(strata) && !missing(weights))
+        data <- mRMR.data(data = data.frame(X, Y), strata = strata, weights = weights)
     else if (!missing(strata))
-				data <- mRMR.data(data = data.frame(X, Y), strata = strata)
-		else if (!missing(weights))
-				data <- mRMR.data(data = data.frame(X, Y), weights = weights)
-		else
-				data <- mRMR.data(data = data.frame(X, Y))
+        data <- mRMR.data(data = data.frame(X, Y), strata = strata)
+    else if (!missing(weights))
+        data <- mRMR.data(data = data.frame(X, Y), weights = weights)
+    else
+        data <- mRMR.data(data = data.frame(X, Y))
 
     if (method == "cindex")
     {
@@ -113,11 +113,11 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
                 as.numeric(input[[3]]), as.numeric(input[[4]]), as.integer(data@strata), as.numeric(data@weights),
                 as.integer(length(unique(data@strata))), outX, ratio, ch, dh, uh, rh)
 
-				browser()
+		#		browser()
 
-				out <- list()
-				out$statistic <- ratio
-				return(out)        
+        out <- list()
+        out$statistic <- ratio
+        return(out)        
 
         ##names(out) <- c("statistic", "concordant_weight", "discordant_weight", "uninformative_weight", "relevant_weight")
         
