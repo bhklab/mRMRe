@@ -99,43 +99,43 @@ Math::computeConcordanceIndex(double const* const pDiscreteSamples,
 
                 if (pDiscreteSamples[i] > pDiscreteSamples[j])
                 {
-                    relevant_weight = pair_weight;
+                    relevant_weight += pair_weight;
 
                     if (pContinuousSamples[i] > pContinuousSamples[j])
-                        concordant_weight = pair_weight;
+                        concordant_weight += pair_weight;
                     else if (pContinuousSamples[i] < pContinuousSamples[j])
-                        discordant_weight = pair_weight;
+                        discordant_weight += pair_weight;
                     else if (outX)
-                        uninformative_weight = pair_weight;
+                        uninformative_weight += pair_weight;
                     else
-                        discordant_weight = pair_weight;
+                        discordant_weight += pair_weight;
                 }
                 else if (pDiscreteSamples[i] < pDiscreteSamples[j])
                 {
-                    relevant_weight = pair_weight;
+                    relevant_weight += pair_weight;
 
                     if (pContinuousSamples[i] < pContinuousSamples[j])
-                        concordant_weight = pair_weight;
+                        concordant_weight += pair_weight;
                     else if (pContinuousSamples[i] > pContinuousSamples[j])
-                        discordant_weight = pair_weight;
+                        discordant_weight += pair_weight;
                     else if (outX)
-                        uninformative_weight = pair_weight;
+                        uninformative_weight += pair_weight;
                     else
-                        discordant_weight = pair_weight;
+                        discordant_weight += pair_weight;
                 }
                 else
                     continue;
+            }
 
-                sum_concordant_weight += concordant_weight;
-                sum_relevant_weight += relevant_weight;
+            sum_concordant_weight += concordant_weight;
+            sum_relevant_weight += relevant_weight;
 
-                if (pConcordantWeight != 0) // Implicity, the other similar vectors
-                {                           // should also match this condition.
-                    pConcordantWeight[i] = concordant_weight;
-                    pDiscordantWeight[i] = discordant_weight;
-                    pUninformativeWeight[i] = uninformative_weight;
-                    pRelevantWeight[i] = relevant_weight;
-                }
+            if (pConcordantWeight != 0) // Implicity, the other similar vectors
+            {                           // should also match this condition.
+                pConcordantWeight[i] = concordant_weight;
+                pDiscordantWeight[i] = discordant_weight;
+                pUninformativeWeight[i] = uninformative_weight;
+                pRelevantWeight[i] = relevant_weight;
             }
         }
     }
