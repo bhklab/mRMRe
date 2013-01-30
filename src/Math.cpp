@@ -66,8 +66,8 @@ Math::computeConcordanceIndex(double const* const pDiscreteSamples,
         double const* const pContinuousSamples, double const* const pSampleWeights,
         unsigned int const* const * const pSampleIndicesPerStratum,
         unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
-        bool const outX, double* const pConcordantWeight, double* const pDiscordantWeight,
-        double* const pUninformativeWeight, double* const pRelevantWeight)
+        bool const outX, double* const pConcordantWeights, double* const pDiscordantWeights,
+        double* const pUninformativeWeights, double* const pRelevantWeights)
 {
     double sum_concordant_weight = 0.;
     double sum_relevant_weight = 0.;
@@ -123,19 +123,17 @@ Math::computeConcordanceIndex(double const* const pDiscreteSamples,
                     else
                         discordant_weight += pair_weight;
                 }
-                else
-                    continue;
             }
 
             sum_concordant_weight += concordant_weight;
             sum_relevant_weight += relevant_weight;
 
-            if (pConcordantWeight != 0) // Implicity, the other similar vectors
-            {                           // should also match this condition.
-                pConcordantWeight[i] = concordant_weight;
-                pDiscordantWeight[i] = discordant_weight;
-                pUninformativeWeight[i] = uninformative_weight;
-                pRelevantWeight[i] = relevant_weight;
+            if (pConcordantWeights != 0) // Implicity, the other similar vectors
+            {                            // should also match this condition.
+                pConcordantWeights[i] = concordant_weight;
+                pDiscordantWeights[i] = discordant_weight;
+                pUninformativeWeights[i] = uninformative_weight;
+                pRelevantWeights[i] = relevant_weight;
             }
         }
     }
@@ -149,19 +147,22 @@ Math::computeConcordanceIndex(double const* const pDiscreteSamples,
         double const* const pSampleWeights,
         unsigned int const* const * const pSampleIndicesPerStratum,
         unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
-        bool const outX, double* const pConcordantWeight, double* const pDiscordantWeight,
-        double* const pUninformativeWeight, double* const pRelevantWeight)
+        bool const outX, double* const pConcordantWeights, double* const pDiscordantWeights,
+        double* const pUninformativeWeights, double* const pRelevantWeights)
 {
-    double concordant_weight = 0.;
-    double discordant_weight = 0.;
-    double uninformative_weight = 0.;
-    double relevant_weight = 0.;
+    double sum_concordant_weight = 0.;
+    double sum_relevant_weight = 0.;
 
     for (unsigned int stratum = 0; stratum < sampleStratumCount; ++stratum)
     {
         for (unsigned int a = 0; a < pSampleCountPerStratum[stratum]; ++a)
         {
             unsigned int const i = pSampleIndicesPerStratum[stratum][a];
+
+            double concordant_weight = 0.;
+            double discordant_weight = 0.;
+            double uninformative_weight = 0.;
+            double relevant_weight = 0.; 
 
             if (pDiscreteSamples[i] != pDiscreteSamples[i] || pTimeSamples[i] != pTimeSamples[i]
                     || pContinuousSamples[i] != pContinuousSamples[i])
@@ -204,19 +205,21 @@ Math::computeConcordanceIndex(double const* const pDiscreteSamples,
                         discordant_weight += pair_weight;
                 }
             }
+
+            sum_concordant_weight += concordant_weight;
+            sum_relevant_weight += relevant_weight;
+
+            if (pConcordantWeights != 0) // Implicity, the other similar vectors
+            {                            // should also match this condition.
+                pConcordantWeights[i] = concordant_weight;
+                pDiscordantWeights[i] = discordant_weight;
+                pUninformativeWeights[i] = uninformative_weight;
+                pRelevantWeights[i] = relevant_weight;
+            }
         }
     }
 
-    if (pConcordantWeight)
-        *pConcordantWeight = concordant_weight;
-    if (pDiscordantWeight)
-        *pDiscordantWeight = discordant_weight;
-    if (pUninformativeWeight)
-        *pUninformativeWeight = uninformative_weight;
-    if (pRelevantWeight)
-        *pRelevantWeight = relevant_weight;
-
-    return concordant_weight / relevant_weight;
+    return sum_concordant_weight / sum_relevant_weight;
 }
 
 /*static*/double const
@@ -225,19 +228,22 @@ Math::computeConcordanceIndex(double const* const pDiscreteSamplesX,
         double const* const pTimeSamplesY, double const* const pSampleWeights,
         unsigned int const* const * const pSampleIndicesPerStratum,
         unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
-        bool const outX, double* const pConcordantWeight, double* const pDiscordantWeight,
-        double* const pUninformativeWeight, double* const pRelevantWeight)
+        bool const outX, double* const pConcordantWeights, double* const pDiscordantWeights,
+        double* const pUninformativeWeights, double* const pRelevantWeights)
 {
-    double concordant_weight = 0.;
-    double discordant_weight = 0.;
-    double uninformative_weight = 0.;
-    double relevant_weight = 0.;
+    double sum_concordant_weight = 0.;
+    double sum_relevant_weight = 0.;
 
     for (unsigned int stratum = 0; stratum < sampleStratumCount; ++stratum)
     {
         for (unsigned int a = 0; a < pSampleCountPerStratum[stratum]; ++a)
         {
             unsigned int const i = pSampleIndicesPerStratum[stratum][a];
+
+            double concordant_weight = 0.;
+            double discordant_weight = 0.;
+            double uninformative_weight = 0.;
+            double relevant_weight = 0.; 
 
             if (pDiscreteSamplesX[i] != pDiscreteSamplesX[i]
                     || pDiscreteSamplesY[i] != pDiscreteSamplesY[i]
@@ -283,19 +289,21 @@ Math::computeConcordanceIndex(double const* const pDiscreteSamplesX,
                         discordant_weight += pair_weight;
                 }
             }
+
+           sum_concordant_weight += concordant_weight;
+            sum_relevant_weight += relevant_weight;
+
+            if (pConcordantWeights != 0) // Implicity, the other similar vectors
+            {                            // should also match this condition.
+                pConcordantWeights[i] = concordant_weight;
+                pDiscordantWeights[i] = discordant_weight;
+                pUninformativeWeights[i] = uninformative_weight;
+                pRelevantWeights[i] = relevant_weight;
+            }
         }
     }
 
-    if (pConcordantWeight)
-        *pConcordantWeight = concordant_weight;
-    if (pDiscordantWeight)
-        *pDiscordantWeight = discordant_weight;
-    if (pUninformativeWeight)
-        *pUninformativeWeight = uninformative_weight;
-    if (pRelevantWeight)
-        *pRelevantWeight = relevant_weight;
-
-    return concordant_weight / relevant_weight;
+    return sum_concordant_weight / sum_relevant_weight;
 }
 
 /* static */double const

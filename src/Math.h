@@ -49,8 +49,8 @@ public:
             double const* const pContinuousSamples, double const* const pSampleWeights,
             unsigned int const* const * const pSampleIndicesPerStratum,
             unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
-            bool const outX, double* const pConcordantWeight = 0, double* const pDiscordantWeight =
-                    0, double* const pUninformativeWeight = 0, double* const pRelevantWeight = 0);
+            bool const outX, double* const pConcordantWeights = 0, double* const pDiscordantWeights =
+                    0, double* const pUninformativeWeights = 0, double* const pRelevantWeights = 0);
 
     static double const
     computeConcordanceIndex(double const* const pDiscreteSamples,
@@ -58,8 +58,8 @@ public:
             double const* const pSampleWeights,
             unsigned int const* const * const pSampleIndicesPerStratum,
             unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
-            bool const outX, double* const pConcordantWeight = 0, double* const pDiscordantWeight =
-                    0, double* const pUninformativeWeight = 0, double* const pRelevantWeight = 0);
+            bool const outX, double* const pConcordantWeights = 0, double* const pDiscordantWeights =
+                    0, double* const pUninformativeWeights = 0, double* const pRelevantWeights = 0);
 
     static double const
     computeConcordanceIndex(double const* const pDiscreteSamplesX,
@@ -67,8 +67,8 @@ public:
             double const* const pTimeSamplesY, double const* const pSampleWeights,
             unsigned int const* const * const pSampleIndicesPerStratum,
             unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
-            bool const outX, double* const pConcordantWeight = 0, double* const pDiscordantWeight =
-                    0, double* const pUninformativeWeight = 0, double* const pRelevantWeight = 0);
+            bool const outX, double* const pConcordantWeights = 0, double* const pDiscordantWeights =
+                    0, double* const pUninformativeWeights = 0, double* const pRelevantWeights = 0);
 
     static double const
     computeCramersV(double const* const pSamplesX, double const* const pSamplesY,

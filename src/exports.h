@@ -16,7 +16,9 @@
 
 extern "C" SEXP
 export_concordance_index(SEXP samplesA, SEXP samplesB, SEXP samplesC, SEXP samplesD,
-        SEXP sampleStrata, SEXP sampleWeights, SEXP sampleStratumCount, SEXP outX, SEXP out);
+        SEXP sampleStrata, SEXP sampleWeights, SEXP sampleStratumCount, SEXP outX, SEXP ratio,
+        SEXP concordantWeights, SEXP discordantWeights, SEXP uninformativeWeights,
+        SEXP relevantWeights);
 
 extern "C" SEXP
 export_filters(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, SEXP priorsWeight,
