@@ -65,15 +65,6 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
 
 `correlate` <- function(X, Y, method = "pearson", strata, weights, outX = TRUE, bootstrap_count = 0)
 {
-    if (missing(weights)) {
-      weights <- rep(1, length(X))
-      names(weights) <- names(X)
-    }
-    if (missing(strata)) {
-      strata <- factor(rep(1, length(X)))
-      names(strata) <- names(X)
-    }
-  
     if (method == "pearson" || method == "spearman" || method == "kendall" || method == "frequency")
     {
         X <- as.numeric(X)
@@ -86,9 +77,16 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
     }
     else if (method != "cindex")
         stop("estimator must be of the following: pearson, spearman, kendall, frequency, cramersv, cindex")
-    
-    data <- mRMR.data(data = data.frame(X, Y), strata = strata, weights = weights)
-    
+
+		if (!missing(strata) && !missing(weights))
+				data <- mRMR.data(data = data.frame(X, Y), strata = strata, weights = weights)
+    else if (!missing(strata))
+				data <- mRMR.data(data = data.frame(X, Y), strata = strata)
+		else if (!missing(weights))
+				data <- mRMR.data(data = data.frame(X, Y), weights = weights)
+		else
+				data <- mRMR.data(data = data.frame(X, Y))
+
     if (method == "cindex")
     {
         empty <- vector(mode = "numeric", length = 0)
@@ -105,13 +103,23 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
         else if (length(data@feature_types) == 4)
             input <- list(data@data[, 1], data@data[, 3], data@data[, 2], data@data[, 4])
         
-        out <- vector(mode = "numeric", length = 5)
-        
+				ratio <- vector(mode = "numeric", length = 1)
+				ch <- vector(mode = "numeric", length = length(input[[1]]))
+				dh <- vector(mode = "numeric", length = length(input[[1]]))
+				uh <- vector(mode = "numeric", length = length(input[[1]]))
+				rh <- vector(mode = "numeric", length = length(input[[1]]))
+
         .Call(mRMRe:::.C_export_concordance_index, as.numeric(input[[1]]), as.numeric(input[[2]]),
                 as.numeric(input[[3]]), as.numeric(input[[4]]), as.integer(data@strata), as.numeric(data@weights),
-                as.integer(length(unique(data@strata))), outX, out)
-        
-        names(out) <- c("statistic", "concordant_weight", "discordant_weight", "uninformative_weight", "relevant_weight")
+                as.integer(length(unique(data@strata))), outX, ratio, ch, dh, uh, rh)
+
+				browser()
+
+				out <- list()
+				out$statistic <- ratio
+				return(out)        
+
+        ##names(out) <- c("statistic", "concordant_weight", "discordant_weight", "uninformative_weight", "relevant_weight")
         
       #         cindex <- out[1]
       #         ch <- out[2]
