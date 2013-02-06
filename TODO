@@ -7,8 +7,6 @@
 - MPI
 - Finish documentation
 - Vignettes
-  
-- The C code for the concordance index, namely mRMRe:::.C_export_concordance_index, should return the same objects than the C code in survcomp, namely concordanceIndexC. More precisely the objects ch, dh, uh and rph (concordant, discordant informative and relevant pairs) should be vectors, not a single value
 
 - The order of solutions should be reversed, the top indices should be the most relevant ones. Currently the last ones are the first selected by the method
 
