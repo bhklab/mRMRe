@@ -80,14 +80,18 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
     else if (method != "cindex")
         stop("estimator must be of the following: pearson, spearman, kendall, frequency, cramersv, cindex")
 
-    if (!missing(strata) && !missing(weights))
-        data <- mRMR.data(data = data.frame(X, Y), strata = strata, weights = weights)
-    else if (!missing(strata))
-        data <- mRMR.data(data = data.frame(X, Y), strata = strata)
-    else if (!missing(weights))
-        data <- mRMR.data(data = data.frame(X, Y), weights = weights)
-    else
-        data <- mRMR.data(data = data.frame(X, Y))
+
+    if (missing(strata)) {
+      strata <- rep(o, length(X))
+      names(strata) <- names(X)
+    }
+    
+    if (missing(weights)) {
+      weights <- rep(o, length(X))
+      names(weights) <- names(X)
+    } 
+    
+    data <- mRMR.data(data = data.frame(X, Y), strata = strata, weights = weights)
 
     if (method == "cindex")
     {
@@ -116,13 +120,14 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
                 as.integer(length(unique(data@strata))), outX, ratio, ch, dh, uh, rh)  
         
               cindex <- ratio
+              myx <- complete.cases(featureData(data), sampleStrata(data), sampleWeights(data))
+              N <- sum(weights[myx])
               
-              myx <- complete.cases(featureData(data))
-              if(missing(weights))
-                N <- sum(myx)
-              else
-                N <- sum(weights[myx], na.rm=TRUE)
+              cscount <- sum(ch + dh) ## comparable pairs
+              if (sum(ch) == 0 || sum (dh) ==0 || sum(ch * (ch - 1)) == 0 || sum(dh * (dh - 1)) == 0 || sum(ch * dh) == 0 || cscount < 10)
+                return(list("cindex"=NA, "se"=NA, "lower"=NA, "upper"=NA, "p"=NA, "n"=N))
               
+              ## FIXME: N and subsequent calculation should be done withing strata
               pc <- (1 / (N * (N - 1))) * sum(ch)
               pd  <- (1 / (N * (N - 1))) * sum(dh)
               pcc <- (1 / (N * (N - 1) * (N - 2))) * sum(ch * (ch - 1))
@@ -130,17 +135,18 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
               pcd <- (1 / (N * (N - 1) * (N - 2))) * sum(ch * dh)
               varp <- (4 / (pc + pd)^4) * (pd^2 * pcc - 2 * pc * pd * pcd + pc^2 * pdd)
               if((varp / N) > 0) {
-                ci <- qnorm(p=alpha / 2, lower.tail=FALSE) * sqrt(varp / N)
+                se <- sqrt(varp / N)
+                ci <- qnorm(p=alpha / 2, lower.tail=FALSE) * se
                 lower <- cindex - ci
                 upper <- cindex + ci
                 switch(alternative, 
-                "two.sided"={ p <- pnorm((cindex - 0.5) / sqrt(varp / N), lower.tail=cindex < 0.5) * 2 }, 
-                "less"={ p <- pnorm((cindex - 0.5) / sqrt(varp / N), lower.tail=TRUE) }, 
-                "greater"={  p <- pnorm((cindex - 0.5) / sqrt(varp / N), lower.tail=FALSE) }
+                "two.sided"={ p <- pnorm((cindex - 0.5) / se, lower.tail=cindex < 0.5) * 2 }, 
+                "less"={ p <- pnorm((cindex - 0.5) / se, lower.tail=TRUE) }, 
+                "greater"={  p <- pnorm((cindex - 0.5) / se, lower.tail=FALSE) }
                 )
-              } else { ci <- lower <- upper <- p <- NA } 
+              } else { se <- lower <- upper <- p <- NA } 
         
-        return(list("cindex"=NA, "se"=NA, "lower"=NA, "upper"=NA, "p"=NA, "n"=N))
+        return(list("cindex"=cindex, "se"=se, "lower"=lower, "upper"=upper, "p"=p, "n"=N))
     }
     else if (method == "cramersv")
         return(list(statistic = mim(data, method = "cor", outX = outX, bootstrap_count = bootstrap_count)[1, 2]))
