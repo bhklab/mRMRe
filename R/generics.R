@@ -82,12 +82,12 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
 
 
     if (missing(strata)) {
-      strata <- rep(o, length(X))
+      strata <- rep(0, length(X))
       names(strata) <- names(X)
     }
     
     if (missing(weights)) {
-      weights <- rep(o, length(X))
+      weights <- rep(1, length(X))
       names(weights) <- names(X)
     } 
     
