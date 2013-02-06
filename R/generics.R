@@ -63,8 +63,10 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
     return(value)
 }
 
-`correlate` <- function(X, Y, method = "pearson", strata, weights, outX = TRUE, bootstrap_count = 0)
+`correlate` <- function(X, Y, method = "pearson", strata, weights, outX = TRUE, bootstrap_count = 0, alpha = 0.05, alternative=c("two.sided", "less", "greater"))
 {
+    alternative <- match.arg(alternative)
+    
     if (method == "pearson" || method == "spearman" || method == "kendall" || method == "frequency")
     {
         X <- as.numeric(X)
@@ -119,30 +121,34 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
         out$statistic <- ratio
         return(out)        
 
-        ##names(out) <- c("statistic", "concordant_weight", "discordant_weight", "uninformative_weight", "relevant_weight")
+        #names(out) <- c("statistic", "concordant_weight", "discordant_weight", "uninformative_weight", "relevant_weight")
         
-      #         cindex <- out[1]
-      #         ch <- out[2]
-      #         dh <- out[3]
-      #         N <- sum(weights, na.rm=TRUE)
-      #         pc <- (1 / (N * (N - 1))) * sum(ch)
-      #         pd  <- (1 / (N * (N - 1))) * sum(dh)
-      #         pcc <- (1 / (N * (N - 1) * (N - 2))) * sum(ch * (ch - 1))
-      #         pdd <- (1 / (N * (N - 1) * (N - 2))) * sum(dh * (dh - 1))
-      #         pcd <- (1 / (N * (N - 1) * (N - 2))) * sum(ch * dh)
-      #         varp <- (4 / (pc + pd)^4) * (pd^2 * pcc - 2 * pc * pd * pcd + pc^2 * pdd)
-      #         if((varp / N) > 0) {
-      #           ci <- qnorm(p=alpha / 2, lower.tail=FALSE) * sqrt(varp / N)
-      #           lower <- cindex - ci
-      #           upper <- cindex + ci
-      #           switch(alternative, 
-      #   "two.sided"={ p <- pnorm((cindex - 0.5) / sqrt(varp / N), lower.tail=cindex < 0.5) * 2 }, 
-      #   "less"={ p <- pnorm((cindex - 0.5) / sqrt(varp / N), lower.tail=TRUE) }, 
-      #   "greater"={  p <- pnorm((cindex - 0.5) / sqrt(varp / N), lower.tail=FALSE) }
-      # )
-      #         } else { ci <- lower <- upper <- p <- NA } 
+              cindex <- ratio
+              
+              myx <- complete.cases(featureData(data))
+              if(missing(weights))
+                N <- sum(myx)
+              else
+                N <- sum(weights[myx], na.rm=TRUE)
+              
+              pc <- (1 / (N * (N - 1))) * sum(ch)
+              pd  <- (1 / (N * (N - 1))) * sum(dh)
+              pcc <- (1 / (N * (N - 1) * (N - 2))) * sum(ch * (ch - 1))
+              pdd <- (1 / (N * (N - 1) * (N - 2))) * sum(dh * (dh - 1))
+              pcd <- (1 / (N * (N - 1) * (N - 2))) * sum(ch * dh)
+              varp <- (4 / (pc + pd)^4) * (pd^2 * pcc - 2 * pc * pd * pcd + pc^2 * pdd)
+              if((varp / N) > 0) {
+                ci <- qnorm(p=alpha / 2, lower.tail=FALSE) * sqrt(varp / N)
+                lower <- cindex - ci
+                upper <- cindex + ci
+                switch(alternative, 
+                "two.sided"={ p <- pnorm((cindex - 0.5) / sqrt(varp / N), lower.tail=cindex < 0.5) * 2 }, 
+                "less"={ p <- pnorm((cindex - 0.5) / sqrt(varp / N), lower.tail=TRUE) }, 
+                "greater"={  p <- pnorm((cindex - 0.5) / sqrt(varp / N), lower.tail=FALSE) }
+                )
+              } else { ci <- lower <- upper <- p <- NA } 
         
-        return(as.list(out))
+        return(list("cindex"=NA, "se"=NA, "lower"=NA, "upper"=NA, "p"=NA, "n"=N))
     }
     else if (method == "cramersv")
         return(list(statistic = mim(data, method = "cor", outX = outX, bootstrap_count = bootstrap_count)[1, 2]))
