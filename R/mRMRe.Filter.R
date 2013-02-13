@@ -140,6 +140,12 @@ setMethod("solutions", signature("mRMRe.Filter"), function(object, mi_threshold 
     return(filters)
 })
 
+## scores
+setMethod("scores", signature("mRMRe.Filter"), function(object)
+{
+	return(object@scores)
+})
+
 ## mim
 
 setMethod("mim", signature("mRMRe.Filter"), function(object)
