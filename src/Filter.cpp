@@ -79,6 +79,28 @@ Filter::getSolutions(int* const solutions) const
     }
 }
 
+void const
+Filter::getScores(int* const scores) const
+{
+    unsigned int counter = 0;
+
+    for (unsigned int end_element_absolute_index = mTreeElementCount - 1;
+            end_element_absolute_index >= mpStartingIndexPerLevel[mLevelCount];
+            --end_element_absolute_index)
+    {
+        unsigned int element_absolute_index = end_element_absolute_index;
+
+        for (unsigned int level = mLevelCount; level > 0; --level)
+        {
+            scores[counter++] = mpScoreTree[element_absolute_index];
+            element_absolute_index = getParentAbsoluteIndex(element_absolute_index, level);
+        }
+    }
+}
+
+
+
+
 bool const
 Filter::hasAncestorByFeatureIndex(unsigned int const absoluteIndex, unsigned int const featureIndex,
         unsigned int level) const

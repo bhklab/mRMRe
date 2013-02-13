@@ -40,6 +40,9 @@ public:
     void const
     getSolutions(int* const solutions) const;
 
+    void const
+    getScores(int* const scores) const;
+
     bool const
     hasAncestorByFeatureIndex(unsigned int const absoluteIndex, unsigned int const featureIndex,
             unsigned int level) const;

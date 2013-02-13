@@ -65,9 +65,10 @@ export_filters(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, S
     unsigned int const chunk_size = solution_count * feature_count_per_solution;
 
     SEXP result;
-    PROTECT(result = allocVector(VECSXP, 2));
+    PROTECT(result = allocVector(VECSXP, 3));
 
     SET_VECTOR_ELT(result, 0, allocVector(VECSXP, LENGTH(targetFeatureIndices)));
+    SET_VECTOR_ELT(result, 1, allocVector(VECSXP, LENGTH(targetFeatureIndices)));
     SET_VECTOR_ELT(result, 1, allocVector(VECSXP, LENGTH(targetFeatureIndices)));
 
     for (unsigned int i = 0; i < LENGTH(targetFeatureIndices); ++i)
@@ -78,8 +79,10 @@ export_filters(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, S
 
         SET_VECTOR_ELT(VECTOR_ELT(result, 0), i, allocVector(INTSXP, chunk_size));
         SET_VECTOR_ELT(VECTOR_ELT(result, 1), i, allocVector(REALSXP, INTEGER(featureCount)[0]));
+        SET_VECTOR_ELT(VECTOR_ELT(result, 2), i, allocVector(INTSXP, chunk_size));
 
         filter.getSolutions(INTEGER(VECTOR_ELT(VECTOR_ELT(result, 0), i)));
+        filter.getScores(INTEGER(VECTOR_ELT(VECTOR_ELT(result, 2), i)));
 
         for (unsigned int k = 0; k < INTEGER(featureCount)[0]; ++k)
             REAL(VECTOR_ELT(VECTOR_ELT(result, 1), i))[k] =
