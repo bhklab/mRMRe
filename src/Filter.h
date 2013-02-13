@@ -22,6 +22,7 @@ private:
     Matrix* const mpFeatureInformationMatrix;
     unsigned int* const mpStartingIndexPerLevel;
     unsigned int* mpIndexTree;
+    unsigned int* mpScoreTree;
     unsigned int mTreeElementCount;
 
 public:
