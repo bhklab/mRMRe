@@ -21,12 +21,12 @@ Filter::Filter(int const* const pChildrenCountPerLevel, unsigned int const level
     mpStartingIndexPerLevel[mLevelCount + 1] = cumulative_element_count;
     mTreeElementCount = cumulative_element_count;
     mpIndexTree = new unsigned int[cumulative_element_count];
-    mpScoreTree = new unsigned int[cumulative_element_count];
+    mpScoreTree = new double [cumulative_element_count];
 
     for (unsigned int i = 0; i < mTreeElementCount; ++i)
     {
         mpIndexTree[i] = targetFeatureIndex;
-        mpIndexTree[i] = 0;
+        mpScoreTree[i] = 0;
     }
 }
 
@@ -80,7 +80,7 @@ Filter::getSolutions(int* const solutions) const
 }
 
 void const
-Filter::getScores(int* const scores) const
+Filter::getScores(double* const scores) const
 {
     unsigned int counter = 0;
 
@@ -236,7 +236,7 @@ Filter::placeElements(unsigned int const startingIndex, unsigned int childrenCou
             if (!isRedundantPath(startingIndex + children_counter, index, level))
             {
                 mpIndexTree[startingIndex + children_counter++] = index;
-                mpScoreTree[startingIndex + children_counter] = p_candidate_scores[index];
+                mpScoreTree[startingIndex + children_counter-1] = p_candidate_scores[index];
             }
         }
     }

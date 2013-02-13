@@ -1,6 +1,6 @@
 ## Definition
 
-setClass("mRMRe.Filter", representation(filters = "list", mi_matrix = "matrix", causality_list = "list",
+setClass("mRMRe.Filter", representation(filters = "list", scores = "list", mi_matrix = "matrix", causality_list = "list",
                 sample_names = "character", feature_names = "character", target_indices = "integer", levels = "integer"))
 
 ## Wrappers
@@ -76,10 +76,13 @@ setMethod("initialize", signature("mRMRe.Filter"),
     
     .Object@filters <- lapply(result[[1]], function(solutions) matrix(compressFeatureIndices(data, solutions + 1),
                         nrow = length(levels), ncol = prod(levels)))
+	
     names(.Object@filters) <- .Object@target_indices
     .Object@causality_list <- result[[2]]
-
-    cols_to_drop <- duplicated(compressFeatureIndices(data, seq(ncol(data@data))))
+	.Object@scores <- lapply(result[[3]], function(scores) matrix(scores,	nrow = length(levels), ncol = prod(levels)))
+	names(.Object@scores) <- .Object@target_indices
+    
+	cols_to_drop <- duplicated(compressFeatureIndices(data, seq(ncol(data@data))))
     
     .Object@causality_list <- lapply(result[[2]], function(causality_array) causality_array[!cols_to_drop])
     names(.Object@causality_list) <- .Object@target_indices

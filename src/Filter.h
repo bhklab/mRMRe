@@ -22,7 +22,7 @@ private:
     Matrix* const mpFeatureInformationMatrix;
     unsigned int* const mpStartingIndexPerLevel;
     unsigned int* mpIndexTree;
-    unsigned int* mpScoreTree;
+    double* mpScoreTree;
     unsigned int mTreeElementCount;
 
 public:
@@ -41,7 +41,7 @@ public:
     getSolutions(int* const solutions) const;
 
     void const
-    getScores(int* const scores) const;
+    getScores(double* const scores) const;
 
     bool const
     hasAncestorByFeatureIndex(unsigned int const absoluteIndex, unsigned int const featureIndex,
