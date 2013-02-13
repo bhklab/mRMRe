@@ -16,19 +16,20 @@ system.time(mim(data))
 
 library(mRMRe)
 set.seed(0)
-dd <- data.frame(
-        "surv1" = Surv(runif(100), sample(0:1, 100, replace = TRUE)),
-        "cont1" = runif(100),
-        "cat1"  = factor(sample(1:5, 100, replace = TRUE), ordered = TRUE),
-        "surv2" = Surv(runif(100), sample(0:1, 100, replace = TRUE)),
-        "cont2" = runif(100),
-        "cont3" = runif(100),
-        "surv3" = Surv(runif(100), sample(0:1, 100, replace = TRUE)),
-        "cat2"=factor(sample(1:5, 100, replace = TRUE), ordered = TRUE))
 
+x <- rnorm(100, 0)
+dd <- data.frame(
+        "cont1" = x,
+        "cont2" = x + rnorm(100, 0.1),
+		"cont3" = x + rnorm(100, 0.1),
+		"cont4" = x + rnorm(100, 0.1),
+		"cont5" = x + rnorm(100, 0.1),
+		"cont6" = x + rnorm(100, 0.01))
+		
 data <- mRMR.data(data = dd)
-filter <- mRMR.ensemble("mRMRe.Filter", data = data, target_indices = 3:5, feature_count = 2, solution_count = 2)
+filter <- mRMR.classic("mRMRe.Filter", data = data, target_indices = 3:5, feature_count = 2)
 solutions(filter)
+scores(filter)
 
 ## NETWORK TEST
 

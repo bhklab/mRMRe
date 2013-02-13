@@ -43,6 +43,8 @@ setGeneric("compressFeatureIndices", function(object, ...) standardGeneric("comp
 
 setGeneric("solutions", function(object, ...) standardGeneric("solutions"))
 
+setGeneric("scores", function(object) standardGeneric("scores"))
+
 setGeneric("causality", function(object, ...) standardGeneric("causality"))
 
 setGeneric("target", function(object) standardGeneric("target"))
