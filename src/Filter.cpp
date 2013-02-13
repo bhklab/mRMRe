@@ -236,7 +236,7 @@ Filter::placeElements(unsigned int const startingIndex, unsigned int childrenCou
             if (!isRedundantPath(startingIndex + children_counter, index, level))
             {
                 mpIndexTree[startingIndex + children_counter++] = index;
-                mpScoreTree[startingIndex + children_counter-1] = p_candidate_scores[index];
+                mpScoreTree[startingIndex + children_counter-1] = p_candidate_scores[p_order[i+1]];
             }
         }
     }
