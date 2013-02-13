@@ -15,23 +15,22 @@ export_concordance_index(SEXP samplesA, SEXP samplesB, SEXP samplesC, SEXP sampl
             INTEGER(sampleStratumCount)[0], sample_count);
 
     if (LENGTH(samplesD) != 0 && LENGTH(samplesC) != 0)
-        REAL(ratio)[0] = Math::computeConcordanceIndex(REAL(samplesA), REAL(samplesB), REAL(samplesC),
-                REAL(samplesD), REAL(sampleWeights), p_sample_indices_per_stratum,
+        REAL(ratio)[0] = Math::computeConcordanceIndex(REAL(samplesA), REAL(samplesB),
+                REAL(samplesC), REAL(samplesD), REAL(sampleWeights), p_sample_indices_per_stratum,
                 p_sample_count_per_stratum, INTEGER(sampleStratumCount)[0], INTEGER(outX)[0] != 0,
                 REAL(concordantWeights), REAL(discordantWeights), REAL(uninformativeWeights),
                 REAL(relevantWeights));
     else if (LENGTH(samplesC) != 0)
-        REAL(ratio)[0] = Math::computeConcordanceIndex(REAL(samplesA), REAL(samplesB), REAL(samplesC),
-                REAL(sampleWeights), p_sample_indices_per_stratum, p_sample_count_per_stratum,
-                INTEGER(sampleStratumCount)[0], INTEGER(outX)[0] != 0,
+        REAL(ratio)[0] = Math::computeConcordanceIndex(REAL(samplesA), REAL(samplesB),
+                REAL(samplesC), REAL(sampleWeights), p_sample_indices_per_stratum,
+                p_sample_count_per_stratum, INTEGER(sampleStratumCount)[0], INTEGER(outX)[0] != 0,
                 REAL(concordantWeights), REAL(discordantWeights), REAL(uninformativeWeights),
                 REAL(relevantWeights));
     else
         REAL(ratio)[0] = Math::computeConcordanceIndex(REAL(samplesA), REAL(samplesB),
                 REAL(sampleWeights), p_sample_indices_per_stratum, p_sample_count_per_stratum,
-                INTEGER(sampleStratumCount)[0], INTEGER(outX)[0] != 0, 
-                REAL(concordantWeights), REAL(discordantWeights), REAL(uninformativeWeights),
-                REAL(relevantWeights));
+                INTEGER(sampleStratumCount)[0], INTEGER(outX)[0] != 0, REAL(concordantWeights),
+                REAL(discordantWeights), REAL(uninformativeWeights), REAL(relevantWeights));
 
     delete[] p_sample_count_per_stratum;
     for (unsigned int i = 0; i < INTEGER(sampleStratumCount)[0]; ++i)
@@ -126,15 +125,17 @@ export_filters_bootstrap(SEXP solutionCount, SEXP solutionLength, SEXP dataMatri
         p_children_count_per_level[i] = 1;
 
     SEXP result;
-    PROTECT(result = allocVector(VECSXP, 2));
+    PROTECT(result = allocVector(VECSXP, 3));
 
     SET_VECTOR_ELT(result, 0, allocVector(VECSXP, LENGTH(targetFeatureIndices)));
     SET_VECTOR_ELT(result, 1, allocVector(VECSXP, LENGTH(targetFeatureIndices)));
+    SET_VECTOR_ELT(result, 2, allocVector(VECSXP, LENGTH(targetFeatureIndices)));
 
     for (unsigned int i = 0; i < LENGTH(targetFeatureIndices); ++i)
     {
         SET_VECTOR_ELT(VECTOR_ELT(result, 0), i, allocVector(INTSXP, chunk_size));
         SET_VECTOR_ELT(VECTOR_ELT(result, 1), i, allocVector(REALSXP, INTEGER(featureCount)[0]));
+        SET_VECTOR_ELT(VECTOR_ELT(result, 2), i, allocVector(REALSXP, chunk_size));
 
         for (unsigned int k = 0; k < INTEGER(featureCount)[0]; ++k)
             REAL(VECTOR_ELT(VECTOR_ELT(result, 1), i))[k] =
@@ -150,13 +151,16 @@ export_filters_bootstrap(SEXP solutionCount, SEXP solutionLength, SEXP dataMatri
             Filter filter(p_children_count_per_level, feature_count_per_solution, &mi_matrix,
                     INTEGER(targetFeatureIndices)[j]);
             filter.build();
-            filter.getSolutions(INTEGER(VECTOR_ELT(VECTOR_ELT(result, 0), j))
-                               + (i * feature_count_per_solution));
+            filter.getSolutions(
+                    INTEGER(VECTOR_ELT(VECTOR_ELT(result, 0), j))
+                            + (i * feature_count_per_solution));
+            filter.getScores(
+                    REAL(VECTOR_ELT(VECTOR_ELT(result, 2), i)) + (i * feature_count_per_solution));
 
-/*            Math::computeCausality(REAL(VECTOR_ELT(VECTOR_ELT(result, 1), i)), &mi_matrix,
-                    INTEGER(VECTOR_ELT(VECTOR_ELT(result, 0), i)) + (i * chunk_size), 1,
-                    feature_count_per_solution, INTEGER(featureCount)[0],
-                    INTEGER(targetFeatureIndices)[i]);*/
+            /*            Math::computeCausality(REAL(VECTOR_ELT(VECTOR_ELT(result, 1), i)), &mi_matrix,
+             INTEGER(VECTOR_ELT(VECTOR_ELT(result, 0), i)) + (i * chunk_size), 1,
+             feature_count_per_solution, INTEGER(featureCount)[0],
+             INTEGER(targetFeatureIndices)[i]);*/
         }
 
         data.bootstrap();
