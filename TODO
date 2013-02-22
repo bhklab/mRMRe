@@ -1,12 +1,20 @@
-- Barcode and Likelihood
 - Remove usage of data as a variable
+
+- Revise R code for imperfections and inefficiencies
+
+- Finish documentation [URGENT]
+
+- Vignettes [URGENT]
+
+- Submisssion to CRAN [URGENT]
+
+- MPI
+
+- Barcode and likelihood
+
 - Implement more functions to existing S4 classes (especially mRMRe.Network)
 	- Compute Likelihood
 	- Linear Regression Models??
-- Revise R code for imperfections and inefficiencies
-- MPI
-- Finish documentation
-- Vignettes
 
 - The order of solutions should be reversed, the top indices should be the most relevant ones. Currently the last ones are the first selected by the method
 
