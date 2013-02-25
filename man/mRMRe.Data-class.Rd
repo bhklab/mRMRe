@@ -44,13 +44,13 @@
 }
 \section{Slots}{
   \describe{
-    \item{\code{sample_names}:}{Object of class \code{"character"} Vector containing the sample names}
-    \item{\code{feature_names}:}{Object of class \code{"character"} Vector containing the feature names}
-    \item{\code{feature_types}:}{Object of class \code{"numeric"} Vector containing the internal representation of features/variables}
-    \item{\code{data}:}{Object of class \code{"matrix"} Matrix containing the internal representation of the data set}
-    \item{\code{strata}:}{Object of class \code{"numeric"} Vector containing the feature strata}
-    \item{\code{weights}:}{Object of class \code{"numeric"} Vector containing sample weights}
-    \item{\code{priors}:}{Object of class \code{"matrix"} Matrix containing the priors}
+    \item{\code{sample_names}:}{Object of class \code{"character"} containing the sample names}
+    \item{\code{feature_names}:}{Object of class \code{"character"} containing the feature names}
+    \item{\code{feature_types}:}{Object of class \code{"numeric"} containing the internal representation of features/variables}
+    \item{\code{data}:}{Object of class \code{"matrix"} containing the internal representation of the data set}
+    \item{\code{strata}:}{Object of class \code{"numeric"} containing the feature strata}
+    \item{\code{weights}:}{Object of class \code{"numeric"} containing sample weights}
+    \item{\code{priors}:}{Object of class \code{"matrix"} containing the priors}
   }
 }
 \section{Methods}{
