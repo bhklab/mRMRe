@@ -22,33 +22,53 @@
 
 \title{Class \code{"mRMRe.Data"}}
 \description{
-	This class is a wrapper for data sets.  mRMRe operates using this mRMRe.Data class as input in order to simplify parameter passing.  Instanciate an mMRMe.Data object with a data frame contaning your data and optionally with strata, weights and priors.  In addition to basic accession functions, the mim() function can be called on an instance of this class that will produce a mutual information matrix based on the demanded estimator, strata, sample weights and priors.
+	mRMRe.Data is a wrapper for data sets.  Most if not all of the routines in the mRMRe package use mRMRe.Data as primary input.
+	Such an object is instantiated with a data frame containing the sample sets and optionally, stratum, weight vectors and a prior
+	matrix.  In addition to basic accession functions, we describe several methods which serve to manipulate the contents of the data
+	set.
 }
-\section{Objects from the Class}{
-Objects can be created by calls of the form \code{new("mRMRe.Data", data, strata, weights, priors)}.
-%%  ~~ describe objects here ~~ 
+\section{Instantiation}{
+	Objects are created via calls of the form \code{new("mRMRe.Data", data, strata, weights, priors)}.
+	
+	\code{"data"}: is expected to be a data frame with samples and features respectively organized as rows and columns.  The columns
+	have to be of type :{numeric, ordered factor, Surv} and respectively interpreted as :{continuous, discrete and survival} variables.
+	
+	\code{"strata"}: is expected to be a vector of type :{ordered factor} with the strata associated to the samples provided
+	in \code{"data"}.
+	
+	\code{"weights"}: is expected to be a vector of type :{numeric} with the weights associated to the samples provided
+	in \code{"data"}.
+	
+	\code{"priors"}: is expected to be a matrix of type :{numeric} where \code{"priors[i, j]"}: denotes an forced association between
+	features i and j in \code{"data"}.  Directionality is important.   
 }
 \section{Slots}{
   \describe{
-    \item{\code{sample_names}:}{Object of class \code{"character"} Names of the samples for data rows}
-    \item{\code{feature_names}:}{Object of class \code{"character"} Names of the feature for data columns}
-    \item{\code{feature_types}:}{Object of class \code{"numeric"} Class of each feature (column), accepted values :{numeric, ordered factor, Surv}}
-    \item{\code{data}:}{Object of class \code{"matrix"} The actual data set containing features as columns and obsverations as rows}
-    \item{\code{strata}:}{Object of class \code{"numeric"} Sample stratification}
-    \item{\code{weights}:}{Object of class \code{"numeric"}  Sample weights}
-    \item{\code{priors}:}{Object of class \code{"matrix"} Feature priors (or weight) }
+    \item{\code{sample_names}:}{Object of class \code{"character"} Vector containing the sample names}
+    \item{\code{feature_names}:}{Object of class \code{"character"} Vector containing the feature names}
+    \item{\code{feature_types}:}{Object of class \code{"numeric"} Vector containing the internal representation of features/variables}
+    \item{\code{data}:}{Object of class \code{"matrix"} Matrix containing the internal representation of the data set}
+    \item{\code{strata}:}{Object of class \code{"numeric"} Vector containing the feature strata}
+    \item{\code{weights}:}{Object of class \code{"numeric"} Vector containing sample weights}
+    \item{\code{priors}:}{Object of class \code{"matrix"} Matrix containing the priors}
   }
 }
 \section{Methods}{
   \describe{
-    \item{compressFeatureIndices}{\code{signature(object = "mRMRe.Data")}: ... }
-    \item{compressFeatureMatrix}{\code{signature(object = "mRMRe.Data")}: Compresses multidimensional }
-    \item{expandFeatureIndices}{\code{signature(object = "mRMRe.Data")}: }
-    \item{expandFeatureMatrix}{\code{signature(object = "mRMRe.Data")}: Expands multidimensional feature (of type Surv) in unidimensional columns to simplify data passing between R and C}
-    \item{featureCount}{\code{signature(object = "mRMRe.Data")}: Returns the number of features in the data set}
-    \item{featureData}{\code{signature(object = "mRMRe.Data")}: ... }
-    \item{featureNames}{\code{signature(object = "mRMRe.Data")}: ... }
-    \item{mim}{\code{signature(object = "mRMRe.Data")}: ... }
+%    \item{compressFeatureIndices}{\code{signature(object = "mRMRe.Data")}: ... }
+%    \item{compressFeatureMatrix}{\code{signature(object = "mRMRe.Data")}: Compresses multidimensional }
+%    \item{expandFeatureIndices}{\code{signature(object = "mRMRe.Data")}: }
+%    \item{expandFeatureMatrix}{\code{signature(object = "mRMRe.Data")}: Expands multidimensional feature (of type Surv) in unidimensional columns to simplify data passing between R and C}
+    \item{featureCount}{\code{signature(object = "mRMRe.Data")}: Returns the number of features}
+    \item{featureData}{\code{signature(object = "mRMRe.Data")}: Returns a data set corresponding to the data set}
+    \item{featureNames}{\code{signature(object = "mRMRe.Data")}: Returns a vector containing the feature names}
+    \item{mim}{\code{signature(object = "mRMRe.Data", prior_weight = 0,
+    continuous_estimator = c("pearson", "spearman", "kendall", "frequency"), outX = TRUE, bootstrap_count = 0)}:
+        Computes and returns the mutual information matrix.
+   	    \code{"prior_weight"}: expects a value between 0 and 1 that denotes the relative importance of the values in the prior matrix
+   	    with respect to the values computed via the estimators.
+   	    \code{"continuous_estimator"}: 
+   	    }
     \item{priors}{\code{signature(object = "mRMRe.Data")}: ... }
     \item{priors<-}{\code{signature(object = "mRMRe.Data")}: ... }
     \item{sampleCount}{\code{signature(object = "mRMRe.Data")}: ... }
@@ -61,20 +81,16 @@ Objects can be created by calls of the form \code{new("mRMRe.Data", data, strata
 	 }
 }
 \references{
-%%  ~~put references to the literature/web site here~~
+
 }
 \author{
-%%  ~~who you are~~
+
 }
 \note{
-%%  ~~further notes~~
+
 }
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
 \seealso{
-%%  ~~objects to See Also as \code{\link{~~fun~~}}, ~~~
-%%  ~~or \code{\linkS4class{CLASSNAME}} for links to other classes ~~~
+
 }
 \examples{
 showClass("mRMRe.Data")
