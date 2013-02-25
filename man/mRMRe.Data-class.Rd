@@ -67,17 +67,20 @@
         Computes and returns the mutual information matrix.
    	    \code{"prior_weight"}: expects a value between 0 and 1 that denotes the relative importance of the values in the prior matrix
    	    with respect to the values computed via the estimators.
-   	    \code{"continuous_estimator"}: 
+   	    \code{"continuous_estimator"}: expects an estimator :{pearson, spearman, kendall, frequency} that is to be used for estimating
+   	    association between two continuous features
+   	    \code{"outX"}: ...
+   	    \code{"bootstrap_count"}: ...
    	    }
-    \item{priors}{\code{signature(object = "mRMRe.Data")}: ... }
-    \item{priors<-}{\code{signature(object = "mRMRe.Data")}: ... }
-    \item{sampleCount}{\code{signature(object = "mRMRe.Data")}: ... }
-    \item{sampleNames}{\code{signature(object = "mRMRe.Data")}: ... }
-    \item{sampleStrata}{\code{signature(object = "mRMRe.Data")}: ... }
-    \item{sampleStrata<-}{\code{signature(object = "mRMRe.Data")}: ... }
-    \item{sampleWeights}{\code{signature(object = "mRMRe.Data")}: ... }
-    \item{sampleWeights<-}{\code{signature(object = "mRMRe.Data")}: ... }
-    \item{subsetData}{\code{signature(object = "mRMRe.Data")}: ... }
+    \item{priors}{\code{signature(object = "mRMRe.Data")}: Returns a matrix containing the priors}
+    \item{priors<-}{\code{signature(object = "mRMRe.Data", value)}: Sets the prior matrix}
+    \item{sampleCount}{\code{signature(object = "mRMRe.Data")}: Returns the number of samples}
+    \item{sampleNames}{\code{signature(object = "mRMRe.Data")}: Returns a vector containing sample names}
+    \item{sampleStrata}{\code{signature(object = "mRMRe.Data")}: Returns a vector containing sample strata}
+    \item{sampleStrata<-}{\code{signature(object = "mRMRe.Data", value)}: Sets the sample strata}
+    \item{sampleWeights}{\code{signature(object = "mRMRe.Data")}: Returns a vector containing sample weights}
+    \item{sampleWeights<-}{\code{signature(object = "mRMRe.Data")}: Sets the sample weights}
+    \item{subsetData}{\code{signature(object = "mRMRe.Data", row_indices, column_indices)}: Returns another mRMRe.Data object but with only the specified row and column (sample and feature) indices}
 	 }
 }
 \references{
