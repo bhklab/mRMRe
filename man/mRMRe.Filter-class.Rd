@@ -13,7 +13,7 @@
 
 \title{Class \code{"mRMRe.Filter"}}
 \description{
-	mRMRe.Filter is a wrapper for various feature selection (filter.)
+	mRMRe.Filter is a wrapper for various variants of the maximum relevance minimum redundancy feature selection (filter.)
 	
 	%% perhaps explain our algorithms %%
 }
@@ -23,22 +23,22 @@
 	
 	\code{data}: is expected to be a \code{mRMRe.Data} object.
 	
-	\code{target_indices}: is expected to be a vector of type \code{numeric} containing the indices of the features
+	\code{target_indices}: is expected to be a vector of type \code{integer} containing the indices of the features
 	that will serve as targets for the feature selections.
 	
 	\code{levels}: is expected to be a vector of type \code{integer} containing the number of children of each element
 	at each level of the resulting filter tree.
 	
 	\code{method}: is expected to be either :{exhaustive, bootstrap}.  The former picks siblings in the tree according
-	to the mRMR metric and the latter, ...
-	
+	to the mRMR metric and the latter, ~~ %%need to find a way to explain this properly
+ 	
 	Since a mutual information matrix must be computed in order for feature selection to take place, the remaining arguments
 	are identical to those required by the \code{mim} method of the \code{mRMRe.Data} object.
 }
 \section{Slots}{
   \describe{
     \item{\code{filters}:}{Object of class \code{"list"} containing for each target a solutions matrix.}
-    \item{\code{mi_matrix}:}{Object of class \code{"matrix"} containing the combined MIM resulting of feature selection for the relevant targets.}
+    \item{\code{mi_matrix}:}{Object of class \code{"matrix"} containing the combined mutual information matrix of the relevant targets.}
     \item{\code{causality_list}:}{Object of class \code{"list"} containing for each target a vector of causality coefficients between the target and its predictors.}
     \item{\code{sample_names}:}{Object of class \code{"character"} containing the sample names.}
     \item{\code{feature_names}:}{Object of class \code{"character"} containing the feature names.}

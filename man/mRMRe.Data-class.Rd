@@ -26,6 +26,8 @@
 	Such an object is instantiated with a data frame containing the sample sets and optionally, stratum, weight vectors and a prior
 	matrix.  In addition to basic accession functions, we describe several methods which serve to manipulate the contents of the data
 	set.
+	
+	%% perhaps explain our algorithms %%
 }
 \section{Instantiation}{
 	Objects are created via calls of the form \code{new("mRMRe.Data", data, strata, weights, priors)}.
@@ -52,7 +54,7 @@
 	The correlations are first computed per strata and these are then combined by the inverse variance weight mean of the estimates
 	using a \code{bootstrap_count} number of bootstraps if the former parameter is greater than 0, and by the relative weights of each
 	strata otherwise.  The resulting correlation is then summated with the corresponding value in the priors matrix with the
-	latter being weighed for a proportion \code{prior_weight} of the final correlation.
+	latter being weighed for a proportion \code{prior_weight} of a final, biased correlation.
 }
 \section{Slots}{
   \describe{
