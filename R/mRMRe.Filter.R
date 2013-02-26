@@ -101,11 +101,26 @@ setMethod("show", signature("mRMRe.Filter"), function(object)
     str(object)
 })
 
+## sampleCount
+
+setMethod("sampleCount", signature("mRMRe.Data"), function(object)
+{
+    return(length(object@sample_names))
+})
+
 ## sampleNames
 
 setMethod("sampleNames", signature("mRMRe.Filter"), function(object)
 {
     return(object@sample_names)
+})
+
+
+## featureCount
+
+setMethod("featureCount", signature("mRMRe.Data"), function(object)
+{
+    return(length(object@feature_names))
 })
 
 ## featureNames
