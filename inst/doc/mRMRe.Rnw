@@ -1,0 +1,211 @@
+%\VignetteIndexEntry{mRMRe: an R package for parallelized mRMR ensemble feature selection}
+%\VignetteDepends{Rcpp}
+%\VignetteSuggests{}
+%\VignetteKeywords{}
+%\VignettePackage{mRMRe}
+
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{authblk}
+
+
+\title{mRMRe: an R package for parallelized mRMR ensemble feature selection}
+\author[1]{Nicolas De Jay}
+\author[1]{Simon Papillon-Cavanagh}
+\author[2]{Catharina Olsen}
+\author[2]{Gianluca Bontempi}
+\author[1]{Benjamin Haibe-Kains}
+\affil[1]{Bioinformatics and Computational Biology Laboratory, Institut de recherches cliniques de Montr\'{e}al, Montreal, Quebec, Canada}
+\affil[2]{Machine Learning Group, Universit\'{e} Libre de Bruxelles, Brussels, Belgium}
+
+\SweaveOpts{highlight=TRUE, tidy=TRUE, keep.space=TRUE, keep.blank.space=FALSE, keep.comment=TRUE}
+
+<<setup,echo=FALSE,results=hide,eval=TRUE>>=
+options(keep.source=TRUE)
+@
+
+\begin{document}
+
+
+\maketitle
+\tableofcontents
+
+%------------------------------------------------------------
+\section{Introduction}
+%------------------------------------------------------------
+
+\textit{mRMRe} is an R package for parallelized mRMR ensemble feature selection.
+
+%------------------------------------------------------------
+\subsection{Installation}
+%------------------------------------------------------------
+
+\textit{mRMRe} requires that \textit{Rcpp} is installed. 
+These should be installed automatically when you install \textit{mRMRe}. Install \textit{mRMRe} from CRAN or Bioconductor using \textit{biocLite} function.
+
+<<install-pkg,eval=FALSE>>=
+install.packages("mRMRe")
+@
+
+Load \textit{mRMRe} into your current workspace:
+<<loadlib,results=hide,eval=TRUE>>=
+library(mRMRe)
+@ 
+
+Load the example dataset \textit{cgps} into your current workspace:
+<<loadlib,results=hide,eval=TRUE>>=
+data(cgps)
+data_cgps <- data.frame(cgps_ic50, cgps_ge)
+@
+
+%------------------------------------------------------------
+\subsection{Known Issues}
+%------------------------------------------------------------
+
+\textit{mRMRe} has only been tested on Mac OS X 10.6.8 and on Linux platforms. Due to the use of the \textit{openMP} library, users may encounter problems
+when trying to install this package on Mac OS X 10.6.8. To fix this issue, it is recommended to add the \textit{-fopenmp} to the CC, CXX and LDFLAGS flags in the
+\textit{\~/.R/Makevars} configuration file.
+
+%------------------------------------------------------------
+\section{Measures of Associtation}
+%------------------------------------------------------------
+
+%------------------------------------------------------------
+\subsection{Mutual Information Matrix}
+%------------------------------------------------------------
+
+mRMRe offers a fully parallelized implementation to compute the Mutual Information Matrix (MIM). The object \textit{data\_cgps} should be a dataframe with samples/observations in rows and features/variables in columns. The method supports the following column types: "numeric" ("integer" or "double"), "ordered factor" and "Surv". Mutual information (MI) between two columns is estimated using a linear approximation based on correlation such that MI is estimated as
+%\begin{equation}
+$ I(x, y) = -\frac{1}{2} \ln{(1 - \rho(x,y)^2)} \label{eq:01} \nonumber $, 
+%\end{equation}
+where $I$ and $\rho$ respectively represent the MI and correlation coefficient between features $x$ and $y$. Correlation between continuous variables can be computed using either Pearson's or Spearman's estimators, while Cramer's V and Somers' Dxy index are used for correlation between discrete variables and between continuous variables and survival data, respectively.
+
+
+<<mim,results=hide,eval=TRUE>>=
+## Test on a dummy dataset
+library(survival)
+dd <- data.frame("surv1"=Surv(runif(100), sample(0:1, 100, replace=TRUE)),
+        "cont1"=runif(100),
+        "cat1"=factor(sample(1:5, 100, replace=TRUE), ordered=TRUE),
+        "surv2"=Surv(runif(100), sample(0:1, 100, replace=TRUE)),
+        "cont2"=runif(100),
+        "cont3"=runif(100),
+        "surv3"=Surv(runif(100),
+                sample(0:1, 100, replace=TRUE)),
+        "cat2"=factor(sample(1:5, 100, replace=TRUE), ordered=TRUE))
+@
+
+<<mimres,results=verbatim,eval=TRUE>>=
+message("Dummy dataframe:")
+print(dd[1:5,1:5])
+message("Resulting MIM:")
+mim <- build.mim(data=dd)
+print(mim[1:5,1:5])
+@
+
+<<mim2,results=verbatim,eval=TRUE>>=
+## Test on the 'cgps' dataset
+## The variables are all of continuous type
+
+# Uses Spearman as correlation estimator
+message("MIM with Pearson estimator:")
+mim <- build.mim(data_cgps) 
+print(mim[1:5,1:5])
+
+# Uses Pearson as correlation estimator
+message("MIM with Spearman estimator:")
+mim <- build.mim(data_cgps, uses_ranks=FALSE) 
+print(mim[1:5,1:5])
+@
+
+
+%------------------------------------------------------------
+\subsection{Correlations}
+%------------------------------------------------------------
+The mRMRe package offers an efficient, stratified and weighted implementation of the major correlation estimators: Cramer's V, Somers Dxy index (based on the concordance index), Pearson, Spearman correlation coefficients.
+
+<<correlations,results=hide,eval=TRUE>>=
+# Compute c-index between feature 1 and 2
+correlate(cgps_ge[,1],cgps_ge[,2], method="cindex")
+
+# Compute Cramer's V
+x <- sample(c(0, 1, 2), 100, replace=TRUE)
+y <- sample(c(0, 1), 100, replace=TRUE)
+correlate(x, y, method="cramer")
+
+# Compute Pearson coefficient with random strata and sample weights
+# between feature 1 and 2
+strata <- sample(as.factor(c("STRATUM_1","STRATUM_2","STRATUM_3")), 
+	nrow(cgps_ge), replace=TRUE)
+weights <- runif(nrow(cgps_ge))
+correlate(cgps_ge[, 1], cgps_ge[, 2], strata=strata, weights=weights, 
+	method="pearson", bootstrap_count=1000)
+@
+
+%------------------------------------------------------------
+\section{mRMR Feature Selection}
+%------------------------------------------------------------
+
+mRMRe offers a highly efficient implementation of the mRMR feature selection \cite{Ding:2005tl,meyer2008informationtheoritic}. The two crucial aspects of our implementation consists first, in parallelizing the key steps of the algorithm and second, in using a lazy procedure to compute only the part of the MIM that is required during the search for the best set of features (instead of estimating the full MIM).
+
+%------------------------------------------------------------
+\subsection{Classic mRMR}
+%------------------------------------------------------------
+
+Here is an example of the classic mRMR feature selection \cite{Ding:2005tl}.
+
+<<classic.mRMR,results=hide,eval=TRUE>>=
+mRMR.classic(data_cgps, 1, 30)
+@
+
+%------------------------------------------------------------
+\subsection{Ensemble mRMR}
+%------------------------------------------------------------
+
+Our ensemble approach allows to create a tree-like set of solutions of non redundant mRMR solutions.  
+The topology of the ensemble tree is user defined throught the \textit{levels} parameter.
+A binary tree of depth 5 can be generated with \textit{levels=rep(2,5)}, therefore creating $2^{5}$ mRMR solutions.
+
+<<ensemble.mRMR,results=hide,eval=TRUE>>=
+mRMR.ensemble(data_cgps, target_index=1, levels=rep.int(1, 30)) # For mRMR.classic-like results
+mRMR.ensemble(data_cgps, target_index=1, levels=rep(2,5))
+@
+
+%------------------------------------------------------------
+\section{Causality Inference}
+%------------------------------------------------------------
+
+The mRMRe package allows one to infer causality through the use of the Co-information lattice method \cite{Bell:2003tb,McGill:1954gz}.
+
+<<causality,results=hide,eval=TRUE>>=
+ensemble <- mRMR.ensemble(data_cgps, target_index=1, c(10, 5, rep(1, 5)))
+compute.causality(ensemble)
+compute.causality(data=data_cgps, target_index=1, mim=NULL, solutions=ensemble$paths, estimator="spearman")
+@
+
+%------------------------------------------------------------
+\section{Utilities}
+%------------------------------------------------------------
+
+In order to allow for full user control, mRMRe allows its users to set the number of threads it will
+use for computations.  One should consider using the following method to avoid crowding computing clusters.
+
+<<utils,results=hide,eval=TRUE>>=
+set.thread.count(3)
+mim <- build.mim(data_cgps)
+head(mim)
+@
+
+%------------------------------------------------------------
+\section{Session Info}
+%------------------------------------------------------------ 
+
+<<sessionInfo,echo=FALSE,results=tex,eval=TRUE>>=
+toLatex(sessionInfo())
+@
+
+\bibliographystyle{plain}
+\bibliography{biblio}
+
+\end{document}
