@@ -56,7 +56,8 @@ library(mRMRe)
 Load the example dataset \textit{cgps} into your current workspace:
 <<loadlib,results=hide,eval=TRUE>>=
 data(cgps)
-data_cgps <- data.frame(cgps_ic50, cgps_ge)
+data.annot <- data.frame(cgps.annot)
+data.cgps <- data.frame(cgps.ic50, cgps.ge)
 @
 
 %------------------------------------------------------------
@@ -82,41 +83,40 @@ $ I(x, y) = -\frac{1}{2} \ln{(1 - \rho(x,y)^2)} \label{eq:01} \nonumber $,
 where $I$ and $\rho$ respectively represent the MI and correlation coefficient between features $x$ and $y$. Correlation between continuous variables can be computed using either Pearson's or Spearman's estimators, while Cramer's V and Somers' Dxy index are used for correlation between discrete variables and between continuous variables and survival data, respectively.
 
 
-<<mim,results=hide,eval=TRUE>>=
-## Test on a dummy dataset
-library(survival)
-dd <- data.frame("surv1"=Surv(runif(100), sample(0:1, 100, replace=TRUE)),
-        "cont1"=runif(100),
-        "cat1"=factor(sample(1:5, 100, replace=TRUE), ordered=TRUE),
-        "surv2"=Surv(runif(100), sample(0:1, 100, replace=TRUE)),
-        "cont2"=runif(100),
-        "cont3"=runif(100),
-        "surv3"=Surv(runif(100),
-                sample(0:1, 100, replace=TRUE)),
-        "cat2"=factor(sample(1:5, 100, replace=TRUE), ordered=TRUE))
-@
+<<mim,results=verbatim,eval=TRUE>>=
+## Test on a dummy dataset.
 
-<<mimres,results=verbatim,eval=TRUE>>=
-message("Dummy dataframe:")
-print(dd[1:5,1:5])
-message("Resulting MIM:")
-mim <- build.mim(data=dd)
-print(mim[1:5,1:5])
+# Create a dummy data set
+library(survival)
+df <- data.frame(
+    "surv1" = Surv(runif(100), sample(0:1, 100, replace = TRUE)),
+    "cont1" = runif(100),
+    "disc1" = factor(sample(1:5, 100, replace = TRUE), ordered = TRUE),
+    "surv2" = Surv(runif(100), sample(0:1, 100, replace = TRUE)),
+    "cont2" = runif(100),
+    "cont3" = runif(100),
+    "surv3" = Surv(runif(100), sample(0:1, 100, replace = TRUE)),
+    "disc2" = factor(sample(1:5, 100, replace = TRUE), ordered = TRUE))
+dd <- mRMR.data(data = df)
+
+# Show a partial mutual information matrix.
+print(mim(subsetData(dd, 1:5, 1:5)))
 @
 
 <<mim2,results=verbatim,eval=TRUE>>=
-## Test on the 'cgps' dataset
-## The variables are all of continuous type
+## Test on the 'cgps' dataset, where the
+## variables are all of continuous type.
+
+dd <- mRMR.data(data = data.cgps)
+dd <- subsetData(dd, 1:10, 1:10)
 
 # Uses Spearman as correlation estimator
-message("MIM with Pearson estimator:")
-mim <- build.mim(data_cgps) 
-print(mim[1:5,1:5])
+spearman_mim <- mim(dd, continuous_estimator = "spearman") 
+print(spearman_mim[1:5, 1:5])
 
 # Uses Pearson as correlation estimator
-message("MIM with Spearman estimator:")
-mim <- build.mim(data_cgps, uses_ranks=FALSE) 
-print(mim[1:5,1:5])
+pearson_mim <- mim(dd, continuous_estimator = "pearson") 
+print(pearson_mim[1:5, 1:5])
 @
 
 
@@ -127,20 +127,20 @@ The mRMRe package offers an efficient, stratified and weighted implementation of
 
 <<correlations,results=hide,eval=TRUE>>=
 # Compute c-index between feature 1 and 2
-correlate(cgps_ge[,1],cgps_ge[,2], method="cindex")
+correlate(cgps.ge[, 1], cgps.ge[, 2], method = "cindex")
 
 # Compute Cramer's V
-x <- sample(c(0, 1, 2), 100, replace=TRUE)
-y <- sample(c(0, 1), 100, replace=TRUE)
-correlate(x, y, method="cramer")
+x <- sample(factor(c("CAT_1", "CAT_2", "CAT_3"), ordered = TRUE), 100, replace = TRUE)
+y <- sample(factor(c("CAT_1", "CAT_2"), ordered = TRUE), 100, replace = TRUE)
+correlate(x, y, method = "cramersv")
 
 # Compute Pearson coefficient with random strata and sample weights
-# between feature 1 and 2
-strata <- sample(as.factor(c("STRATUM_1","STRATUM_2","STRATUM_3")), 
-	nrow(cgps_ge), replace=TRUE)
-weights <- runif(nrow(cgps_ge))
-correlate(cgps_ge[, 1], cgps_ge[, 2], strata=strata, weights=weights, 
-	method="pearson", bootstrap_count=1000)
+# between features 1 and 2
+strata <- sample(factor(c("STRATUM_1","STRATUM_2","STRATUM_3"), ordered = TRUE), 
+	         nrow(cgps.ge), replace = TRUE)
+weights <- runif(nrow(cgps.ge))
+correlate(cgps.ge[, 1], cgps.ge[, 2], strata = strata, weights = weights, 
+	method = "pearson")
 @
 
 %------------------------------------------------------------
@@ -156,45 +156,50 @@ mRMRe offers a highly efficient implementation of the mRMR feature selection \ci
 Here is an example of the classic mRMR feature selection \cite{Ding:2005tl}.
 
 <<classic.mRMR,results=hide,eval=TRUE>>=
-mRMR.classic(data_cgps, 1, 30)
+dd <- mRMR.data(data = data.cgps)
+
+mRMR.classic(data = dd, target_indices = c(1), feature_count = 30)
 @
 
 %------------------------------------------------------------
 \subsection{Ensemble mRMR}
 %------------------------------------------------------------
 
-Our ensemble approach allows to create a tree-like set of solutions of non redundant mRMR solutions.  
-The topology of the ensemble tree is user defined throught the \textit{levels} parameter.
-A binary tree of depth 5 can be generated with \textit{levels=rep(2,5)}, therefore creating $2^{5}$ mRMR solutions.
+%Our ensemble approach allows to create a tree-like set of solutions of non redundant mRMR solutions.  
+%The topology of the ensemble tree is user defined throught the \textit{levels} parameter.
+%A binary tree of depth 5 can be generated with \textit{levels=rep(2, 5)}, therefore creating $2^{5}$ mRMR solutions.
 
 <<ensemble.mRMR,results=hide,eval=TRUE>>=
-mRMR.ensemble(data_cgps, target_index=1, levels=rep.int(1, 30)) # For mRMR.classic-like results
-mRMR.ensemble(data_cgps, target_index=1, levels=rep(2,5))
+dd <- mRMR.data(data = data.cgps)
+
+# For mRMR.classic-like results
+mRMR.ensemble(data = dd, target_indices = c(1), solution_count = 1, feature_count = 30)
+
+# For mRMR.ensemble-like results
+mRMR.ensemble(data = dd, target_indices = c(1), solution_count = 5, feature_count = 30)
 @
 
 %------------------------------------------------------------
 \section{Causality Inference}
 %------------------------------------------------------------
 
-The mRMRe package allows one to infer causality through the use of the Co-information lattice method \cite{Bell:2003tb,McGill:1954gz}.
+The mRMRe package allows one to infer causality through the use of the co-information lattice method \cite{Bell:2003tb,McGill:1954gz}.
 
 <<causality,results=hide,eval=TRUE>>=
-ensemble <- mRMR.ensemble(data_cgps, target_index=1, c(10, 5, rep(1, 5)))
-compute.causality(ensemble)
-compute.causality(data=data_cgps, target_index=1, mim=NULL, solutions=ensemble$paths, estimator="spearman")
+ensemble <- mRMR.ensemble(data = dd, target_indices = c(1), solution_count = 5, feature_count = 10)
+causality(ensemble)
 @
 
 %------------------------------------------------------------
 \section{Utilities}
 %------------------------------------------------------------
 
-In order to allow for full user control, mRMRe allows its users to set the number of threads it will
-use for computations.  One should consider using the following method to avoid crowding computing clusters.
+The mRMRe package allows its users to set the number of threads it will
+use for computations.  One should may consider the following method to avoid crowding computing clusters,
+or fully utilize them.
 
 <<utils,results=hide,eval=TRUE>>=
 set.thread.count(3)
-mim <- build.mim(data_cgps)
-head(mim)
 @
 
 %------------------------------------------------------------
