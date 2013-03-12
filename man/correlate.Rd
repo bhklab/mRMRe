@@ -42,15 +42,15 @@ correlate(X, Y, method = c("pearson", "spearman", "kendall", "frequency", "crame
    \item{p}{p-value}
    \item{n}{sample size}
 }
-\references{
-}
+%\references{
+%}
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
-\note{
-}
+%\note{
+%}
 \seealso{
-\code{\link{mRMRe.Data-class}}
+\code{\link[mRMRe]{mRMRe.Data-class}}
 }
 \examples{
 

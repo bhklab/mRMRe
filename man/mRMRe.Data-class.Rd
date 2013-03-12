@@ -92,17 +92,15 @@
     \item{subsetData}{\code{signature(object = "mRMRe.Data", row_indices, column_indices)}: Returns another data object containing only the specified samples and features (rows and columns, respectively.)}
 	 }
 }
-\references{
-
-}
+%\references{
+%}
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
-\note{
-
-}
+%\note{
+%}
 \seealso{
-
+\code{\link[mRMRe]{mRMRe.Filter-class}}, \code{\link[mRMRe]{mRMRe.Network-class}}
 }
 \examples{
 showClass("mRMRe.Data")

@@ -50,15 +50,15 @@
     \item{visualize}{\code{signature(object = "mRMRe.Network")}: ... }
 	 }
 }
-\references{
-}
+%\references{
+%}
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
-\note{
-}
+%\note{
+%}
 \seealso{
-\code{\link{mRMRe.Filter-class}}, \code{\link{mRMRe.Data-class}}
+\code{\link[mRMRe]{mRMRe.Filter-class}}, \code{\link[mRMRe]{mRMRe.Data-class}}
 }
 \examples{
 showClass("mRMRe.Network")

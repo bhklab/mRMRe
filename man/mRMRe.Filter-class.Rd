@@ -65,17 +65,15 @@
     \item{target}{\code{signature(object = "mRMRe.Filter")}: Returns a vector containing the target indices.}
   }
 }
-\references{
-
-}
+%\references{
+%}
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
-\note{
-
-}
+%\note{
+%}
 \seealso{
-\code{\link{mRMRe.Data-class}}
+\code{\link[mRMRe]{mRMRe.Data-class}}
 }
 \examples{
 showClass("mRMRe.Filter")
