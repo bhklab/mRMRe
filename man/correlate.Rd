@@ -23,12 +23,14 @@ correlate(X, Y, method = c("pearson", "spearman", "kendall", "frequency", "crame
 }
 \details{
    The \code{correlate} function could be used to measure correlation between any types of variables:
+   \describe{
    \item{numeric vs. numeric}{Pearson, Spearman, Kendall or concordance index}
    \item{numeric vs. ordered factor}{concordance index (Somers' Dxy)}
    \item{numeric vs. survival data}{concordance index (Somers' Dxy)}
    \item{ordered factor vs. ordered factor}{Carmer's V}
    \item{ordered factor vs. survival data}{concordance index (Somers' Dxy)}
    \item{survival data vs. survival data}{concordance index (Somers' Dxy)}
+   }
  
 	Part of the code underlying \code{correlate} is also used in \code{mim} method of the \code{mRMRe.Data} object because correlations are used to build the mutual information matrix in order for feature selection to take place. This is why these two functions have many argiuments in common.
 }
