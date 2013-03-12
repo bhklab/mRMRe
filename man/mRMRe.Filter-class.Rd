@@ -1,7 +1,9 @@
 \name{mRMRe.Filter-class}
 \Rdversion{1.1}
 \docType{class}
-\alias{mRMRe.Filter-class}
+\alias{mRMRe.Filter}
+\alias{mRMR.ensemble}
+\alias{mRMR.classic}
 \alias{causality,mRMRe.Filter-method}
 \alias{featureCount,mRMRe.Filter-method}
 \alias{featureNames,mRMRe.Filter-method}
@@ -13,7 +15,9 @@
 
 \title{Class \code{"mRMRe.Filter"}}
 \description{
-	mRMRe.Filter is a wrapper for various variants of the maximum relevance minimum redundancy feature selection (filter.)
+	mRMRe.Filter is a wrapper for various variants of the maximum relevance minimum redundancy (mRMR) feature selection/filter.
+   
+   Note that \code{mRMR.classic} and \code{mRMR.ensemble} functions are wrappers to easily perform classical (single) and ensemble mRMR feature selection.
 	
 	%% perhaps explain our algorithms %%
 }
@@ -65,7 +69,7 @@
 
 }
 \author{
-
+Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
 \note{
 
@@ -75,5 +79,21 @@
 }
 \examples{
 showClass("mRMRe.Filter")
+
+## load data
+data(cgps)
+
+## build an mRMRe.Data object
+ge <- mRMR.data(data = data.frame(cgps.ge[ , 1:100, drop=FALSE]))
+
+## perform a classic (single) mRMR to select the 10 genes the most correlated with  the first gene but the less correlated between each other
+exect <- system.time(fs <- new("mRMRe.Filter", data = ge, target_indices = 1, levels = c(8, 1, 1, 1, 1)))
+print(exect)
+
+## print the index of the selected features for each distinct mRMR solutions
+print(solutions(fs)[[1]])
+
+## print the names of the selected features for each distinct mRMR solutions
+print(apply(solutions(fs)[[1]], 2, function(x, y) { return(y[x]) }, y=featureNames(ge)))
 }
 \keyword{classes}

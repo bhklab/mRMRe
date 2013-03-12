@@ -1,7 +1,8 @@
 \name{mRMRe.Data-class}
 \Rdversion{1.1}
 \docType{class}
-\alias{mRMRe.Data-class}
+\alias{mRMRe.Data}
+\alias{mRMR.Data}
 %\alias{compressFeatureIndices,mRMRe.Data-method}
 %\alias{compressFeatureMatrix,mRMRe.Data-method}
 %\alias{expandFeatureIndices,mRMRe.Data-method}
@@ -22,11 +23,12 @@
 
 \title{Class \code{"mRMRe.Data"}}
 \description{
-	mRMRe.Data is a wrapper for data sets.  Most if not all of the routines in the mRMRe package use mRMRe.Data as primary input.
-	Such an object is instantiated with a data frame containing the sample sets and optionally, stratum, weight vectors and a prior
-	matrix.  In addition to basic accession functions, we describe several methods which serve to manipulate the contents of the data
-	set.
-	
+	\code{mRMRe.Data} is the class containing datasets.  Most if not all of the routines in the mRMRe package use \code{mRMRe.Data} objects as primary input.
+   
+	Such an object is instantiated with a data frame containing the sample sets and optionally, stratum, weight vectors and a prior matrix.  In addition to basic accession functions, we describe several methods which serve to manipulate the contents of the dataset.
+   
+   Note that \code{mRMR.data} function is a wrapper to easily create \code{mRMRe.Data} objects.
+   
 	%% perhaps explain our algorithms %%
 }
 \section{Instantiation}{
@@ -94,7 +96,7 @@
 
 }
 \author{
-
+Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
 \note{
 
@@ -104,5 +106,24 @@
 }
 \examples{
 showClass("mRMRe.Data")
+
+## load data
+data(cgps)
+
+## equivalent ways of building an mRMRe.Data object
+ge <- mRMR.data(data = data.frame(cgps.ge[ , 1:10, drop=FALSE]))
+ge <- new("mRMRe.Data", data = data.frame(cgps.ge[ , 1:10, drop=FALSE]))
+
+## print data
+print(featureData(ge)[1:3, 1:3])
+
+## print feature names
+print(featureNames(ge))
+
+## print the first sample names
+print(head(sampleNames(ge)))
+
+## print the first sample weights
+print(head(sampleWeights(ge)))
 }
 \keyword{classes}

@@ -65,8 +65,9 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
     return(value)
 }
 
-`correlate` <- function(X, Y, method = "pearson", strata, weights, outX = TRUE, bootstrap_count = 0, alpha = 0.05, alternative=c("two.sided", "less", "greater"))
+`correlate` <- function(X, Y, method = c("pearson", "spearman", "kendall", "frequency", "cramersv", "cindex"), strata, weights, outX = TRUE, bootstrap_count = 0, alpha = 0.05, alternative=c("two.sided", "less", "greater"))
 {
+    method <- match.arg(method)
     alternative <- match.arg(alternative)
     
     if (method == "pearson" || method == "spearman" || method == "kendall" || method == "frequency")
@@ -148,7 +149,7 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
                 )
               } else { se <- lower <- upper <- p <- NA } 
         
-        return(list("cindex"=cindex, "se"=se, "lower"=lower, "upper"=upper, "p"=p, "n"=N))
+        return(list("estimate"=cindex, "se"=se, "lower"=lower, "upper"=upper, "p"=p, "n"=N))
     }
     else if (method == "cramersv")
         return(list(statistic = mim(data, method = "cor", outX = outX, bootstrap_count = bootstrap_count)[1, 2]))
