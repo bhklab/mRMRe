@@ -3,10 +3,6 @@
 \docType{class}
 \alias{mRMRe.Data}
 \alias{mRMR.Data}
-%\alias{compressFeatureIndices,mRMRe.Data-method}
-%\alias{compressFeatureMatrix,mRMRe.Data-method}
-%\alias{expandFeatureIndices,mRMRe.Data-method}
-%\alias{expandFeatureMatrix,mRMRe.Data-method}
 \alias{featureCount,mRMRe.Data-method}
 \alias{featureData,mRMRe.Data-method}
 \alias{featureNames,mRMRe.Data-method}
@@ -71,10 +67,6 @@
 }
 \section{Methods}{
   \describe{
-%    \item{compressFeatureIndices}{\code{signature(object = "mRMRe.Data")}: ... }
-%    \item{compressFeatureMatrix}{\code{signature(object = "mRMRe.Data")}: Compresses multidimensional }
-%    \item{expandFeatureIndices}{\code{signature(object = "mRMRe.Data")}: }
-%    \item{expandFeatureMatrix}{\code{signature(object = "mRMRe.Data")}: Expands multidimensional feature (of type Surv) in unidimensional columns to simplify data passing between R and C}
     \item{featureCount}{\code{signature(object = "mRMRe.Data")}: Returns the number of features.}
     \item{featureData}{\code{signature(object = "mRMRe.Data")}: Returns a data frame corresponding to the data set.}
     \item{featureNames}{\code{signature(object = "mRMRe.Data")}: Returns a vector containing the feature names.}
