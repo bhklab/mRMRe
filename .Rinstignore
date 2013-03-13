@@ -3,6 +3,7 @@ inst/doc/Makefile
 Debug/*
 test/*
 src/*.{s,}o
+src/Makefile
 TODO
 README
 .DS_Store

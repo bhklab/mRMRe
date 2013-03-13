@@ -50,7 +50,7 @@
 \section{Mutual Information Matrix}{
 	The \code{mim} method computes and returns a mutual information matrix.  A correlation between continuous features is estimated
 	using an estimator specified in \code{continuous_estimator}; currently, :{pearson, spearman, kendall, frequency} are supported.
-	The estimator for discrete features is Cramér's V and for all other combinations, concordance index.
+	The estimator for discrete features is Cramer's V and for all other combinations, concordance index.
 	
 	When \code{outX} is set to \code{TRUE}, ties are ignored when computing the concordance index and otherwise, these are considered.
 	The correlations are first computed per strata and these are then combined by the inverse variance weight mean of the estimates
