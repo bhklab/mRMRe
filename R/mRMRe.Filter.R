@@ -51,7 +51,7 @@ setMethod("initialize", signature("mRMRe.Filter"),
     .Object@target_indices <- as.integer(c(target_indices))
     .Object@levels <- as.integer(c(levels))
     
-    target_indices <- as.integer(expandFeatureIndices(data, target_indices)) - 1
+    target_indices <- as.integer(.expandFeatureIndices(data, target_indices)) - 1
     
     ## Filter; Mutual Information and Causality Matrix
 
@@ -74,7 +74,7 @@ setMethod("initialize", signature("mRMRe.Filter"),
 	else
 		stop("Unrecognized method: use exhaustive or bootstrap")
     
-    .Object@filters <- lapply(result[[1]], function(solutions) matrix(compressFeatureIndices(data, solutions + 1),
+    .Object@filters <- lapply(result[[1]], function(solutions) matrix(.compressFeatureIndices(data, solutions + 1),
                         nrow = length(levels), ncol = prod(levels)))
 	
     names(.Object@filters) <- .Object@target_indices
@@ -82,12 +82,12 @@ setMethod("initialize", signature("mRMRe.Filter"),
 	.Object@scores <- lapply(result[[3]], function(scores) matrix(scores,	nrow = length(levels), ncol = prod(levels)))
 	names(.Object@scores) <- .Object@target_indices
     
-	cols_to_drop <- duplicated(compressFeatureIndices(data, seq(ncol(data@data))))
+	cols_to_drop <- duplicated(.compressFeatureIndices(data, seq(ncol(data@data))))
     
     .Object@causality_list <- lapply(result[[2]], function(causality_array) causality_array[!cols_to_drop])
     names(.Object@causality_list) <- .Object@target_indices
     
-    .Object@mi_matrix <- compressFeatureMatrix(data, matrix(mi_matrix, ncol = ncol(data@data), nrow = ncol(data@data)))
+    .Object@mi_matrix <- .compressFeatureMatrix(data, matrix(mi_matrix, ncol = ncol(data@data), nrow = ncol(data@data)))
     .Object@feature_names <- featureNames(data)
     .Object@sample_names <- sampleNames(data)
 

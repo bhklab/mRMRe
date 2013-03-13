@@ -198,7 +198,7 @@ setMethod("priors", signature("mRMRe.Data"), function(object)
     if (length(object@priors) == 0)
         return(object@priors)
     else
-        return(compressFeatureMatrix(object, object@priors))
+        return(.compressFeatureMatrix(object, object@priors))
 })
 
 ## priors<-
@@ -208,7 +208,7 @@ setReplaceMethod("priors", signature("mRMRe.Data"), function(object, value)
     if (ncol(value) != ncol(object@data) || nrow(value) != ncol(object@data))
         stop("priors matrix must be a symmetric matrix containing as many features as data")
     else
-        object@priors <- expandFeatureMatrix(object, value)
+        object@priors <- .expandFeatureMatrix(object, value)
     
     return(object)
 })
@@ -240,7 +240,7 @@ setMethod("mim", signature("mRMRe.Data"),
     
     mi_matrix <- matrix(mi_matrix, ncol = ncol(object@data), nrow = ncol(object@data))
     
-    mi_matrix <- compressFeatureMatrix(object, mi_matrix)
+    mi_matrix <- .compressFeatureMatrix(object, mi_matrix)
 
     # mi_matrix[i, j] contains the biased correlation between
     # features i and j (i -> j directionality)
@@ -250,7 +250,7 @@ setMethod("mim", signature("mRMRe.Data"),
 
 ## expandFeatureMatrix
 
-setMethod("expandFeatureMatrix", signature("mRMRe.Data"), function(object, matrix)
+setMethod(".expandFeatureMatrix", signature("mRMRe.Data"), function(object, matrix)
 {
     adaptor <- which(object@feature_types != 3)
     matrix <- do.call(cbind, lapply(seq(adaptor), function(i)
@@ -276,7 +276,7 @@ setMethod("expandFeatureMatrix", signature("mRMRe.Data"), function(object, matri
 
 ## compressFeatureMatrix
 
-setMethod("compressFeatureMatrix", signature("mRMRe.Data"), function(object, matrix)
+setMethod(".compressFeatureMatrix", signature("mRMRe.Data"), function(object, matrix)
 {
     adaptor <- which(object@feature_types != 3)
     matrix <- matrix[adaptor, adaptor]
@@ -288,7 +288,7 @@ setMethod("compressFeatureMatrix", signature("mRMRe.Data"), function(object, mat
 
 ## expandFeatureIndices
 
-setMethod("expandFeatureIndices", signature("mRMRe.Data"), function(object, indices)
+setMethod(".expandFeatureIndices", signature("mRMRe.Data"), function(object, indices)
 {
     adaptor <- which(object@feature_types == 3)
     if (length(adaptor) > 0 && any(indices >= adaptor))
@@ -299,7 +299,7 @@ setMethod("expandFeatureIndices", signature("mRMRe.Data"), function(object, indi
 
 ## compressFeatureIndices
 
-setMethod("compressFeatureIndices", signature("mRMRe.Data"), function(object, indices)
+setMethod(".compressFeatureIndices", signature("mRMRe.Data"), function(object, indices)
 {
     adaptor <- which(object@feature_types == 3)
     
