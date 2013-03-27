@@ -322,7 +322,9 @@ Math::computeCramersV(double const* const pSamplesX, double const* const pSample
         unsigned int seed = std::time(NULL);
         Matrix bootstraps(bootstrapCount, sampleStratumCount);
 
+#ifdef _OPENMP
 #pragma omp parallel for schedule(dynamic) firstprivate(seed)
+#endif
         for (unsigned int i = 0; i < bootstrapCount; ++i)
         {
             for (unsigned int j = 0; j < sampleStratumCount; ++j)
@@ -447,7 +449,9 @@ Math::computeFrequency(double const* const pSamplesX, double const* const pSampl
         unsigned int seed = std::time(NULL);
         Matrix bootstraps(bootstrapCount, sampleStratumCount);
 
+#ifdef _OPENMP
 #pragma omp parallel for schedule(dynamic) firstprivate(seed)
+#endif
         for (unsigned int i = 0; i < bootstrapCount; ++i)
         {
             for (unsigned int j = 0; j < sampleStratumCount; ++j)
@@ -562,7 +566,9 @@ Math::computePearsonCorrelation(double const* const pSamplesX, double const* con
         unsigned int seed = std::time(NULL);
         Matrix bootstraps(bootstrapCount, sampleStratumCount);
 
+#ifdef _OPENMP
 #pragma omp parallel for schedule(dynamic) firstprivate(seed)
+#endif
         for (unsigned int i = 0; i < bootstrapCount; ++i)
         {
             for (unsigned int j = 0; j < sampleStratumCount; ++j)

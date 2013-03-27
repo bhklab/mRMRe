@@ -1,7 +1,9 @@
 #ifndef mRMRe_MutualInformationMatrix_h
 #define mRMRe_MutualInformationMatrix_h
 
+#ifdef _OPENMP
 #include <omp.h>
+#endif
 
 #include "Data.h"
 #include "Matrix.h"

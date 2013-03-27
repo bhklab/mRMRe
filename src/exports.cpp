@@ -195,7 +195,9 @@ export_mim(SEXP dataMatrix, SEXP priorsMatrix, SEXP priorsWeight, SEXP sampleStr
 extern "C" SEXP
 get_thread_count(SEXP threadCount)
 {
+#ifdef _OPENMP
     INTEGER(threadCount)[0] = omp_get_max_threads();
+#endif
 
     return R_NilValue;
 }
@@ -203,7 +205,9 @@ get_thread_count(SEXP threadCount)
 extern "C" SEXP
 set_thread_count(SEXP threadCount)
 {
+#ifdef _OPENMP
     omp_set_num_threads(INTEGER(threadCount)[0]);
+#endif
 
     return R_NilValue;
 }

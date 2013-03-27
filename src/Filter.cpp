@@ -45,7 +45,9 @@ Filter::build()
         unsigned int const parent_count = mpStartingIndexPerLevel[level + 1]
                 - mpStartingIndexPerLevel[level];
 
+#ifdef _OPENMP
 #pragma omp parallel for schedule(dynamic)
+#endif
         for (unsigned int parent = 0; parent < parent_count; ++parent)
             placeElements(
                     mpStartingIndexPerLevel[level + 1] + (parent * mpChildrenCountPerLevel[level]),
@@ -97,9 +99,6 @@ Filter::getScores(double* const scores) const
         }
     }
 }
-
-
-
 
 bool const
 Filter::hasAncestorByFeatureIndex(unsigned int const absoluteIndex, unsigned int const featureIndex,

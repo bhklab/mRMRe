@@ -3,7 +3,11 @@
 
 #include <cmath>
 #include <limits>
+
+#ifdef _OPENMP
 #include <omp.h>
+#endif
+
 #include <vector>
 
 #include "Math.h"
