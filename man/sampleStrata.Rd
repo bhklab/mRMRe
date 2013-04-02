@@ -3,8 +3,8 @@
 \docType{methods}
 \alias{sampleStrata}
 \alias{sampleStrata<-}
-\alias{sampleStrata,mMRRe.Data-method}
-\alias{sampleStrata<-,mMRRe.Data,numeric-method}
+\alias{sampleStrata,mRMRe.Data-method}
+\alias{sampleStrata<-,mRMRe.Data-method}
 
 \title{
 	Accessor function for the 'sampleStrata' information in a mRMRe.Data object

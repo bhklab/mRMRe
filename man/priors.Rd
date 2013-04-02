@@ -3,8 +3,8 @@
 \docType{methods}
 \alias{priors}
 \alias{priors<-}
-\alias{priors,mMRRe.Data-method}
-\alias{priors<-,mMRRe.Data,numeric-method}
+\alias{priors,mRMRe.Data-method}
+\alias{priors<-,mRMRe.Data-method}
 
 \title{
 	Accessor function for the 'priors' information in a mRMRe.Data object

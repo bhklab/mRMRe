@@ -1,7 +1,7 @@
 \name{mRMRe.Filter-class}
 \Rdversion{1.1}
 \docType{class}
-\alias{mRMRe.Filter}
+\alias{mRMRe.Filter-class}
 \alias{mRMR.ensemble}
 \alias{mRMR.classic}
 \title{Class \code{"mRMRe.Filter"}}

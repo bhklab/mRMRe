@@ -3,8 +3,8 @@
 \docType{methods}
 \alias{sampleWeights}
 \alias{sampleWeights<-}
-\alias{sampleWeights,mMRRe.Data-method}
-\alias{sampleWeights<-,mMRRe.Data,numeric-method}
+\alias{sampleWeights,mRMRe.Data-method}
+\alias{sampleWeights<-,mRMRe.Data-method}
 \title{
 	Accessor function for the 'sampleWeights' information in a mRMRe.Data object
 }

@@ -1,7 +1,7 @@
 \name{mRMRe.Data-class}
 \Rdversion{1.1}
 \docType{class}
-\alias{mRMRe.Data}
+\alias{mRMRe.Data-class}
 \alias{mRMR.data}
 \title{Class \code{"mRMRe.Data"}}
 \description{

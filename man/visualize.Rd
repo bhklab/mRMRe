@@ -2,6 +2,7 @@
 \Rdversion{1.1}
 \docType{methods}
 \alias{visualize}
+\alias{visualize,mRMRe.Network-method}
 
 \title{
 TODO}

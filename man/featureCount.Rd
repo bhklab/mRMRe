@@ -2,7 +2,7 @@
 \Rdversion{1.1}
 \docType{methods}
 \alias{featureCount}
-\alias{featureCount,mMRRe.Data-method}
+\alias{featureCount,mRMRe.Data-method}
 \alias{featureCount,mRMRe.Filter-method}
 \alias{featureCount,mRMRe.Network-method}
 \title{

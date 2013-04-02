@@ -1,7 +1,7 @@
 \name{mRMRe.Network-class}
 \Rdversion{1.1}
 \docType{class}
-\alias{mRMRe.Network}
+\alias{mRMRe.Network-class}
 \alias{mRMR.network}
 \title{Class \code{"mRMRe.Network"}}
 \description{
