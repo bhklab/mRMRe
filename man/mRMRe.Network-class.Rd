@@ -2,12 +2,6 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{mRMRe.Network}
-\alias{adjacencyMatrix,mRMRe.Network-method}
-\alias{adjacencyMatrixSum,mRMRe.Network-method}
-
-\alias{solutions,mRMRe.Network-method}
-\alias{visualize,mRMRe.Network-method}
-
 \title{Class \code{"mRMRe.Network"}}
 \description{
 	mRMRe.Network is a wrapper for inferring a network of features based on mRMR feature selection.

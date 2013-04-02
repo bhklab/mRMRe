@@ -84,10 +84,24 @@ setMethod("show", signature("mRMRe.Network"), function(object)
 
 ## sampleNames
 
+setMethod("sampleCount", signature("mRMRe.Network"), function(object)
+		{
+			return(length(object@sample_names))
+		})
+
+## sampleNames
+
 setMethod("sampleNames", signature("mRMRe.Network"), function(object)
 {
     return(object@sample_names)
 })
+
+## featureCount
+
+setMethod("featureCount", signature("mRMRe.Network"), function(object)
+		{
+			return(length(object@feature_names))
+		})
 
 ## featureNames
 

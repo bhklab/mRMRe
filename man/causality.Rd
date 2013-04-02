@@ -16,17 +16,10 @@
 \S4method{causality}{mRMRe.Network}(object)
 }
 \arguments{
-  \item{object}{a \code{mRMRe.Filter} object.}
-  \item{object}{a \code{mRMRe.Network} object.}
+  \item{object}{a \code{mRMRe.Filter or mRMRe.Network} object.}
 }
-\details{
-%%  ~~ If necessary, more details than the __description__ above ~~
-}
-\source{
-%%  ~~ reference to a publication or URL from which the data were obtained ~~
-}
-\references{
-%%  ~~ possibly secondary sources and usages ~~
+\author{
+Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
 \examples{
 data(causality)

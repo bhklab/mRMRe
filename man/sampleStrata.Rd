@@ -2,6 +2,7 @@
 \Rdversion{1.1}
 \docType{methods}
 \alias{sampleStrata}
+\alias{sampleStrata<-}
 \alias{sampleStrata,mMRRe.Data-method}
 \alias{sampleStrata<-,mMRRe.Data,numeric-method}
 
@@ -21,14 +22,8 @@
   \item{object}{a \code{mRMRe.Data} object.}
   \item{value}{a factor vector identifying the stratification of samples.}
 }
-\details{
-%%  ~~ If necessary, more details than the __description__ above ~~
-}
-\source{
-%%  ~~ reference to a publication or URL from which the data were obtained ~~
-}
-\references{
-%%  ~~ possibly secondary sources and usages ~~
+\author{
+Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
 \examples{
 data(sampleStrata)

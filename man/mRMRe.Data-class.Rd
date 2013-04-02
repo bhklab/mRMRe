@@ -3,12 +3,6 @@
 \docType{class}
 \alias{mRMRe.Data}
 \alias{mRMR.Data}
-\alias{sampleStrata,mRMRe.Data-method}
-\alias{sampleStrata<-,mRMRe.Data-method}
-\alias{sampleWeights,mRMRe.Data-method}
-\alias{sampleWeights<-,mRMRe.Data-method}
-\alias{subsetData,mRMRe.Data-method}
-
 \title{Class \code{"mRMRe.Data"}}
 \description{
 	\code{mRMRe.Data} is the class containing datasets.  Most if not all of the routines in the mRMRe package use \code{mRMRe.Data} objects as primary input.

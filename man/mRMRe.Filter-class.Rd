@@ -4,10 +4,6 @@
 \alias{mRMRe.Filter}
 \alias{mRMR.ensemble}
 \alias{mRMR.classic}
-
-\alias{solutions,mRMRe.Filter-method}
-\alias{target,mRMRe.Filter-method}
-
 \title{Class \code{"mRMRe.Filter"}}
 \description{
 	mRMRe.Filter is a wrapper for various variants of the maximum relevance minimum redundancy (mRMR) feature selection/filter.

@@ -1,0 +1,28 @@
+\name{sampleWeights}
+\Rdversion{1.1}
+\docType{methods}
+\alias{sampleWeights}
+\alias{sampleWeights<-}
+\alias{sampleWeights,mMRRe.Data-method}
+\alias{sampleWeights<-,mMRRe.Data,numeric-method}
+\title{
+	Accessor function for the 'sampleWeights' information in a mRMRe.Data object
+}
+\description{
+TODO
+}
+\usage{
+\S4method{sampleWeights}{mRMRe.Data}(object)
+\S4method{sampleWeights}{mRMRe.Data, methods}(object) <- value
+}
+\arguments{
+  \item{object}{a \code{mRMRe.Data} object.}
+  \item{value}{a numeric vector containing the biases of each sample in the mutual information computation.}
+}
+\author{
+Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
+}
+\examples{
+data(sampleStrata)
+## maybe str(sampleStrata) ; plot(sampleStrata) ...
+}

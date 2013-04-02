@@ -2,6 +2,7 @@
 \Rdversion{1.1}
 \docType{methods}
 \alias{priors}
+\alias{priors<-}
 \alias{priors,mMRRe.Data-method}
 \alias{priors<-,mMRRe.Data,numeric-method}
 
@@ -19,14 +20,8 @@
   \item{object}{a \code{mRMRe.Data} object.}
   \item{value}{a numeric matrix containing values from 0 to 1 (or NA), one per pairwise feature bias.}
 }
-\details{
-%%  ~~ If necessary, more details than the __description__ above ~~
-}
-\source{
-%%  ~~ reference to a publication or URL from which the data were obtained ~~
-}
-\references{
-%%  ~~ possibly secondary sources and usages ~~
+\author{
+Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
 \examples{
 data(priors)

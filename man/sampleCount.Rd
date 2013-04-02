@@ -18,19 +18,10 @@
 \S4method{sampleCount}{mRMRe.Network}(object)
 }
 \arguments{
-  \item{sampleCount}{a \code{mRMRe.Data} object.}
-  \item{sampleCount}{a \code{mRMRe.Filter} object.}
-  \item{sampleCount}{a \code{mRMRe.Network} object.}
+  \item{object}{a \code{mRMRe.Data, mRMRe.Filter or mRMRe.Network} object.}
 }
-
-\details{
-%%  ~~ If necessary, more details than the __description__ above ~~
-}
-\source{
-%%  ~~ reference to a publication or URL from which the data were obtained ~~
-}
-\references{
-%%  ~~ possibly secondary sources and usages ~~
+\author{
+Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
 \examples{
 data(sampleCount)

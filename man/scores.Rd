@@ -1,24 +1,23 @@
 \name{scores}
+\Rdversion{1.1}
+\docType{methods}
 \alias{scores}
-\docType{data}
+\alias{scores,mRMRe.Filter-method}
+\alias{scores,mRMRe.Network-method}
 \title{
 TODO}
 \description{
-%%  ~~ A concise (1-5 lines) description of the dataset. ~~
+TODO
 }
-\usage{data(scores)}
-\format{
-  The format is:
- chr "scores"
+\usage{
+\S4method{scores}{mRMRe.Filter}(object)
+\S4method{scores}{mRMRe.Network}(object)
 }
-\details{
-%%  ~~ If necessary, more details than the __description__ above ~~
+\arguments{
+  \item{object}{a \code{mRMRe.Filter or mRMRe.Network} object.}
 }
-\source{
-%%  ~~ reference to a publication or URL from which the data were obtained ~~
-}
-\references{
-%%  ~~ possibly secondary sources and usages ~~
+\author{
+Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
 \examples{
 data(scores)

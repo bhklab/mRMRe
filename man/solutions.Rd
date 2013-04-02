@@ -1,24 +1,23 @@
 \name{solutions}
+\Rdversion{1.1}
+\docType{methods}
 \alias{solutions}
-\docType{data}
+\alias{solutions,mRMRe.Filter-method}
+\alias{solutions,mRMRe.Network-method}
 \title{
 TODO}
 \description{
-%%  ~~ A concise (1-5 lines) description of the dataset. ~~
+TODO
 }
-\usage{data(solutions)}
-\format{
-  The format is:
- chr "solutions"
+\usage{
+\S4method{solutions}{mRMRe.Filter}(object)
+\S4method{solutions}{mRMRe.Network}(object)
 }
-\details{
-%%  ~~ If necessary, more details than the __description__ above ~~
+\arguments{
+  \item{object}{a \code{mRMRe.Filter or mRMRe.Network} object.}
 }
-\source{
-%%  ~~ reference to a publication or URL from which the data were obtained ~~
-}
-\references{
-%%  ~~ possibly secondary sources and usages ~~
+\author{
+Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
 \examples{
 data(solutions)

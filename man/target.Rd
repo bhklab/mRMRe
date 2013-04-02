@@ -1,25 +1,24 @@
 \name{target}
+\Rdversion{1.1}
+\docType{methods}
 \alias{target}
-\docType{data}
+\alias{target,mRMRe.Filter-method}
+\alias{target,mRMRe.Network-method}
 \title{
 TODO
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of the dataset. ~~
+TODO
 }
-\usage{data(target)}
-\format{
-  The format is:
- chr "target"
+\usage{
+\S4method{target}{mRMRe.Filter}(object)
+\S4method{target}{mRMRe.Network}(object)
 }
-\details{
-%%  ~~ If necessary, more details than the __description__ above ~~
+\arguments{
+  \item{object}{a \code{mRMRe.Filter or mRMRe.Network} object.}
 }
-\source{
-%%  ~~ reference to a publication or URL from which the data were obtained ~~
-}
-\references{
-%%  ~~ possibly secondary sources and usages ~~
+\author{
+Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
 \examples{
 data(target)
