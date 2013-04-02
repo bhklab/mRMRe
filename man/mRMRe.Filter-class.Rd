@@ -4,12 +4,7 @@
 \alias{mRMRe.Filter}
 \alias{mRMR.ensemble}
 \alias{mRMR.classic}
-\alias{causality,mRMRe.Filter-method}
-\alias{featureCount,mRMRe.Filter-method}
-\alias{featureNames,mRMRe.Filter-method}
-\alias{mim,mRMRe.Filter-method}
-\alias{sampleCount,mRMRe.Filter-method}
-\alias{sampleNames,mRMRe.Filter-method}
+
 \alias{solutions,mRMRe.Filter-method}
 \alias{target,mRMRe.Filter-method}
 

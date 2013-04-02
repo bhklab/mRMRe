@@ -3,14 +3,6 @@
 \docType{class}
 \alias{mRMRe.Data}
 \alias{mRMR.Data}
-\alias{featureCount,mRMRe.Data-method}
-\alias{featureData,mRMRe.Data-method}
-\alias{featureNames,mRMRe.Data-method}
-\alias{mim,mRMRe.Data-method}
-\alias{priors,mRMRe.Data-method}
-\alias{priors<-,mRMRe.Data-method}
-\alias{sampleCount,mRMRe.Data-method}
-\alias{sampleNames,mRMRe.Data-method}
 \alias{sampleStrata,mRMRe.Data-method}
 \alias{sampleStrata<-,mRMRe.Data-method}
 \alias{sampleWeights,mRMRe.Data-method}

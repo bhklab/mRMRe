@@ -4,10 +4,7 @@
 \alias{mRMRe.Network}
 \alias{adjacencyMatrix,mRMRe.Network-method}
 \alias{adjacencyMatrixSum,mRMRe.Network-method}
-\alias{causality,mRMRe.Network-method}
-\alias{featureNames,mRMRe.Network-method}
-\alias{mim,mRMRe.Network-method}
-\alias{sampleNames,mRMRe.Network-method}
+
 \alias{solutions,mRMRe.Network-method}
 \alias{visualize,mRMRe.Network-method}
 
