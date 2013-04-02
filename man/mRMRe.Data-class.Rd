@@ -2,7 +2,7 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{mRMRe.Data}
-\alias{mRMR.Data}
+\alias{mRMR.data}
 \title{Class \code{"mRMRe.Data"}}
 \description{
 	\code{mRMRe.Data} is the class containing datasets.  Most if not all of the routines in the mRMRe package use \code{mRMRe.Data} objects as primary input.

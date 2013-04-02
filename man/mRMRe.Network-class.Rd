@@ -2,6 +2,7 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{mRMRe.Network}
+\alias{mRMR.network}
 \title{Class \code{"mRMRe.Network"}}
 \description{
 	mRMRe.Network is a wrapper for inferring a network of features based on mRMR feature selection.

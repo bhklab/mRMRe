@@ -2,7 +2,7 @@
 \Rdversion{1.1}
 \docType{methods}
 \alias{subsetData}
-\alias{sampleStrata,mMRRe.Data-method}
+\alias{subsetData,mMRRe.Data-method}
 
 \title{
 	Returns a mRMRe.Data object using a subset of the current mRMRe.Data object.
