@@ -4,7 +4,7 @@
 \title{
 openMP Thread Count}
 \description{
-This methods allows you to set the number of cores currently accessible to openMP}
+This methods allows you to set the number of cores currently accessible to openMP
 }
 \usage{
 set.thread.count(thread_count)
@@ -23,4 +23,5 @@ set.thread.count(1)
 
 # Revert back to all accessible threads
 set.thread.count(threads)
+}
 \keyword{methods}
