@@ -8,8 +8,8 @@ Function to compute various correlation measures between two variables
 	Correlate is a function that cestimates correlation between two variables, which can be either continuous, categorical (ordered factor) or censored (survival data).
 }
 \usage{
-correlate(X, Y, method = c("pearson", "spearman", "kendall", "frequency", "cramersv", "cindex"),
- 		strata, weights, outX = TRUE, bootstrap_count = 0, alpha = 0.05,
+correlate(X, Y, method = c("pearson", "spearman", "kendall", "frequency", "cramersv",
+		"cindex"),strata, weights, outX = TRUE, bootstrap_count = 0, alpha = 0.05,
  		alternative = c("two.sided", "less", "greater"))
 }
 \arguments{

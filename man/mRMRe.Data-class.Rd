@@ -57,8 +57,8 @@
     \item{featureData}{\code{signature(object = "mRMRe.Data")}: Returns a data frame corresponding to the data set.}
     \item{featureNames}{\code{signature(object = "mRMRe.Data")}: Returns a vector containing the feature names.}
     \item{mim}{\code{signature(object = "mRMRe.Data", prior_weight = 0,
-    continuous_estimator = c("pearson", "spearman", "kendall", "frequency"), outX = TRUE, bootstrap_count = 0)}:
-        Computes and returns the mutual information matrix.}
+    continuous_estimator = c("pearson", "spearman", "kendall", "frequency"),
+    outX = TRUE, bootstrap_count = 0)}: Computes and returns the mutual information matrix.}
     \item{priors}{\code{signature(object = "mRMRe.Data")}: Returns a matrix containing the priors.}
     \item{priors<-}{\code{signature(object = "mRMRe.Data", value)}: Sets the prior matrix.}
     \item{sampleCount}{\code{signature(object = "mRMRe.Data")}: Returns the number of samples.}

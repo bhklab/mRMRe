@@ -26,7 +26,8 @@ Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 data(cgps)
 feature_data <- mRMR.data(data =  data.frame(cgps.ge))
 featureCount(feature_data)
-filter <- mRMR.classic("mRMRe.Filter", data = feature_data, target_indices = 3:5, feature_count = 2)
+filter <- mRMR.classic("mRMRe.Filter", data = feature_data, target_indices = 3:5,
+						feature_count = 2)
 featureCount(filter)
 }
 \keyword{methods}

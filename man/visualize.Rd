@@ -20,12 +20,13 @@ The 'visualize' methods allows the visual display of an inferred mRMRe.Network t
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
 \examples{
+
 data(cgps)
 feature_data <- mRMR.data(data =  data.frame(cgps.ge))
 
 # Build an mRMR-based network and display it
-network <- new("mRMRe.Network", data = feature_data, target_indices = c(1, 2), levels = c(2, 1),
-				layers = 1)
-visualize(network)
+network <- new("mRMRe.Network", data = feature_data, target_indices = c(1, 2),
+				levels = c(2, 1), layers = 1)
+\dontrun{visualize(network)}
 }
 \keyword{methods}

@@ -10,9 +10,8 @@
 	%% perhaps explain our algorithms %%
 }
 \section{Instantiation}{
-	Objects are created via calls of the form
-	\code{new("mRMRe.Network", data, prior_weight, target_indices, levels,\
-	layers, ..., mi_threshold, causality_threshold)}.
+	Objects are created via calls of the form \code{new("mRMRe.Network", data, prior_weight,
+	target_indices, levels, layers, ..., mi_threshold, causality_threshold)}.
 	
 	\code{layers}: is expected to be an \code{integer} specifying the number of layers of network inference desired.  When multiple
 	layers are desired, the elements of the solutions found in the last step of feature selection are used as the targets of the next

@@ -32,6 +32,7 @@ feature_data_copy <- subsetData(feature_data, row_indices=sampleCount(feature_da
 feature_data_samples <- subsetData(feature_data, row_indices=sampleCount(feature_data)/2)
 
 # Use only half of the features
-feature_data_features <- subsetData(feature_data, column_indices=featureCount(feature_data))
+feature_data_features <- subsetData(feature_data,
+									column_indices=featureCount(feature_data))
 }
 \keyword{methods}
