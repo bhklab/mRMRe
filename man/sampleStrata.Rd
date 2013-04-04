@@ -37,4 +37,4 @@ sampleStrata(feature_data) <- as.factor(sample(c(0,1), sampleCount(feature_data)
 # Show result
 sampleStrata(feature_data)
 }
-\keyword{datasets}
+\keyword{methods}

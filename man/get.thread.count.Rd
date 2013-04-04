@@ -14,8 +14,4 @@ Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
 \examples{
 get.thead.count()
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ parallel }
-\keyword{ multithread }% __ONLY ONE__ keyword per line
-\keyword{ openmp }
+\keyword{ methods }

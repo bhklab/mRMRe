@@ -34,3 +34,4 @@ sampleWeights(feature_data) <- runif(sampleCount(feature_data))
 # Show result
 sampleWeights(feature_data)
 }
+\keyword{methods}

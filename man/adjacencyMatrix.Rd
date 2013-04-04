@@ -25,4 +25,4 @@ Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 data(adjacencyMatrix)
 ## maybe str(adjacencyMatrix) ; plot(adjacencyMatrix) ...
 }
-\keyword{datasets}
+\keyword{methods}

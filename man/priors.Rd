@@ -28,5 +28,4 @@ data(cgps)
 feature_data <- mRMR.data(data = data.frame(cgps.ge))
 priors(feature_data)
 }
-\keyword{bias}
-\keyword{priors}
+\keyword{methods}

@@ -22,7 +22,15 @@
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
 \examples{
-data(subsetData)
-## maybe str(subsetData) ; plot(subsetData) ...
+data(cgps)
+feature_data <- mRMR.data(data = data.frame(cgps.ge))
+# Subset the same dimensions, equivalent to making a copy
+feature_data_copy <- subsetData(feature_data, row_indices=sampleCount(featureData), column_indices=featureCount(feature_data))
+
+# Use only half of the samples
+feature_data_samples <- subsetData(feature_data, row_indices=sampleCount(featureData)/2)
+
+# Use only half of the features
+feature_data_features <- subsetData(feature_data, column_indices=featureCount(feature_data))
 }
-\keyword{datasets}
+\keyword{methods}

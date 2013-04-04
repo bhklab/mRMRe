@@ -29,4 +29,4 @@ sampleNames(feature_data)
 filter <- mRMR.classic("mRMRe.Filter", data = feature_data, target_indices = 3:5, feature_count = 2)
 sampleNames(filter)
 }
-\keyword{datasets}
+\keyword{methods}

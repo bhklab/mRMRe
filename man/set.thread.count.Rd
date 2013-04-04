@@ -23,6 +23,4 @@ set.thread.count(1)
 
 # Revert back to all accessible threads
 set.thread.count(threads)
-\keyword{ parallel }
-\keyword{ multithread }
-\keyword{ openmp }
+\keyword{methods}

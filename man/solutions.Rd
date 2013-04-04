@@ -33,4 +33,5 @@ solutions(filter)
 network <- new("mRMRe.Network", data = feature_data, target_indices = c(1, 2), levels = c(2, 1), layers = 1)
 solutions(network)
 }
-\keyword{datasets}
+\keyword{methods}
+

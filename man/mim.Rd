@@ -34,4 +34,4 @@ filter <- mRMR.classic("mRMRe.Filter", data = feature_data, target_indices = 3:5
 # Obtain the sparse (lazy-evaluated) mutual information matrix.
 mim(filter)
 }
-\keyword{datasets}
+\keyword{methods}
