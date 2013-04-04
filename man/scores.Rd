@@ -23,4 +23,4 @@ Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 data(scores)
 ## maybe str(scores) ; plot(scores) ...
 }
-\keyword{datasets}
+\keyword{methods}

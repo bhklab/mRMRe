@@ -23,6 +23,14 @@ TODO
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
 \examples{
-data(sampleStrata)
-## maybe str(sampleStrata) ; plot(sampleStrata) ...
+data(cgps)
+feature_data <- mRMR.data(data = data.frame(cgps.ge))
+
+# Uniform weight (default)
+sampleWeights(feature_data)
+
+# Random weighting  
+sampleWeights(feature_data) <- runif(sampleCount(feature_data))
+# Show result
+sampleWeights(feature_data)
 }

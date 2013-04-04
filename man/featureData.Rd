@@ -19,7 +19,8 @@
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
 \examples{
-data(featureData)
-## maybe str(featureData) ; plot(featureData) ...
+data(cgps)
+feature_data <- mRMR.data(data =  data.frame(cgps.ge))
+featureData(feature_data)
 }
-\keyword{datasets}
+\keyword{methods}

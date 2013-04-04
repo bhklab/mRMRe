@@ -24,7 +24,9 @@
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
 \examples{
-data(priors)
-## maybe str(priors) ; plot(priors) ...
+data(cgps)
+feature_data <- mRMR.data(data = data.frame(cgps.ge))
+priors(feature_data)
 }
-\keyword{datasets}
+\keyword{bias}
+\keyword{priors}

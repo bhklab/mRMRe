@@ -24,7 +24,14 @@
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
 \examples{
-data(mim)
-## maybe str(mim) ; plot(mim) ...
+data(cgps)
+feature_data <- mRMR.data(data =  data.frame(cgps.ge))
+
+# Calculate the pairwise mutual information matrix
+mim(feature_data)
+filter <- mRMR.classic("mRMRe.Filter", data = feature_data, target_indices = 3:5, feature_count = 2)
+
+# Obtain the sparse (lazy-evaluated) mutual information matrix.
+mim(filter)
 }
 \keyword{datasets}
