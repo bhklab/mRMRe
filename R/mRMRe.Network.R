@@ -191,9 +191,11 @@ setMethod("visualize", signature("mRMRe.Network"), function(object)
     ## FIXME : Cannot find a way to display vertex names...
     
     adjacency <- adjacencyMatrix(object)
-    graph <- graph.adjacency(adjacency, mode = "undirected", add.rownames = TRUE)
-    #V(graph)$name <- object@feature_names
-    
+	used_rows <- apply(adjacency, 1, sum) > 0
+	used_cols <- apply(adjacency, 2, sum) > 0
+	adjacency <- adjacency[used_rows | used_cols, used_cols | used_rows]
+    graph <- graph.adjacency(adjacency, mode = "undirected", add.rownames = 'label')
+	
     return(plot.igraph(graph))
 })
 
