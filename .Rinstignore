@@ -6,6 +6,7 @@ src/*.{s,}o
 src/Makefile
 TODO
 README
+REVISIONS
 .DS_Store
 .git/*
 .project
