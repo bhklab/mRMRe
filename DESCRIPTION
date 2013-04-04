@@ -1,7 +1,7 @@
 Package: mRMRe
 Type: Package
 Title: R package for parallelized mRMR ensemble feature selection
-Version: 1.0.8
+Version: 2.0.0
 Date: 2013-03-12
 Author: Nicolas De Jay, Simon Papillon-Cavanagh, Catharina Olsen, Gianluca Bontempi, Benjamin Haibe-Kains
 Maintainer: Benjamin Haibe-Kains <bhaibeka@ircm.qc.ca>

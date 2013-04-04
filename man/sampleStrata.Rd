@@ -16,7 +16,7 @@
 }
 \usage{
 \S4method{sampleStrata}{mRMRe.Data}(object)
-\S4method{sampleStrata}{mRMRe.Data, methods}(object) <- value
+\S4method{sampleStrata}{mRMRe.Data}(object) <- value
 }
 \arguments{
   \item{object}{a \code{mRMRe.Data} object.}

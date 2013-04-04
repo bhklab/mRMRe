@@ -13,7 +13,7 @@ TODO
 }
 \usage{
 \S4method{sampleWeights}{mRMRe.Data}(object)
-\S4method{sampleWeights}{mRMRe.Data, methods}(object) <- value
+\S4method{sampleWeights}{mRMRe.Data}(object) <- value
 }
 \arguments{
   \item{object}{a \code{mRMRe.Data} object.}

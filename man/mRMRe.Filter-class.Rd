@@ -39,6 +39,7 @@
     \item{\code{feature_names}:}{Object of class \code{"character"} containing the feature names.}
     \item{\code{target_indices}:}{Object of class \code{"integer"} containing the target indices.}
     \item{\code{levels}:}{Object of class \code{"integer"} containing the desired topology of the tree.}
+    \item{\code{scores}:}{Object of class \code{"list"} containing the mRMR score of selected features, respective to filters.}
   }
 }
 \section{Methods}{
