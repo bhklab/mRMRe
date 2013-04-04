@@ -117,7 +117,7 @@ setMethod("solutions", signature("mRMRe.Network"), function(object)
     # filters[[target]][solution, ] is a vector of selected features
     # in a solution for a target; missing values denote removed features
             
-    return(object@solutions)
+    return(object@topologies)
 })
 
 ## mim
