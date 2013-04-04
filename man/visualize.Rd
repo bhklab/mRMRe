@@ -25,8 +25,8 @@ data(cgps)
 feature_data <- mRMR.data(data =  data.frame(cgps.ge))
 
 # Build an mRMR-based network and display it
-network <- new("mRMRe.Network", data = feature_data, target_indices = c(1, 2),
-				levels = c(2, 1), layers = 1)
-\dontrun{visualize(network)}
+network <- new("mRMRe.Network", data = feature_data, target_indices = c(1),
+				levels = c(3, 1), layers = 2)
+visualize(network)
 }
 \keyword{methods}
