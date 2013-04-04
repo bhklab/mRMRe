@@ -12,9 +12,9 @@
 	featureNames are the names of the features given as input to the mRMRe procedure.
 }
 \usage{
-\S4method{featureCount}{mRMRe.Data}(object)
-\S4method{featureCount}{mRMRe.Filter}(object)
-\S4method{featureCount}{mRMRe.Network}(object)
+\S4method{featureNames}{mRMRe.Data}(object)
+\S4method{featureNames}{mRMRe.Filter}(object)
+\S4method{featureNames}{mRMRe.Network}(object)
 }
 \arguments{
   \item{object}{a \code{mRMRe.Data, mRMRe.Filter or mRMRe.Network} object.}

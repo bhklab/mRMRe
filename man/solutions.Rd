@@ -12,11 +12,15 @@ the set of feature are identified by their indices in the inputed feature set (1
 network level, 'solutions' consists of the topology of the network, identifying which features is connected to others.
 }
 \usage{
-\S4method{solutions}{mRMRe.Filter}(object)
+\S4method{solutions}{mRMRe.Filter}(object, mi_threshold, causality_threshold)
 \S4method{solutions}{mRMRe.Network}(object)
 }
 \arguments{
   \item{object}{a \code{mRMRe.Filter or mRMRe.Network} object.}
+  \item{mi_threshold}{a numeric value used in filtering the features based on their mRMR scores,
+  		features that do not pass the threshold will be set at NA.}
+  \item{causality_threshold}{a numeric value used in filtering the features based on their causality scores,
+  		features that do not pass the threshold will be set at NA}
 }
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains

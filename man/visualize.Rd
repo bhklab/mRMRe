@@ -5,20 +5,26 @@
 \alias{visualize,mRMRe.Network-method}
 
 \title{
-TODO}
+mRMRe Network display}
 \description{
-TODO
+The 'visualize' methods allows the visual display of an inferred mRMRe.Network topology.
 }
-\usage{data(visualize)}
-\format{
-  The format is:
- chr "visualize"
+\usage{
+\S4method{visualize}{mRMRe.Network}(object)
 }
+\arguments{
+  \item{object}{a \code{mRMRe.Network} object.}
+}
+
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
 \examples{
-data(visualize)
-## maybe str(visualize) ; plot(visualize) ...
+data(cgps)
+feature_data <- mRMR.data(data =  data.frame(cgps.ge))
+
+# Build an mRMR-based network and display it
+network <- new("mRMRe.Network", data = feature_data, target_indices = c(1, 2), levels = c(2, 1), layers = 1)
+visualize(network)
 }
 \keyword{methods}

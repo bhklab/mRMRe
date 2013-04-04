@@ -5,10 +5,11 @@
 \alias{target,mRMRe.Filter-method}
 \alias{target,mRMRe.Network-method}
 \title{
-TODO
+mRMR Target(s)
 }
 \description{
-TODO
+ The 'target' method allows you to access the target of a mRMR procedure.  In a mRMRe.Network setting, the target consists of the seed or
+ the starting set of features given in the network building.
 }
 \usage{
 \S4method{target}{mRMRe.Filter}(object)

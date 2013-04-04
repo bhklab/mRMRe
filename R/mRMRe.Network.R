@@ -196,3 +196,10 @@ setMethod("visualize", signature("mRMRe.Network"), function(object)
     
     return(plot.igraph(graph))
 })
+
+## target
+
+setMethod("target", signature("mRMRe.Network"), function(object)
+{
+	return(object@target_indices)
+})

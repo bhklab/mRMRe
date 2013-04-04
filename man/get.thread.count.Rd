@@ -13,5 +13,5 @@ get.thread.count()
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
 \examples{
-get.thead.count() }
+get.thread.count() }
 \keyword{ methods }

@@ -11,7 +11,7 @@
 	This method is used to extract a subset of the current mRMRe.Data object.
 }
 \usage{
-\S4method{sampleStrata}{mRMRe.Data}(object, row_indices, column_indices)
+\S4method{subsetData}{mRMRe.Data}(object, row_indices, column_indices)
 }
 \arguments{
   \item{object}{a \code{mRMRe.Data} object.}
@@ -25,10 +25,10 @@ Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 data(cgps)
 feature_data <- mRMR.data(data = data.frame(cgps.ge))
 # Subset the same dimensions, equivalent to making a copy
-feature_data_copy <- subsetData(feature_data, row_indices=sampleCount(featureData), column_indices=featureCount(feature_data))
+feature_data_copy <- subsetData(feature_data, row_indices=sampleCount(feature_data), column_indices=featureCount(feature_data))
 
 # Use only half of the samples
-feature_data_samples <- subsetData(feature_data, row_indices=sampleCount(featureData)/2)
+feature_data_samples <- subsetData(feature_data, row_indices=sampleCount(feature_data)/2)
 
 # Use only half of the features
 feature_data_features <- subsetData(feature_data, column_indices=featureCount(feature_data))
