@@ -8,7 +8,9 @@ Function to compute various correlation measures between two variables
 	Correlate is a function that cestimates correlation between two variables, which can be either continuous, categorical (ordered factor) or censored (survival data).
 }
 \usage{
-correlate(X, Y, method = c("pearson", "spearman", "kendall", "frequency", "cramersv", "cindex"), strata, weights, outX = TRUE, bootstrap_count = 0, alpha = 0.05, alternative = c("two.sided", "less", "greater"))
+correlate(X, Y, method = c("pearson", "spearman", "kendall", "frequency", "cramersv", "cindex"),
+ 		strata, weights, outX = TRUE, bootstrap_count = 0, alpha = 0.05,
+ 		alternative = c("two.sided", "less", "greater"))
 }
 \arguments{
   \item{X}{Vector of type {numeric, ordered factor, or Surv}.}
@@ -42,13 +44,11 @@ correlate(X, Y, method = c("pearson", "spearman", "kendall", "frequency", "crame
    \item{p}{p-value}
    \item{n}{sample size}
 }
-%\references{
-%}
+
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
-%\note{
-%}
+
 \seealso{
 \code{\link[mRMRe]{mRMRe.Data-class}}
 }
@@ -63,8 +63,5 @@ correlate(X=cgps.ge[ ,1], Y=cgps.ic50, method="spearman")
 ## concordance index between the first gene and Camptothecin IC50
 correlate(X=cgps.ge[ ,1], Y=cgps.ic50, method="cindex")
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-% How does the below work ??
-%\keyword{ ~kwd1 }
-\keyword{ univar }% __ONLY ONE__ keyword per line
+
+\keyword{ univar }

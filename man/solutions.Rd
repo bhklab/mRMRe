@@ -34,7 +34,8 @@ filter <- mRMR.classic("mRMRe.Filter", data = feature_data, target_indices = 3:5
 solutions(filter)
 
 # Build an mRMR-based network and obtain feature connections (topology)
-network <- new("mRMRe.Network", data = feature_data, target_indices = c(1, 2), levels = c(2, 1), layers = 1)
+network <- new("mRMRe.Network", data = feature_data, target_indices = c(1, 2),
+			levels = c(2, 1), layers = 1)
 solutions(network)
 }
 \keyword{methods}

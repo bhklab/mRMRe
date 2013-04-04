@@ -22,7 +22,13 @@
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
 \examples{
-data(adjacencyMatrix)
-## maybe str(adjacencyMatrix) ; plot(adjacencyMatrix) ...
+data(cgps)
+feature_data <- mRMR.data(data =  data.frame(cgps.ge))
+
+
+# Build an mRMR-based network and display adjacency matrix (topology)
+network <- new("mRMRe.Network", data = feature_data, target_indices = c(1, 2),
+			levels = c(2, 1), layers = 1)
+adjacencyMatrix(network)
 }
 \keyword{methods}

@@ -13,7 +13,7 @@
 	%% perhaps explain our algorithms %%
 }
 \section{Instantiation}{
-	Objects are created via calls of the form \code{new("mRMRe.Filter", data, prior_weight, target_indices, levels,
+	Objects are created via calls of the form \code{new("mRMRe.Filter", data, prior_weight, target_indices, levels,\
 	method, continuous_estimator, outX, bootstrap_count)}.
 	
 	\code{data}: is expected to be a \code{mRMRe.Data} object.
@@ -76,7 +76,8 @@ data(cgps)
 ## build an mRMRe.Data object
 ge <- mRMR.data(data = data.frame(cgps.ge[ , 1:100, drop=FALSE]))
 
-## perform a classic (single) mRMR to select the 10 genes the most correlated with  the first gene but the less correlated between each other
+## perform a classic (single) mRMR to select the 10 genes the most correlated with 
+## the first gene but the less correlated between each other
 exect <- system.time(fs <- new("mRMRe.Filter", data = ge, target_indices = 1, levels = c(8, 1, 1, 1, 1)))
 print(exect)
 

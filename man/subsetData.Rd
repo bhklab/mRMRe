@@ -25,7 +25,8 @@ Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 data(cgps)
 feature_data <- mRMR.data(data = data.frame(cgps.ge))
 # Subset the same dimensions, equivalent to making a copy
-feature_data_copy <- subsetData(feature_data, row_indices=sampleCount(feature_data), column_indices=featureCount(feature_data))
+feature_data_copy <- subsetData(feature_data, row_indices=sampleCount(feature_data),
+					column_indices=featureCount(feature_data))
 
 # Use only half of the samples
 feature_data_samples <- subsetData(feature_data, row_indices=sampleCount(feature_data)/2)
