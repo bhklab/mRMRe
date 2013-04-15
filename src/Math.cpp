@@ -56,7 +56,7 @@ Math::computeCoInformationLattice(double const cor_ij, double const cor_ik, doub
     double const cor_ik_sq = cor_ik * cor_ik;
 
     return -.5
-            * log(
+            * std::log(
                     ((1 - cor_ij_sq) * (1 - cor_ik_sq) * (1 - cor_jk_sq))
                             / (1 + 2 * cor_ij * cor_ik * cor_jk - cor_ij_sq - cor_ik_sq - cor_jk_sq));
 }
