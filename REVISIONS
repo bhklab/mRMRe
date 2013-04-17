@@ -15,6 +15,7 @@ Priorities
 (4) Add a new dataset with breast cancer (BC) prognosis so we show 2 applications of mRMRe in the application note. So 2 datasets will be used:
     1. Irinotecan sensitivity prediction: train in CGP and validate in CCLE
     2. BC prognosis: train in VDX ER-/HER2- and validate on TRANSBIG ER-/HER2-
+    -->> DONE (see Dropbox/mRMRe_appnote/revision/analysis/data)
 
 (4) With these 2 datasets, perform stability-diversity and GO analysis to compare classic, resampled and parallel mRMR feature selections
     (a) Resolve the feature # vs solution length debacle
