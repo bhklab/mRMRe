@@ -85,7 +85,7 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
     else if (method != "cindex")
         stop("estimator must be of the following: pearson, spearman, kendall, frequency, cramersv, cindex")
     
-    if(is.Suv(X)) { ll <- nrow(X) } else { ll <- length(X) }
+    if(is.Surv(X)) { ll <- nrow(X) } else { ll <- length(X) }
 
     if (missing(strata)) {
       strata <- factor(rep(0, ll))
