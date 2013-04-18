@@ -44,7 +44,7 @@
   \describe{
     \item{\code{sample_names}:}{Object of class \code{"character"} containing the sample names.}
     \item{\code{feature_names}:}{Object of class \code{"character"} containing the feature names.}
-    \item{\code{feature_types}:}{Object of class \code{"numeric"} containing the internal representation of features/variables.}
+    \item{\code{feature_types}:}{Object of class \code{"numeric"} containing the internal representation of features/variables: \code{1} for numeric, \code{2} for ordered factor, and \code{3} for survival data}
     \item{\code{data}:}{Object of class \code{"matrix"} containing the internal representation of the data set.}
     \item{\code{strata}:}{Object of class \code{"numeric"} containing the feature strata.}
     \item{\code{weights}:}{Object of class \code{"numeric"} containing sample weights.}

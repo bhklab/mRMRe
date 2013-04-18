@@ -70,6 +70,8 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
     method <- match.arg(method)
     alternative <- match.arg(alternative)
     
+    if((is.Surv(X) || is.Surv(Y)) && method != "cindex") { stop("method should be cindex when dealing with survival data") }
+    
     if (method == "pearson" || method == "spearman" || method == "kendall" || method == "frequency")
     {
         X <- as.numeric(X)
@@ -82,15 +84,16 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
     }
     else if (method != "cindex")
         stop("estimator must be of the following: pearson, spearman, kendall, frequency, cramersv, cindex")
-
+    
+    if(is.Suv(X)) { ll <- nrow(X) } else { ll <- length(X) }
 
     if (missing(strata)) {
-      strata <- factor(rep(0, length(X)))
+      strata <- factor(rep(0, ll))
       names(strata) <- names(X)
     }
     
     if (missing(weights)) {
-      weights <- rep(1, length(X))
+      weights <- rep(1, ll)
       names(weights) <- names(X)
     } 
     
