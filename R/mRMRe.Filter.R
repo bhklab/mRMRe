@@ -18,8 +18,11 @@ setClass("mRMRe.Filter", representation(filters = "list", scores = "list", mi_ma
 ## initialize
 
 setMethod("initialize", signature("mRMRe.Filter"),
-        function(.Object, data, prior_weight, target_indices, levels, method = c("exhaustive", "bootstrap"), continuous_estimator = "pearson", outX = TRUE,
-                bootstrap_count = 0)
+        function(.Object, data, prior_weight, target_indices, levels, 
+          method = c("exhaustive", "bootstrap"), 
+          continuous_estimator = c("pearson", "spearman", "kendall", "frequency"), 
+          outX = TRUE,
+          bootstrap_count = 0)
 {
   method <- match.arg(method)
     if (class(data) != "mRMRe.Data")

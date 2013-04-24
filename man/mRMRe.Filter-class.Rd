@@ -24,8 +24,17 @@
 	\code{levels}: is expected to be a vector of type \code{integer} containing the number of children of each element
 	at each level of the resulting filter tree.
 	
-	\code{method}: is expected to be either :{exhaustive, bootstrap}.  The former picks siblings in the tree according
-	to the mRMR metric and the latter, ~~ %%need to find a way to explain this properly
+	\code{method}: is expected to be either \code{exhaustive} or \code{bootstrap}.  The former uses the whole dataset to pick siblings in the tree according
+	to the mRMR metric, while the latter perform the classical mRMR feature selection on several bootrstap selections of the dataset.
+   
+   \code{continuous_estimator}: it specifies the estimators for correlation between two continuous variables; value is either \code{pearson}, \code{spearman}, \code{kendall}, \code{frequency}, 
+   
+   \code{outX}: set to \code{TRUE} (default value) to not count pairs of 
+   observations tied on ‘x’ as a relevant pair. This results in a 
+   Goodman-Kruskal gamma type rank correlation.
+   
+   \code{bootstrap_count}: Number of bootstraps to statistically compare
+   teh mRMR scores of each solution.
  	
 	Since a mutual information matrix must be computed in order for feature selection to take place, the remaining arguments
 	are identical to those required by the \code{mim} method of the \code{mRMRe.Data} object.
