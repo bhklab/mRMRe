@@ -24,7 +24,9 @@ setMethod("initialize", signature("mRMRe.Filter"),
           outX = TRUE,
           bootstrap_count = 0)
 {
-  method <- match.arg(method)
+    method <- match.arg(method)
+    continuous_estimator <- match.arg(continuous_estimator)
+    
     if (class(data) != "mRMRe.Data")
         stop("data must be of type mRMRe.Data")
     
