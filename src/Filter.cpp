@@ -84,7 +84,7 @@ Filter::getSolutions(int* const solutions) const
 void const
 Filter::getScores(double* const scores) const
 {
-    unsigned int counter = 0;
+    /*unsigned int counter = 0;
 
     for (unsigned int end_element_absolute_index = mTreeElementCount - 1;
             end_element_absolute_index >= mpStartingIndexPerLevel[mLevelCount];
@@ -97,7 +97,7 @@ Filter::getScores(double* const scores) const
             scores[counter++] = mpScoreTree[element_absolute_index];
             element_absolute_index = getParentAbsoluteIndex(element_absolute_index, level);
         }
-    }
+    }*/
 }
 
 bool const
