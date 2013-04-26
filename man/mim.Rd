@@ -14,15 +14,16 @@
 }
 \usage{
 \S4method{mim}{mRMRe.Data}(object, prior_weight, continuous_estimator, outX, bootstrap_count)
-\S4method{mim}{mRMRe.Filter}(object)
+\S4method{mim}{mRMRe.Filter}(object, method)
 \S4method{mim}{mRMRe.Network}(object)
 }
 \arguments{
   \item{object}{a \code{mRMRe.Data, mRMRe.Filter or mRMRe.Network} object.}
   \item{prior_weight}{a numeric value [0,1] of indicating the impact of priors (mRMRe.Data only).}
-  \item{continuous_estimator}{an estimator of the mutual information between features c("pearson", "spearman", "kendall", "frequency") (mRMRe.Data only).}
+  \item{continuous_estimator}{an estimator of the mutual information between features: either "pearson", "spearman", "kendall", "frequency" (mRMRe.Data only).}
   \item{outX}{a boolean used in the concordance index estimator to keep or throw out ties (mRMRe.Data only).}
   \item{bootstrap_count}{an integer indicating the number of bootstrap resampling used in estimation (mRMRe.Data only). }
+  \item{method}{either "mi" or "cor"; the latter will return the correlation coefficients (rho) while the former will return the mutual information (-0.5 * log(1 - (rho^2))). }
 }
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
