@@ -173,8 +173,9 @@ setMethod("scores", signature("mRMRe.Filter"), function(object)
 
 ## mim
 
-setMethod("mim", signature("mRMRe.Filter"), function(object)
+setMethod("mim", signature("mRMRe.Filter"), function(object, method=c("mi", "cor"))
 {
+    method <- match.arg(method)
     # mi_matrix[i, j] contains the biased correlation between
     # features i and j (i -> j directionality)
     return(object@mi_matrix)
