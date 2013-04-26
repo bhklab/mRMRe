@@ -154,8 +154,8 @@ export_filters_bootstrap(SEXP solutionCount, SEXP solutionLength, SEXP dataMatri
             filter.getSolutions(
                     INTEGER(VECTOR_ELT(VECTOR_ELT(result, 0), j))
                             + (i * feature_count_per_solution));
-            filter.getScores(
-                    REAL(VECTOR_ELT(VECTOR_ELT(result, 2), i)) + (i * feature_count_per_solution));
+            //filter.getScores(
+             //       REAL(VECTOR_ELT(VECTOR_ELT(result, 2), i)) + (i * feature_count_per_solution));
 
             /*            Math::computeCausality(REAL(VECTOR_ELT(VECTOR_ELT(result, 1), i)), &mi_matrix,
              INTEGER(VECTOR_ELT(VECTOR_ELT(result, 0), i)) + (i * chunk_size), 1,
