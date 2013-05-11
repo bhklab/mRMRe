@@ -33,6 +33,7 @@ setGeneric("mim", function(object, method = c("mi", "cor"), ...)
     return(matrix)
 })
 
+setGeneric(".extractScore", function(object, ...) standardGeneric(".extractScore"))
 setGeneric(".expandFeatureMatrix", function(object, ...) standardGeneric(".expandFeatureMatrix"))
 
 setGeneric(".compressFeatureMatrix", function(object, ...) standardGeneric(".compressFeatureMatrix"))
