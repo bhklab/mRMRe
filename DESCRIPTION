@@ -1,8 +1,8 @@
 Package: mRMRe
 Type: Package
 Title: R package for parallelized mRMR ensemble feature selection
-Version: 2.0.1
-Date: 2013-04-17
+Version: 2.0.2
+Date: 2013-05-14
 Author: Nicolas De Jay, Simon Papillon-Cavanagh, Catharina Olsen, Gianluca Bontempi, Benjamin Haibe-Kains
 Maintainer: Benjamin Haibe-Kains <bhaibeka@ircm.qc.ca>
 Description: This package contains a set of function to compute mutual information matrices from continuous, categorical and survival variables. It also contains function to perform feature selection with mRMR and a new ensemble mRMR technique.
