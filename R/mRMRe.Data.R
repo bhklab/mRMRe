@@ -310,7 +310,7 @@ setMethod(".compressFeatureIndices", signature("mRMRe.Data"), function(object, i
 })
 
 
-setMethod(".extractScore", signature("mRMRe.Data"), function(object, solutions)
+setMethod("scores", signature("mRMRe.Data"), function(object, solutions)
 {
     mi_matrix <- mim(object)
     targets <- names(solutions)

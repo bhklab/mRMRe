@@ -205,3 +205,27 @@ setMethod("target", signature("mRMRe.Network"), function(object)
 {
 	return(object@target_indices)
 })
+
+setMethod("scores", signature("mRMRe.Network"), function(object)
+{
+	mi_matrix <- mim(object)
+	targets <- names(solutions(object))
+
+	scores <- lapply(targets, function(target) {
+				apply(solutions(object)[[target]], 2, function(solution) {
+							sapply(1:length(solution), function(i) {
+
+										feature_i <- solution[i]
+										if(is.na(feature_i))
+											return(NA)
+										if(i == 1)
+											return(mi_matrix[as.numeric(target), feature_i])
+								
+										ancestry_score <- mean(sapply((i-1):1, function(j) mi_matrix[feature_i, solution[j]]))
+										return(mi_matrix[as.numeric(target), feature_i] - ancestry_score)
+									})							
+						})
+			})
+	names(scores) <- targets
+	return(scores)
+})

@@ -11,10 +11,13 @@
 	minus the average mutual information of previously selected features and this feature.
 }
 \usage{
+\S4method{scores}{mRMRe.Data}(object, solutions)
 \S4method{scores}{mRMRe.Filter}(object)
+\S4method{scores}{mRMRe.Network}(object)
 }
 \arguments{
-  \item{object}{a \code{mRMRe.Filter} object.}
+  \item{object}{a \code{mRMRe.Data, mRMRe.Filter or mRMRe.Network} object.}
+  \item{solutions}{a set of solutions from mRMRe.Filter or mRMRe.Network to be used in computing the scores from a mRMRe.Data set.}
 }
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
@@ -27,5 +30,7 @@ feature_data <- mRMR.data(data =  data.frame(cgps.ge))
 filter <- mRMR.classic("mRMRe.Filter", data = feature_data, target_indices = 3:5,
 						feature_count = 2)
 scores(filter)
+
+
 }
 \keyword{methods}
