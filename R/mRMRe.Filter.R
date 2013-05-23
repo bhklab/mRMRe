@@ -164,7 +164,7 @@ setMethod("solutions", signature("mRMRe.Filter"), function(object, mi_threshold 
 setMethod("scores", signature("mRMRe.Filter"), function(object)
 {
 	mi_matrix <- mim(object)
-	targets <- target(object)
+	targets <- as.character(target(object))
 	scores <- lapply(targets, function(target) {
 				apply(solutions(object)[[target]], 2, function(solution) {
 							sapply(1:length(solution), function(i) {
