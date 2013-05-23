@@ -9,5 +9,6 @@ README
 REVISIONS
 .DS_Store
 .git/*
+.gitignore
 .project
 
