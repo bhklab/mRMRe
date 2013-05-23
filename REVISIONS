@@ -10,7 +10,7 @@ Priorities
 (3) Provide documentation for all public methods.
     (a) Man pages
     (b) Vignette
-    -->> DONE
+    -->> DONE
 
 (4) Add a new dataset with breast cancer (BC) prognosis so we show 2 applications of mRMRe in the application note. So 2 datasets will be used:
     1. Irinotecan sensitivity prediction: train in CGP and validate in CCLE
@@ -20,6 +20,7 @@ Priorities
 (4) With these 2 datasets, perform stability-diversity and GO analysis to compare classic, resampled and parallel mRMR feature selections
     (a) Resolve the feature # vs solution length debacle
     (b) Find the best way to report GO results
+    -->> DONE
 
 (5) Update the article.
     (a) Regenerate (and document) experiments discussed (with the resampled
@@ -29,6 +30,7 @@ Priorities
         resampled: multiple datasets / 1 solution each
         parallel: 1 dataset / multiple solutions
     (d) Add stability-diversity analysis and update GO analysis results
+    -->> DONE
 
 
 

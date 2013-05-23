@@ -9,8 +9,6 @@
 	mRMRe.Filter is a wrapper for various variants of the maximum relevance minimum redundancy (mRMR) feature selection/filter.
    
    Note that \code{mRMR.classic} and \code{mRMR.ensemble} functions are wrappers to easily perform classical (single) and ensemble mRMR feature selection.
-	
-	%% perhaps explain our algorithms %%
 }
 \section{Instantiation}{
 	Objects are created via calls of the form \code{new("mRMRe.Filter", data, prior_weight,
@@ -30,7 +28,7 @@
    \code{continuous_estimator}: it specifies the estimators for correlation between two continuous variables; value is either \code{pearson}, \code{spearman}, \code{kendall}, \code{frequency}, 
    
    \code{outX}: set to \code{TRUE} (default value) to not count pairs of 
-   observations tied on ‘x’ as a relevant pair. This results in a 
+   observations tied on \code{x} as a relevant pair. This results in a 
    Goodman-Kruskal gamma type rank correlation.
    
    \code{bootstrap_count}: Number of bootstraps to statistically compare
@@ -62,18 +60,16 @@
     \item{solutions}{\code{signature(object = "mRMRe.Filter", mi_threshold = -Inf,
     						causality_threshold = Inf)}:
     Returns a matrix in which each column represents a different solution (path from root of the tree to a leaf.)
-    The parameters serve respectively as high- and low- pass filters. %% Not sure how it's called? %%
     }
     \item{target}{\code{signature(object = "mRMRe.Filter")}: Returns a vector containing the target indices.}
   }
 }
-%\references{
-%}
+\references{
+Ding, C. and Peng, H. (2005). "Minimum redundancy feature selection from microarray gene expression data". \emph{Journal of bioinformatics and computational biology}, \bold{3}(2):185--205.
+}
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
-%\note{
-%}
 \seealso{
 \code{\link[mRMRe]{mRMRe.Data-class}}
 }
