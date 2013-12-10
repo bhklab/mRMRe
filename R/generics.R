@@ -121,7 +121,7 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
 				uh <- vector(mode = "numeric", length = length(input[[1]]))
 				rh <- vector(mode = "numeric", length = length(input[[1]]))
 
-        .Call(mRMRe:::.C_export_concordance_index, as.numeric(input[[1]]), as.numeric(input[[2]]),
+        .Call(.C_export_concordance_index, as.numeric(input[[1]]), as.numeric(input[[2]]),
                 as.numeric(input[[3]]), as.numeric(input[[4]]), as.integer(data@strata), as.numeric(data@weights),
                 as.integer(length(unique(data@strata))), outX, ratio, ch, dh, uh, rh)  
         
@@ -165,7 +165,7 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
 {
     thread_count <- vector(mode = "integer", length = 1)
     
-    .Call(mRMRe:::.C_get_thread_count, thread_count)
+    .Call(.C_get_thread_count, thread_count)
     
     return(thread_count)
 }
@@ -174,7 +174,7 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
 {
     thread_count <- as.integer(thread_count)
     
-    .Call(mRMRe:::.C_set_thread_count, thread_count)
+    .Call(.C_set_thread_count, thread_count)
     
     return(thread_count)
 }
