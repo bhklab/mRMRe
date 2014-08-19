@@ -26,6 +26,7 @@ network level, 'solutions' consists of the topology of the network, identifying 
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
 \examples{
+set.thread.count(2)
 data(cgps)
 feature_data <- mRMR.data(data =  data.frame(cgps.ge))
 

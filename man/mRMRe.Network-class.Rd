@@ -55,6 +55,8 @@ Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 \examples{
 showClass("mRMRe.Network")
 
+set.thread.count(2)
+
 ## load data
 data(cgps)
 

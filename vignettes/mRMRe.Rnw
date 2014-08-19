@@ -38,7 +38,7 @@ options(keep.source=TRUE)
 \textit{mRMRe} is an R package for parallelized mRMR ensemble feature selection.
 
 %------------------------------------------------------------
-\subsection{Installation}
+\subsection{Installation and Settings}
 %------------------------------------------------------------
 
 \textit{mRMRe} requires that \textit{Rcpp} is installed. 
@@ -52,6 +52,15 @@ Load \textit{mRMRe} into your current workspace:
 <<loadlib,results=hide,eval=TRUE>>=
 library(mRMRe)
 @ 
+
+The mRMRe package allows its users to set the number of threads it will
+use for computations. One should may consider the following method to avoid crowding computing clusters,
+or fully utilize them.
+
+<<utils,results=hide,eval=TRUE>>=
+set.thread.count(2)
+@
+
 
 Load the example dataset \textit{cgps} into your current workspace:
 <<loadlib,results=hide,eval=TRUE>>=
@@ -200,18 +209,6 @@ ensemble <- mRMR.ensemble(data = dd, target_indices = c(1),
                           solution_count = 5,
                           feature_count = 10)
 causality(ensemble)
-@
-
-%------------------------------------------------------------
-\section{Utilities}
-%------------------------------------------------------------
-
-The mRMRe package allows its users to set the number of threads it will
-use for computations.  One should may consider the following method to avoid crowding computing clusters,
-or fully utilize them.
-
-<<utils,results=hide,eval=TRUE>>=
-set.thread.count(3)
 @
 
 %------------------------------------------------------------

@@ -22,9 +22,9 @@
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
 \examples{
+set.thread.count(2)
 data(cgps)
 feature_data <- mRMR.data(data =  data.frame(cgps.ge))
-
 
 # Build an mRMR-based network and display adjacency matrix (topology)
 network <- new("mRMRe.Network", data = feature_data, target_indices = c(1, 2),
