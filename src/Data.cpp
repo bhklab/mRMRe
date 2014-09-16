@@ -175,11 +175,11 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j, doubl
 
     if (mpPriorsMatrix != 0)
     {
-        val_ij =  std::fabs(1.0 - mPriorsWeight) * val_ij
-                	+ mPriorsWeight * mpPriorsMatrix->at(i, j);
+        val_ij = (std::fabs(1.0 - mPriorsWeight) * val_ij)
+                	+ (mPriorsWeight * mpPriorsMatrix->at(i, j));
 
-        val_ji = std::fabs(1.0 - mPriorsWeight) * val_ji
-                	+ mPriorsWeight * mpPriorsMatrix->at(j, i);
+        val_ji = (std::fabs(1.0 - mPriorsWeight) * val_ji)
+                	+ (mPriorsWeight * mpPriorsMatrix->at(j, i));
     }
 
     if (val_ij == val_ij)
