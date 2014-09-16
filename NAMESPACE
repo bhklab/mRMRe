@@ -1,2 +1,5 @@
 useDynLib(mRMRe, .fixes=".C_", export_concordance_index, export_filters, export_filters_bootstrap, export_mim, set_thread_count, get_thread_count)
 exportPattern("^[^\\.]")
+import(igraph)
+import(methods)
+import(survival)

@@ -83,6 +83,8 @@ Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 \examples{
 showClass("mRMRe.Data")
 
+set.thread.count(2)
+
 ## load data
 data(cgps)
 

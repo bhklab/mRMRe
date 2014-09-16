@@ -94,7 +94,7 @@ system("chmod -R 775 /stockage/Laboratoires/HAI/Rlib")
 
 library(mRMRe)
 ## set the number of threads
-set.thread.count(8)
+set.thread.count(2)
 ## run the network inference
 data(cgps)
 ge <- mRMR.data(data = data.frame(cgps.ge[ ,1:1000]))

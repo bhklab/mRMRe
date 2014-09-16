@@ -53,6 +53,7 @@ Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 \code{\link[mRMRe]{mRMRe.Data-class}}
 }
 \examples{
+set.thread.count(2)
 
 ## load data
 data(cgps)

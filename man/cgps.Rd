@@ -22,6 +22,7 @@ The \code{\link[mRMRe]{cgps}} dataset is composed of three objects
 }
 \references{Garnett MJ et al. "Systematic identification of genomic markers of drug sensitivity in cancer cells", \emph{Nature}, \bold{483}:570-575, 2012.}
 \examples{
+set.thread.count(2)
 data(cgps)
 
 message("Gene expression data:")

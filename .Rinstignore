@@ -1,7 +1,6 @@
-inst/doc/.*[.]bib$
-inst/doc/Makefile
 Debug/*
-test/*
+unitest
+unitest/*
 src/*.{s,}o
 src/Makefile
 TODO
