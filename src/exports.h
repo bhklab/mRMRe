@@ -6,6 +6,7 @@
 #include <R.h>
 #include <Rinternals.h>
 #include <Rdefines.h>
+#include <R_ext/Rdynload.h>
 
 #include <cstdlib>
 #include <vector>
@@ -13,6 +14,9 @@
 #include "Filter.h"
 #include "Math.h"
 #include "MutualInformationMatrix.h"
+
+extern "C" void
+R_init_mRMRe(DllInfo* info);
 
 extern "C" SEXP
 export_concordance_index(SEXP samplesA, SEXP samplesB, SEXP samplesC, SEXP samplesD,
