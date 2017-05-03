@@ -1,0 +1,11 @@
+Debug/*
+unitest
+unitest/*
+TODO
+README
+REVISIONS
+.DS_Store
+.git/*
+.gitignore
+.project
+

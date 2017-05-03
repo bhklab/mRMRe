@@ -1,8 +1,8 @@
 Package: mRMRe
 Type: Package
 Title: Parallelized Minimum Redundancy, Maximum Relevance (mRMR) Ensemble Feature Selection
-Version: 2.0.6
-Date: 2017-01-06
+Version: 2.0.7
+Date: 2017-05-03
 Author: Nicolas De Jay, Simon Papillon-Cavanagh, Catharina Olsen, Gianluca Bontempi, Benjamin Haibe-Kains
 Maintainer: Benjamin Haibe-Kains <benjamin.haibe.kains@utoronto.ca>
 Description: Computes mutual information matrices from continuous, categorical and survival variables, as well as feature selection with minimum redundancy, maximum relevance (mRMR) and a new ensemble mRMR technique.

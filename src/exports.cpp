@@ -1,5 +1,23 @@
 #include "exports.h"
 
+// borrowed from Matrix/rcpp
+#define CALLDEF(name, n)  {#name, (DL_FUNC) &name, n}
+
+static const R_CallMethodDef callEntries[] = {
+  CALLDEF(export_concordance_index, 13),
+  CALLDEF(export_filters, 15),
+  CALLDEF(export_filters_bootstrap, 16),
+  CALLDEF(export_mim, 13),
+  CALLDEF(set_thread_count, 1),
+  CALLDEF(get_thread_count, 1)
+};
+
+extern "C" void
+R_init_mRMRe(DllInfo* info) {
+  R_registerRoutines(info, NULL, callEntries, NULL, NULL);
+  R_useDynamicSymbols(info, FALSE);
+}
+
 extern "C" SEXP
 export_concordance_index(SEXP samplesA, SEXP samplesB, SEXP samplesC, SEXP samplesD,
         SEXP sampleStrata, SEXP sampleWeights, SEXP sampleStratumCount, SEXP outX, SEXP ratio,
