@@ -4,12 +4,13 @@
 #define CALLDEF(name, n)  {#name, (DL_FUNC) &name, n}
 
 static const R_CallMethodDef callEntries[] = {
-  CALLDEF(export_concordance_index, 13),
-  CALLDEF(export_filters, 15),
-  CALLDEF(export_filters_bootstrap, 16),
-  CALLDEF(export_mim, 13),
-  CALLDEF(set_thread_count, 1),
-  CALLDEF(get_thread_count, 1)
+    CALLDEF(export_concordance_index, 13),
+    CALLDEF(export_filters, 15),
+    CALLDEF(export_filters_bootstrap, 16),
+    CALLDEF(export_mim, 13),
+    CALLDEF(set_thread_count, 1),
+    CALLDEF(get_thread_count, 1),
+    {NULL, NULL, 0}
 };
 
 extern "C" void
