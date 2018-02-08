@@ -51,8 +51,7 @@ setMethod("initialize", signature("mRMRe.Filter"),
     
     if (missing(levels))
         stop("levels must be provided")
-    else if ((prod(levels) - 1) > choose(featureCount(data) - 1, length(levels)))
-        stop("user cannot request for more solutions than is possible given the data set")
+
     
     .Object@target_indices <- as.integer(c(target_indices))
     .Object@levels <- as.integer(c(levels))
@@ -63,13 +62,19 @@ setMethod("initialize", signature("mRMRe.Filter"),
 
     mi_matrix <- as.numeric(matrix(NA, ncol = ncol(data@data), nrow = ncol(data@data)))
     
-	if(method == "exhaustive")
+	if(method == "exhaustive"){
+	  
+	    ## Level Processing
+	    if ((prod(levels) - 1) > choose(featureCount(data) - 1, length(levels)))
+	      stop("user cannot request for more solutions than is possible given the data set")
+    
     	result <- .Call(.C_export_filters, as.integer(.Object@levels), as.numeric(data@data),
         	    as.numeric(data@priors), as.numeric(prior_weight), as.integer(data@strata), as.numeric(data@weights),
             	as.integer(data@feature_types), as.integer(nrow(data@data)), as.integer(ncol(data@data)),
             	as.integer(length(unique(data@strata))), as.integer(target_indices),
             	as.integer(.map.continuous.estimator(continuous_estimator)), as.integer(outX),
             	as.integer(bootstrap_count), mi_matrix)
+	}
 	else if(method == "bootstrap")
 		result <- .Call(.C_export_filters_bootstrap, as.integer(.Object@levels[1]), as.integer(length(.Object@levels)),
 				as.numeric(data@data), as.numeric(data@priors), as.numeric(prior_weight), as.integer(data@strata),

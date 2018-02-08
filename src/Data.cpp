@@ -1,4 +1,5 @@
 #include "Data.h"
+#include <sys/time.h>
 
 Data::Data(double* const pData, Matrix const* const pPriorsMatrix, double const priorsWeight,
         unsigned int const sampleCount, unsigned int const featureCount,
@@ -47,7 +48,11 @@ Data::~Data()
 void const
 Data::bootstrap()
 {
-    unsigned int seed = std::time(NULL);
+    // unsigned int seed = std::time(NULL); too long for small datasets
+    struct timeval start;
+    gettimeofday(&start, NULL);
+    unsigned int seed = start.tv_usec; //microseconds
+    
     for (unsigned int i = 0; i < mSampleStratumCount; ++i)
         for (unsigned int j = 0; j < mpSampleCountPerStratum[i]; ++j)
         {
