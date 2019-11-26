@@ -11,7 +11,7 @@ setClass("mRMRe.Data", representation(sample_names = "character", feature_names 
 
 ## initialize
 
-setMethod("initialize", signature("mRMRe.Data"), function(.Object, data, strata, weights, priors)
+setMethod("initialize", signature("mRMRe.Data"), function(.Object, data, fixed = 0, strata, weights, priors)
 {
     ## Data Processing
     
@@ -38,6 +38,7 @@ setMethod("initialize", signature("mRMRe.Data"), function(.Object, data, strata,
                                 "Surv" = cbind(event = data[, i][, "status"], time = data[, i][, "time"]),
                                 "ordered_factor" = as.numeric(as.integer(data[, i]) - 1),
                                 as.numeric(data[, i]))))
+    
     
     rownames(.Object@data) <- rownames(data)
     colnames(.Object@data)[!.Object@feature_types %in% c(2, 3)] <- colnames(data)[feature_types != "Surv"]
@@ -330,3 +331,4 @@ setMethod("scores", signature("mRMRe.Data"), function(object, solutions)
 	 names(scores) <- targets
 	 return(scores)
 })
+
