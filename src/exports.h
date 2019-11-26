@@ -27,14 +27,14 @@ export_concordance_index(SEXP samplesA, SEXP samplesB, SEXP samplesC, SEXP sampl
 extern "C" SEXP
 export_filters(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, SEXP priorsWeight,
         SEXP sampleStrata, SEXP sampleWeights, SEXP featureTypes, SEXP sampleCount,
-        SEXP featureCount, SEXP sampleStratumCount, SEXP targetFeatureIndices,
+        SEXP featureCount, SEXP sampleStratumCount, SEXP targetFeatureIndices, SEXP fixedFeatureCount,
         SEXP continuousEstimator, SEXP outX, SEXP bootstrapCount, SEXP miMatrix);
 
 extern "C" SEXP
 export_filters_bootstrap(SEXP solutionCount, SEXP solutionLength, SEXP dataMatrix,
         SEXP priorsMatrix, SEXP priorsWeight, SEXP sampleStrata, SEXP sampleWeights,
         SEXP featureTypes, SEXP sampleCount, SEXP featureCount, SEXP sampleStratumCount,
-        SEXP targetFeatureIndices, SEXP continuousEstimator, SEXP outX, SEXP bootstrapCount,
+        SEXP targetFeatureIndices, SEXP continuousEstimator, SEXP outX, SEXP bootstrapCount, SEXP fixedFeatureCount,
         SEXP miMatrix);
 
 extern "C" SEXP

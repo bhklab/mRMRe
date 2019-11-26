@@ -4,9 +4,10 @@
 #include <cmath>
 #include <limits>
 
+
 #ifdef _OPENMP
 #include <omp.h>
-#endif
+#endif 
 
 #include <vector>
 
@@ -25,14 +26,16 @@ private:
     unsigned int const mLevelCount;
     Matrix* const mpFeatureInformationMatrix;
     unsigned int* const mpStartingIndexPerLevel;
+    unsigned int const mFixedFeatureCount;
     unsigned int* mpIndexTree;
     double* mpScoreTree;
     unsigned int mTreeElementCount;
 
 public:
     Filter(int const* const pChildrenCountPerLevel, unsigned int const levelCount,
-            Matrix* const pFeatureInformationMatrix, unsigned int const targetFeatureIndex);
-
+            Matrix* const pFeatureInformationMatrix, unsigned int const targetFeatureIndex,
+            unsigned int const fixedFeatureCount);
+    
     ~Filter();
 
     void const
@@ -46,6 +49,9 @@ public:
 
     void const
     getScores(double* const scores) const;
+
+    bool const
+    hasAncestorByFeatureIndex(unsigned int const absolute);
 
     bool const
     hasAncestorByFeatureIndex(unsigned int const absoluteIndex, unsigned int const featureIndex,

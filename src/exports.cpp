@@ -1,12 +1,12 @@
 #include "exports.h"
-
+#include <R.h>
 // borrowed from Matrix/rcpp
 #define CALLDEF(name, n)  {#name, (DL_FUNC) &name, n}
 
 static const R_CallMethodDef callEntries[] = {
     CALLDEF(export_concordance_index, 13),
-    CALLDEF(export_filters, 15),
-    CALLDEF(export_filters_bootstrap, 16),
+    CALLDEF(export_filters, 16),
+    CALLDEF(export_filters_bootstrap, 17),
     CALLDEF(export_mim, 13),
     CALLDEF(set_thread_count, 1),
     CALLDEF(get_thread_count, 1),
@@ -62,7 +62,7 @@ export_concordance_index(SEXP samplesA, SEXP samplesB, SEXP samplesC, SEXP sampl
 extern "C" SEXP
 export_filters(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, SEXP priorsWeight,
         SEXP sampleStrata, SEXP sampleWeights, SEXP featureTypes, SEXP sampleCount,
-        SEXP featureCount, SEXP sampleStratumCount, SEXP targetFeatureIndices,
+        SEXP featureCount, SEXP sampleStratumCount, SEXP targetFeatureIndices, SEXP fixedFeatureCount,
         SEXP continuousEstimator, SEXP outX, SEXP bootstrapCount, SEXP miMatrix)
 {
     Matrix const priors_matrix(REAL(priorsMatrix), INTEGER(featureCount)[0],
@@ -92,7 +92,7 @@ export_filters(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, S
     for (unsigned int i = 0; i < LENGTH(targetFeatureIndices); ++i)
     {
         Filter filter(INTEGER(childrenCountPerLevel), LENGTH(childrenCountPerLevel), &mi_matrix,
-                INTEGER(targetFeatureIndices)[i]);
+                INTEGER(targetFeatureIndices)[i], INTEGER(fixedFeatureCount)[0]);
         filter.build();
 
         SET_VECTOR_ELT(VECTOR_ELT(result, 0), i, allocVector(INTSXP, chunk_size));
@@ -111,7 +111,7 @@ export_filters(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, S
                 feature_count_per_solution, INTEGER(featureCount)[0],
                 INTEGER(targetFeatureIndices)[i]);
     }
-
+    //PrintValue(result);
     UNPROTECT(1);
 
     return result;
@@ -121,7 +121,7 @@ extern "C" SEXP
 export_filters_bootstrap(SEXP solutionCount, SEXP solutionLength, SEXP dataMatrix,
         SEXP priorsMatrix, SEXP priorsWeight, SEXP sampleStrata, SEXP sampleWeights,
         SEXP featureTypes, SEXP sampleCount, SEXP featureCount, SEXP sampleStratumCount,
-        SEXP targetFeatureIndices, SEXP continuousEstimator, SEXP outX, SEXP bootstrapCount,
+        SEXP targetFeatureIndices, SEXP fixedFeatureCount, SEXP continuousEstimator, SEXP outX, SEXP bootstrapCount,
         SEXP miMatrix)
 {
     Matrix const priors_matrix(REAL(priorsMatrix), INTEGER(featureCount)[0],
@@ -168,7 +168,7 @@ export_filters_bootstrap(SEXP solutionCount, SEXP solutionLength, SEXP dataMatri
         for (unsigned int j = 0; j < LENGTH(targetFeatureIndices); ++j)
         {
             Filter filter(p_children_count_per_level, feature_count_per_solution, &mi_matrix,
-                    INTEGER(targetFeatureIndices)[j]);
+                    INTEGER(targetFeatureIndices)[j], INTEGER(fixedFeatureCount)[0]);
             filter.build();
             filter.getSolutions(
                     INTEGER(VECTOR_ELT(VECTOR_ELT(result, 0), j))
