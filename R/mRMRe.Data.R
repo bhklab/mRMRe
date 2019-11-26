@@ -11,7 +11,7 @@ setClass("mRMRe.Data", representation(sample_names = "character", feature_names 
 
 ## initialize
 
-setMethod("initialize", signature("mRMRe.Data"), function(.Object, data, fixed = 0, strata, weights, priors)
+setMethod("initialize", signature("mRMRe.Data"), function(.Object, data, strata, weights, priors)
 {
     ## Data Processing
     
