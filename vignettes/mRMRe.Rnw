@@ -26,6 +26,7 @@ options(keep.source=TRUE)
 @
 
 \begin{document}
+\SweaveOpts{concordance=TRUE}
 
 
 \maketitle

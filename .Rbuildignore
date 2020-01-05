@@ -9,3 +9,5 @@ REVISIONS
 .gitignore
 .project
 
+^.*\.Rproj$
+^\.Rproj\.user$
