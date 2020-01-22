@@ -1,7 +1,7 @@
 ## Definition
 
 setClass("mRMRe.Filter", representation(filters = "list", scores = "list", mi_matrix = "matrix", causality_list = "list",
-                sample_names = "character", feature_names = "character", target_indices = "integer", levels = "integer"))
+                sample_names = "character", feature_names = "character", target_indices = "integer", fixed_feature_count = "numeric", levels = "integer"))
 
 ## Wrappers
 
@@ -21,6 +21,7 @@ setMethod("initialize", signature("mRMRe.Filter"),
         function(.Object, data, prior_weight, target_indices, levels, 
           method = c("exhaustive", "bootstrap"), 
           continuous_estimator = c("pearson", "spearman", "kendall", "frequency"), 
+          fixed_feature_count = 0,
           outX = TRUE,
           bootstrap_count = 0)
 {
@@ -46,21 +47,34 @@ setMethod("initialize", signature("mRMRe.Filter"),
 
     if (sum(sapply(target_indices, function(index) index < 1 || index > featureCount(data))) > 1)
         stop("target_indices must only contain values ranging from 1 to the number of features in data")
-            
+    
     ## Level Processing
     
     if (missing(levels))
-        stop("levels must be provided")
+      stop("levels must be provided")
+    
+            
+    ## Fixed selected feature processing
+    if (fixed_feature_count > length(levels))
+        stop("The number of fixed selected features can not be larger the length of solutions")
+    
+    if (fixed_feature_count > 0)
+        length(levels) <- length(levels) - fixed_feature_count
+    
 
+    .Object@fixed_feature_count <- fixed_feature_count
     
     .Object@target_indices <- as.integer(c(target_indices))
     .Object@levels <- as.integer(c(levels))
     
     target_indices <- as.integer(.expandFeatureIndices(data, target_indices)) - 1
     
+    
+    
     ## Filter; Mutual Information and Causality Matrix
 
     mi_matrix <- as.numeric(matrix(NA, ncol = ncol(data@data), nrow = ncol(data@data)))
+    
     
 	if(method == "exhaustive"){
 	  
@@ -71,7 +85,7 @@ setMethod("initialize", signature("mRMRe.Filter"),
     	result <- .Call(.C_export_filters, as.integer(.Object@levels), as.numeric(data@data),
         	    as.numeric(data@priors), as.numeric(prior_weight), as.integer(data@strata), as.numeric(data@weights),
             	as.integer(data@feature_types), as.integer(nrow(data@data)), as.integer(ncol(data@data)),
-            	as.integer(length(unique(data@strata))), as.integer(target_indices),
+            	as.integer(length(unique(data@strata))), as.integer(target_indices), as.integer(fixed_feature_count),
             	as.integer(.map.continuous.estimator(continuous_estimator)), as.integer(outX),
             	as.integer(bootstrap_count), mi_matrix)
 	}
@@ -79,11 +93,13 @@ setMethod("initialize", signature("mRMRe.Filter"),
 		result <- .Call(.C_export_filters_bootstrap, as.integer(.Object@levels[1]), as.integer(length(.Object@levels)),
 				as.numeric(data@data), as.numeric(data@priors), as.numeric(prior_weight), as.integer(data@strata),
 				as.numeric(data@weights), as.integer(data@feature_types), as.integer(nrow(data@data)),
-				as.integer(ncol(data@data)), as.integer(length(unique(data@strata))), as.integer(target_indices),
+				as.integer(ncol(data@data)), as.integer(length(unique(data@strata))), as.integer(target_indices), as.integer(fixed_feature_count),
 				as.integer(.map.continuous.estimator(continuous_estimator)), as.integer(outX),
 				as.integer(bootstrap_count), mi_matrix)
 	else
 		stop("Unrecognized method: use exhaustive or bootstrap")
+    
+    
     
     .Object@filters <- lapply(result[[1]], function(solutions) matrix(.compressFeatureIndices(data, solutions + 1),
                         nrow = length(levels), ncol = prod(levels)))
@@ -143,7 +159,7 @@ setMethod("featureNames", signature("mRMRe.Filter"), function(object)
 
 ## solutions
 
-setMethod("solutions", signature("mRMRe.Filter"), function(object, mi_threshold = -Inf, causality_threshold = Inf)
+setMethod("solutions", signature("mRMRe.Filter"), function(object, mi_threshold = -Inf, causality_threshold = Inf, with_fixed_features = TRUE)
 {
     # filters[[target]][solution, ] is a vector of selected features
     # in a solution for a target; missing values denote removed features
@@ -160,8 +176,23 @@ setMethod("solutions", signature("mRMRe.Filter"), function(object, mi_threshold 
 
         return(pre_return_matrix)
     })
-    names(filters) <- object@target_indices
+    
 
+    # Concate the fixed selected features
+    if (object@fixed_feature_count > 0 && with_fixed_features)
+    {
+  
+        prefix <- matrix(seq(object@fixed_feature_count), nrow = object@fixed_feature_count, ncol = as.numeric(dim(filters[[1]])[2]), byrow = FALSE)
+        
+        filters <- lapply(seq(length(filters)), function(i)
+        {
+            filters[[i]] <- rbind(prefix, filters[[i]])
+            return(filters[[i]])
+        })
+        
+    }
+    
+    names(filters) <- object@target_indices
     return(filters)
 })
 

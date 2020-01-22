@@ -39,6 +39,7 @@ setMethod("initialize", signature("mRMRe.Data"), function(.Object, data, strata,
                                 "ordered_factor" = as.numeric(as.integer(data[, i]) - 1),
                                 as.numeric(data[, i]))))
     
+    
     rownames(.Object@data) <- rownames(data)
     colnames(.Object@data)[!.Object@feature_types %in% c(2, 3)] <- colnames(data)[feature_types != "Surv"]
     colnames(.Object@data)[.Object@feature_types %in% c(2, 3)] <- paste(rep(colnames(data)[feature_types == "Surv"],
@@ -330,3 +331,4 @@ setMethod("scores", signature("mRMRe.Data"), function(object, solutions)
 	 names(scores) <- targets
 	 return(scores)
 })
+

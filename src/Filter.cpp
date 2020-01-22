@@ -1,10 +1,12 @@
 #include "Filter.h"
+#include <iostream>
 
 Filter::Filter(int const* const pChildrenCountPerLevel, unsigned int const levelCount,
-        Matrix* const pFeatureInformationMatrix, unsigned int const targetFeatureIndex) :
+        Matrix* const pFeatureInformationMatrix, unsigned int const targetFeatureIndex, 
+        unsigned int const fixedFeatureCount) :
         mpChildrenCountPerLevel(pChildrenCountPerLevel), mLevelCount(levelCount), mpFeatureInformationMatrix(
                 pFeatureInformationMatrix), mpStartingIndexPerLevel(
-                new unsigned int[mLevelCount + 2])
+                new unsigned int[mLevelCount + 2]), mFixedFeatureCount(fixedFeatureCount)
 {
     unsigned int cumulative_element_count = 1;
     unsigned int children_per_level = 1;
@@ -45,9 +47,10 @@ Filter::build()
         unsigned int const parent_count = mpStartingIndexPerLevel[level + 1]
                 - mpStartingIndexPerLevel[level];
 
+
 #ifdef _OPENMP
 #pragma omp parallel for schedule(dynamic)
-#endif
+#endif 
         for (unsigned int parent = 0; parent < parent_count; ++parent)
             placeElements(
                     mpStartingIndexPerLevel[level + 1] + (parent * mpChildrenCountPerLevel[level]),
@@ -171,7 +174,8 @@ Filter::isRedundantPath(unsigned int const absoluteIndex, unsigned int const fea
 void const
 Filter::placeElements(unsigned int const startingIndex, unsigned int childrenCount,
         unsigned int const level)
-{
+{   
+    // This function calculates the solutions and scores
     unsigned int counter = 0;
     unsigned int const feature_count = mpFeatureInformationMatrix->getRowCount();
     unsigned int* const p_candidate_feature_indices = new unsigned int[feature_count];
@@ -179,16 +183,34 @@ Filter::placeElements(unsigned int const startingIndex, unsigned int childrenCou
     unsigned int* const p_adaptor = new unsigned int[feature_count];
     double* const p_candidate_scores = new double[feature_count];
 
-    for (unsigned int i = 0; i < feature_count; ++i)
-    {
+    /*  The reason why the selection does not start from the 0, it is because the package request (temporarily) the input 
+    *   dataframe has the fixed selected features in the first several columns
+    */ 
+
+    for (unsigned int i = mFixedFeatureCount; i < feature_count; ++i)
+    {   
+        
         if (hasAncestorByFeatureIndex(startingIndex, i, level))
             continue;
-
+        
         double ancestry_score = 0.;
+        
+        for (int j = 0; j < mFixedFeatureCount; ++j) 
+        {
+            double ancestry_score_ij = Math::computeMi(
+                    mpFeatureInformationMatrix->at(i, j));
+            double ancestry_score_ji = Math::computeMi(
+                    mpFeatureInformationMatrix->at(j, i));
+            
+            ancestry_score += std::max(ancestry_score_ij, ancestry_score_ji);
+        }
 
+        
         if (level > 1)
         {
             unsigned int ancestor_absolute_index = startingIndex;
+            
+            // The below for loop is used to compute the redundancy (loops from the top to bottom)
 
             for (unsigned int j = level; j > 0; --j)
             {
@@ -200,11 +222,12 @@ Filter::placeElements(unsigned int const startingIndex, unsigned int childrenCou
                         mpFeatureInformationMatrix->at(mpIndexTree[ancestor_absolute_index], i));
 
                 ancestry_score += std::max(ancestry_score_ij, ancestry_score_ji);
+                
             }
         }
 
         double const score = Math::computeMi(mpFeatureInformationMatrix->at(i, mpIndexTree[0]))
-                - (ancestry_score / level);
+                - (ancestry_score / (level + mFixedFeatureCount));
 
         if (score == score)
         {
@@ -224,9 +247,6 @@ Filter::placeElements(unsigned int const startingIndex, unsigned int childrenCou
         unsigned int children_counter = 0;
         unsigned int i = counter - 1;
 
-        // Sorry about this
-        //       ||
-        //       \/
         // i < counter depends on the fact that i-- causes an overflow on the unsigned int
         while (i < counter && children_counter < childrenCount)
         {

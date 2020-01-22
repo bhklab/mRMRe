@@ -199,6 +199,22 @@ mRMR.ensemble(data = dd, target_indices = c(1),
               solution_count = 5, feature_count = 30)
 @
 
+
+%------------------------------------------------------------
+\section{Fixed Selected Features}
+%------------------------------------------------------------
+
+The mRMRe package allows to select the features with some features being fixed selected, also supports the return with/without the fixed ones
+
+<<causality,results=hide,eval=TRUE>>=
+ensemble <- mRMR.ensemble(data = dd, target_indices = c(1),
+                          solution_count = 5,
+                          feature_count = 10,
+                          fixed_feature_count = 1)
+
+solutions(ensemble, with_fixed_features = FALSE)
+@
+
 %------------------------------------------------------------
 \section{Causality Inference}
 %------------------------------------------------------------
