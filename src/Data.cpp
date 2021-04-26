@@ -120,10 +120,14 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j, doubl
 
         case KENDALL_ESTIMATOR:
         {
-            val_ij = val_ji = Math::computeSomersD(
-                    Math::computeConcordanceIndex(&(mpDataMatrix->at(0, i)),
-                            &(mpDataMatrix->at(0, j)), mpSampleWeights, mpSampleIndicesPerStratum,
-                            mpSampleCountPerStratum, mSampleStratumCount, mOutX));
+            val_ij =  Math::computeSomersD(
+              Math::computeConcordanceIndex(&(mpDataMatrix->at(0, i)),
+                                            &(mpDataMatrix->at(0, j)), mpSampleWeights, mpSampleIndicesPerStratum,
+                                            mpSampleCountPerStratum, mSampleStratumCount, mOutX));
+            val_ji = Math::computeSomersD(
+              Math::computeConcordanceIndex(&(mpDataMatrix->at(0, j)),
+                                            &(mpDataMatrix->at(0, i)), mpSampleWeights, mpSampleIndicesPerStratum,
+                                            mpSampleCountPerStratum, mSampleStratumCount, mOutX));
         }
             break;
 
