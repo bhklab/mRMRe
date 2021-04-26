@@ -1,7 +1,9 @@
 ## Definition
 
-setClass("mRMRe.Filter", representation(filters = "list", scores = "list", mi_matrix = "matrix", causality_list = "list",
-                sample_names = "character", feature_names = "character", target_indices = "integer", fixed_feature_count = "numeric", levels = "integer"))
+setClass("mRMRe.Filter", representation(filters = "list", scores = "list", 
+    mi_matrix = "matrix", causality_list = "list", sample_names = "character", 
+    feature_names = "character", target_indices = "integer", 
+    fixed_feature_count = "numeric", levels = "integer"))
 
 ## Wrappers
 
@@ -159,7 +161,9 @@ setMethod("featureNames", signature("mRMRe.Filter"), function(object)
 
 ## solutions
 
-setMethod("solutions", signature("mRMRe.Filter"), function(object, mi_threshold = -Inf, causality_threshold = Inf, with_fixed_features = TRUE)
+setMethod("solutions", signature("mRMRe.Filter"), 
+    function(object, mi_threshold = -Inf, causality_threshold = Inf, 
+    with_fixed_features = TRUE)
 {
     # filters[[target]][solution, ] is a vector of selected features
     # in a solution for a target; missing values denote removed features

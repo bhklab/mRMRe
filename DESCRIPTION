@@ -1,12 +1,12 @@
 Package: mRMRe
 Type: Package
 Title: "Parallelized Minimum Redundancy, Maximum Relevance (mRMR) Ensemble Feature Selection"
-Version: 2.1.9
-Date: 2020-01-04
+Version: 2.1.10
+Date: 2021-04-26
 Author: Nicolas De Jay, Simon Papillon-Cavanagh, Catharina Olsen, Gianluca Bontempi, Bo Li, Benjamin Haibe-Kains
 Maintainer: Benjamin Haibe-Kains <benjamin.haibe.kains@utoronto.ca>
 Description: "Computes mutual information matrices from continuous, categorical and survival variables, as well as feature selection with minimum redundancy, maximum relevance (mRMR) and a new ensemble mRMR technique with DOI: N De Jay et al. (2013) <doi:10.1093/bioinformatics/btt383>."
 License: Artistic-2.0
-Depends: survival, igraph, methods
+Depends: R (>= 3.5), survival, igraph, methods
 URL: http://www.pmgenomics.ca/bhklab/
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.1.9001

@@ -32,7 +32,7 @@
    Goodman-Kruskal gamma type rank correlation.
    
    \code{bootstrap_count}: Number of bootstraps to statistically compare
-   teh mRMR scores of each solution.
+   the mRMR scores of each solution.
  	
 	Since a mutual information matrix must be computed in order for feature selection to take place, the remaining arguments
 	are identical to those required by the \code{mim} method of the \code{mRMRe.Data} object.
@@ -45,6 +45,7 @@
     \item{\code{sample_names}:}{Object of class \code{"character"} containing the sample names.}
     \item{\code{feature_names}:}{Object of class \code{"character"} containing the feature names.}
     \item{\code{target_indices}:}{Object of class \code{"integer"} containing the target indices.}
+    \item{\code{fixed_feature_count}:}{Object of class \code{"integer"} containing the number of fixed features.}
     \item{\code{levels}:}{Object of class \code{"integer"} containing the desired topology of the tree.}
     \item{\code{scores}:}{Object of class \code{"list"} containing the mRMR score of selected features, respective to filters.}
   }
