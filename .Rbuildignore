@@ -11,3 +11,5 @@ REVISIONS
 
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^doc$
+^Meta$

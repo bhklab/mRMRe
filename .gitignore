@@ -3,3 +3,5 @@
 *.*~
 test/*
 .Rproj.user
+/doc/
+/Meta/
