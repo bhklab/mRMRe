@@ -21,6 +21,9 @@ Export the concordance index
    \item{uninformativeWeights}{...}
    \item{relevantWeights}{...}
 }
+\value{
+No return. Modifies the \code{ratio} argument by reference.
+}
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }

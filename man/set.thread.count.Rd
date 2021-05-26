@@ -15,6 +15,9 @@ set.thread.count(thread_count)
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
+\value{
+No return, sets the number of cores available to openMP for C level parallelization.
+}
 \examples{
 # Access to number of available threads
 threads <- get.thread.count()

@@ -9,6 +9,9 @@ This methods allows you to get the number of cores currently accessible to openM
 \arguments{
    \item{thread_count}{number of OPENMP threads to be used}
 }
+\value{
+Return the current number of cores accessible to openMP for C level parallelization
+}
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }

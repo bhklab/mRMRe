@@ -21,6 +21,9 @@ Export mim
    \item{bootstrapCount}{...}
    \item{miMatrix}{...}
 }
+\value{
+Returns the mutual information matrix.
+}
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }

@@ -24,6 +24,11 @@ Export the filters
    \item{bootstrapCount}{...}
    \item{miMatrix}{...}
 }
+\value{
+Bootstraps and estimate of the minimum redundancy maximim relevance features
+from the mutual information, returning a list where each item is a numeric
+vector of selected feature indices.
+}
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }

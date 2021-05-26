@@ -23,6 +23,11 @@ Export the filters
    \item{bootstrapCount}{...}
    \item{miMatrix}{...}
 }
+\value{
+Exhaustively computes the minimum redudancy maximim relevance features from
+the mutual information matrix, returing a list of solutions where each item
+is a numeric index of selected features.
+}
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
