@@ -1,15 +1,15 @@
 Package: mRMRe
 Type: Package
 Title: Parallelized Minimum Redundancy, Maximum Relevance (mRMR)
-Version: 2.1.1
-Date: 2021-05-25
+Version: 2.1.2
+Date: 2021-09-03
 Authors@R: c(
   person('Nicolas', 'De Jay', role=c('aut')), 
   person('Simon', 'Papillon-Cavanagh', role=c('aut')), 
   person('Catharina', 'Olsen', role=c('aut')),
   person('Gianluca', 'Bontempi', role=c('aut')), 
   person('Bo', 'Li', role=c('aut')),
-  person('Chirstopher', 'Eeles', role=c('ctb')),
+  person('Christopher', 'Eeles', role=c('ctb')),
   person('Benjamin', 'Haibe-Kains', email='benjamin.haibe.kains@utoronto.ca', 
     role=c('aut', 'cre'))
   )

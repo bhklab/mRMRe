@@ -59,7 +59,7 @@ jobs:
           options(crayon.enabled = TRUE)
           rcmdcheck::rcmdcheck(
             args = c("--no-manual", "--as-cran", "--ignore-vignettes"),
-            build_args = c("--no-build-vignettes"),
+            build_args = c("--no-build-vignettes", "--resave-data"),
             error_on = "warning", 
             check_dir = "check"
           )
