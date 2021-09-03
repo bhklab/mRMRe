@@ -14,3 +14,4 @@ REVISIONS
 ^doc$
 ^Meta$
 ^\.github$
+^\.vscode$

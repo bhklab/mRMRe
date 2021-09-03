@@ -3,17 +3,17 @@
 
 #define USE_RINTERNALS
 
-#include <R.h>
-#include <Rinternals.h>
-#include <Rdefines.h>
-#include <R_ext/Rdynload.h>
-
 #include <cstdlib>
 #include <vector>
 
 #include "Filter.h"
 #include "Math.h"
 #include "MutualInformationMatrix.h"
+
+#include <R.h>
+#include <Rinternals.h>
+#include <Rdefines.h>
+#include <R_ext/Rdynload.h>
 
 extern "C" void
 R_init_mRMRe(DllInfo* info);
