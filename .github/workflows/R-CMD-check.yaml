@@ -23,7 +23,7 @@ jobs:
       matrix:
         config:
           - {os: macOS-latest,   r: 'release'}
-          - {os: macOS-11, r: 'release'}
+          - {os: macOS-11.0, r: '4.0'}
           - {os: windows-latest, r: 'release'}
           - {os: windows-latest, r: '3.6'}
           # Deliberately check on older ubuntu to maximise backward compatibility
@@ -37,15 +37,18 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: r-lib/actions/setup-pandoc@v1
+      - uses: r-lib/actions/setup-pandoc@master
 
-      - uses: r-lib/actions/setup-r@v1
+      - uses: r-lib/actions/setup-r@master
         with:
           r-version: ${{ matrix.config.r }}
-          http-user-agent: ${{ matrix.config.http-user-agent }}
-          use-public-rspm: true
+          
+      - name: Put R on the path
+        run: |
+          ln -s /Library/Frameworks/R.framework/Versions/Current/Resources/bin/R /usr/local/bin/ || true
+          ln -s /Library/Frameworks/R.framework/Versions/Current/Resources/bin/Rscript /usr/local/bin/ || true
 
-      - uses: r-lib/actions/setup-r-dependencies@v1
+      - uses: r-lib/actions/setup-r-dependencies@master
         with:
           extra-packages: rcmdcheck
 
