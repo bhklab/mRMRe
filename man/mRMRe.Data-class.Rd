@@ -17,21 +17,21 @@
 	Objects are created via calls of the form \code{new("mRMRe.Data", data, strata, weights, priors)}.
 	
 	\code{data}: is expected to be a data frame with samples and features respectively organized as rows and columns.  The columns
-	have to be of type :{numeric, ordered factor, Surv} and respectively interpreted as :{continuous, discrete and survival} variables.
+	have to be of type \code{numeric}, ordered \code{factor}, or \code{Surv}, and are respectively interpreted as continuous, discrete, and survival variables.
 	
-	\code{strata}: is expected to be a vector of type :{ordered factor} with the strata associated to the samples provided
+	\code{strata}: is expected to be a vector of type \code{factor} with the strata associated to the samples provided
 	in \code{data}.
 	
-	\code{weights}: is expected to be a vector of type :{numeric} with the weights associated to the samples provided
+	\code{weights}: is expected to be a vector of type \code{numeric} with the weights associated to the samples provided
 	in \code{data}.
 	
-	\code{priors}: is expected to be a matrix of type :{numeric} where \code{priors[i, j]}: denotes an forced association between
+	\code{priors}: is expected to be a matrix of type \code{numeric} where \code{priors[i, j]}: denotes an forced association between
 	features i and j in \code{data}.  The latter takes into consideration the directionality of the relationship and must be a value
 	between 0 and 1.
 }
 \section{Mutual Information Matrix}{
 	The \code{mim} method computes and returns a mutual information matrix.  A correlation between continuous features is estimated
-	using an estimator specified in \code{continuous_estimator}; currently, :{pearson, spearman, kendall, frequency} are supported.
+	using an estimator specified in \code{continuous_estimator}; currently, \code{pearson}, \code{spearman}, \code{kendall}, and \code{frequency} are supported.
 	The estimator for discrete features is Cramer's V and for all other combinations, concordance index.
 	
 	When \code{outX} is set to \code{TRUE}, ties are ignored when computing the concordance index and otherwise, these are considered.
