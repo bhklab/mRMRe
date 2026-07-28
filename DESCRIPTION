@@ -1,7 +1,7 @@
 Package: mRMRe
 Type: Package
 Title: Parallelized Minimum Redundancy, Maximum Relevance (mRMR)
-Version: 2.1.2
+Version: 2.1.3
 Date: 2021-09-03
 Authors@R: c(
   person('Nicolas', 'De Jay', role=c('aut')), 
