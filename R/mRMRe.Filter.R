@@ -30,7 +30,7 @@ setMethod("initialize", signature("mRMRe.Filter"),
     method <- match.arg(method)
     continuous_estimator <- match.arg(continuous_estimator)
     
-    if (class(data) != "mRMRe.Data")
+    if (!is(data, "mRMRe.Data"))
         stop("data must be of type mRMRe.Data")
     
     ## Prior Processing
