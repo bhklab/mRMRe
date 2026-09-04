@@ -13,15 +13,15 @@ correlate(X, Y, method = c("pearson", "spearman", "kendall", "frequency", "crame
  		alternative = c("two.sided", "less", "greater"))
 }
 \arguments{
-  \item{X}{Vector of type {numeric, ordered factor, or Surv}.}
-  \item{Y}{Vector of type {numeric, ordered factor, or Surv} of same length as \code{X}.}
-  \item{method}{One of the following values: {pearson, spearman, kendall, frequency, cramersv, or cindex}.}
-  \item{strata}{Vector of type {factor} corresponding to the sample strata.}
-  \item{weights}{Vector of type {numeric} corresponding to the sample weights.}
+  \item{X}{Vector of type \code{numeric}, ordered \code{factor}, or \code{Surv}.}
+  \item{Y}{Vector of type \code{numeric}, ordered \code{factor}, or \code{Surv}, of the same length as \code{X}.}
+  \item{method}{One of \code{"pearson"}, \code{"spearman"}, \code{"kendall"}, \code{"frequency"}, \code{"cramersv"}, or \code{"cindex"}.}
+  \item{strata}{Vector of type \code{factor} corresponding to the sample strata.}
+  \item{weights}{Vector of type \code{numeric} corresponding to the sample weights.}
   \item{outX}{For cindex, if set to \code{TRUE}, ignore ties; otherwise, take them into account when computing the concordance index.}
   \item{bootstrap_count}{If set to \code{0}, analytical standard error for the correlation estimate in each strata is used to compute the meta-estimate (inverse-variance weighting avarega); otherwise a number of bootstraps are used to computes standard errors.}
   \item{alpha}{The probability of Type I error that is, rejecting a null hypothesis when it is in fact true}
-  \item{alternative}{a character string specifying the alternative hypothesis,must be one of {two.sided (default), greater or less}.  You can specify just the initial letter.}
+  \item{alternative}{Character string specifying the alternative hypothesis; one of \code{"two.sided"}, \code{"greater"}, or \code{"less"}. You can specify just the initial letter.}
 }
 \details{
    The \code{correlate} function could be used to measure correlation between any types of variables:

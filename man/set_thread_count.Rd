@@ -1,18 +1,17 @@
 \name{set_thread_count}
 \alias{set_thread_count}
-\title{
-openMP Thread Count
-}
+\title{Internal compiled routine}
 \description{
-This methods allows you to set the number of cores currently accessible to openMP
-}
-\arguments{
-   \item{thread_count}{number of OPENMP threads to be used}
+Internal compiled routine used by \pkg{mRMRe}. Users should call
+\code{set.thread.count()} instead.
 }
 \value{
-No return, sets the number of cores available to openMP for C level parallelization.
+No return value. Used internally to set the OpenMP thread count.
+}
+\seealso{
+\code{\link{set.thread.count}}
 }
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
-\keyword{ methods }
+\keyword{internal}

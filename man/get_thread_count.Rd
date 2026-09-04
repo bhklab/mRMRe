@@ -1,18 +1,17 @@
 \name{get_thread_count}
 \alias{get_thread_count}
-\title{
-openMP Thread Count
-}
+\title{Internal compiled routine}
 \description{
-This methods allows you to get the number of cores currently accessible to openMP
-}
-\arguments{
-   \item{thread_count}{number of OPENMP threads to be used}
+Internal compiled routine used by \pkg{mRMRe}. Users should call
+\code{get.thread.count()} instead.
 }
 \value{
-Return the current number of cores accessible to openMP for C level parallelization
+The current number of threads, returned internally.
+}
+\seealso{
+\code{\link{get.thread.count}}
 }
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
-\keyword{ methods }
+\keyword{internal}

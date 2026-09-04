@@ -1,15 +1,32 @@
 citHeader("To cite mRMRe in publications use:")
 
-citEntry(entry="article",
-  title  ="mRMRe: an R package for parallelized mRMR ensemble feature selection",
-  author = "N De Jay, S Papillon-Cavanagh, C Olsen, G Bontempi and B Haibe-Kains",
-  journal = "Submitted",
-  year = "2012",
-  volume = "",
-  pages = ".",
-  textVersion = paste("N De Jay, S Papillon-Cavanagh, C Olsen, G Bontempi and B Haibe-Kains",
-    "mRMRe: an R package for parallelized mRMR ensemble feature selection",
-    "Submitted (2012)."))
+bibentry(
+  bibtype = "Article",
+  title = "{mRMRe}: an {R} package for parallelized {mRMR} ensemble feature selection",
+  author = c(
+    person("Nicolas", "De Jay"),
+    person("Simon", "Papillon-Cavanagh"),
+    person("Catharina", "Olsen"),
+    person("Naïm", "El-Hachem"),
+    person("Gianluca", "Bontempi"),
+    person("Benjamin", "Haibe-Kains")
+  ),
+  journal = "Bioinformatics",
+  year = "2013",
+  volume = "29",
+  number = "18",
+  pages = "2365--2368",
+  doi = "10.1093/bioinformatics/btt383",
+  textVersion = paste(
+    "De Jay N, Papillon-Cavanagh S, Olsen C, El-Hachem N,",
+    "Bontempi G and Haibe-Kains B (2013).",
+    "mRMRe: an R package for parallelized mRMR ensemble feature selection.",
+    "Bioinformatics, 29(18), 2365--2368.",
+    "doi:10.1093/bioinformatics/btt383."
+  )
+)
 
-citFooter("We have invested our time and effort in creating mRMRe,",
-          "we would be grateful if you could cite it when using it in your analysis.")
+citFooter(
+  "We have invested our time and effort in creating mRMRe;",
+  "we would be grateful if you could cite it when using it in your analysis."
+)
