@@ -1,35 +1,13 @@
 \name{export_filters_bootstrap}
 \alias{export_filters_bootstrap}
-\title{
-Export filters bootstrap
-}
+\title{Internal compiled routine}
 \description{
-Export the filters
-}
-\arguments{
-   \item{solutionCount}{...}
-   \item{solutionLength}{...}
-   \item{dataMatrix}{...}
-   \item{priorsMatrix}{...}
-   \item{priorsWeight}{...}
-   \item{sampleStrata}{...}
-   \item{sampleWeights}{...}
-   \item{featureTypes}{...}
-   \item{sampleCount}{...}
-   \item{featureCount}{...}
-   \item{sampleStratumCount}{...}
-   \item{targetFeatureIndices}{...}
-   \item{continuousEstimator}{...}
-   \item{outX}{...}
-   \item{bootstrapCount}{...}
-   \item{miMatrix}{...}
+Internal compiled routine used by \pkg{mRMRe}. Not intended to be called directly.
 }
 \value{
-Bootstraps and estimate of the minimum redundancy maximim relevance features
-from the mutual information, returning a list where each item is a numeric
-vector of selected feature indices.
+Internal result used by \pkg{mRMRe} to compute bootstrapped minimum redundancy maximum relevance feature selections.
 }
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
-\keyword{ methods }
+\keyword{internal}

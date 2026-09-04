@@ -1,30 +1,13 @@
 \name{export_concordance_index}
 \alias{export_concordance_index}
-\title{
-Export concordance index
-}
+\title{Internal compiled routine}
 \description{
-Export the concordance index
-}
-\arguments{
-   \item{samplesA}{...}
-   \item{samplesB}{...}
-   \item{samplesC}{...}
-   \item{samplesD}{...}
-   \item{sampleStrata}{...}
-   \item{sampleWeights}{...}
-   \item{sampleStratumCount}{...}
-   \item{outX}{...}
-   \item{ratio}{...}
-   \item{concordantWeights}{...}
-   \item{discordantWeights}{...}
-   \item{uninformativeWeights}{...}
-   \item{relevantWeights}{...}
+Internal compiled routine used by \pkg{mRMRe}. Not intended to be called directly.
 }
 \value{
-No return. Modifies the \code{ratio} argument by reference.
+No return value. Used internally by \pkg{mRMRe}.
 }
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
-\keyword{ methods }
+\keyword{internal}

@@ -1,30 +1,13 @@
 \name{export_mim}
 \alias{export_mim}
-\title{
-Export mim
-}
+\title{Internal compiled routine}
 \description{
-Export mim
-}
-\arguments{
-   \item{dataMatrix}{...}
-   \item{priorsMatrix}{...}
-   \item{priorsWeight}{...}
-   \item{sampleStrata}{...}
-   \item{sampleWeights}{...}
-   \item{featureTypes}{...}
-   \item{sampleCount}{...}
-   \item{featureCount}{...}
-   \item{sampleStratumCount}{...}
-   \item{continuousEstimator}{...}
-   \item{outX}{...}
-   \item{bootstrapCount}{...}
-   \item{miMatrix}{...}
+Internal compiled routine used by \pkg{mRMRe}. Not intended to be called directly.
 }
 \value{
-Returns the mutual information matrix.
+Internal result used by \pkg{mRMRe} to compute the mutual information matrix.
 }
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
-\keyword{ methods }
+\keyword{internal}
