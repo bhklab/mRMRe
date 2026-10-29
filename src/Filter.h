@@ -38,33 +38,30 @@ public:
     
     ~Filter();
 
-    void const
+    void
     build();
 
-    inline unsigned int const
+    inline unsigned int
     getParentAbsoluteIndex(unsigned int const absoluteIndex, unsigned int const level) const;
 
     void
     prefetchMi(unsigned int const level);
 
-    void const
+    void
     getSolutions(int* const solutions) const;
 
-    void const
+    void
     getScores(double* const scores) const;
 
-    bool const
-    hasAncestorByFeatureIndex(unsigned int const absolute);
-
-    bool const
+    bool
     hasAncestorByFeatureIndex(unsigned int const absoluteIndex, unsigned int const featureIndex,
             unsigned int level) const;
 
-    bool const
+    bool
     isRedundantPath(unsigned int const absoluteIndex, unsigned int const featureIndex,
             unsigned int const level) const;
 
-    void const
+    void
     placeElements(unsigned int const startingIndex, unsigned int childrenCount,
             unsigned int const level);
 };

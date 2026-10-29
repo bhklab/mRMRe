@@ -5,7 +5,7 @@
 #include <Rmath.h>
 
 // R's RNG is not thread-safe: draw from it serially, never inside an OpenMP region.
-static unsigned int const
+static unsigned int
 drawSeed()
 {
     GetRNGstate();
@@ -29,6 +29,17 @@ Data::Data(double* const pData, Matrix const* const pPriorsMatrix, double const 
                 new unsigned int[sampleStratumCount]), mContinuousEstimator(continuousEstimator), mOutX(
                 outX), mBootstrapCount(bootstrapCount), mPriorsWeight(priorsWeight)
 {
+    // computeMiBetweenFeatures() reads the time column at i + 1 of every survival event column.
+    for (unsigned int i = 0; i < featureCount; ++i)
+    {
+        bool const is_event = pFeatureTypes[i] == FEATURE_SURVIVAL_EVENT;
+        bool const is_time = pFeatureTypes[i] == FEATURE_SURVIVAL_TIME;
+        if (is_event && (i + 1 >= featureCount || pFeatureTypes[i + 1] != FEATURE_SURVIVAL_TIME))
+            Rf_error("survival event column %u must be followed by a survival time column", i + 1);
+        if (is_time && (i == 0 || pFeatureTypes[i - 1] != FEATURE_SURVIVAL_EVENT))
+            Rf_error("survival time column %u must be preceded by a survival event column", i + 1);
+    }
+
     mSeed = bootstrapCount > 0 ? drawSeed() : 0;
 
     Math::placeStratificationData(mpSampleStrata, mpSampleWeights, mpSampleIndicesPerStratum,
@@ -58,7 +69,7 @@ Data::~Data()
     delete[] mpSampleCountPerStratum;
 }
 
-void const
+void
 Data::bootstrap()
 {
     GetRNGstate();
@@ -92,7 +103,7 @@ Data::placeOrders()
                     mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount);
 }
 
-void const
+void
 Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j, double* const mi_ij,
         double* const mi_ji) const
 {
@@ -216,13 +227,13 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j, doubl
         *mi_ji = val_ji;
 }
 
-unsigned int const
+unsigned int
 Data::getSampleCount() const
 {
     return mpDataMatrix->getRowCount();
 }
 
-unsigned int const
+unsigned int
 Data::getFeatureCount() const
 {
     return mpDataMatrix->getColumnCount();

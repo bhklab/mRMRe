@@ -1,5 +1,4 @@
 #include "Filter.h"
-#include <iostream>
 #include <limits>
 
 Filter::Filter(int const* const pChildrenCountPerLevel, unsigned int const levelCount,
@@ -40,7 +39,7 @@ Filter::~Filter()
     delete[] mpScoreTree;
 }
 
-void const
+void
 Filter::build()
 {
     for (unsigned int level = 0; level < mLevelCount; ++level)
@@ -96,14 +95,14 @@ Filter::prefetchMi(unsigned int const level)
         }
 }
 
-/* inline */unsigned int const
+/* inline */unsigned int
 Filter::getParentAbsoluteIndex(unsigned int const absoluteIndex, unsigned int const level) const
 {
     return (absoluteIndex - mpStartingIndexPerLevel[level]) / mpChildrenCountPerLevel[level - 1]
             + mpStartingIndexPerLevel[level - 1];
 }
 
-void const
+void
 Filter::getSolutions(int* const solutions) const
 {
     unsigned int counter = 0;
@@ -123,7 +122,7 @@ Filter::getSolutions(int* const solutions) const
     }
 }
 
-void const
+void
 Filter::getScores(double* const scores) const
 {
     unsigned int counter = 0;
@@ -141,7 +140,7 @@ Filter::getScores(double* const scores) const
     }
 }
 
-bool const
+bool
 Filter::hasAncestorByFeatureIndex(unsigned int const absoluteIndex, unsigned int const featureIndex,
         unsigned int level) const
 {
@@ -160,7 +159,7 @@ Filter::hasAncestorByFeatureIndex(unsigned int const absoluteIndex, unsigned int
     return false;
 }
 
-bool const
+bool
 Filter::isRedundantPath(unsigned int const absoluteIndex, unsigned int const featureIndex,
         unsigned int const level) const
 {
@@ -209,7 +208,7 @@ Filter::isRedundantPath(unsigned int const absoluteIndex, unsigned int const fea
     return false;
 }
 
-void const
+void
 Filter::placeElements(unsigned int const startingIndex, unsigned int childrenCount,
         unsigned int const level)
 {   
@@ -219,7 +218,6 @@ Filter::placeElements(unsigned int const startingIndex, unsigned int childrenCou
     unsigned int const feature_count = mi_matrix.getRowCount();
     unsigned int* const p_candidate_feature_indices = new unsigned int[feature_count];
     unsigned int* const p_order = new unsigned int[feature_count];
-    unsigned int* const p_adaptor = new unsigned int[feature_count];
     double* const p_candidate_scores = new double[feature_count];
 
     /*  The reason why the selection does not start from the 0, it is because the package request (temporarily) the input 
@@ -234,7 +232,7 @@ Filter::placeElements(unsigned int const startingIndex, unsigned int childrenCou
         
         double ancestry_score = 0.;
         
-        for (int j = 0; j < mFixedFeatureCount; ++j) 
+        for (unsigned int j = 0; j < mFixedFeatureCount; ++j) 
         {
             double ancestry_score_ij = Math::computeMi(
                     mi_matrix.at(i, j));
@@ -271,7 +269,6 @@ Filter::placeElements(unsigned int const startingIndex, unsigned int childrenCou
         if (score == score)
         {
             p_order[counter] = counter;
-            p_adaptor[counter] = counter;
             p_candidate_feature_indices[counter] = i;
             p_candidate_scores[counter] = score;
 
@@ -279,7 +276,9 @@ Filter::placeElements(unsigned int const startingIndex, unsigned int childrenCou
         }
     }
 
-    std::sort(p_order, p_order + counter, Math::IndirectComparator(p_candidate_scores, p_adaptor));
+    std::sort(p_order, p_order + counter,
+            [p_candidate_scores](unsigned int a, unsigned int b)
+            { return p_candidate_scores[a] < p_candidate_scores[b]; });
 
 #ifdef _OPENMP
 // Scoring runs in parallel; placement is applied in parent order so that redundancy checks against
@@ -304,7 +303,6 @@ Filter::placeElements(unsigned int const startingIndex, unsigned int childrenCou
     }
 
     delete[] p_order;
-    delete[] p_adaptor;
     delete[] p_candidate_feature_indices;
     delete[] p_candidate_scores;
 }

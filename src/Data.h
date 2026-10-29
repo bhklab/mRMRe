@@ -53,17 +53,17 @@ public:
 
     ~Data();
 
-    void const
+    void
     bootstrap();
 
-    void const
+    void
     computeMiBetweenFeatures(unsigned int const i, unsigned int const j, double* const mi_ij,
             double* const mi_ji) const;
 
-    unsigned int const
+    unsigned int
     getSampleCount() const;
 
-    unsigned int const
+    unsigned int
     getFeatureCount() const;
 };
 

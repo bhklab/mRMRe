@@ -1,7 +1,7 @@
 #ifndef mRMRe_Matrix_h
 #define mRMRe_Matrix_h
 
-#include <vector>
+#include <cstddef>
 
 class Matrix
 {
@@ -21,9 +21,6 @@ public:
     Matrix(unsigned int const rowCount, unsigned int const columnCount);
 
     explicit
-    Matrix(unsigned int const size, unsigned int const rowCount, unsigned int const columnCount);
-
-    explicit
     Matrix(double* const pData, unsigned int const rowCount, unsigned int const columnCount);
 
     virtual
@@ -35,10 +32,10 @@ public:
     virtual double const&
     at(unsigned int const i, unsigned int const j) const;
 
-    unsigned int const
+    unsigned int
     getColumnCount() const;
 
-    unsigned int const
+    unsigned int
     getRowCount() const;
 };
 
