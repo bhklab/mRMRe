@@ -83,11 +83,11 @@ export_filters(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, S
     unsigned int const chunk_size = solution_count * feature_count_per_solution;
 
     SEXP result;
-    PROTECT(result = allocVector(VECSXP, 3));
+    PROTECT(result = Rf_allocVector(VECSXP, 3));
 
-    SET_VECTOR_ELT(result, 0, allocVector(VECSXP, LENGTH(targetFeatureIndices)));
-    SET_VECTOR_ELT(result, 1, allocVector(VECSXP, LENGTH(targetFeatureIndices)));
-    SET_VECTOR_ELT(result, 2, allocVector(VECSXP, LENGTH(targetFeatureIndices)));
+    SET_VECTOR_ELT(result, 0, Rf_allocVector(VECSXP, LENGTH(targetFeatureIndices)));
+    SET_VECTOR_ELT(result, 1, Rf_allocVector(VECSXP, LENGTH(targetFeatureIndices)));
+    SET_VECTOR_ELT(result, 2, Rf_allocVector(VECSXP, LENGTH(targetFeatureIndices)));
 
     for (unsigned int i = 0; i < LENGTH(targetFeatureIndices); ++i)
     {
@@ -95,9 +95,9 @@ export_filters(SEXP childrenCountPerLevel, SEXP dataMatrix, SEXP priorsMatrix, S
                 INTEGER(targetFeatureIndices)[i], INTEGER(fixedFeatureCount)[0]);
         filter.build();
 
-        SET_VECTOR_ELT(VECTOR_ELT(result, 0), i, allocVector(INTSXP, chunk_size));
-        SET_VECTOR_ELT(VECTOR_ELT(result, 1), i, allocVector(REALSXP, INTEGER(featureCount)[0]));
-        SET_VECTOR_ELT(VECTOR_ELT(result, 2), i, allocVector(REALSXP, chunk_size));
+        SET_VECTOR_ELT(VECTOR_ELT(result, 0), i, Rf_allocVector(INTSXP, chunk_size));
+        SET_VECTOR_ELT(VECTOR_ELT(result, 1), i, Rf_allocVector(REALSXP, INTEGER(featureCount)[0]));
+        SET_VECTOR_ELT(VECTOR_ELT(result, 2), i, Rf_allocVector(REALSXP, chunk_size));
 
         filter.getSolutions(INTEGER(VECTOR_ELT(VECTOR_ELT(result, 0), i)));
         filter.getScores(REAL(VECTOR_ELT(VECTOR_ELT(result, 2), i)));
@@ -144,17 +144,17 @@ export_filters_bootstrap(SEXP solutionCount, SEXP solutionLength, SEXP dataMatri
         p_children_count_per_level[i] = 1;
 
     SEXP result;
-    PROTECT(result = allocVector(VECSXP, 3));
+    PROTECT(result = Rf_allocVector(VECSXP, 3));
 
-    SET_VECTOR_ELT(result, 0, allocVector(VECSXP, LENGTH(targetFeatureIndices)));
-    SET_VECTOR_ELT(result, 1, allocVector(VECSXP, LENGTH(targetFeatureIndices)));
-    SET_VECTOR_ELT(result, 2, allocVector(VECSXP, LENGTH(targetFeatureIndices)));
+    SET_VECTOR_ELT(result, 0, Rf_allocVector(VECSXP, LENGTH(targetFeatureIndices)));
+    SET_VECTOR_ELT(result, 1, Rf_allocVector(VECSXP, LENGTH(targetFeatureIndices)));
+    SET_VECTOR_ELT(result, 2, Rf_allocVector(VECSXP, LENGTH(targetFeatureIndices)));
 
     for (unsigned int i = 0; i < LENGTH(targetFeatureIndices); ++i)
     {
-        SET_VECTOR_ELT(VECTOR_ELT(result, 0), i, allocVector(INTSXP, chunk_size));
-        SET_VECTOR_ELT(VECTOR_ELT(result, 1), i, allocVector(REALSXP, INTEGER(featureCount)[0]));
-        SET_VECTOR_ELT(VECTOR_ELT(result, 2), i, allocVector(REALSXP, chunk_size));
+        SET_VECTOR_ELT(VECTOR_ELT(result, 0), i, Rf_allocVector(INTSXP, chunk_size));
+        SET_VECTOR_ELT(VECTOR_ELT(result, 1), i, Rf_allocVector(REALSXP, INTEGER(featureCount)[0]));
+        SET_VECTOR_ELT(VECTOR_ELT(result, 2), i, Rf_allocVector(REALSXP, chunk_size));
 
         for (unsigned int k = 0; k < INTEGER(featureCount)[0]; ++k)
             REAL(VECTOR_ELT(VECTOR_ELT(result, 1), i))[k] =
