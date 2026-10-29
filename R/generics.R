@@ -57,12 +57,10 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
 
 `.map.continuous.estimator` <- function(continuous_estimator)
 {
-    value <- switch(continuous_estimator, "pearson" = 0L, "spearman" = 1L, "kendall" = 2L, "frequency" = 3L, -1L)
+    estimators <- c("pearson", "spearman", "kendall", "frequency")
+    continuous_estimator <- match.arg(continuous_estimator, estimators)
     
-    if (value < 0L || value > 4L || !is.character(continuous_estimator))
-        stop("estimator must be of the following: pearson, spearman, kendall, frequency")
-    
-    return(value)
+    return(match(continuous_estimator, estimators) - 1L)
 }
 
 `correlate` <- function(X, Y, method = c("pearson", "spearman", "kendall", "frequency", "cramersv", "cindex"), strata, weights, outX = TRUE, bootstrap_count = 0, alpha = 0.05, alternative=c("two.sided", "less", "greater"))
@@ -97,23 +95,23 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
       names(weights) <- names(X)
     } 
     
-    data <- mRMR.data(data = data.frame(X, Y), strata = strata, weights = weights)
+    mrmre_data <- mRMR.data(data = data.frame(X, Y), strata = strata, weights = weights)
 
     if (method == "cindex")
     {
         empty <- vector(mode = "numeric", length = 0)
         
-        if (length(data@feature_types) == 2)
-            input <- list(data@data[, 1], data@data[, 2], empty, empty)
-        else if (length(data@feature_types) == 3)
+        if (length(mrmre_data@feature_types) == 2)
+            input <- list(mrmre_data@data[, 1], mrmre_data@data[, 2], empty, empty)
+        else if (length(mrmre_data@feature_types) == 3)
         {
-            if (data@feature_types[[1]] == 2)
-                input <- list(data@data[, 1], data@data[, 3], data@data[, 2], empty)
-            else if (data@feature_types[[2]] == 2)
-                input <- list(data@data[, 2], data@data[, 1], data@data[, 3], empty)
+            if (mrmre_data@feature_types[[1]] == 2)
+                input <- list(mrmre_data@data[, 1], mrmre_data@data[, 3], mrmre_data@data[, 2], empty)
+            else if (mrmre_data@feature_types[[2]] == 2)
+                input <- list(mrmre_data@data[, 2], mrmre_data@data[, 1], mrmre_data@data[, 3], empty)
         }
-        else if (length(data@feature_types) == 4)
-            input <- list(data@data[, 1], data@data[, 3], data@data[, 2], data@data[, 4])
+        else if (length(mrmre_data@feature_types) == 4)
+            input <- list(mrmre_data@data[, 1], mrmre_data@data[, 3], mrmre_data@data[, 2], mrmre_data@data[, 4])
         
 				ratio <- vector(mode = "numeric", length = 1)
 				ch <- vector(mode = "numeric", length = length(input[[1]]))
@@ -122,16 +120,16 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
 				rh <- vector(mode = "numeric", length = length(input[[1]]))
 
         .Call(.C_export_concordance_index, as.numeric(input[[1]]), as.numeric(input[[2]]),
-                as.numeric(input[[3]]), as.numeric(input[[4]]), as.integer(data@strata), as.numeric(data@weights),
-                as.integer(length(unique(data@strata))), outX, ratio, ch, dh, uh, rh)  
+                as.numeric(input[[3]]), as.numeric(input[[4]]), as.integer(mrmre_data@strata), as.numeric(mrmre_data@weights),
+                as.integer(length(unique(mrmre_data@strata))), outX, ratio, ch, dh, uh, rh)  
         
               cindex <- ratio
-              myx <- complete.cases(featureData(data), sampleStrata(data), sampleWeights(data))
+              myx <- complete.cases(featureData(mrmre_data), sampleStrata(mrmre_data), sampleWeights(mrmre_data))
               N <- sum(weights[myx])
               
               cscount <- sum(ch + dh) ## comparable pairs
               if (sum(ch) == 0 || sum (dh) ==0 || sum(ch * (ch - 1)) == 0 || sum(dh * (dh - 1)) == 0 || sum(ch * dh) == 0 || cscount < 10)
-                return(list("cindex"=NA, "se"=NA, "lower"=NA, "upper"=NA, "p"=NA, "n"=N))
+                return(list("estimate"=NA, "se"=NA, "lower"=NA, "upper"=NA, "p"=NA, "n"=N))
               
               ## FIXME: N and subsequent calculation should be done withing strata
               pc <- (1 / (N * (N - 1))) * sum(ch)
@@ -155,9 +153,9 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
         return(list("estimate"=cindex, "se"=se, "lower"=lower, "upper"=upper, "p"=p, "n"=N))
     }
     else if (method == "cramersv")
-        return(list(statistic = mim(data, method = "cor", outX = outX, bootstrap_count = bootstrap_count)[1, 2]))
+        return(list(statistic = mim(mrmre_data, method = "cor", outX = outX, bootstrap_count = bootstrap_count)[1, 2]))
     else
-        return(list(statistic = mim(data, method = "cor", continuous_estimator = method, outX = outX,
+        return(list(statistic = mim(mrmre_data, method = "cor", continuous_estimator = method, outX = outX,
                             bootstrap_count = bootstrap_count)[1, 2]))
 }
 

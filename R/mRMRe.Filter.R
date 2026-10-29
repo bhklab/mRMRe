@@ -1,6 +1,6 @@
 ## Definition
 
-setClass("mRMRe.Filter", representation(filters = "list", scores = "list", 
+setClass("mRMRe.Filter", representation(filters = "list", 
     mi_matrix = "matrix", causality_list = "list", sample_names = "character", 
     feature_names = "character", target_indices = "integer", 
     fixed_feature_count = "numeric", levels = "integer"))
@@ -30,7 +30,7 @@ setMethod("initialize", signature("mRMRe.Filter"),
     method <- match.arg(method)
     continuous_estimator <- match.arg(continuous_estimator)
     
-    if (class(data) != "mRMRe.Data")
+    if (!is(data, "mRMRe.Data"))
         stop("data must be of type mRMRe.Data")
     
     ## Prior Processing
@@ -107,9 +107,6 @@ setMethod("initialize", signature("mRMRe.Filter"),
                         nrow = length(levels), ncol = prod(levels)))
 	
     names(.Object@filters) <- .Object@target_indices
-    .Object@causality_list <- result[[2]]
-	.Object@scores <- lapply(result[[3]], function(scores) matrix(scores,	nrow = length(levels), ncol = prod(levels)))
-	names(.Object@scores) <- .Object@target_indices
     
 	cols_to_drop <- duplicated(.compressFeatureIndices(data, seq(ncol(data@data))))
     
@@ -203,24 +200,32 @@ setMethod("solutions", signature("mRMRe.Filter"),
 ## scores
 setMethod("scores", signature("mRMRe.Filter"), function(object)
 {
-	mi_matrix <- mim(object)
-	targets <- as.character(target(object))
+	return(.scores.from.solutions(mim(object), solutions(object)))
+})
+
+## shared by the scores() methods of mRMRe.Data, mRMRe.Filter and mRMRe.Network
+
+`.scores.from.solutions` <- function(mi_matrix, solutions)
+{
+	targets <- names(solutions)
+
 	scores <- lapply(targets, function(target) {
-				apply(solutions(object)[[target]], 2, function(solution) {
+				apply(solutions[[target]], 2, function(solution) {
 							sapply(1:length(solution), function(i) {
-										feature_i <- solution[i] 
+										feature_i <- solution[i]
+										if(is.na(feature_i))
+											return(NA)
 										if(i == 1)
 											return(mi_matrix[as.numeric(target), feature_i])
-										
+
 										ancestry_score <- mean(sapply((i-1):1, function(j) mi_matrix[feature_i, solution[j]]))
 										return(mi_matrix[as.numeric(target), feature_i] - ancestry_score)
 									})
-							
 						})
 			})
 	names(scores) <- targets
 	return(scores)
-})
+}
 
 ## mim
 

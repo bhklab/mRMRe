@@ -1,7 +1,7 @@
 useDynLib(mRMRe, .fixes = ".C_", .registration = TRUE)
 import(methods)
 importFrom(survival, Surv, is.Surv)
-importFrom(igraph, graph.adjacency, plot.igraph)
+importFrom(igraph, graph_from_adjacency_matrix)
 importFrom("stats", "complete.cases", "pnorm", "qnorm")
 importFrom("utils", "str")
 export(correlate, get.thread.count, mRMR.classic, mRMR.data, mRMR.ensemble,
