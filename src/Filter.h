@@ -44,6 +44,9 @@ public:
     inline unsigned int const
     getParentAbsoluteIndex(unsigned int const absoluteIndex, unsigned int const level) const;
 
+    void
+    prefetchMi(unsigned int const level);
+
     void const
     getSolutions(int* const solutions) const;
 

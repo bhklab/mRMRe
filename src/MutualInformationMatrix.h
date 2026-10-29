@@ -5,6 +5,8 @@
 #include <omp.h>
 #endif
 
+#include <vector>
+
 #include "Data.h"
 #include "Matrix.h"
 
@@ -18,6 +20,7 @@ private:
 
 protected:
     Data const* const mpData;
+    std::vector<char> mIsComputed; // char, not bool: adjacent flags must be writable from different threads
 
 public:
     MutualInformationMatrix(Data const* const pData);
