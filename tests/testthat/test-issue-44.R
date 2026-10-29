@@ -6,7 +6,7 @@ orig_threads <- get.thread.count()
 
 with_threads <- function(n, expr) {
     set.thread.count(n)
-    on.exit(set.thread.count(orig_threads))
+    on.exit(if (orig_threads >= 1) set.thread.count(orig_threads))
     force(expr)
 }
 
