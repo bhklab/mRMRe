@@ -14,13 +14,13 @@ Math::IndirectComparator::IndirectComparator(double const* const pSamples,
 
 }
 
-bool const
+bool
 Math::IndirectComparator::operator()(unsigned int const i, unsigned int const j) const
 {
     return mpSamples[mpSampleIndices[i]] < mpSamples[mpSampleIndices[j]];
 }
 
-/* static */void const
+void
 Math::computeCausality(double* const pCausalityArray, Matrix const* const pMiMatrix,
         int const* const pSolutions, unsigned int const solutionCount,
         unsigned int const featureCountPerSolution, unsigned int const featureCount,
@@ -58,7 +58,7 @@ Math::computeCausality(double* const pCausalityArray, Matrix const* const pMiMat
     }
 }
 
-/* static */double const
+double
 Math::computeCoInformationLattice(double const cor_ij, double const cor_ik, double const cor_jk)
 {
     double const cor_ij_sq = cor_ij * cor_ij;
@@ -71,7 +71,7 @@ Math::computeCoInformationLattice(double const cor_ij, double const cor_ik, doub
                             / (1 + 2 * cor_ij * cor_ik * cor_jk - cor_ij_sq - cor_ik_sq - cor_jk_sq));
 }
 
-/* static */double const
+double
 Math::computeConcordanceIndex(double const* const pDiscreteSamples,
         double const* const pContinuousSamples, double const* const pSampleWeights,
         unsigned int const* const * const pSampleIndicesPerStratum,
@@ -151,7 +151,7 @@ Math::computeConcordanceIndex(double const* const pDiscreteSamples,
     return sum_concordant_weight / sum_relevant_weight;
 }
 
-/*static*/double const
+double
 Math::computeConcordanceIndex(double const* const pDiscreteSamples,
         double const* const pContinuousSamples, double const* const pTimeSamples,
         double const* const pSampleWeights,
@@ -232,7 +232,7 @@ Math::computeConcordanceIndex(double const* const pDiscreteSamples,
     return sum_concordant_weight / sum_relevant_weight;
 }
 
-/*static*/double const
+double
 Math::computeConcordanceIndex(double const* const pDiscreteSamplesX,
         double const* const pDiscreteSamplesY, double const* const pTimeSamplesX,
         double const* const pTimeSamplesY, double const* const pSampleWeights,
@@ -316,7 +316,7 @@ Math::computeConcordanceIndex(double const* const pDiscreteSamplesX,
     return sum_concordant_weight / sum_relevant_weight;
 }
 
-/* static */double const
+double
 Math::computeCramersV(double const* const pSamplesX, double const* const pSamplesY,
         double const* const pSampleWeights,
         unsigned int const* const * const pSampleIndicesPerStratum,
@@ -383,7 +383,7 @@ Math::computeCramersV(double const* const pSamplesX, double const* const pSample
     return r;
 }
 
-/* static */double const
+double
 Math::computeCramersV(double const* const pSamplesX, double const* const pSamplesY,
         double const* const pSampleWeights, unsigned int const* const pSampleIndices,
         unsigned int const sampleCount, double* const pTotalWeight)
@@ -462,7 +462,7 @@ Math::computeCramersV(double const* const pSamplesX, double const* const pSample
     return std::sqrt(chi_square / (total_weight * (min_classes - 1)));
 }
 
-/* static */double const
+double
 Math::computeFrequency(double const* const pSamplesX, double const* const pSamplesY,
         double const* const pSampleWeights,
         unsigned int const* const * const pSampleIndicesPerStratum,
@@ -529,7 +529,7 @@ Math::computeFrequency(double const* const pSamplesX, double const* const pSampl
     return r;
 }
 
-/* static */double const
+double
 Math::computeFrequency(double const* const pSamplesX, double const* const pSamplesY,
         double const* const pSampleWeights, unsigned int const* const pSampleIndices,
         unsigned int const sampleCount, double* const pTotalWeight)
@@ -561,26 +561,13 @@ Math::computeFrequency(double const* const pSamplesX, double const* const pSampl
     return r;
 }
 
-/* static */double const
-Math::computeFisherTransformation(double const r)
-{
-    return 0.5 * std::log((1 + r) / (1 - r));
-}
-
-/* static */double const
-Math::computeFisherTransformationReverse(double const z)
-{
-    double const exp = std::exp(2 * z);
-    return (exp - 1) / (exp + 1);
-}
-
-/* static */double const
+double
 Math::computeMi(double const r)
 {
     return -0.5 * std::log(1 - (r * r));
 }
 
-/* static */double const
+double
 Math::computePearsonCorrelation(double const* const pSamplesX, double const* const pSamplesY,
         double const* const pSampleWeights,
         unsigned int const* const * const pSampleIndicesPerStratum,
@@ -647,7 +634,7 @@ Math::computePearsonCorrelation(double const* const pSamplesX, double const* con
     return r;
 }
 
-/* static */double const
+double
 Math::computePearsonCorrelation(double const* const pSamplesX, double const* const pSamplesY,
         double const* const pSampleWeights, unsigned int const* const pSampleIndices,
         unsigned int const sampleCount, double* const pTotalWeight)
@@ -687,48 +674,13 @@ Math::computePearsonCorrelation(double const* const pSamplesX, double const* con
     return r;
 }
 
-/* static */double const
+double
 Math::computeSomersD(double const c)
 {
     return (c - 0.5) * 2;
 }
 
-/* static */double const
-Math::computeSpearmanCorrelation(double const* const pSamplesX, double const* const pSamplesY,
-        double const* const pSampleWeights,
-        unsigned int const* const * const pSampleIndicesPerStratum,
-        unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
-        unsigned int const bootstrapCount, unsigned int const seed, unsigned int const sampleCount)
-{
-    double* const p_ordered_samples_x = new double[sampleCount];
-    double* const p_ordered_samples_y = new double[sampleCount];
-
-    Math::placeOrders(&pSamplesX[0], p_ordered_samples_x, pSampleIndicesPerStratum,
-            pSampleCountPerStratum, sampleStratumCount);
-    Math::placeOrders(&pSamplesY[0], p_ordered_samples_y, pSampleIndicesPerStratum,
-            pSampleCountPerStratum, sampleStratumCount);
-
-    double* const p_ranked_samples_x = new double[sampleCount];
-    double* const p_ranked_samples_y = new double[sampleCount];
-
-    Math::placeRanksFromOrders(&pSamplesX[0], &pSamplesY[0], p_ordered_samples_x,
-            p_ordered_samples_y, p_ranked_samples_x, p_ranked_samples_y, pSampleIndicesPerStratum,
-            pSampleCountPerStratum, sampleStratumCount);
-
-    delete[] p_ordered_samples_x;
-    delete[] p_ordered_samples_y;
-
-    double const r = Math::computePearsonCorrelation(p_ranked_samples_x, p_ranked_samples_y,
-            &pSampleWeights[0], pSampleIndicesPerStratum, pSampleCountPerStratum,
-            sampleStratumCount, bootstrapCount, seed);
-
-    delete[] p_ranked_samples_x;
-    delete[] p_ranked_samples_y;
-
-    return r;
-}
-
-/* static */double const
+double
 Math::computeVariance(double const* const pSamples, unsigned int const sampleCount)
 {
     if (sampleCount == 0)
@@ -748,7 +700,7 @@ Math::computeVariance(double const* const pSamples, unsigned int const sampleCou
     return m2 / (sampleCount - 1);
 }
 
-/* static */void const
+void
 Math::placeOrders(double const* const pSamples, double* const pOrders,
         unsigned int const* const * const pSampleIndicesPerStratum,
         unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount)
@@ -778,7 +730,7 @@ Math::placeOrders(double const* const pSamples, double* const pOrders,
     }
 }
 
-/* static */void const
+void
 Math::placeRanksFromOrders(double const* const pSamplesX, double const* const pSamplesY,
         double const* const pOrdersX, double const* const pOrdersY, double* const pRanksX,
         double* const pRanksY, unsigned int const* const * const pSampleIndicesPerStratum,
@@ -817,42 +769,7 @@ Math::placeRanksFromOrders(double const* const pSamplesX, double const* const pS
     }
 }
 
-/* static */void const
-Math::placeRanksFromSamples(double const* const pSamples, double* const pRanks,
-        unsigned int const* const * const pSampleIndicesPerStratum,
-        unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount)
-{
-    for (unsigned int i = 0; i < sampleStratumCount; ++i)
-    {
-        unsigned int const* const p_sample_indices = pSampleIndicesPerStratum[i];
-        unsigned int const sample_count = pSampleCountPerStratum[i];
-        unsigned int* const p_order = new unsigned int[sample_count];
-
-        unsigned int offset = 0;
-        for (unsigned int j = 0; j < sample_count; ++j)
-        {
-            unsigned int const my_index = p_sample_indices[j];
-
-            if (pSamples[my_index] == pSamples[my_index])
-                p_order[j - offset] = j;
-            else
-                ++offset;
-        }
-
-        std::sort(p_order, p_order + sample_count - offset,
-                Math::IndirectComparator(pSamples, p_sample_indices));
-
-        for (unsigned int j = 0; j < sample_count; ++j)
-            pRanks[j] = std::numeric_limits<double>::quiet_NaN();
-
-        for (unsigned int j = 0; j < sample_count - offset; ++j)
-            pRanks[p_sample_indices[p_order[j]]] = j;
-
-        delete[] p_order;
-    }
-}
-
-/* static */void const
+void
 Math::placeStratificationData(int const* const pSampleStrata, double const* const pSampleWeights,
         unsigned int** const pSampleIndicesPerStratum, unsigned int* const pSampleCountPerStratum,
         unsigned int const sampleStratumCount, unsigned int const sampleCount)
