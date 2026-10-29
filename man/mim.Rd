@@ -23,7 +23,10 @@
   \item{continuous_estimator}{an estimator of the mutual information between features: either "pearson", "spearman", "kendall", "frequency" (mRMRe.Data only).}
   \item{outX}{a boolean used in the concordance index estimator to keep or throw out ties (mRMRe.Data only).}
   \item{bootstrap_count}{an integer indicating the number of bootstrap resampling used in estimation (mRMRe.Data only). }
-  \item{method}{either "mi" or "cor"; the latter will return the correlation coefficients (rho) while the former will return the mutual information (-0.5 * log(1 - (rho^2))). }
+  \item{method}{either "mi" or "cor"; the latter will return the correlation coefficients (rho) while the former will return the mutual information (-0.5 * log(1 - (rho^2))). For \code{mRMRe.Data}, \code{method = "cor"} returns the correlation matrix, the estimator being set by \code{continuous_estimator}. }
+}
+\value{
+A square numeric matrix with one row and column per feature. For \code{mRMRe.Data} it is the full pairwise matrix of mutual information, or of correlation coefficients when \code{method = "cor"}; for \code{mRMRe.Filter} and \code{mRMRe.Network} it is the sparse, lazily evaluated matrix computed during selection.
 }
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains

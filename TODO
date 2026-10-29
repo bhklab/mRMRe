@@ -2,14 +2,6 @@
 
 - Revise R code for imperfections and inefficiencies
 
-- Finish documentation [URGENT]
-
-- Vignettes [URGENT]
-
-- Submisssion to CRAN [URGENT]
-
-- MPI
-
 - Barcode and likelihood
 
 - Implement more functions to existing S4 classes (especially mRMRe.Network)
@@ -25,5 +17,3 @@
 - Adjacency matrix should be directed if causality inference is performed: parents (selected features) in rows, children (target features) in columns
 
 - mRMR score of each solution should be stored in the mRMR.Filter and mRMR.Network objects
-
-- in mRMRe.Filter user should be able to specify some features that are already selected; for instance let say that the user wants to find solutions that starts with features 1, 5, and 27 and see wich ar the next features taht will selected. This scenario is relevant to cancer research where we want to include some clinical parameters by defaults in our feature selection.

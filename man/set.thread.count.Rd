@@ -16,7 +16,7 @@ set.thread.count(thread_count)
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
 \value{
-No return, sets the number of cores available to openMP for C level parallelization.
+Returns the thread count that was set (the value passed as \code{thread_count}, as an integer). The number of cores available to openMP for C level parallelization is set as a side effect.
 }
 \examples{
 # Access to number of available threads
