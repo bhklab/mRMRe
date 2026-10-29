@@ -9,6 +9,5 @@
 ^CLAUDE\.local\.md$
 ^REVIEW\.md$
 ^\.issues$
-^unitest$
 ^\.git$
 ^\.claude$
