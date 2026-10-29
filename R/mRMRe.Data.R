@@ -244,14 +244,12 @@ setMethod("mim", signature("mRMRe.Data"),
     else
         prior_weight <- 0
     
-    mi_matrix <- as.numeric(matrix(NA, ncol = ncol(object@data), nrow = ncol(object@data)))
-    
-    .Call(.C_export_mim, as.numeric(object@data), as.numeric(object@priors),
+    mi_matrix <- .Call(.C_export_mim, as.numeric(object@data), as.numeric(object@priors),
             as.numeric(prior_weight), as.integer(object@strata), as.numeric(object@weights),
             as.integer(object@feature_types), as.integer(nrow(object@data)), as.integer(ncol(object@data)),
             as.integer(length(unique(object@strata))),
             as.integer(.map.continuous.estimator(continuous_estimator)),
-            as.integer(outX), as.integer(bootstrap_count), mi_matrix)
+            as.integer(outX), as.integer(bootstrap_count))
     
     mi_matrix <- matrix(mi_matrix, ncol = ncol(object@data), nrow = ncol(object@data))
     

@@ -9,7 +9,7 @@ This methods allows you to retrieve the number of cores currently accessible to 
 get.thread.count()
 }
 \value{
-An integer: the number of cores accessible to openMP for C level parallelization. It is 0 when the package was built without OpenMP support (e.g. the macOS CRAN binaries), in which case the C code runs single-threaded.
+An integer: the maximum number of cores accessible to openMP for C level parallelization. It is 0 when the package was built without OpenMP support (e.g. the macOS CRAN binaries), in which case the C code runs single-threaded.
 }
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains

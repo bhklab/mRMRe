@@ -113,17 +113,13 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
         else if (length(mrmre_data@feature_types) == 4)
             input <- list(mrmre_data@data[, 1], mrmre_data@data[, 3], mrmre_data@data[, 2], mrmre_data@data[, 4])
         
-				ratio <- vector(mode = "numeric", length = 1)
-				ch <- vector(mode = "numeric", length = length(input[[1]]))
-				dh <- vector(mode = "numeric", length = length(input[[1]]))
-				uh <- vector(mode = "numeric", length = length(input[[1]]))
-				rh <- vector(mode = "numeric", length = length(input[[1]]))
-
-        .Call(.C_export_concordance_index, as.numeric(input[[1]]), as.numeric(input[[2]]),
+        out <- .Call(.C_export_concordance_index, as.numeric(input[[1]]), as.numeric(input[[2]]),
                 as.numeric(input[[3]]), as.numeric(input[[4]]), as.integer(mrmre_data@strata), as.numeric(mrmre_data@weights),
-                as.integer(length(unique(mrmre_data@strata))), outX, ratio, ch, dh, uh, rh)  
+                as.integer(length(unique(mrmre_data@strata))), outX)
+        ch <- out$concordant
+        dh <- out$discordant
         
-              cindex <- ratio
+              cindex <- out$ratio
               myx <- complete.cases(featureData(mrmre_data), sampleStrata(mrmre_data), sampleWeights(mrmre_data))
               N <- sum(weights[myx])
               
@@ -161,18 +157,14 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
 
 `get.thread.count` <- function()
 {
-    thread_count <- vector(mode = "integer", length = 1)
-    
-    .Call(.C_get_thread_count, thread_count)
-    
-    return(thread_count)
+    .Call(.C_get_thread_count)
 }
 
 `set.thread.count` <- function(thread_count)
 {
-    thread_count <- as.integer(thread_count)
+    if (!is.numeric(thread_count) || length(thread_count) != 1 || is.na(thread_count) ||
+            thread_count < 1 || thread_count != round(thread_count))
+        stop("thread_count must be a single whole number >= 1")
     
-    .Call(.C_set_thread_count, thread_count)
-    
-    return(thread_count)
+    invisible(.Call(.C_set_thread_count, as.integer(thread_count)))
 }
