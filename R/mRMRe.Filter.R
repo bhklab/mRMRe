@@ -47,7 +47,7 @@ setMethod("initialize", signature("mRMRe.Filter"),
     
     ## Target Processing
 
-    if (sum(sapply(target_indices, function(index) index < 1 || index > featureCount(data))) > 1)
+    if (any(target_indices < 1 | target_indices > featureCount(data)))
         stop("target_indices must only contain values ranging from 1 to the number of features in data")
     
     ## Level Processing
@@ -57,8 +57,8 @@ setMethod("initialize", signature("mRMRe.Filter"),
     
             
     ## Fixed selected feature processing
-    if (fixed_feature_count > length(levels))
-        stop("The number of fixed selected features can not be larger the length of solutions")
+    if (fixed_feature_count >= length(levels))
+        stop("fixed_feature_count must be smaller than length(levels)")
     
     if (fixed_feature_count > 0)
         length(levels) <- length(levels) - fixed_feature_count
@@ -92,12 +92,16 @@ setMethod("initialize", signature("mRMRe.Filter"),
             	as.integer(bootstrap_count), mi_matrix)
 	}
 	else if(method == "bootstrap")
+	{
+		if (any(levels[-1] != 1))
+			stop("levels[-1] must all be 1 when method is 'bootstrap'")
 		result <- .Call(.C_export_filters_bootstrap, as.integer(.Object@levels[1]), as.integer(length(.Object@levels)),
 				as.numeric(data@data), as.numeric(data@priors), as.numeric(prior_weight), as.integer(data@strata),
 				as.numeric(data@weights), as.integer(data@feature_types), as.integer(nrow(data@data)),
 				as.integer(ncol(data@data)), as.integer(length(unique(data@strata))), as.integer(target_indices), as.integer(fixed_feature_count),
 				as.integer(.map.continuous.estimator(continuous_estimator)), as.integer(outX),
 				as.integer(bootstrap_count), mi_matrix)
+	}
 	else
 		stop("Unrecognized method: use exhaustive or bootstrap")
     
@@ -176,7 +180,7 @@ setMethod("solutions", signature("mRMRe.Filter"),
         mi_dropped <- which(-.5 * log(1 - object@mi_matrix[, target_index, drop = TRUE]^2) < mi_threshold)
         result_matrix[result_matrix %in% c(causality_dropped, mi_dropped)] <- NA
 
-        pre_return_matrix <- apply(as.matrix(result_matrix), 2, rev)
+        pre_return_matrix <- result_matrix[nrow(result_matrix):1, , drop = FALSE]
 
         return(pre_return_matrix)
     })
