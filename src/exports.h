@@ -1,8 +1,6 @@
 #ifndef mRMRe_exports_h
 #define mRMRe_exports_h
 
-#define USE_RINTERNALS
-
 #include <cstdlib>
 #include <vector>
 
@@ -10,9 +8,10 @@
 #include "Math.h"
 #include "MutualInformationMatrix.h"
 
+#define R_NO_REMAP
+
 #include <R.h>
 #include <Rinternals.h>
-#include <Rdefines.h>
 #include <R_ext/Rdynload.h>
 
 extern "C" void
