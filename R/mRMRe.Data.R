@@ -13,6 +13,9 @@ setClass("mRMRe.Data", representation(sample_names = "character", feature_names 
 
 setMethod("initialize", signature("mRMRe.Data"), function(.Object, data, strata, weights, priors)
 {
+    if (missing(data))
+        return(callNextMethod(.Object))
+
     ## Data Processing
     
     if (!is.data.frame(data))
@@ -21,10 +24,15 @@ setMethod("initialize", signature("mRMRe.Data"), function(.Object, data, strata,
     if(ncol(data) > (sqrt((2^31) - 1)))
         stop("Too many features, the number of features should be <= 46340!")
     
-    feature_types <- sapply(data, function(feature) paste(class(feature), collapse = "_"))
+    feature_types <- sapply(data, function(feature)
+        if (is.Surv(feature)) "Surv" else if (is.ordered(feature)) "ordered_factor"
+        else if (is.numeric(feature)) "numeric" else "other")
     
-    if (any(!is.element(feature_types, c("numeric", "ordered_factor", "Surv"))))
+    if (any(feature_types == "other"))
         stop("data columns must be either of numeric, ordered factor or Surv type")
+
+    if (any(sapply(data[feature_types == "Surv"], function(feature) !identical(attr(feature, "type"), "right"))))
+        stop("Surv columns must be right-censored")
 
     .Object@sample_names <- rownames(data)
     .Object@feature_names <- colnames(data)
@@ -102,16 +110,22 @@ setMethod("subsetData", signature("mRMRe.Data"), function(object, row_indices, c
     if(missing(column_indices))
         column_indices <- 1:featureCount(object)
     
-    data <- featureData(object)[row_indices, column_indices, drop=FALSE]
-    strata <- factor(sampleStrata(object)[row_indices])
-    weights <- sampleWeights(object)[row_indices]
-    priors <- priors(object)
-    if(length(priors) > 0)
-        priors <- priors[column_indices, column_indices, drop=FALSE]
-    else
-        priors <- NULL
-    
-    return(new("mRMRe.Data", data = data, strata = strata, weights = weights, priors = priors))
+    ## Slots are subset directly: featureData() would turn ordered factors into numeric.
+    # one entry per feature; Surv features span 2 columns
+    expanded <- split(seq(ncol(object@data)), cumsum(object@feature_types != 3))
+    columns <- unlist(expanded[column_indices], use.names = FALSE)
+
+    new_object <- new("mRMRe.Data")
+    new_object@sample_names <- object@sample_names[row_indices]
+    new_object@feature_names <- object@feature_names[column_indices]
+    new_object@feature_types <- object@feature_types[columns]
+    new_object@data <- object@data[row_indices, columns, drop = FALSE]
+    new_object@strata <- as.numeric(factor(object@strata[row_indices])) - 1
+    new_object@weights <- object@weights[row_indices]
+    if (length(object@priors) > 0)
+        new_object@priors <- object@priors[columns, columns, drop = FALSE]
+
+    return(new_object)
 })
 
 ## sampleCount
@@ -184,8 +198,10 @@ setReplaceMethod("sampleWeights", signature("mRMRe.Data"), function(object, valu
 {
     if (length(value) != nrow(object@data))
         stop("data and weight must contain the same number of samples")
-    else if (sum(is.na(value)) > 0)
-        stop("cannot have missing values in weights")
+    else if (!is.numeric(value) || sum(is.na(value)) > 0)
+        stop("weights must be numeric without missing values")
+    else if (any(value < 0))
+        stop("weights must be non-negative")
     else
         object@weights <- as.numeric(value)
     
@@ -206,7 +222,7 @@ setMethod("priors", signature("mRMRe.Data"), function(object)
 
 setReplaceMethod("priors", signature("mRMRe.Data"), function(object, value)
 {
-    if (ncol(value) != ncol(object@data) || nrow(value) != ncol(object@data))
+    if (!is.matrix(value) || ncol(value) != featureCount(object) || nrow(value) != featureCount(object) || !isSymmetric(unname(value)))
         stop("priors matrix must be a symmetric matrix containing as many features as data")
     else
         object@priors <- .expandFeatureMatrix(object, value)
@@ -224,7 +240,7 @@ setMethod("mim", signature("mRMRe.Data"),
     {
         if (missing(prior_weight))
             stop("prior weight must be provided if there are priors")
-        else if  (prior_weight < 0 || prior_weight > 1)
+        else if (!is.numeric(prior_weight) || length(prior_weight) != 1 || is.na(prior_weight) || prior_weight < 0 || prior_weight > 1)
             stop("prior weight must be a value ranging from 0 to 1")
     }
     else
@@ -280,7 +296,7 @@ setMethod(".expandFeatureMatrix", signature("mRMRe.Data"), function(object, matr
 setMethod(".compressFeatureMatrix", signature("mRMRe.Data"), function(object, matrix)
 {
     adaptor <- which(object@feature_types != 3)
-    matrix <- matrix[adaptor, adaptor]
+    matrix <- matrix[adaptor, adaptor, drop = FALSE]
     colnames(matrix) <- object@feature_names
     rownames(matrix) <- object@feature_names
     
@@ -292,7 +308,7 @@ setMethod(".compressFeatureMatrix", signature("mRMRe.Data"), function(object, ma
 setMethod(".expandFeatureIndices", signature("mRMRe.Data"), function(object, indices)
 {
     adaptor <- which(object@feature_types == 3)
-    if (length(adaptor) > 0 && any(indices >= adaptor))
+    if (length(adaptor) > 0)
         indices <- sapply(indices, function(i) i + sum(sapply(1:length(adaptor), function(j) i >= (adaptor[[j]] - j + 1))))
 
     return(as.integer(indices))

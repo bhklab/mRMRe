@@ -79,8 +79,8 @@ setGeneric("visualize", function(object) standardGeneric("visualize"))
     }
     else if (method == "cramersv")
     {
-        X <- as.factor(X)
-        Y <- as.factor(Y)
+        X <- factor(X, ordered = TRUE)
+        Y <- factor(Y, ordered = TRUE)
     }
     else if (method != "cindex")
         stop("estimator must be of the following: pearson, spearman, kendall, frequency, cramersv, cindex")
