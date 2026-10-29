@@ -75,7 +75,6 @@ setMethod("initialize", signature("mRMRe.Filter"),
     
     ## Filter; Mutual Information and Causality Matrix
 
-    mi_matrix <- as.numeric(matrix(NA, ncol = ncol(data@data), nrow = ncol(data@data)))
     
     
 	if(method == "exhaustive"){
@@ -89,7 +88,7 @@ setMethod("initialize", signature("mRMRe.Filter"),
             	as.integer(data@feature_types), as.integer(nrow(data@data)), as.integer(ncol(data@data)),
             	as.integer(length(unique(data@strata))), as.integer(target_indices), as.integer(fixed_feature_count),
             	as.integer(.map.continuous.estimator(continuous_estimator)), as.integer(outX),
-            	as.integer(bootstrap_count), mi_matrix)
+            	as.integer(bootstrap_count))
 	}
 	else if(method == "bootstrap")
 	{
@@ -100,7 +99,8 @@ setMethod("initialize", signature("mRMRe.Filter"),
 				as.numeric(data@weights), as.integer(data@feature_types), as.integer(nrow(data@data)),
 				as.integer(ncol(data@data)), as.integer(length(unique(data@strata))), as.integer(target_indices), as.integer(fixed_feature_count),
 				as.integer(.map.continuous.estimator(continuous_estimator)), as.integer(outX),
-				as.integer(bootstrap_count), mi_matrix)
+				as.integer(bootstrap_count))
+		result[[4]] <- rep(NA_real_, ncol(data@data)^2)
 	}
 	else
 		stop("Unrecognized method: use exhaustive or bootstrap")
@@ -117,7 +117,7 @@ setMethod("initialize", signature("mRMRe.Filter"),
     .Object@causality_list <- lapply(result[[2]], function(causality_array) causality_array[!cols_to_drop])
     names(.Object@causality_list) <- .Object@target_indices
     
-    .Object@mi_matrix <- .compressFeatureMatrix(data, matrix(mi_matrix, ncol = ncol(data@data), nrow = ncol(data@data)))
+    .Object@mi_matrix <- .compressFeatureMatrix(data, matrix(result[[4]], ncol = ncol(data@data), nrow = ncol(data@data)))
     .Object@feature_names <- featureNames(data)
     .Object@sample_names <- sampleNames(data)
 
