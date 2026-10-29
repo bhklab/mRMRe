@@ -38,10 +38,11 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
         solutions <- solutions(filter, mi_threshold = mi_threshold, causality_threshold = causality_threshold)
        	causality <- causality(filter)
 		
-        lapply(names(solutions), function(i) { 
-					.Object@topologies[[i]] <<- solutions[[i]]
-					.Object@causality_list[[i]] <<- causality[[i]]
-				})
+        for (i in names(solutions))
+        {
+            .Object@topologies[[i]] <- solutions[[i]]
+            .Object@causality_list[[i]] <- causality[[i]]
+        }
 		screen <- which(!is.na(mim(filter, method="cor")))
         .Object@mi_matrix[screen] <- mim(filter, method="cor")[screen]
 
@@ -62,15 +63,15 @@ setMethod("initialize", signature("mRMRe.Network"), function(.Object, data, prio
             levels = levels, ...)
     solutions <- solutions(filter, mi_threshold = mi_threshold, causality_threshold = causality_threshold)
     
-    lapply(target_indices, function(target_index)
+    for (target_index in target_indices)
     {
         solution <- solutions[[as.character(target_index)]]
         new_solutions <- apply(solution, c(1, 2), function(feature_index)
                     ifelse(as.character(feature_index) %in% names(.Object@topologies), feature_index, NA))
         
-        if (sum(is.na(new_solutions)) > 0)
-            .Object@topologies[[as.character(target_index)]] <<- new_solutions
-    })
+        if (any(!is.na(new_solutions)))
+            .Object@topologies[[as.character(target_index)]] <- new_solutions
+    }
     
     return(.Object)
 })
@@ -122,7 +123,7 @@ setMethod("solutions", signature("mRMRe.Network"), function(object)
 
 ## mim
 
-setMethod("mim", signature("mRMRe.Network"), function(object)
+setMethod("mim", signature("mRMRe.Network"), function(object, method = c("mi", "cor"))
 {
     # mi_matrix[i, j] contains the biased correlation between
     # features i and j (i -> j directionality)
@@ -146,16 +147,13 @@ setMethod("adjacencyMatrix", signature("mRMRe.Network"), function(object)
 {
     adjacency_matrix <- matrix(0, nrow = length(object@feature_names), ncol = length(object@feature_names), dimnames=list(object@feature_names, object@feature_names))
     
-    lapply(names(object@topologies), function(target_index)
+    for (target_index in names(object@topologies))
     {
         connected_indices <- as.vector(object@topologies[[target_index]])
         connected_indices <- unique(connected_indices[!is.na(connected_indices)])
-        if(length(connected_indices) > 0) {
-            adjacency_matrix[connected_indices, as.integer(target_index)] <<- 1
-            if(length(causality(object)) == 0)
-                adjacency_matrix[as.integer(target_index), connected_indices] <<- 1
-        }
-    })
+        if (length(connected_indices) > 0)
+            adjacency_matrix[connected_indices, as.integer(target_index)] <- 1
+    }
 
     # adjacency matrix: parents (seletected features) in rows, children (target features) in columns
     return(adjacency_matrix)
@@ -167,18 +165,15 @@ setMethod("adjacencyMatrixSum", signature("mRMRe.Network"), function(object)
 {
     adjacency_matrix <- matrix(0, nrow = length(object@feature_names), ncol = length(object@feature_names), dimnames=list(object@feature_names, object@feature_names))
     
-    lapply(names(object@topologies), function(target_index)
+    for (target_index in names(object@topologies))
     {
         connected_indices <- as.vector(object@topologies[[target_index]])
         connected_indices <- sort(connected_indices[!is.na(connected_indices)])
         connected_indices_count <- table(connected_indices)
         connected_indices <- unique(connected_indices)
-        if(length(connected_indices) > 0) {
-            adjacency_matrix[connected_indices, as.integer(target_index)] <<- connected_indices_count
-            if(length(causality(object)) == 0)
-                adjacency_matrix[as.integer(target_index), connected_indices] <<- connected_indices_count
-        }
-    })
+        if (length(connected_indices) > 0)
+            adjacency_matrix[connected_indices, as.integer(target_index)] <- connected_indices_count
+    }
 
     # adjacency matrix: parents (seletected features) in rows, children (target features) in columns
     return(adjacency_matrix)
@@ -193,10 +188,10 @@ setMethod("visualize", signature("mRMRe.Network"), function(object)
     adjacency <- adjacencyMatrix(object)
 	used_rows <- apply(adjacency, 1, sum) > 0
 	used_cols <- apply(adjacency, 2, sum) > 0
-	adjacency <- adjacency[used_rows | used_cols, used_cols | used_rows]
-    graph <- graph.adjacency(adjacency, mode = "undirected", add.rownames = 'label')
+	adjacency <- adjacency[used_rows | used_cols, used_cols | used_rows, drop = FALSE]
+    graph <- graph_from_adjacency_matrix(adjacency, mode = "max")
 	
-    return(plot.igraph(graph))
+    return(plot(graph))
 })
 
 ## target
@@ -208,24 +203,5 @@ setMethod("target", signature("mRMRe.Network"), function(object)
 
 setMethod("scores", signature("mRMRe.Network"), function(object)
 {
-	mi_matrix <- mim(object)
-	targets <- names(solutions(object))
-
-	scores <- lapply(targets, function(target) {
-				apply(solutions(object)[[target]], 2, function(solution) {
-							sapply(1:length(solution), function(i) {
-
-										feature_i <- solution[i]
-										if(is.na(feature_i))
-											return(NA)
-										if(i == 1)
-											return(mi_matrix[as.numeric(target), feature_i])
-								
-										ancestry_score <- mean(sapply((i-1):1, function(j) mi_matrix[feature_i, solution[j]]))
-										return(mi_matrix[as.numeric(target), feature_i] - ancestry_score)
-									})							
-						})
-			})
-	names(scores) <- targets
-	return(scores)
+	return(.scores.from.solutions(mim(object), solutions(object)))
 })

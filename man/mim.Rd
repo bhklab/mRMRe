@@ -15,7 +15,7 @@
 \usage{
 \S4method{mim}{mRMRe.Data}(object, prior_weight, continuous_estimator, outX, bootstrap_count)
 \S4method{mim}{mRMRe.Filter}(object, method)
-\S4method{mim}{mRMRe.Network}(object)
+\S4method{mim}{mRMRe.Network}(object, method)
 }
 \arguments{
   \item{object}{a \code{mRMRe.Data, mRMRe.Filter or mRMRe.Network} object.}
