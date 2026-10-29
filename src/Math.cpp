@@ -2,6 +2,10 @@
 
 #include <limits>
 
+#define R_NO_REMAP
+#include <R_ext/Arith.h>
+#include <R_ext/Error.h>
+
 Math::IndirectComparator::IndirectComparator(double const* const pSamples,
         unsigned int const* const pSampleIndices) :
         mpSamples(pSamples), mpSampleIndices(pSampleIndices)
@@ -873,6 +877,11 @@ Math::placeStratificationData(int const* const pSampleStrata, double const* cons
         unsigned int** const pSampleIndicesPerStratum, unsigned int* const pSampleCountPerStratum,
         unsigned int const sampleStratumCount, unsigned int const sampleCount)
 {
+    for (unsigned int i = 0; i < sampleCount; ++i)
+        if (pSampleStrata[i] == NA_INTEGER || pSampleStrata[i] < 0
+                || static_cast<unsigned int>(pSampleStrata[i]) >= sampleStratumCount)
+            Rf_error("sample strata must be integers in [0, sampleStratumCount)");
+
     unsigned int* const p_iterator_per_stratum = new unsigned int[sampleStratumCount];
 
     for (unsigned int i = 0; i < sampleStratumCount; ++i)

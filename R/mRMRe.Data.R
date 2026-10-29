@@ -172,12 +172,10 @@ setReplaceMethod("sampleStrata", signature("mRMRe.Data"), function(object, value
 {
     if (length(value) != nrow(object@data))
         stop("data and strata must contain the same number of samples")
-    else if (!is.factor(value))
-        stop("strata must be provided as factors")
-    else if (sum(is.na(value)) > 0)
+    else if (anyNA(value))
         stop("cannot have missing values in strata")
     else
-        object@strata <- as.integer(value) - 1
+        object@strata <- as.integer(droplevels(factor(value))) - 1L
     
     return(object)
 })
