@@ -20,4 +20,6 @@ Description: Computes mutual information matrices from continuous, categorical
 License: Artistic-2.0
 Depends: R (>= 3.5), survival, igraph, methods
 URL: https://www.pmgenomics.ca/bhklab/
+Suggests: testthat (>= 3.0.0)
+Config/testthat/edition: 3
 RoxygenNote: 7.1.1
