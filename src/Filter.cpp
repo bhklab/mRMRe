@@ -1,5 +1,6 @@
 #include "Filter.h"
 #include <iostream>
+#include <limits>
 
 Filter::Filter(int const* const pChildrenCountPerLevel, unsigned int const levelCount,
         Matrix* const pFeatureInformationMatrix, unsigned int const targetFeatureIndex, 
@@ -28,7 +29,7 @@ Filter::Filter(int const* const pChildrenCountPerLevel, unsigned int const level
     for (unsigned int i = 0; i < mTreeElementCount; ++i)
     {
         mpIndexTree[i] = targetFeatureIndex;
-        mpScoreTree[i] = 0;
+        mpScoreTree[i] = std::numeric_limits<double>::quiet_NaN();
     }
 }
 
@@ -70,15 +71,16 @@ Filter::getSolutions(int* const solutions) const
 {
     unsigned int counter = 0;
 
-    for (unsigned int end_element_absolute_index = mTreeElementCount - 1;
-            end_element_absolute_index >= mpStartingIndexPerLevel[mLevelCount];
-            --end_element_absolute_index)
+    for (unsigned int end_element_absolute_index = mTreeElementCount;
+            end_element_absolute_index-- > mpStartingIndexPerLevel[mLevelCount];)
     {
         unsigned int element_absolute_index = end_element_absolute_index;
 
         for (unsigned int level = mLevelCount; level > 0; --level)
         {
-            solutions[counter++] = mpIndexTree[element_absolute_index];
+            // Unfilled slots (score still NaN) are reported as NA_INTEGER (INT_MIN)
+            solutions[counter++] = (mpScoreTree[element_absolute_index] != mpScoreTree[element_absolute_index]) ?
+                    std::numeric_limits<int>::min() : mpIndexTree[element_absolute_index];
             element_absolute_index = getParentAbsoluteIndex(element_absolute_index, level);
         }
     }
@@ -89,9 +91,8 @@ Filter::getScores(double* const scores) const
 {
     unsigned int counter = 0;
 
-    for (unsigned int end_element_absolute_index = mTreeElementCount - 1;
-            end_element_absolute_index >= mpStartingIndexPerLevel[mLevelCount];
-            --end_element_absolute_index)
+    for (unsigned int end_element_absolute_index = mTreeElementCount;
+            end_element_absolute_index-- > mpStartingIndexPerLevel[mLevelCount];)
     {
         unsigned int element_absolute_index = end_element_absolute_index;
 

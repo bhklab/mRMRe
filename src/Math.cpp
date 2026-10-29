@@ -28,6 +28,9 @@ Math::computeCausality(double* const pCausalityArray, Matrix const* const pMiMat
                 int const a = pSolutions[(featureCountPerSolution * s) + i];
                 int const b = pSolutions[(featureCountPerSolution * s) + j];
 
+                if (a < 0 || b < 0) // NA (unfilled) slot
+                    continue;
+
                 double const cor_ij =
                         (std::fabs(pMiMatrix->at(a, b)) > std::fabs(pMiMatrix->at(b, a))) ?
                                 pMiMatrix->at(a, b) : pMiMatrix->at(b, a);
