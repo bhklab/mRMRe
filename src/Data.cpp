@@ -1,5 +1,18 @@
 #include "Data.h"
-#include <sys/time.h>
+
+#define R_NO_REMAP
+#include <R.h>
+#include <Rmath.h>
+
+// R's RNG is not thread-safe: draw from it serially, never inside an OpenMP region.
+static unsigned int
+drawSeed()
+{
+    GetRNGstate();
+    unsigned int const seed = static_cast<unsigned int>(R_unif_index(4294967296.));
+    PutRNGstate();
+    return seed;
+}
 
 Data::Data(double* const pData, Matrix const* const pPriorsMatrix, double const priorsWeight,
         unsigned int const sampleCount, unsigned int const featureCount,
@@ -8,7 +21,7 @@ Data::Data(double* const pData, Matrix const* const pPriorsMatrix, double const 
         unsigned int const continuousEstimator, bool const outX, unsigned int const bootstrapCount) :
         mpDataMatrix(new Matrix(pData, sampleCount, featureCount)), mpOrderMatrix(
                 continuousEstimator ? new Matrix(sampleCount, featureCount) : 0), mpPriorsMatrix(
-                pPriorsMatrix), mpHasOrderCached(new bool[mpDataMatrix->getColumnCount()]), mpSampleStrata(
+                pPriorsMatrix), mpSampleStrata(
                 pSampleStrata), mpSampleWeights(pSampleWeights), mpFeatureTypes(pFeatureTypes), mSampleStratumCount(
                 sampleStratumCount), mpSampleIndicesPerStratum(
                 new unsigned int*[sampleStratumCount]), mpMasterSampleIndicesPerStratum(
@@ -16,8 +29,18 @@ Data::Data(double* const pData, Matrix const* const pPriorsMatrix, double const 
                 new unsigned int[sampleStratumCount]), mContinuousEstimator(continuousEstimator), mOutX(
                 outX), mBootstrapCount(bootstrapCount), mPriorsWeight(priorsWeight)
 {
-    for (unsigned int i = 0; i < mpDataMatrix->getColumnCount(); ++i)
-        mpHasOrderCached[i] = false;
+    // computeMiBetweenFeatures() reads the time column at i + 1 of every survival event column.
+    for (unsigned int i = 0; i < featureCount; ++i)
+    {
+        bool const is_event = pFeatureTypes[i] == FEATURE_SURVIVAL_EVENT;
+        bool const is_time = pFeatureTypes[i] == FEATURE_SURVIVAL_TIME;
+        if (is_event && (i + 1 >= featureCount || pFeatureTypes[i + 1] != FEATURE_SURVIVAL_TIME))
+            Rf_error("survival event column %u must be followed by a survival time column", i + 1);
+        if (is_time && (i == 0 || pFeatureTypes[i - 1] != FEATURE_SURVIVAL_EVENT))
+            Rf_error("survival time column %u must be preceded by a survival event column", i + 1);
+    }
+
+    mSeed = bootstrapCount > 0 ? drawSeed() : 0;
 
     Math::placeStratificationData(mpSampleStrata, mpSampleWeights, mpSampleIndicesPerStratum,
             mpSampleCountPerStratum, mSampleStratumCount, sampleCount);
@@ -28,13 +51,14 @@ Data::Data(double* const pData, Matrix const* const pPriorsMatrix, double const 
         for (unsigned int j = 0; j < mpSampleCountPerStratum[i]; ++j)
             mpMasterSampleIndicesPerStratum[i][j] = mpSampleIndicesPerStratum[i][j];
     }
+
+    placeOrders();
 }
 
 Data::~Data()
 {
     delete mpDataMatrix;
     delete mpOrderMatrix;
-    delete[] mpHasOrderCached;
     for (unsigned int i = 0; i < mSampleStratumCount; ++i)
     {
         delete[] mpSampleIndicesPerStratum[i];
@@ -45,26 +69,45 @@ Data::~Data()
     delete[] mpSampleCountPerStratum;
 }
 
-void const
+void
 Data::bootstrap()
 {
-    // unsigned int seed = std::time(NULL); too long for small datasets
-    struct timeval start;
-    gettimeofday(&start, NULL);
-    unsigned int seed = start.tv_usec; //microseconds
-    
+    GetRNGstate();
+
     for (unsigned int i = 0; i < mSampleStratumCount; ++i)
         for (unsigned int j = 0; j < mpSampleCountPerStratum[i]; ++j)
         {
-            unsigned int index = Math::computeRandomNumber(&seed) % mpSampleCountPerStratum[i];
+            unsigned int const index = static_cast<unsigned int>(R_unif_index(mpSampleCountPerStratum[i]));
             mpSampleIndicesPerStratum[i][j] = mpMasterSampleIndicesPerStratum[i][index];
         }
+
+    PutRNGstate();
+
+    if (mBootstrapCount > 0)
+        mSeed = drawSeed();
+
+    placeOrders();
 }
 
-void const
+// Spearman orders depend on the (bootstrapped) sample indices. Computing them all here, serially,
+// keeps computeMiBetweenFeatures() read-only so it is safe inside OpenMP regions.
+void
+Data::placeOrders()
+{
+    if (mContinuousEstimator != SPEARMAN_ESTIMATOR)
+        return;
+
+    for (unsigned int i = 0; i < mpDataMatrix->getColumnCount(); ++i)
+        if (mpFeatureTypes[i] == FEATURE_CONTINUOUS)
+            Math::placeOrders(&(mpDataMatrix->at(0, i)), &(mpOrderMatrix->at(0, i)),
+                    mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount);
+}
+
+void
 Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j, double* const mi_ij,
         double* const mi_ji) const
 {
+    unsigned int const seed = mSeed + (i * getFeatureCount()) + j;
     double val_ij = std::numeric_limits<double>::quiet_NaN();
     double val_ji = std::numeric_limits<double>::quiet_NaN();
 
@@ -84,26 +127,12 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j, doubl
         {
             val_ij = val_ji = Math::computePearsonCorrelation(&(mpDataMatrix->at(0, i)),
                     &(mpDataMatrix->at(0, j)), mpSampleWeights, mpSampleIndicesPerStratum,
-                    mpSampleCountPerStratum, mSampleStratumCount, mBootstrapCount);
+                    mpSampleCountPerStratum, mSampleStratumCount, mBootstrapCount, seed);
         }
             break;
 
         case SPEARMAN_ESTIMATOR:
         {
-            if (!mpHasOrderCached[i])
-            {
-                Math::placeOrders(&(mpDataMatrix->at(0, i)), &(mpOrderMatrix->at(0, i)),
-                        mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount);
-                mpHasOrderCached[i] = true;
-            }
-
-            if (!mpHasOrderCached[j])
-            {
-                Math::placeOrders(&(mpDataMatrix->at(0, j)), &(mpOrderMatrix->at(0, j)),
-                        mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount);
-                mpHasOrderCached[j] = true;
-            }
-
             double* const p_ranked_samples_x = new double[getSampleCount()];
             double* const p_ranked_samples_y = new double[getSampleCount()];
             Math::placeRanksFromOrders(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
@@ -112,7 +141,7 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j, doubl
                     mSampleStratumCount);
             val_ij = val_ji = Math::computePearsonCorrelation(p_ranked_samples_x,
                     p_ranked_samples_y, mpSampleWeights, mpSampleIndicesPerStratum,
-                    mpSampleCountPerStratum, mSampleStratumCount, mBootstrapCount);
+                    mpSampleCountPerStratum, mSampleStratumCount, mBootstrapCount, seed);
             delete[] p_ranked_samples_x;
             delete[] p_ranked_samples_y;
         }
@@ -135,7 +164,7 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j, doubl
         {
             val_ij = Math::computeFrequency(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
                     mpSampleWeights, mpSampleIndicesPerStratum, mpSampleCountPerStratum,
-                    mSampleStratumCount, mBootstrapCount);
+                    mSampleStratumCount, mBootstrapCount, seed);
             val_ji = 1 - val_ij;
         }
             break;
@@ -154,7 +183,7 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j, doubl
     else if (A_is_discrete && B_is_discrete)
         val_ij = val_ji = Math::computeCramersV(&(mpDataMatrix->at(0, i)),
                 &(mpDataMatrix->at(0, j)), mpSampleWeights, mpSampleIndicesPerStratum,
-                mpSampleCountPerStratum, mSampleStratumCount, mBootstrapCount);
+                mpSampleCountPerStratum, mSampleStratumCount, mBootstrapCount, seed);
     else if (A_is_survival_event && B_is_continuous)
         val_ij = val_ji = Math::computeSomersD(
                 Math::computeConcordanceIndex(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
@@ -198,13 +227,13 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j, doubl
         *mi_ji = val_ji;
 }
 
-unsigned int const
+unsigned int
 Data::getSampleCount() const
 {
     return mpDataMatrix->getRowCount();
 }
 
-unsigned int const
+unsigned int
 Data::getFeatureCount() const
 {
     return mpDataMatrix->getColumnCount();

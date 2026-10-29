@@ -5,6 +5,8 @@
 #include <omp.h>
 #endif
 
+#include <vector>
+
 #include "Data.h"
 #include "Matrix.h"
 
@@ -18,6 +20,13 @@ private:
 
 protected:
     Data const* const mpData;
+    std::size_t
+    index(unsigned int const i, unsigned int const j) const
+    {
+        return static_cast<std::size_t>(i) * mColumnCount + j;
+    }
+
+    std::vector<char> mIsComputed; // char, not bool: adjacent flags must be writable from different threads
 
 public:
     MutualInformationMatrix(Data const* const pData);
@@ -33,7 +42,7 @@ public:
     virtual double const&
     at(unsigned int const i, unsigned int const j) const;
 
-    void const
+    void
     build();
 };
 

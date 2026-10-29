@@ -10,13 +10,13 @@ This methods allows you to set the number of cores currently accessible to openM
 set.thread.count(thread_count)
 }
 \arguments{
-  \item{thread_count}{number of OPENMP threads to be used}
+  \item{thread_count}{a single whole number >= 1: the number of OPENMP threads to request. Anything else (\code{NA}, zero, negative, non-integer or longer than one) is an error.}
 }
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
 \value{
-No return, sets the number of cores available to openMP for C level parallelization.
+Invisibly, the thread count in effect: \code{thread_count} clamped to between 1 and the number of processors available to openMP. It is 0 (and nothing is changed) when the package was built without OpenMP support. An error is raised if \code{thread_count} is not a single whole number >= 1.
 }
 \examples{
 # Access to number of available threads
@@ -25,6 +25,6 @@ threads <- get.thread.count()
 set.thread.count(1)
 
 # Revert back to all accessible threads
-set.thread.count(threads)
+if (threads >= 1) set.thread.count(threads)
 }
 \keyword{methods}

@@ -22,6 +22,9 @@
   \item{object}{a \code{mRMRe.Data} object.}
   \item{value}{a factor vector identifying the stratification of samples.}
 }
+\value{
+For \code{sampleStrata}, a numeric vector of zero-based stratum indices named by sample. The replacement form returns the modified \code{mRMRe.Data} object.
+}
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }

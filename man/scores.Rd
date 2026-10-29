@@ -21,6 +21,9 @@
   \item{object}{a \code{mRMRe.Data, mRMRe.Filter or mRMRe.Network} object.}
   \item{solutions}{a set of solutions from mRMRe.Filter or mRMRe.Network to be used in computing the scores from a mRMRe.Data set.}
 }
+\value{
+A list with one element per target; each element is a matrix with one column per solution holding the mRMR score of each selected feature, in selection order.
+}
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }

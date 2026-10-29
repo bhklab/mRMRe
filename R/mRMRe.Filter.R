@@ -1,6 +1,6 @@
 ## Definition
 
-setClass("mRMRe.Filter", representation(filters = "list", scores = "list", 
+setClass("mRMRe.Filter", representation(filters = "list", 
     mi_matrix = "matrix", causality_list = "list", sample_names = "character", 
     feature_names = "character", target_indices = "integer", 
     fixed_feature_count = "numeric", levels = "integer"))
@@ -30,7 +30,7 @@ setMethod("initialize", signature("mRMRe.Filter"),
     method <- match.arg(method)
     continuous_estimator <- match.arg(continuous_estimator)
     
-    if (class(data) != "mRMRe.Data")
+    if (!is(data, "mRMRe.Data"))
         stop("data must be of type mRMRe.Data")
     
     ## Prior Processing
@@ -47,7 +47,7 @@ setMethod("initialize", signature("mRMRe.Filter"),
     
     ## Target Processing
 
-    if (sum(sapply(target_indices, function(index) index < 1 || index > featureCount(data))) > 1)
+    if (any(target_indices < 1 | target_indices > featureCount(data)))
         stop("target_indices must only contain values ranging from 1 to the number of features in data")
     
     ## Level Processing
@@ -57,8 +57,8 @@ setMethod("initialize", signature("mRMRe.Filter"),
     
             
     ## Fixed selected feature processing
-    if (fixed_feature_count > length(levels))
-        stop("The number of fixed selected features can not be larger the length of solutions")
+    if (fixed_feature_count >= length(levels))
+        stop("fixed_feature_count must be smaller than length(levels)")
     
     if (fixed_feature_count > 0)
         length(levels) <- length(levels) - fixed_feature_count
@@ -75,7 +75,6 @@ setMethod("initialize", signature("mRMRe.Filter"),
     
     ## Filter; Mutual Information and Causality Matrix
 
-    mi_matrix <- as.numeric(matrix(NA, ncol = ncol(data@data), nrow = ncol(data@data)))
     
     
 	if(method == "exhaustive"){
@@ -89,15 +88,20 @@ setMethod("initialize", signature("mRMRe.Filter"),
             	as.integer(data@feature_types), as.integer(nrow(data@data)), as.integer(ncol(data@data)),
             	as.integer(length(unique(data@strata))), as.integer(target_indices), as.integer(fixed_feature_count),
             	as.integer(.map.continuous.estimator(continuous_estimator)), as.integer(outX),
-            	as.integer(bootstrap_count), mi_matrix)
+            	as.integer(bootstrap_count))
 	}
 	else if(method == "bootstrap")
+	{
+		if (any(levels[-1] != 1))
+			stop("levels[-1] must all be 1 when method is 'bootstrap'")
 		result <- .Call(.C_export_filters_bootstrap, as.integer(.Object@levels[1]), as.integer(length(.Object@levels)),
 				as.numeric(data@data), as.numeric(data@priors), as.numeric(prior_weight), as.integer(data@strata),
 				as.numeric(data@weights), as.integer(data@feature_types), as.integer(nrow(data@data)),
 				as.integer(ncol(data@data)), as.integer(length(unique(data@strata))), as.integer(target_indices), as.integer(fixed_feature_count),
 				as.integer(.map.continuous.estimator(continuous_estimator)), as.integer(outX),
-				as.integer(bootstrap_count), mi_matrix)
+				as.integer(bootstrap_count))
+		result[[4]] <- rep(NA_real_, ncol(data@data)^2)
+	}
 	else
 		stop("Unrecognized method: use exhaustive or bootstrap")
     
@@ -107,16 +111,13 @@ setMethod("initialize", signature("mRMRe.Filter"),
                         nrow = length(levels), ncol = prod(levels)))
 	
     names(.Object@filters) <- .Object@target_indices
-    .Object@causality_list <- result[[2]]
-	.Object@scores <- lapply(result[[3]], function(scores) matrix(scores,	nrow = length(levels), ncol = prod(levels)))
-	names(.Object@scores) <- .Object@target_indices
     
 	cols_to_drop <- duplicated(.compressFeatureIndices(data, seq(ncol(data@data))))
     
     .Object@causality_list <- lapply(result[[2]], function(causality_array) causality_array[!cols_to_drop])
     names(.Object@causality_list) <- .Object@target_indices
     
-    .Object@mi_matrix <- .compressFeatureMatrix(data, matrix(mi_matrix, ncol = ncol(data@data), nrow = ncol(data@data)))
+    .Object@mi_matrix <- .compressFeatureMatrix(data, matrix(result[[4]], ncol = ncol(data@data), nrow = ncol(data@data)))
     .Object@feature_names <- featureNames(data)
     .Object@sample_names <- sampleNames(data)
 
@@ -176,7 +177,7 @@ setMethod("solutions", signature("mRMRe.Filter"),
         mi_dropped <- which(-.5 * log(1 - object@mi_matrix[, target_index, drop = TRUE]^2) < mi_threshold)
         result_matrix[result_matrix %in% c(causality_dropped, mi_dropped)] <- NA
 
-        pre_return_matrix <- apply(as.matrix(result_matrix), 2, rev)
+        pre_return_matrix <- result_matrix[nrow(result_matrix):1, , drop = FALSE]
 
         return(pre_return_matrix)
     })
@@ -203,24 +204,32 @@ setMethod("solutions", signature("mRMRe.Filter"),
 ## scores
 setMethod("scores", signature("mRMRe.Filter"), function(object)
 {
-	mi_matrix <- mim(object)
-	targets <- as.character(target(object))
+	return(.scores.from.solutions(mim(object), solutions(object)))
+})
+
+## shared by the scores() methods of mRMRe.Data, mRMRe.Filter and mRMRe.Network
+
+`.scores.from.solutions` <- function(mi_matrix, solutions)
+{
+	targets <- names(solutions)
+
 	scores <- lapply(targets, function(target) {
-				apply(solutions(object)[[target]], 2, function(solution) {
+				apply(solutions[[target]], 2, function(solution) {
 							sapply(1:length(solution), function(i) {
-										feature_i <- solution[i] 
+										feature_i <- solution[i]
+										if(is.na(feature_i))
+											return(NA)
 										if(i == 1)
 											return(mi_matrix[as.numeric(target), feature_i])
-										
+
 										ancestry_score <- mean(sapply((i-1):1, function(j) mi_matrix[feature_i, solution[j]]))
 										return(mi_matrix[as.numeric(target), feature_i] - ancestry_score)
 									})
-							
 						})
 			})
 	names(scores) <- targets
 	return(scores)
-})
+}
 
 ## mim
 

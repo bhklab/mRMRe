@@ -1,8 +1,7 @@
 *.so
 *.o
 *.*~
-test/*
 .Rproj.user
 /doc/
 /Meta/
-\.vscode$
+.vscode/

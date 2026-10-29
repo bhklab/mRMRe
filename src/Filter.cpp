@@ -1,5 +1,5 @@
 #include "Filter.h"
-#include <iostream>
+#include <limits>
 
 Filter::Filter(int const* const pChildrenCountPerLevel, unsigned int const levelCount,
         Matrix* const pFeatureInformationMatrix, unsigned int const targetFeatureIndex, 
@@ -28,7 +28,7 @@ Filter::Filter(int const* const pChildrenCountPerLevel, unsigned int const level
     for (unsigned int i = 0; i < mTreeElementCount; ++i)
     {
         mpIndexTree[i] = targetFeatureIndex;
-        mpScoreTree[i] = 0;
+        mpScoreTree[i] = std::numeric_limits<double>::quiet_NaN();
     }
 }
 
@@ -39,18 +39,20 @@ Filter::~Filter()
     delete[] mpScoreTree;
 }
 
-void const
+void
 Filter::build()
 {
     for (unsigned int level = 0; level < mLevelCount; ++level)
     {
+        prefetchMi(level + 1);
+
         unsigned int const parent_count = mpStartingIndexPerLevel[level + 1]
                 - mpStartingIndexPerLevel[level];
 
 
 #ifdef _OPENMP
-#pragma omp parallel for schedule(dynamic)
-#endif 
+#pragma omp parallel for schedule(dynamic) ordered
+#endif
         for (unsigned int parent = 0; parent < parent_count; ++parent)
             placeElements(
                     mpStartingIndexPerLevel[level + 1] + (parent * mpChildrenCountPerLevel[level]),
@@ -58,40 +60,75 @@ Filter::build()
     }
 }
 
-/* inline */unsigned int const
+// placeElements() (run in parallel) only reads the matrix, so every cell it needs is computed here
+// first: pairs (i, a) for each candidate i and each fixed feature or tree node a above `level`.
+// Each pair is owned by exactly one thread, so the lazy writes of at() cannot race.
+void
+Filter::prefetchMi(unsigned int const level)
+{
+    unsigned int const feature_count = mpFeatureInformationMatrix->getRowCount();
+    std::vector<char> in_set(feature_count, 0);
+    std::vector<unsigned int> set;
+
+    for (unsigned int a = 0; a < mFixedFeatureCount; ++a)
+        in_set[a] = 1;
+    for (unsigned int n = 0; n < mpStartingIndexPerLevel[level]; ++n)
+        in_set[mpIndexTree[n]] = 1;
+    for (unsigned int a = 0; a < feature_count; ++a)
+        if (in_set[a])
+            set.push_back(a);
+
+#ifdef _OPENMP
+#pragma omp parallel for schedule(dynamic)
+#endif
+    for (unsigned int i = mFixedFeatureCount; i < feature_count; ++i)
+        for (size_t k = 0; k < set.size(); ++k)
+        {
+            unsigned int const a = set[k];
+            // when both i and a are candidates and in the set, the lower index owns the pair
+            if (a != i && !(a >= mFixedFeatureCount && in_set[i] && a < i))
+            {
+                // lower index first, as in MutualInformationMatrix::build(), whatever the call order
+                mpFeatureInformationMatrix->at(std::min(i, a), std::max(i, a));
+                mpFeatureInformationMatrix->at(std::max(i, a), std::min(i, a));
+            }
+        }
+}
+
+/* inline */unsigned int
 Filter::getParentAbsoluteIndex(unsigned int const absoluteIndex, unsigned int const level) const
 {
     return (absoluteIndex - mpStartingIndexPerLevel[level]) / mpChildrenCountPerLevel[level - 1]
             + mpStartingIndexPerLevel[level - 1];
 }
 
-void const
+void
 Filter::getSolutions(int* const solutions) const
 {
     unsigned int counter = 0;
 
-    for (unsigned int end_element_absolute_index = mTreeElementCount - 1;
-            end_element_absolute_index >= mpStartingIndexPerLevel[mLevelCount];
-            --end_element_absolute_index)
+    for (unsigned int end_element_absolute_index = mTreeElementCount;
+            end_element_absolute_index-- > mpStartingIndexPerLevel[mLevelCount];)
     {
         unsigned int element_absolute_index = end_element_absolute_index;
 
         for (unsigned int level = mLevelCount; level > 0; --level)
         {
-            solutions[counter++] = mpIndexTree[element_absolute_index];
+            // Unfilled slots (score still NaN) are reported as NA_INTEGER (INT_MIN)
+            solutions[counter++] = (mpScoreTree[element_absolute_index] != mpScoreTree[element_absolute_index]) ?
+                    std::numeric_limits<int>::min() : mpIndexTree[element_absolute_index];
             element_absolute_index = getParentAbsoluteIndex(element_absolute_index, level);
         }
     }
 }
 
-void const
+void
 Filter::getScores(double* const scores) const
 {
     unsigned int counter = 0;
 
-    for (unsigned int end_element_absolute_index = mTreeElementCount - 1;
-            end_element_absolute_index >= mpStartingIndexPerLevel[mLevelCount];
-            --end_element_absolute_index)
+    for (unsigned int end_element_absolute_index = mTreeElementCount;
+            end_element_absolute_index-- > mpStartingIndexPerLevel[mLevelCount];)
     {
         unsigned int element_absolute_index = end_element_absolute_index;
 
@@ -103,7 +140,7 @@ Filter::getScores(double* const scores) const
     }
 }
 
-bool const
+bool
 Filter::hasAncestorByFeatureIndex(unsigned int const absoluteIndex, unsigned int const featureIndex,
         unsigned int level) const
 {
@@ -122,7 +159,7 @@ Filter::hasAncestorByFeatureIndex(unsigned int const absoluteIndex, unsigned int
     return false;
 }
 
-bool const
+bool
 Filter::isRedundantPath(unsigned int const absoluteIndex, unsigned int const featureIndex,
         unsigned int const level) const
 {
@@ -171,16 +208,16 @@ Filter::isRedundantPath(unsigned int const absoluteIndex, unsigned int const fea
     return false;
 }
 
-void const
+void
 Filter::placeElements(unsigned int const startingIndex, unsigned int childrenCount,
         unsigned int const level)
 {   
     // This function calculates the solutions and scores
     unsigned int counter = 0;
-    unsigned int const feature_count = mpFeatureInformationMatrix->getRowCount();
+    Matrix const& mi_matrix = *mpFeatureInformationMatrix; // const: never triggers a lazy write
+    unsigned int const feature_count = mi_matrix.getRowCount();
     unsigned int* const p_candidate_feature_indices = new unsigned int[feature_count];
     unsigned int* const p_order = new unsigned int[feature_count];
-    unsigned int* const p_adaptor = new unsigned int[feature_count];
     double* const p_candidate_scores = new double[feature_count];
 
     /*  The reason why the selection does not start from the 0, it is because the package request (temporarily) the input 
@@ -195,12 +232,12 @@ Filter::placeElements(unsigned int const startingIndex, unsigned int childrenCou
         
         double ancestry_score = 0.;
         
-        for (int j = 0; j < mFixedFeatureCount; ++j) 
+        for (unsigned int j = 0; j < mFixedFeatureCount; ++j) 
         {
             double ancestry_score_ij = Math::computeMi(
-                    mpFeatureInformationMatrix->at(i, j));
+                    mi_matrix.at(i, j));
             double ancestry_score_ji = Math::computeMi(
-                    mpFeatureInformationMatrix->at(j, i));
+                    mi_matrix.at(j, i));
             
             ancestry_score += std::max(ancestry_score_ij, ancestry_score_ji);
         }
@@ -217,22 +254,21 @@ Filter::placeElements(unsigned int const startingIndex, unsigned int childrenCou
                 ancestor_absolute_index = getParentAbsoluteIndex(ancestor_absolute_index, j);
 
                 double ancestry_score_ij = Math::computeMi(
-                        mpFeatureInformationMatrix->at(i, mpIndexTree[ancestor_absolute_index]));
+                        mi_matrix.at(i, mpIndexTree[ancestor_absolute_index]));
                 double ancestry_score_ji = Math::computeMi(
-                        mpFeatureInformationMatrix->at(mpIndexTree[ancestor_absolute_index], i));
+                        mi_matrix.at(mpIndexTree[ancestor_absolute_index], i));
 
                 ancestry_score += std::max(ancestry_score_ij, ancestry_score_ji);
                 
             }
         }
 
-        double const score = Math::computeMi(mpFeatureInformationMatrix->at(i, mpIndexTree[0]))
+        double const score = Math::computeMi(mi_matrix.at(i, mpIndexTree[0]))
                 - (ancestry_score / (level + mFixedFeatureCount));
 
         if (score == score)
         {
             p_order[counter] = counter;
-            p_adaptor[counter] = counter;
             p_candidate_feature_indices[counter] = i;
             p_candidate_scores[counter] = score;
 
@@ -240,9 +276,15 @@ Filter::placeElements(unsigned int const startingIndex, unsigned int childrenCou
         }
     }
 
-    std::sort(p_order, p_order + counter, Math::IndirectComparator(p_candidate_scores, p_adaptor));
+    std::sort(p_order, p_order + counter,
+            [p_candidate_scores](unsigned int a, unsigned int b)
+            { return p_candidate_scores[a] < p_candidate_scores[b]; });
 
-#pragma omp critical(filter_element_placement)
+#ifdef _OPENMP
+// Scoring runs in parallel; placement is applied in parent order so that redundancy checks against
+// siblings placed by other parents give the same result as a serial run.
+#pragma omp ordered
+#endif
     {
         unsigned int children_counter = 0;
         unsigned int i = counter - 1;
@@ -261,7 +303,6 @@ Filter::placeElements(unsigned int const startingIndex, unsigned int childrenCou
     }
 
     delete[] p_order;
-    delete[] p_adaptor;
     delete[] p_candidate_feature_indices;
     delete[] p_candidate_scores;
 }

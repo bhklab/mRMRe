@@ -16,6 +16,9 @@ The 'visualize' methods allows the visual display of an inferred mRMRe.Network t
   \item{object}{a \code{mRMRe.Network} object.}
 }
 
+\value{
+The result of \code{plot.igraph}, which is \code{NULL}; the function is called for its side effect of plotting the network.
+}
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }

@@ -20,6 +20,9 @@
   \item{object}{a \code{mRMRe.Data} object.}
   \item{value}{a numeric matrix containing values from 0 to 1 (or NA), one per pairwise feature bias.}
 }
+\value{
+For \code{priors}, a numeric matrix of the priors (of length zero if none were set). The replacement form returns the modified \code{mRMRe.Data} object.
+}
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
