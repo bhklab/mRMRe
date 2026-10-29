@@ -1,5 +1,7 @@
 #include "Math.h"
 
+#include <limits>
+
 Math::IndirectComparator::IndirectComparator(double const* const pSamples,
         unsigned int const* const pSampleIndices) :
         mpSamples(pSamples), mpSampleIndices(pSampleIndices)
@@ -386,11 +388,22 @@ Math::computeCramersV(double const* const pSamplesX, double const* const pSample
     for (unsigned int i = 0; i < sampleCount; ++i)
     {
         unsigned int const index = pSampleIndices[i];
+        double const x = pSamplesX[index];
+        double const y = pSamplesY[index];
 
-        if (x_class_count <= pSamplesX[index])
-            x_class_count = pSamplesX[index] + 1;
-        if (y_class_count <= pSamplesY[index])
-            y_class_count = pSamplesY[index] + 1;
+        if (x != x || y != y)
+            continue;
+
+        // Factor codes are validated in R; the 65536 cap only guards the
+        // (x+1)*(y+1)-cell contingency table allocation.
+        if (x < 0. || y < 0. || x >= 65536. || y >= 65536. || x != std::floor(x)
+                || y != std::floor(y))
+            return std::numeric_limits<double>::quiet_NaN();
+
+        if (x_class_count <= x)
+            x_class_count = static_cast<unsigned int>(x) + 1;
+        if (y_class_count <= y)
+            y_class_count = static_cast<unsigned int>(y) + 1;
     }
 
     Matrix contingency_table(x_class_count + 1, y_class_count + 1);
@@ -422,6 +435,9 @@ Math::computeCramersV(double const* const pSamplesX, double const* const pSample
                     * contingency_table.at(x_class_count, j)
                     / contingency_table.at(x_class_count, y_class_count);
 
+            if (expected_value == 0.)
+                continue;
+
             chi_square += std::pow((contingency_table.at(i, j) - expected_value), 2)
                     / expected_value;
         }
@@ -429,11 +445,15 @@ Math::computeCramersV(double const* const pSamplesX, double const* const pSample
     unsigned int const min_classes =
             (x_class_count < y_class_count) ? x_class_count : y_class_count;
 
-    *pTotalWeight = contingency_table.at(x_class_count, y_class_count);
+    double const total_weight = contingency_table.at(x_class_count, y_class_count);
 
-    double const v = std::sqrt(chi_square / ((*pTotalWeight) * (min_classes - 1)));
+    if (pTotalWeight != 0)
+        *pTotalWeight = total_weight;
 
-    return v;
+    if (min_classes < 2)
+        return std::numeric_limits<double>::quiet_NaN();
+
+    return std::sqrt(chi_square / (total_weight * (min_classes - 1)));
 }
 
 /* static */double const
@@ -583,7 +603,7 @@ Math::computePearsonCorrelation(double const* const pSamplesX, double const* con
                     p_samples[k] = pSampleIndicesPerStratum[j][Math::computeRandomNumber(&seed)
                             % sample_count];
 
-                double const correlation = computeCramersV(pSamplesX, pSamplesY, pSampleWeights,
+                double const correlation = computePearsonCorrelation(pSamplesX, pSamplesY, pSampleWeights,
                         p_samples, sample_count);
                 bootstraps.at(i, j) = correlation;
 
@@ -653,7 +673,8 @@ Math::computePearsonCorrelation(double const* const pSamplesX, double const* con
                     (sum_of_x_x - ((sum_of_x * sum_of_x) / sum_of_weights))
                             * (sum_of_y_y - ((sum_of_y * sum_of_y) / sum_of_weights)));
 
-    *pTotalWeight = sum_of_weights;
+    if (pTotalWeight != 0)
+        *pTotalWeight = sum_of_weights;
 
     return r;
 }
@@ -729,18 +750,18 @@ Math::computeVariance(double const* const pSamples, unsigned int const sampleCou
     if (sampleCount == 0)
         return 0.;
 
-    double sum_for_mean = pSamples[0];
-    double sum_for_error = 0.;
+    // Sample variance (divides by n - 1), via Welford's online update.
+    double mean = 0.;
+    double m2 = 0.;
 
-    for (unsigned int i = 1; i < sampleCount; ++i)
+    for (unsigned int i = 0; i < sampleCount; ++i)
     {
-        double const my_sum = pSamples[i] - sum_for_mean;
-        double const my_mean = ((i - 1) * my_sum) / i;
-        sum_for_mean += my_mean;
-        sum_for_error += my_mean * my_sum;
+        double const delta = pSamples[i] - mean;
+        mean += delta / (i + 1);
+        m2 += delta * (pSamples[i] - mean);
     }
 
-    return sum_for_error / (sampleCount - 1);
+    return m2 / (sampleCount - 1);
 }
 
 /* static */void const
