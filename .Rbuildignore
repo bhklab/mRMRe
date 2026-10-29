@@ -11,3 +11,4 @@
 ^\.issues$
 ^unitest$
 ^\.git$
+^\.claude$
