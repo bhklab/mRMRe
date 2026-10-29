@@ -17,7 +17,6 @@ private:
     Matrix const* const mpDataMatrix;
     Matrix* const mpOrderMatrix;
     Matrix const* const mpPriorsMatrix;
-    bool* const mpHasOrderCached;
     int const* const mpSampleStrata;
     double const* const mpSampleWeights;
     int const* const mpFeatureTypes;
@@ -30,6 +29,9 @@ private:
     unsigned int const mBootstrapCount;
     double const mPriorsWeight;
     unsigned int mSeed; // drawn serially from R's RNG; per-pair bootstrap seeds derive from it
+
+    void
+    placeOrders();
 
 public:
     static int const FEATURE_CONTINUOUS = 0;

@@ -21,7 +21,7 @@ Data::Data(double* const pData, Matrix const* const pPriorsMatrix, double const 
         unsigned int const continuousEstimator, bool const outX, unsigned int const bootstrapCount) :
         mpDataMatrix(new Matrix(pData, sampleCount, featureCount)), mpOrderMatrix(
                 continuousEstimator ? new Matrix(sampleCount, featureCount) : 0), mpPriorsMatrix(
-                pPriorsMatrix), mpHasOrderCached(new bool[mpDataMatrix->getColumnCount()]), mpSampleStrata(
+                pPriorsMatrix), mpSampleStrata(
                 pSampleStrata), mpSampleWeights(pSampleWeights), mpFeatureTypes(pFeatureTypes), mSampleStratumCount(
                 sampleStratumCount), mpSampleIndicesPerStratum(
                 new unsigned int*[sampleStratumCount]), mpMasterSampleIndicesPerStratum(
@@ -30,9 +30,6 @@ Data::Data(double* const pData, Matrix const* const pPriorsMatrix, double const 
                 outX), mBootstrapCount(bootstrapCount), mPriorsWeight(priorsWeight)
 {
     mSeed = bootstrapCount > 0 ? drawSeed() : 0;
-
-    for (unsigned int i = 0; i < mpDataMatrix->getColumnCount(); ++i)
-        mpHasOrderCached[i] = false;
 
     Math::placeStratificationData(mpSampleStrata, mpSampleWeights, mpSampleIndicesPerStratum,
             mpSampleCountPerStratum, mSampleStratumCount, sampleCount);
@@ -43,13 +40,14 @@ Data::Data(double* const pData, Matrix const* const pPriorsMatrix, double const 
         for (unsigned int j = 0; j < mpSampleCountPerStratum[i]; ++j)
             mpMasterSampleIndicesPerStratum[i][j] = mpSampleIndicesPerStratum[i][j];
     }
+
+    placeOrders();
 }
 
 Data::~Data()
 {
     delete mpDataMatrix;
     delete mpOrderMatrix;
-    delete[] mpHasOrderCached;
     for (unsigned int i = 0; i < mSampleStratumCount; ++i)
     {
         delete[] mpSampleIndicesPerStratum[i];
@@ -76,6 +74,22 @@ Data::bootstrap()
 
     if (mBootstrapCount > 0)
         mSeed = drawSeed();
+
+    placeOrders();
+}
+
+// Spearman orders depend on the (bootstrapped) sample indices. Computing them all here, serially,
+// keeps computeMiBetweenFeatures() read-only so it is safe inside OpenMP regions.
+void
+Data::placeOrders()
+{
+    if (mContinuousEstimator != SPEARMAN_ESTIMATOR)
+        return;
+
+    for (unsigned int i = 0; i < mpDataMatrix->getColumnCount(); ++i)
+        if (mpFeatureTypes[i] == FEATURE_CONTINUOUS)
+            Math::placeOrders(&(mpDataMatrix->at(0, i)), &(mpOrderMatrix->at(0, i)),
+                    mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount);
 }
 
 void const
@@ -108,20 +122,6 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j, doubl
 
         case SPEARMAN_ESTIMATOR:
         {
-            if (!mpHasOrderCached[i])
-            {
-                Math::placeOrders(&(mpDataMatrix->at(0, i)), &(mpOrderMatrix->at(0, i)),
-                        mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount);
-                mpHasOrderCached[i] = true;
-            }
-
-            if (!mpHasOrderCached[j])
-            {
-                Math::placeOrders(&(mpDataMatrix->at(0, j)), &(mpOrderMatrix->at(0, j)),
-                        mpSampleIndicesPerStratum, mpSampleCountPerStratum, mSampleStratumCount);
-                mpHasOrderCached[j] = true;
-            }
-
             double* const p_ranked_samples_x = new double[getSampleCount()];
             double* const p_ranked_samples_y = new double[getSampleCount()];
             Math::placeRanksFromOrders(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
