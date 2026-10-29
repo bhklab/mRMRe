@@ -29,6 +29,7 @@ private:
     bool const mOutX;
     unsigned int const mBootstrapCount;
     double const mPriorsWeight;
+    unsigned int mSeed; // drawn serially from R's RNG; per-pair bootstrap seeds derive from it
 
 public:
     static int const FEATURE_CONTINUOUS = 0;

@@ -1,6 +1,7 @@
 #include "Math.h"
 
 #include <limits>
+#include <random>
 
 #define R_NO_REMAP
 #include <R_ext/Arith.h>
@@ -320,7 +321,7 @@ Math::computeCramersV(double const* const pSamplesX, double const* const pSample
         double const* const pSampleWeights,
         unsigned int const* const * const pSampleIndicesPerStratum,
         unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
-        unsigned int const bootstrapCount)
+        unsigned int const bootstrapCount, unsigned int const seed)
 {
     bool const useBootstrap = bootstrapCount > 3 && sampleStratumCount > 0;
     double* p_error_per_stratum = 0;
@@ -328,22 +329,23 @@ Math::computeCramersV(double const* const pSamplesX, double const* const pSample
     if (useBootstrap)
     {
         p_error_per_stratum = new double[sampleStratumCount];
-        unsigned int seed = std::time(NULL);
         Matrix bootstraps(bootstrapCount, sampleStratumCount);
 
 #ifdef _OPENMP
-#pragma omp parallel for schedule(dynamic) firstprivate(seed)
+#pragma omp parallel for schedule(dynamic)
 #endif
         for (unsigned int i = 0; i < bootstrapCount; ++i)
         {
+            std::seed_seq seed_sequence{seed, i};
+            std::mt19937 generator(seed_sequence);
+
             for (unsigned int j = 0; j < sampleStratumCount; ++j)
             {
                 unsigned int const sample_count = pSampleCountPerStratum[j];
                 unsigned int* const p_samples = new unsigned int[sample_count];
 
                 for (unsigned int k = 0; k < sample_count; ++k)
-                    p_samples[k] = pSampleIndicesPerStratum[j][Math::computeRandomNumber(&seed)
-                            % sample_count];
+                    p_samples[k] = pSampleIndicesPerStratum[j][generator() % sample_count];
 
                 double const correlation = computeCramersV(pSamplesX, pSamplesY, pSampleWeights,
                         p_samples, sample_count);
@@ -465,7 +467,7 @@ Math::computeFrequency(double const* const pSamplesX, double const* const pSampl
         double const* const pSampleWeights,
         unsigned int const* const * const pSampleIndicesPerStratum,
         unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
-        unsigned int const bootstrapCount)
+        unsigned int const bootstrapCount, unsigned int const seed)
 {
     bool const useBootstrap = bootstrapCount > 3 && sampleStratumCount > 0;
     double* p_error_per_stratum = 0;
@@ -473,22 +475,23 @@ Math::computeFrequency(double const* const pSamplesX, double const* const pSampl
     if (useBootstrap)
     {
         p_error_per_stratum = new double[sampleStratumCount];
-        unsigned int seed = std::time(NULL);
         Matrix bootstraps(bootstrapCount, sampleStratumCount);
 
 #ifdef _OPENMP
-#pragma omp parallel for schedule(dynamic) firstprivate(seed)
+#pragma omp parallel for schedule(dynamic)
 #endif
         for (unsigned int i = 0; i < bootstrapCount; ++i)
         {
+            std::seed_seq seed_sequence{seed, i};
+            std::mt19937 generator(seed_sequence);
+
             for (unsigned int j = 0; j < sampleStratumCount; ++j)
             {
                 unsigned int const sample_count = pSampleCountPerStratum[j];
                 unsigned int* const p_samples = new unsigned int[sample_count];
 
                 for (unsigned int k = 0; k < sample_count; ++k)
-                    p_samples[k] = pSampleIndicesPerStratum[j][Math::computeRandomNumber(&seed)
-                            % sample_count];
+                    p_samples[k] = pSampleIndicesPerStratum[j][generator() % sample_count];
 
                 double const correlation = computeFrequency(pSamplesX, pSamplesY, pSampleWeights,
                         p_samples, sample_count);
@@ -582,7 +585,7 @@ Math::computePearsonCorrelation(double const* const pSamplesX, double const* con
         double const* const pSampleWeights,
         unsigned int const* const * const pSampleIndicesPerStratum,
         unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
-        unsigned int const bootstrapCount)
+        unsigned int const bootstrapCount, unsigned int const seed)
 {
     bool const useBootstrap = bootstrapCount > 3 && sampleStratumCount > 0;
     double* p_error_per_stratum = 0;
@@ -590,22 +593,23 @@ Math::computePearsonCorrelation(double const* const pSamplesX, double const* con
     if (useBootstrap)
     {
         p_error_per_stratum = new double[sampleStratumCount];
-        unsigned int seed = std::time(NULL);
         Matrix bootstraps(bootstrapCount, sampleStratumCount);
 
 #ifdef _OPENMP
-#pragma omp parallel for schedule(dynamic) firstprivate(seed)
+#pragma omp parallel for schedule(dynamic)
 #endif
         for (unsigned int i = 0; i < bootstrapCount; ++i)
         {
+            std::seed_seq seed_sequence{seed, i};
+            std::mt19937 generator(seed_sequence);
+
             for (unsigned int j = 0; j < sampleStratumCount; ++j)
             {
                 unsigned int const sample_count = pSampleCountPerStratum[j];
                 unsigned int* const p_samples = new unsigned int[sample_count];
 
                 for (unsigned int k = 0; k < sample_count; ++k)
-                    p_samples[k] = pSampleIndicesPerStratum[j][Math::computeRandomNumber(&seed)
-                            % sample_count];
+                    p_samples[k] = pSampleIndicesPerStratum[j][generator() % sample_count];
 
                 double const correlation = computePearsonCorrelation(pSamplesX, pSamplesY, pSampleWeights,
                         p_samples, sample_count);
@@ -683,30 +687,6 @@ Math::computePearsonCorrelation(double const* const pSamplesX, double const* con
     return r;
 }
 
-/* static */int const
-Math::computeRandomNumber(unsigned int* const seed)
-{
-    unsigned int next = *seed;
-    int result;
-
-    next *= 1103515245;
-    next += 12345;
-    result = static_cast<unsigned int>(next / 65536) % 2048;
-
-    next *= 1103515245;
-    next += 12345;
-    result <<= 10;
-    result ^= static_cast<unsigned int>(next / 65536) % 1024;
-
-    next *= 1103515245;
-    next += 12345;
-    result <<= 10;
-    result ^= static_cast<unsigned int>(next / 65536) % 1024;
-
-    *seed = next;
-    return result;
-}
-
 /* static */double const
 Math::computeSomersD(double const c)
 {
@@ -718,7 +698,7 @@ Math::computeSpearmanCorrelation(double const* const pSamplesX, double const* co
         double const* const pSampleWeights,
         unsigned int const* const * const pSampleIndicesPerStratum,
         unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
-        unsigned int const bootstrapCount, unsigned int const sampleCount)
+        unsigned int const bootstrapCount, unsigned int const seed, unsigned int const sampleCount)
 {
     double* const p_ordered_samples_x = new double[sampleCount];
     double* const p_ordered_samples_y = new double[sampleCount];
@@ -740,7 +720,7 @@ Math::computeSpearmanCorrelation(double const* const pSamplesX, double const* co
 
     double const r = Math::computePearsonCorrelation(p_ranked_samples_x, p_ranked_samples_y,
             &pSampleWeights[0], pSampleIndicesPerStratum, pSampleCountPerStratum,
-            sampleStratumCount, bootstrapCount);
+            sampleStratumCount, bootstrapCount, seed);
 
     delete[] p_ranked_samples_x;
     delete[] p_ranked_samples_y;

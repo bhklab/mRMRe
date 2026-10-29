@@ -3,7 +3,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <ctime>
 #include <limits>
 
 #include "Matrix.h"
@@ -75,7 +74,7 @@ public:
             double const* const pSampleWeights,
             unsigned int const* const * const pSampleIndicesPerStratum,
             unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
-            unsigned int const bootstrapCount);
+            unsigned int const bootstrapCount, unsigned int const seed);
 
     static double const
     computeCramersV(double const* const pSamplesX, double const* const pSamplesY,
@@ -93,7 +92,7 @@ public:
             double const* const pSampleWeights,
             unsigned int const* const * const pSampleIndicesPerStratum,
             unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
-            unsigned int const bootstrapCount);
+            unsigned int const bootstrapCount, unsigned int const seed);
 
     static double const
     computeFrequency(double const* const pSamplesX, double const* const pSamplesY,
@@ -108,15 +107,12 @@ public:
             double const* const pSampleWeights,
             unsigned int const* const * const pSampleIndicesPerStratum,
             unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
-            unsigned int const bootstrapCount);
+            unsigned int const bootstrapCount, unsigned int const seed);
 
     static double const
     computePearsonCorrelation(double const* const pSamplesX, double const* const pSamplesY,
             double const* const pSampleWeights, unsigned int const* const pSampleIndices,
             unsigned int const sampleCount, double* const pTotalWeight = 0);
-
-    static int const
-    computeRandomNumber(unsigned int* const seed);
 
     static double const
     computeSomersD(double const c);
@@ -126,7 +122,7 @@ public:
             double const* const pSampleWeights,
             unsigned int const* const * const pSampleIndicesPerStratum,
             unsigned int const* const pSampleCountPerStratum, unsigned int const sampleStratumCount,
-            unsigned int const bootstrapCount, unsigned int const sampleCount);
+            unsigned int const bootstrapCount, unsigned int const seed, unsigned int const sampleCount);
 
     static double const
     computeVariance(double const* const pSamples, unsigned int const sampleCount);

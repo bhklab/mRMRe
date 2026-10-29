@@ -1,5 +1,18 @@
 #include "Data.h"
-#include <sys/time.h>
+
+#define R_NO_REMAP
+#include <R.h>
+#include <Rmath.h>
+
+// R's RNG is not thread-safe: draw from it serially, never inside an OpenMP region.
+static unsigned int const
+drawSeed()
+{
+    GetRNGstate();
+    unsigned int const seed = static_cast<unsigned int>(R_unif_index(4294967296.));
+    PutRNGstate();
+    return seed;
+}
 
 Data::Data(double* const pData, Matrix const* const pPriorsMatrix, double const priorsWeight,
         unsigned int const sampleCount, unsigned int const featureCount,
@@ -16,6 +29,8 @@ Data::Data(double* const pData, Matrix const* const pPriorsMatrix, double const 
                 new unsigned int[sampleStratumCount]), mContinuousEstimator(continuousEstimator), mOutX(
                 outX), mBootstrapCount(bootstrapCount), mPriorsWeight(priorsWeight)
 {
+    mSeed = bootstrapCount > 0 ? drawSeed() : 0;
+
     for (unsigned int i = 0; i < mpDataMatrix->getColumnCount(); ++i)
         mpHasOrderCached[i] = false;
 
@@ -48,23 +63,26 @@ Data::~Data()
 void const
 Data::bootstrap()
 {
-    // unsigned int seed = std::time(NULL); too long for small datasets
-    struct timeval start;
-    gettimeofday(&start, NULL);
-    unsigned int seed = start.tv_usec; //microseconds
-    
+    GetRNGstate();
+
     for (unsigned int i = 0; i < mSampleStratumCount; ++i)
         for (unsigned int j = 0; j < mpSampleCountPerStratum[i]; ++j)
         {
-            unsigned int index = Math::computeRandomNumber(&seed) % mpSampleCountPerStratum[i];
+            unsigned int const index = static_cast<unsigned int>(R_unif_index(mpSampleCountPerStratum[i]));
             mpSampleIndicesPerStratum[i][j] = mpMasterSampleIndicesPerStratum[i][index];
         }
+
+    PutRNGstate();
+
+    if (mBootstrapCount > 0)
+        mSeed = drawSeed();
 }
 
 void const
 Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j, double* const mi_ij,
         double* const mi_ji) const
 {
+    unsigned int const seed = mSeed + (i * getFeatureCount()) + j;
     double val_ij = std::numeric_limits<double>::quiet_NaN();
     double val_ji = std::numeric_limits<double>::quiet_NaN();
 
@@ -84,7 +102,7 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j, doubl
         {
             val_ij = val_ji = Math::computePearsonCorrelation(&(mpDataMatrix->at(0, i)),
                     &(mpDataMatrix->at(0, j)), mpSampleWeights, mpSampleIndicesPerStratum,
-                    mpSampleCountPerStratum, mSampleStratumCount, mBootstrapCount);
+                    mpSampleCountPerStratum, mSampleStratumCount, mBootstrapCount, seed);
         }
             break;
 
@@ -112,7 +130,7 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j, doubl
                     mSampleStratumCount);
             val_ij = val_ji = Math::computePearsonCorrelation(p_ranked_samples_x,
                     p_ranked_samples_y, mpSampleWeights, mpSampleIndicesPerStratum,
-                    mpSampleCountPerStratum, mSampleStratumCount, mBootstrapCount);
+                    mpSampleCountPerStratum, mSampleStratumCount, mBootstrapCount, seed);
             delete[] p_ranked_samples_x;
             delete[] p_ranked_samples_y;
         }
@@ -135,7 +153,7 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j, doubl
         {
             val_ij = Math::computeFrequency(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
                     mpSampleWeights, mpSampleIndicesPerStratum, mpSampleCountPerStratum,
-                    mSampleStratumCount, mBootstrapCount);
+                    mSampleStratumCount, mBootstrapCount, seed);
             val_ji = 1 - val_ij;
         }
             break;
@@ -154,7 +172,7 @@ Data::computeMiBetweenFeatures(unsigned int const i, unsigned int const j, doubl
     else if (A_is_discrete && B_is_discrete)
         val_ij = val_ji = Math::computeCramersV(&(mpDataMatrix->at(0, i)),
                 &(mpDataMatrix->at(0, j)), mpSampleWeights, mpSampleIndicesPerStratum,
-                mpSampleCountPerStratum, mSampleStratumCount, mBootstrapCount);
+                mpSampleCountPerStratum, mSampleStratumCount, mBootstrapCount, seed);
     else if (A_is_survival_event && B_is_continuous)
         val_ij = val_ji = Math::computeSomersD(
                 Math::computeConcordanceIndex(&(mpDataMatrix->at(0, i)), &(mpDataMatrix->at(0, j)),
