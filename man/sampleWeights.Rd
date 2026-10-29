@@ -19,6 +19,9 @@ TODO
   \item{object}{a \code{mRMRe.Data} object.}
   \item{value}{a numeric vector containing the biases of each sample in the mutual information computation.}
 }
+\value{
+For \code{sampleWeights}, a numeric vector of sample weights named by sample. The replacement form returns the modified \code{mRMRe.Data} object.
+}
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }

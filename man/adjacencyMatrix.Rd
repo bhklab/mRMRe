@@ -18,6 +18,9 @@
 \arguments{
   \item{object}{a \code{mRMRe.Network} object.}
 }
+\value{
+A square numeric matrix with feature names as row and column names. Entry \code{[i, j]} is 1 if feature \code{i} was selected for target \code{j} (parents in rows, targets in columns); for networks built without causality the matrix is also filled symmetrically.
+}
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }

@@ -15,6 +15,9 @@
 \arguments{
   \item{object}{a \code{mRMRe.Data} object.}
 }
+\value{
+A \code{data.frame} with samples in rows and features in columns holding the feature values; survival features are returned as \code{Surv} objects.
+}
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }

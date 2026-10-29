@@ -18,6 +18,9 @@
   \item{row_indices}{An integer vector of the rows to be included in the subset.}
   \item{column_indices}{An integer vector of the columns to be included in the subset.}
 }
+\value{
+A new \code{mRMRe.Data} object restricted to the given samples and features.
+}
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }

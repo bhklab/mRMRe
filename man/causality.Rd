@@ -18,6 +18,9 @@
 \arguments{
   \item{object}{a \code{mRMRe.Filter or mRMRe.Network} object.}
 }
+\value{
+A list, one element per target, of causality coefficients between each feature and the target; empty when causality was not computed.
+}
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }

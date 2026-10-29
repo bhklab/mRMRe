@@ -18,6 +18,9 @@ mRMR Target(s)
 \arguments{
   \item{object}{a \code{mRMRe.Filter or mRMRe.Network} object.}
 }
+\value{
+An integer vector of the target feature indices.
+}
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }

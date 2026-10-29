@@ -19,6 +19,9 @@
 \arguments{
   \item{object}{a \code{mRMRe.Data, mRMRe.Filter or mRMRe.Network} object.}
 }
+\value{
+An integer: the number of features.
+}
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }

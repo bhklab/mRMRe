@@ -23,6 +23,9 @@ network level, 'solutions' consists of the topology of the network, identifying 
   		features that do not pass the threshold will be set at NA}
   \item{with_fixed_features}{a boolean indicating if fixed features are used in the computation, default TRUE}
 }
+\value{
+A list with one element per target. For \code{mRMRe.Filter} each element is an integer matrix of feature indices with one column per solution (most relevant feature first; removed features are \code{NA}); for \code{mRMRe.Network} each element holds the topology of the target.
+}
 \author{
 Nicolas De Jay, Simon Papillon-Cavanagh, Benjamin Haibe-Kains
 }
