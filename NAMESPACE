@@ -1,9 +1,18 @@
 useDynLib(mRMRe, .fixes=".C_", export_concordance_index, export_filters, 
     export_filters_bootstrap, export_mim, set_thread_count, get_thread_count, 
     .registration = TRUE)
-exportPattern("^[^\\.]")
-import(igraph)
 import(methods)
-import(survival)
+importFrom(survival, Surv, is.Surv)
+importFrom(igraph, graph.adjacency, plot.igraph)
 importFrom("stats", "complete.cases", "pnorm", "qnorm")
 importFrom("utils", "str")
+export(correlate, export_concordance_index, export_filters,
+    export_filters_bootstrap, export_mim, get.thread.count, get_thread_count,
+    mRMR.classic, mRMR.data, mRMR.ensemble, mRMR.network, set.thread.count,
+    set_thread_count)
+exportClasses(mRMRe.Data, mRMRe.Filter, mRMRe.Network)
+exportMethods("$", "$<-", "[", "[<-", "[[<-", adjacencyMatrix,
+    adjacencyMatrixSum, causality, featureCount, featureData, featureNames, mim,
+    priors, "priors<-", sampleCount, sampleNames, sampleStrata,
+    "sampleStrata<-", sampleWeights, "sampleWeights<-", scores, solutions,
+    subsetData, target, visualize)
