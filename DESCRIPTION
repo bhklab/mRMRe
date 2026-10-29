@@ -21,3 +21,5 @@ License: Artistic-2.0
 Depends: R (>= 3.5), survival, igraph, methods
 URL: https://www.pmgenomics.ca/bhklab/
 RoxygenNote: 7.1.1
+VignetteBuilder: knitr
+Suggests: knitr, rmarkdown
